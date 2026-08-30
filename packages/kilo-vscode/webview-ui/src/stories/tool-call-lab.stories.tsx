@@ -25,7 +25,7 @@ import { ServerContext } from "../context/server"
 import { SessionContext } from "../context/session"
 import type { TranscriptDiffRow } from "../context/transcript-rows"
 import type { PermissionRequest, QuestionRequest, SuggestionRequest } from "../types/messages"
-import { writeToolOpen } from "../../../../kilo-ui/src/components/tool-open-state"
+import { writeToolOpen } from "@kilocode/kilo-ui/tool-open-state"
 
 registerExpandedTaskTool()
 registerVscodeToolOverrides()

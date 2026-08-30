@@ -4,7 +4,7 @@ import {
   resetToolOpenState,
   toolOpenKey,
   writeToolOpen,
-} from "../../../kilo-ui/src/components/tool-open-state"
+} from "@kilocode/kilo-ui/tool-open-state"
 import { taskResult, taskRunning, taskVisible } from "../../webview-ui/src/components/chat/task-tool-state"
 
 describe("completed task hydration", () => {

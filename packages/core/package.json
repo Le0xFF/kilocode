@@ -59,7 +59,8 @@
     "@parcel/watcher-win32-arm64": "2.5.1",
     "@parcel/watcher-win32-x64": "2.5.1",
     "@opencode-ai/http-recorder": "workspace:*",
-    "drizzle-kit": "catalog:"
+    "drizzle-kit": "catalog:",
+    "@types/mime-types": "3.0.1"
   },
   "dependencies": {
     "@kilocode/kilo-gateway": "workspace:*",
@@ -129,7 +130,8 @@
     "@silvia-odwyer/photon-node": "0.3.4",
     "@opencode-ai/schema": "workspace:*",
     "@kilocode/plugin": "workspace:*",
-    "diff": "catalog:"
+    "diff": "catalog:",
+    "@kilocode/sdk": "workspace:*"
   },
   "overrides": {
     "drizzle-orm": "catalog:"

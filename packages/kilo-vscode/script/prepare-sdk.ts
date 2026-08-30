@@ -24,7 +24,6 @@ const inputs = [
   "packages/plugin",
   "packages/plugin-atomic-chat",
   "packages/server",
-  "packages/util",
   "packages/sdk/js/package.json",
   "packages/sdk/js/tsconfig.json",
   "packages/sdk/js/script",

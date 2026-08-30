@@ -2,7 +2,7 @@
 // kilocode_change - new file
 
 /**
- * Guards against accidentally inheriting workflows from upstream opencode.
+ * Guards against accidentally inheriting workflows from upstream.
  *
  * We regularly merge upstream. When upstream adds a new workflow under
  * `.github/workflows/`, it silently starts running in our CI unless we
@@ -27,35 +27,15 @@ const DIR = path.join(ROOT, ".github", "workflows")
 
 // Workflows we have deliberately accepted into CI. Sort alphabetically.
 const active = new Set([
-  "auto-docs.yml",
   "beta.yml",
   "check-forbidden-strings.yml",
   "check-kilo-generated-artifacts.yml",
   "check-md-table-padding.yml",
-  "check-opencode-annotations.yml",
-  "check-org-member.yml",
-  "codeql-kotlin.yml",
   "codeql.yml",
-  "containers.yml",
-  "docs-build.yml",
-  "docs-check-links.yml",
-  "docs-sync.yml",
-  "generate.yml",
-  "kilo-auto-close.yml",
-  "nix-eval.yml",
-  "nix-hashes.yml",
-  "prepare-jetbrains-release.yml",
-  "publish-jetbrains-bundled.yml",
-  "publish-jetbrains.yml",
-  "publish.yml",
-  "smoke-test.yml",
-  "source-check-links.yml",
-  "test-jetbrains.yml",
   "test-vscode.yml",
   "test.yml",
   "typecheck.yml",
   "visual-regression.yml",
-  "watch-opencode-releases.yml",
 ])
 
 // GitHub picks up both .yml and .yaml in .github/workflows/. We accept both so
@@ -83,5 +63,5 @@ if (errs.length === 0) {
 for (const e of errs) console.error(e)
 console.error("")
 console.error(`Found ${errs.length} workflow drift issue(s).`)
-console.error("This guard prevents upstream-merged workflows from silently running in our CI.")
+console.error("This guard prevents merged workflows from silently running in our CI.")
 process.exit(1)

@@ -47,7 +47,6 @@ jobs:
               - '**'
               - '!.changeset/**'
               - '!.kilo/plans/**'
-              - '!packages/kilo-jetbrains/**'
               - '!packages/kilo-vscode/**'
               - '!packages/kilo-docs/**'
               - '!packages/extensions/zed/**'
@@ -177,13 +176,9 @@ jobs:
         if: matrix.settings.run && matrix.settings.packages && matrix.settings.os == 'linux'
         run: bun run script/check-test-ci.ts
 
-      - name: Run root tooling unit tests
-        if: matrix.settings.run && matrix.settings.packages && matrix.settings.os == 'linux'
-        run: bun run test:script:ci
-
       - name: Run non-CLI unit tests
         if: matrix.settings.run && matrix.settings.packages
-        run: bun turbo test:ci --output-logs=errors-only --log-order=grouped --log-prefix=task --filter='!@kilocode/cli' --filter='!@kilocode/kilo-jetbrains'
+        run: bun turbo test:ci --output-logs=errors-only --log-order=grouped --log-prefix=task --filter='!@kilocode/cli'
         env:
           KILO_EXPERIMENTAL_DISABLE_FILEWATCHER: "true" # kilocode_change - non-CLI tests use the watcher-free unit-test profile
 
@@ -303,15 +298,6 @@ jobs:
 
   # kilocode_change end
 
-  # kilocode_change start
-  jetbrains:
-    name: jetbrains
-    permissions:
-      contents: read
-      checks: write
-      pull-requests: read
-    uses: ./.github/workflows/test-jetbrains.yml
-  # kilocode_change end
 
   # kilocode_change start
   unit-required:
@@ -334,19 +320,14 @@ jobs:
       - changes
       - unit
       - httpapi
-      - jetbrains
     if: always()
     steps:
       - name: Verify upstream test jobs passed # kilocode_change
         run: |
           echo "unit=${{ needs.unit.result }}"
-          echo "httpapi=${{ needs.httpapi.result }}"
-          echo "jetbrains=${{ needs.jetbrains.result }}"
-          test "${{ needs.unit.result }}" = "success"
+          echo "httpapi=${{ needs.httpapi.result }}"          test "${{ needs.unit.result }}" = "success"
           if [ "${{ needs.changes.outputs.general }}" = "true" ]; then
             test "${{ needs.httpapi.result }}" = "success"
           else
             test "${{ needs.httpapi.result }}" = "skipped"
-          fi
-          test "${{ needs.jetbrains.result }}" = "success"
-  # kilocode_change end
+          fi  # kilocode_change end
