@@ -400,7 +400,7 @@ describe("WorktreeManager.createWorktree", () => {
     tempDirs.push(dir)
     const mgr = createManager(dir)
 
-    await expect(mgr.createWorktree({ prompt: "test" })).rejects.toThrow("not a git repository")
+    await expect(mgr.createWorktree({ prompt: "test" })).rejects.toThrow(/not a git repository|non è un repository/)
   })
 
   it("creates worktrees directory under .kilo/worktrees/", async () => {

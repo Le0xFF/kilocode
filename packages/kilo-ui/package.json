@@ -91,7 +91,9 @@
     "./icons/file-type": "./src/components/file-icons/types.ts",
     "./icons/app": "./src/components/app-icons/types.ts",
     "./fonts/*": "./src/assets/fonts/*",
-    "./audio/*": "./src/assets/audio/*"
+    "./audio/*": "./src/assets/audio/*",
+    "./tool-open-state": "./src/components/tool-open-state.ts",
+    "./stories/theme-decorator": "./src/stories/theme-decorator.tsx"
   },
   "peerDependencies": {
     "@opencode-ai/ui": "workspace:*",

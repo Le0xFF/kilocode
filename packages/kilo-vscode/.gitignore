@@ -1,6 +1,7 @@
 bin/
 out/
 .vscode-test/
+.kilo-dev/
 storybook-static/
 test-results/
 playwright-report/

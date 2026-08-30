@@ -69,6 +69,9 @@ async function isKiloConsoleUpToDate(app: string, out: string) {
     path.resolve(dir, "../../bun.lock"),
   ]
   for (const p of inputs) {
+  // A missing console app (pruned branch) means the freshness check must not
+  // trigger a rebuild; absence is handled by buildKiloConsole's guard.
+  if (!fs.existsSync(path.join(app, "package.json"))) return true
     if (!fs.existsSync(p)) continue
     const st = await fs.promises.stat(p)
     if (st.isDirectory()) {
@@ -87,6 +90,18 @@ async function isKiloConsoleUpToDate(app: string, out: string) {
 async function buildKiloConsole() {
   const app = path.resolve(dir, "../kilo-console")
   const out = path.join(app, "dist")
+  // Guard: on branches without packages/kilo-console (VS Code-only prune) skip
+  // the console build and asset copy instead of failing the CLI build. The
+  // runtime serves 404 JSON for /console/* when assets are absent. kilo-web-ui
+  // is a console dependency, so its absence also disables the console.
+  if (!(await Bun.file(path.join(app, "package.json")).exists())) {
+    console.warn("Kilo Console package not found, skipping Kilo Console build")
+    return null
+  }
+  if (!(await Bun.file(path.resolve(dir, "../kilo-web-ui/package.json")).exists())) {
+    console.warn("Kilo Web UI package not found, skipping Kilo Console build")
+    return null
+  }
   if (await isKiloConsoleUpToDate(app, out)) {
     console.log(`reusing existing Kilo Console build at ${out}`)
     return out
@@ -105,7 +120,11 @@ async function buildKiloConsole() {
 }
 // kilocode_change end
 
-async function copyKiloConsole(input: string, outputDir: string) {
+async function copyKiloConsole(input: string | null, outputDir: string) {
+  if (input === null) {
+    console.log("skipping Kilo Console assets (package absent)")
+    return
+  }
   const target = path.join(outputDir, "console")
   await fs.promises.rm(target, { recursive: true, force: true })
   await fs.promises.cp(input, target, { recursive: true })
