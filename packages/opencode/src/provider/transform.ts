@@ -4,7 +4,6 @@ import type { JSONSchema7 } from "@ai-sdk/provider"
 import type * as Provider from "./provider"
 import type * as ModelsDev from "@opencode-ai/core/models-dev"
 import { iife } from "@/util/iife"
-import { kiloProviderOptions } from "@/kilocode/provider-options"
 import { isLing } from "@/kilocode/model-match" // kilocode_change
 import { reasoningSummary } from "@/kilocode/provider/reasoning-summary" // kilocode_change
 
@@ -86,8 +85,6 @@ function sdkKey(npm: string): string | undefined {
     case "@ai-sdk/gateway":
       return "gateway"
     case "@openrouter/ai-sdk-provider":
-      return "openrouter"
-    case "@kilocode/kilo-gateway": // kilocode_change
       return "openrouter"
     case "ai-gateway-provider":
       // ai-gateway-provider/unified wraps createOpenAICompatible({ name: "Unified" }),
@@ -523,7 +520,7 @@ export function message(msgs: ModelMessage[], model: Provider.Model, options: Re
   const usesAnthropicAutomaticCaching =
     options.cacheControl !== undefined &&
     (model.api.npm === "@ai-sdk/anthropic" || model.api.npm === "@ai-sdk/google-vertex/anthropic")
-  // kilocode_change start - apply caching for anthropic, alibaba, and GPT-5.6+ openai/azure/kilo-gateway
+  // kilocode_change start - apply caching for anthropic, alibaba, and GPT-5.6+ openai/azure
   if (
     (model.providerID === "anthropic" ||
       model.providerID === "google-vertex-anthropic" ||
@@ -533,9 +530,7 @@ export function message(msgs: ModelMessage[], model: Provider.Model, options: Re
       model.id.includes("claude") ||
       model.api.npm === "@ai-sdk/anthropic" ||
       model.api.npm === "@ai-sdk/alibaba" ||
-      ((model.api.npm === "@ai-sdk/openai" ||
-        model.api.npm === "@ai-sdk/azure" ||
-        model.api.npm === "@kilocode/kilo-gateway") &&
+      ((model.api.npm === "@ai-sdk/openai" || model.api.npm === "@ai-sdk/azure") &&
         supportsPromptCacheBreakpoint(model))) &&
     model.api.npm !== "@ai-sdk/gateway" &&
     !usesAnthropicAutomaticCaching
@@ -786,7 +781,7 @@ function googleThinkingVariants(model: Provider.Model): Record<string, Record<st
 export function variants(model: Provider.Model): Record<string, Record<string, any>> {
   // kilocode_change start
   if (
-    ["@kilocode/kilo-gateway", "@ai-sdk/openai-compatible"].includes(model.api.npm) &&
+    model.api.npm === "@ai-sdk/openai-compatible" &&
     model.variants &&
     Object.keys(model.variants).length > 0
   ) {
@@ -1353,8 +1348,6 @@ function reasoningEffort(model: Provider.Model, effort: string) {
     case "venice-ai-sdk-provider":
     case "ai-gateway-provider":
       return { reasoningEffort: effort }
-    case "@kilocode/kilo-gateway": // kilocode_change - OpenRouter-shaped reasoning effort
-      return { reasoning: { effort } } // kilocode_change
     case "@ai-sdk/cohere":
     case "@ai-sdk/perplexity":
     case "@ai-sdk/vercel":
@@ -1465,8 +1458,7 @@ export function options(input: {
 
   if (
     input.model.api.npm === "@openrouter/ai-sdk-provider" ||
-    input.model.api.npm === "@llmgateway/ai-sdk-provider" ||
-    input.model.api.npm === "@kilocode/kilo-gateway" // kilocode_change
+    input.model.api.npm === "@llmgateway/ai-sdk-provider"
   ) {
     result["usage"] = {
       include: true,
@@ -1580,7 +1572,6 @@ export function options(input: {
         input.model.api.npm === "@ai-sdk/azure" ||
         input.model.api.npm === "@ai-sdk/github-copilot" ||
         input.model.api.npm === "@openrouter/ai-sdk-provider" || // kilocode_change
-        input.model.api.npm === "@kilocode/kilo-gateway" || // kilocode_change
         input.model.api.npm === "@ai-sdk/amazon-bedrock/mantle"
       ) {
         result["reasoningSummary"] = reasoningSummary(input.model) // kilocode_change
@@ -1596,8 +1587,7 @@ export function options(input: {
         input.model.api.npm === "@ai-sdk/azure" ||
         input.model.api.npm === "@ai-sdk/amazon-bedrock/mantle" ||
         input.model.api.npm === "@ai-sdk/github-copilot" ||
-        input.model.api.npm === "@openrouter/ai-sdk-provider" ||
-        input.model.api.npm === "@kilocode/kilo-gateway") &&
+        input.model.api.npm === "@openrouter/ai-sdk-provider") &&
       // kilocode_change end
       input.model.api.id.includes("gpt-5.") &&
       !input.model.api.id.includes("codex") &&
@@ -1633,12 +1623,6 @@ export function smallOptions(model: Provider.Model) {
       return { reasoning: { enabled: false } }
     }
   }
-  if (model.api.npm === "@kilocode/kilo-gateway") {
-    // kilocode_change
-    if (!model.capabilities.reasoning) return {} // kilocode_change - omit unsupported reasoning options
-    return { reasoning: { enabled: true } } // kilocode_change - use the model's supported default effort
-  }
-
   if (model.providerID === "venice") {
     if (Object.keys(small).length > 0) return small
     return { veniceParameters: { disableThinking: true } }
@@ -1693,12 +1677,6 @@ export function providerOptions(model: Provider.Model, options: { [x: string]: a
 
     return result
   }
-
-  // kilocode_change start
-  if (model.api.npm === "@kilocode/kilo-gateway") {
-    return kiloProviderOptions(options)
-  }
-  // kilocode_change end
 
   // AI SDK packages that resolve providerOptionsName by splitting the
   // provider name on "." (e.g. "wafer.ai" -> "wafer") need the same

@@ -59,7 +59,6 @@ export interface ToolDeps {
   notifyReady: (sid: string, result: CreateWorktreeResult, wid?: string) => void
   push: () => void
   post: (msg: unknown) => void
-  capture: (event: string, props?: Record<string, unknown>) => void
   log: (...args: unknown[]) => void
   error: (msg: string) => void
 }
@@ -156,13 +155,6 @@ async function local(deps: ToolDeps, client: KiloClient, task: ToolTask, directo
   deps.getPanel()?.sessions.registerSession(session)
   if (wt) deps.post({ type: "agentManager.sessionAdded", sessionId: session.id, worktreeId: wt.id })
   await prompt(client, session.id, target, task)
-  deps.capture("Agent Manager Session Started", {
-    source: PLATFORM,
-    sessionId: session.id,
-    tool: true,
-    mode: "local",
-    worktreeId: wt?.id,
-  })
   return true
 }
 
@@ -209,13 +201,6 @@ async function worktree(
   deps.notifyReady(session.id, created.result, created.worktree.id)
   deps.getPanel()?.sessions.registerSession(session)
   await prompt(client, session.id, created.result.path, task)
-  deps.capture("Agent Manager Session Started", {
-    source: PLATFORM,
-    sessionId: session.id,
-    worktreeId: created.worktree.id,
-    branch: created.result.branch,
-    tool: true,
-  })
   return true
 }
 

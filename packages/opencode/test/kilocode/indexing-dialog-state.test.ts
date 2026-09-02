@@ -3,68 +3,15 @@ import { createEffect, createRoot, createSignal } from "solid-js"
 import type { Config, IndexingConfig } from "@kilocode/sdk/v2"
 import {
   createIndexingDialogState,
-  currentKiloModel,
   indexingInheritance,
   indexingPatch,
   indexingScopeConfig,
   inheritedDescription,
-  kiloModelOptions,
-  loadKiloEmbeddingModels,
   mergeIndexingConfig,
   type IndexingScope,
 } from "../../src/kilocode/components/indexing-dialog-state"
 
 describe("indexing dialog state", () => {
-  test.serial("loads Kilo models directly from the public catalog", async () => {
-    const original = global.fetch
-    const calls: string[] = []
-    global.fetch = (async (input) => {
-      calls.push(String(input))
-      return new Response(
-        JSON.stringify({
-          defaultModel: "kilo/default",
-          models: [{ id: "kilo/default", name: "Default", dimension: 1024, scoreThreshold: 0.35 }],
-          aliases: {},
-        }),
-        { status: 200, headers: { "content-type": "application/json" } },
-      )
-    }) as typeof global.fetch
-
-    try {
-      const catalog = await loadKiloEmbeddingModels()
-
-      expect(catalog.models).toHaveLength(1)
-      expect(catalog.defaultModel).toBe("kilo/default")
-      expect(calls).toHaveLength(1)
-      expect(new URL(calls[0] ?? "https://invalid.test").pathname).toEndWith("/embedding-models")
-    } finally {
-      global.fetch = original
-    }
-  })
-
-  test("builds stable loading, empty, and loaded model options", () => {
-    expect(kiloModelOptions()).toEqual([{ value: "", title: "Loading supported models..." }])
-    expect(kiloModelOptions({ defaultModel: "", models: [], aliases: {} })).toEqual([
-      { value: "", title: "No supported models available" },
-    ])
-
-    const catalog = {
-      defaultModel: "provider/default",
-      models: [
-        { id: "provider/default", name: "Default", dimension: 1024, scoreThreshold: 0.35 },
-        { id: "provider/code", name: "Code", dimension: 1536, scoreThreshold: 0.4, note: "code" },
-      ],
-      aliases: { code: "provider/code" },
-    }
-
-    expect(kiloModelOptions(catalog)).toEqual([
-      { value: "provider/default", title: "Default (1024d)" },
-      { value: "provider/code", title: "Code (code, 1536d)" },
-    ])
-    expect(currentKiloModel(catalog, "code")).toBe("provider/code")
-    expect(currentKiloModel(catalog, "missing")).toBe("provider/default")
-  })
-
   test("classifies scalar and partial nested inheritance", () => {
     const global: IndexingConfig = {
       provider: "openai-compatible",
@@ -117,10 +64,10 @@ describe("indexing dialog state", () => {
   })
 
   test("isolates global auth config from project indexing values", () => {
-    const project: IndexingConfig = { kilo: { apiKey: "project-key", baseUrl: "https://project.test" } }
+    const project: IndexingConfig = { ollama: { baseUrl: "https://project.test" } }
     const inherited: IndexingConfig = { enabled: true }
     const effective: Config = {
-      provider: { kilo: { options: { apiKey: "provider-key" } } },
+      provider: { ollama: { options: { apiKey: "provider-key" } } },
       indexing: project,
     }
     const global: Config = { provider: effective.provider, indexing: inherited }

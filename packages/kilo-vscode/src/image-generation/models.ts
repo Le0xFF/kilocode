@@ -1,8 +1,6 @@
 import type { KiloConnectionService } from "../services/cli-backend/connection-service"
 import { getErrorMessage } from "../kilo-provider-utils"
 
-const PATH = "/kilo/models/images"
-
 export type ImageModel = {
   id: string
   name: string
@@ -14,28 +12,31 @@ export type ImageModelsResult = { ok: true; models: ImageModel[] } | { ok: false
 export async function fetchImageModels(
   connection: KiloConnectionService,
   dir: string,
-  signal?: AbortSignal,
 ): Promise<ImageModelsResult> {
-  const cfg = connection.getServerConfig()
-  if (!cfg) return { ok: false, error: "Not connected to the Kilo backend" }
-
-  const auth = Buffer.from(`kilo:${cfg.password}`).toString("base64")
-  const url = new URL(PATH, cfg.baseUrl)
-  if (dir) url.searchParams.set("directory", dir)
-
+  const client = connection.getClient()
   try {
-    const res = await fetch(url, {
-      signal,
-      headers: { Authorization: `Basic ${auth}` },
-    })
-
-    if (!res.ok) {
-      return { ok: false, error: `Failed to fetch image models (HTTP ${res.status})` }
-    }
-
-    const models = (await res.json()) as ImageModel[]
+    const { data, error } = await client.mediaLocal.img.models(
+      { directory: dir || undefined },
+      { throwOnError: false },
+    )
+    if (error) return { ok: false, error: getErrorMessage(error) || "Failed to fetch image models" }
+    const models = Array.isArray(data) ? (data as unknown[]).filter(isImageModel).map(toImageModel) : []
     return { ok: true, models }
   } catch (err) {
     return { ok: false, error: getErrorMessage(err) }
+  }
+}
+
+function isImageModel(value: unknown): value is ImageModel {
+  if (!value || typeof value !== "object") return false
+  const model = value as Record<string, unknown>
+  return typeof model.id === "string" && typeof model.name === "string"
+}
+
+function toImageModel(model: ImageModel): ImageModel {
+  return {
+    id: model.id,
+    name: model.name,
+    ...(model.description ? { description: model.description } : {}),
   }
 }

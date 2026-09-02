@@ -1,7 +1,6 @@
 import { Component, createSignal, createMemo, createEffect, Switch, Match, Show, onMount, onCleanup } from "solid-js"
 import { DataProvider } from "@kilocode/kilo-ui/context/data"
 import Settings from "./components/settings/Settings"
-import ProfileView from "./components/profile/ProfileView"
 import { useVSCode } from "./context/vscode"
 import { useServer } from "./context/server"
 import { useProvider } from "./context/provider"
@@ -31,8 +30,8 @@ import type { Message as SDKMessage, Part as SDKPart } from "@kilocode/sdk/v2"
 import { cycleAgent as cycle } from "./context/session-agent"
 import "./styles/chat.css"
 
-type ViewType = "newTask" | "history" | "profile" | "settings" | "subAgentViewer"
-const VALID_VIEWS = new Set<string>(["newTask", "history", "profile", "settings", "subAgentViewer"])
+type ViewType = "newTask" | "history" | "settings" | "subAgentViewer"
+const VALID_VIEWS = new Set<string>(["newTask", "history", "settings", "subAgentViewer"])
 
 /**
  * Bridge our session store to the DataProvider's expected Data shape.
@@ -248,9 +247,6 @@ const AppContent: Component = () => {
       case "historyButtonClicked":
         setCurrentView("history")
         break
-      case "profileButtonClicked":
-        setCurrentView("profile")
-        break
       case "settingsButtonClicked":
         setCurrentView("settings")
         break
@@ -304,11 +300,6 @@ const AppContent: Component = () => {
         setCurrentView(message.view as ViewType)
         vscode.postMessage({ type: "settingsTabChanged", tab: message.tab })
       }
-      if (message?.type === "openCloudSession" && message.sessionId) {
-        console.log("[Kilo New] App: ☁️ openCloudSession:", message.sessionId)
-        session.selectCloudSession(message.sessionId)
-        setCurrentView("newTask")
-      }
       handleKiloModel(message)
       handleForked(message)
       if (message?.type === "viewSubAgentSession" && message.sessionID) {
@@ -354,16 +345,11 @@ const AppContent: Component = () => {
     KILO_AGENT_MANAGER_SETTINGS?: boolean
   }
   const showTopBar = host.KILO_TOP_BAR !== false
-  const topBarSurface = host.KILO_TOP_BAR_SURFACE ?? "sidebar_title"
 
   return (
     <div class="container">
       <Show when={showTopBar}>
-        <SidebarTopBar
-          onNewTask={() => handleViewAction("plusButtonClicked")}
-          onHistory={() => handleViewAction("historyButtonClicked")}
-          surface={topBarSurface}
-        />
+        <SidebarTopBar onNewTask={() => handleViewAction("plusButtonClicked")} onHistory={() => handleViewAction("historyButtonClicked")} />
       </Show>
       {/* legacy-migration start — state-driven overlay, independent of currentView */}
       <Show
@@ -391,18 +377,6 @@ const AppContent: Component = () => {
             </Match>
             <Match when={currentView() === "history"}>
               <HistoryView onSelectSession={handleSelectSession} onBack={() => setCurrentView("newTask")} />
-            </Match>
-            <Match when={currentView() === "profile"}>
-              <ProfileView
-                profileData={server.profileData()}
-                providerUsage={server.providerUsage()}
-                providerUsageLoading={server.providerUsageLoading()}
-                providerUsageError={server.providerUsageError()}
-                deviceAuth={server.deviceAuth()}
-                onLogin={server.startLogin}
-                onRequestProviderUsage={server.requestProviderUsage}
-                onRefreshProviderUsage={server.refreshProviderUsage}
-              />
             </Match>
             <Match when={currentView() === "settings"}>
               <Settings

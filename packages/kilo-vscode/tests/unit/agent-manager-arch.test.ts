@@ -1129,12 +1129,9 @@ describe("Shared webview provider shell", () => {
       "SpeechToTextPrewarm",
       "DisplayProvider",
       "IndexingProvider",
-      "KiloEmbeddingModelsProvider",
       "ImageModelsProvider",
-      "NotificationsProvider",
       "SessionProvider",
       "MemoryProvider",
-      "FeedbackProvider",
     ])
     expect(source.indexOf("<Toast.Region")).toBeGreaterThan(source.indexOf("</VSCodeProvider>"))
   })

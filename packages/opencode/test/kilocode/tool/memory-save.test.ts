@@ -8,7 +8,6 @@ import { MemoryTool } from "@kilocode/kilo-memory/tool"
 import { MemorySaveTool } from "@/kilocode/tool/memory-save"
 import { MessageID, SessionID } from "@/session/schema"
 import { Permission } from "@/permission"
-import { RemoteSender } from "@/kilo-sessions/remote-sender"
 import type { Tool } from "@/tool/tool"
 import { resetDatabase } from "../../fixture/db"
 import { provideTestInstance, tmpdir } from "../../fixture/fixture"
@@ -39,7 +38,6 @@ type Request = Omit<Permission.Request, "id" | "sessionID" | "tool">
 
 beforeEach(() => {
   process.env.KILO_EXPERIMENTAL_DISABLE_FILEWATCHER = "true"
-  spyOn(RemoteSender, "create").mockReturnValue({ handle() {}, dispose() {} })
 })
 
 afterEach(async () => {

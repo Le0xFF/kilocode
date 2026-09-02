@@ -36,14 +36,13 @@ import { EnhancePromptApi } from "@/kilocode/server/httpapi/groups/enhance-promp
 import { IndexingApi } from "@/kilocode/server/httpapi/groups/indexing"
 import { InstanceReloadApi } from "@/kilocode/server/httpapi/groups/instance-reload"
 import { InteractiveTerminalApi } from "@/kilocode/server/httpapi/groups/interactive-terminal"
-import { KiloGatewayApi } from "@/kilocode/server/httpapi/groups/kilo-gateway"
 import { KilocodeApi } from "@/kilocode/server/httpapi/groups/kilocode"
+import { MediaLocalApi } from "@/kilocode/media-local/group" // kilocode_change
 import { NetworkApi } from "@/kilocode/server/httpapi/groups/network"
 import { RemoteApi } from "@/kilocode/server/httpapi/groups/remote"
 import { SandboxApi } from "@/kilocode/server/httpapi/groups/sandbox"
 import { SessionImportApi } from "@/kilocode/server/httpapi/groups/session-import"
 import { SuggestionApi } from "@/kilocode/server/httpapi/groups/suggestion"
-import { TelemetryApi } from "@/kilocode/server/httpapi/groups/telemetry"
 import { MemoryApi } from "@/kilocode/server/httpapi/groups/memory" // kilocode_change
 // kilocode_change end
 import { makeApi } from "@opencode-ai/protocol/api"
@@ -106,15 +105,14 @@ export const InstanceHttpApi = HttpApi.make("opencode-instance")
   .addHttpApi(IndexingApi)
   .addHttpApi(InstanceReloadApi)
   .addHttpApi(InteractiveTerminalApi)
-  .addHttpApi(KiloGatewayApi)
   .addHttpApi(KilocodeApi)
+  .addHttpApi(MediaLocalApi) // kilocode_change
   .addHttpApi(NetworkApi)
   .addHttpApi(RemoteApi)
   .addHttpApi(SandboxApi)
   .addHttpApi(SessionImportApi)
-  .addHttpApi(SuggestionApi)
-  .addHttpApi(TelemetryApi)
-  .addHttpApi(MemoryApi)
+.addHttpApi(SuggestionApi)
+   .addHttpApi(MemoryApi)
   // kilocode_change end
   .middleware(SchemaErrorMiddleware)
 

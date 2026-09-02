@@ -2,12 +2,10 @@ import { expect, test } from "bun:test"
 import { internalTuiPlugins } from "@/plugin/tui/internal"
 
 const kilo = [
-  "internal:home-news",
   "internal:home-onboarding",
   "internal:kilo-attention",
   "internal:kilo-home-footer",
   "internal:kilo-permissions",
-  "internal:kilo-sidebar-footer",
   "internal:kilo-sidebar-memory",
   "internal:kilo-memory-palette",
   "internal:kilo-sidebar-background-processes",

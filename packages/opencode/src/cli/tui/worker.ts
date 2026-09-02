@@ -14,7 +14,6 @@ import { KiloLog } from "@/kilocode/log" // kilocode_change
 import { ensureProcessMetadata } from "@opencode-ai/core/util/opencode-process" // kilocode_change
 import { createWorkerRemoteExit } from "@/kilocode/cli/cmd/tui/remote-exit-worker" // kilocode_change
 import { createWorkerShutdown } from "@/cli/tui/worker-shutdown" // kilocode_change
-import { KiloSessions } from "@/kilo-sessions/kilo-sessions" // kilocode_change
 
 ensureProcessMetadata("worker") // kilocode_change - retain worker role and parent run correlation
 await KiloLog.init() // kilocode_change - keep compatibility logs off the TUI terminal
@@ -40,9 +39,8 @@ GlobalBus.on("event", (event) => {
 
 let server: Awaited<ReturnType<typeof Server.listen>> | undefined
 const remoteExit = createWorkerRemoteExit(Rpc.emit) // kilocode_change
-// kilocode_change start - drain ingest before dispose so GlobalBus/remote stay live
+// kilocode_change start - keep upstream's shutdown sequence (dispose then stopServer) without the removed ingest drain
 const runShutdown = createWorkerShutdown({
-  drain: () => KiloSessions.drainIngestForShutdown(),
   dispose: () => InstanceRuntime.disposeAllInstances(),
   stopServer: async () => {
     if (server) await server.stop(true)

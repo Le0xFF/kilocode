@@ -1,47 +1,7 @@
-import { fetchKiloEmbeddingModelCatalog, resolveKiloGatewayBaseUrl } from "@kilocode/kilo-gateway"
-import type { Config, IndexingConfig, KiloEmbeddingModelCatalog } from "@kilocode/sdk/v2"
-import * as Log from "@opencode-ai/core/util/log"
+import type { Config, IndexingConfig } from "@kilocode/sdk/v2"
 import { createMemo, type Accessor } from "solid-js"
 
 export type IndexingScope = "global" | "project"
-
-const log = Log.create({ service: "indexing-model-catalog" })
-
-export async function loadKiloEmbeddingModels(onError?: (message: string) => void) {
-  const endpoint = new URL("embedding-models", resolveKiloGatewayBaseUrl()).toString()
-  log.info("loading Kilo embedding model catalog", { endpoint })
-  const catalog = await fetchKiloEmbeddingModelCatalog({
-    onError: (issue) => {
-      log.warn("failed to load Kilo embedding model catalog", {
-        code: issue.code,
-        status: issue.status,
-        message: issue.message,
-      })
-      onError?.(issue.message)
-    },
-  })
-  log.info("loaded Kilo embedding model catalog", {
-    models: catalog.models.length,
-    defaultModel: catalog.defaultModel || undefined,
-  })
-  return catalog
-}
-
-export function kiloModelOptions(catalog?: KiloEmbeddingModelCatalog) {
-  if (!catalog) return [{ value: "", title: "Loading supported models..." }]
-  if (catalog.models.length === 0) return [{ value: "", title: "No supported models available" }]
-  return catalog.models.map((model) => ({
-    value: model.id,
-    title: `${model.name} (${model.note ? `${model.note}, ` : ""}${model.dimension}d)`,
-  }))
-}
-
-export function currentKiloModel(catalog: KiloEmbeddingModelCatalog | undefined, model?: string | null) {
-  if (!catalog) return undefined
-  const fallback = catalog.aliases[catalog.defaultModel] ?? catalog.defaultModel
-  const current = model ? (catalog.aliases[model] ?? model) : fallback
-  return catalog.models.some((item) => item.id === current) ? current : fallback
-}
 
 export function indexingScopeConfig(
   scope: IndexingScope,

@@ -11,20 +11,6 @@ import { described } from "@/server/routes/instance/httpapi/groups/metadata"
 
 export { IndexingStatusInfo, IndexingStatusState, IndexingWarningInfo } from "@/kilocode/indexing-event"
 
-export const KiloEmbeddingModel = Schema.Struct({
-  id: Schema.String,
-  name: Schema.String,
-  dimension: Schema.Int.check(Schema.isGreaterThan(0)),
-  scoreThreshold: Schema.Finite.check(Schema.isBetween({ minimum: 0, maximum: 1 })),
-  note: Schema.optional(Schema.String),
-})
-
-export const KiloEmbeddingModelCatalog = Schema.Struct({
-  defaultModel: Schema.String,
-  models: Schema.Array(KiloEmbeddingModel),
-  aliases: Schema.Record(Schema.String, Schema.String),
-}).annotate({ identifier: "KiloEmbeddingModelCatalog" })
-
 const root = "/indexing"
 const IndexingConsent = Schema.Struct({
   enabled: Schema.Boolean,
@@ -65,12 +51,12 @@ export const IndexingApi = HttpApi.make("indexing")
       .add(
         HttpApiEndpoint.get("models", IndexingPaths.models, {
           query: WorkspaceRoutingQuery,
-          success: described(KiloEmbeddingModelCatalog, "Kilo embedding model catalog"),
+          success: described(Schema.Array(Schema.String), "Configured embedding model ids"),
         }).annotateMerge(
           OpenApi.annotations({
             identifier: "indexing.models",
-            summary: "List Kilo embedding models",
-            description: "Retrieve the embedding models available through the active Kilo account.",
+            summary: "List configured embedding models",
+            description: "List the embedding models configured for local indexing providers.",
           }),
         ),
       )

@@ -1,4 +1,3 @@
-import type { InstallMarketplaceItemOptions, MarketplaceFilters, MarketplaceItem } from "../marketplace"
 import type { FileAttachment } from "./parts"
 import type { MessageLoadMode } from "./sessions"
 import type { PermissionFileDiff } from "./permissions"
@@ -7,7 +6,6 @@ import type { Config } from "./config"
 import type { ModelAllocation, ReviewCommentEntry, TerminalDestination, TerminalPlacement } from "./agent-manager"
 import type { ReviewMessageData } from "../../../../src/shared/review-comments"
 import type { WorkStyle, WorkStyleState } from "../../../../src/shared/work-style-presets"
-import type { RefreshProviderUsageMessage, RequestProviderUsageMessage } from "./provider-usage"
 import type { AnacondaDesktopWebviewMessage } from "../../../../src/shared/anaconda-desktop-messages"
 import type {
   ClearLegacyDataMessage,
@@ -126,49 +124,6 @@ export interface RequestSessionModelUsageMessage {
   requestID: string
 }
 
-export interface RequestCloudSessionsMessage {
-  type: "requestCloudSessions"
-  cursor?: string
-  limit?: number
-  gitUrl?: string
-}
-
-export interface RequestGitRemoteUrlMessage {
-  type: "requestGitRemoteUrl"
-}
-
-export interface RequestCloudSessionDataMessage {
-  type: "requestCloudSessionData"
-  sessionId: string
-}
-
-export interface ImportAndSendMessage {
-  type: "importAndSend"
-  cloudSessionId: string
-  text: string
-  messageID?: string
-  providerID?: string
-  modelID?: string
-  agent?: string
-  variant?: string
-  files?: FileAttachment[]
-  review?: ReviewMessageData
-  command?: string
-  commandArgs?: string
-}
-
-export interface LoginRequest {
-  type: "login"
-}
-
-export interface LogoutRequest {
-  type: "logout"
-}
-
-export interface RefreshProfileRequest {
-  type: "refreshProfile"
-}
-
 export interface OpenExternalRequest {
   type: "openExternal"
   url: string
@@ -200,15 +155,6 @@ export interface ValidateFilesRequest {
   // against the wrong worktree.
   sessionID: string
   paths: string[]
-}
-
-export interface CancelLoginRequest {
-  type: "cancelLogin"
-}
-
-export interface SetOrganizationRequest {
-  type: "setOrganization"
-  organizationId: string | null
 }
 
 export interface WebviewReadyRequest {
@@ -272,10 +218,6 @@ export interface ConfigureAgentManagerSetupScriptMessage {
   requestId: string
 }
 
-export interface OpenProfilePanelRequest {
-  type: "openProfilePanel"
-}
-
 export interface OpenVSCodeSettingsRequest {
   type: "openVSCodeSettings"
   query: string
@@ -308,21 +250,12 @@ export interface OpenConfigFileRequest {
   }
 }
 
-export interface OpenMarketplacePanelRequest {
-  type: "openMarketplacePanel"
-  directory?: string
-}
-
 export interface OpenAgentManagerRequest {
   type: "openAgentManager"
 }
 
 export interface OpenAdvancedWorktreeRequest {
   type: "openAdvancedWorktree"
-}
-
-export interface OpenKiloClawRequest {
-  type: "openKiloClaw"
 }
 
 export interface RequestAgentsMessage {
@@ -441,16 +374,6 @@ export interface ExportSessionTranscriptRequest {
   sessionID: string
 }
 
-export interface RequestAutocompleteSettingsMessage {
-  type: "requestAutocompleteSettings"
-}
-
-export interface RequestChatCompletionMessage {
-  type: "requestChatCompletion"
-  text: string
-  requestId: string
-}
-
 export interface SpeechToTextPrewarmMessage {
   type: "speechToTextPrewarm"
 }
@@ -504,10 +427,6 @@ export interface RequestGitChangesContextMessage {
   agentManagerContext?: string
 }
 
-export interface ChatCompletionAcceptedMessage {
-  type: "chatCompletionAccepted"
-  suggestionLength?: number
-}
 export interface UpdateSettingRequest {
   type: "updateSetting"
   key: string
@@ -581,10 +500,6 @@ export interface RequestChatSettingsMessage {
   type: "requestChatSettings"
 }
 
-export interface RequestKiloEmbeddingModelsMessage {
-  type: "requestKiloEmbeddingModels"
-}
-
 export interface RequestImageModelsMessage {
   type: "requestImageModels"
 }
@@ -623,22 +538,9 @@ export interface ResetAllSettingsRequest {
   type: "resetAllSettings"
 }
 
-export interface ResetReadNotificationsRequest {
-  type: "resetReadNotifications"
-}
-
 export interface SettingsTabChangedMessage {
   type: "settingsTabChanged"
   tab: string
-}
-
-export interface RequestNotificationsMessage {
-  type: "requestNotifications"
-}
-
-export interface DismissNotificationMessage {
-  type: "dismissNotification"
-  notificationId: string
 }
 
 export interface SyncSessionRequest {
@@ -664,13 +566,6 @@ export interface CreateWorktreeSessionRequest {
   files?: FileAttachment[]
 }
 
-export interface TelemetryRequest {
-  type: "telemetry"
-  event: string
-  properties?: Record<string, unknown>
-}
-
-// Create a new worktree (with auto-created first session)
 export interface CreateWorktreeRequest {
   type: "agentManager.createWorktree"
   projectId?: string
@@ -1473,31 +1368,6 @@ export interface MoveSectionRequest {
   dir: -1 | 1
 }
 
-export interface FetchMarketplaceDataMessage {
-  type: "fetchMarketplaceData"
-}
-
-export interface FilterMarketplaceItemsMessage {
-  type: "filterMarketplaceItems"
-  filters: MarketplaceFilters
-}
-
-export interface InstallMarketplaceItemMessage {
-  type: "installMarketplaceItem"
-  mpItem: MarketplaceItem
-  mpInstallOptions: InstallMarketplaceItemOptions
-}
-
-export interface RemoveInstalledMarketplaceItemMessage {
-  type: "removeInstalledMarketplaceItem"
-  mpItem: MarketplaceItem
-  mpInstallOptions: InstallMarketplaceItemOptions
-}
-
-export interface DismissAgentMigrationBannerMessage {
-  type: "dismissAgentMigrationBanner"
-}
-
 export type WebviewMessage =
   | { type: "sessionActivity"; state: Activity }
   | DocumentRequestMessage
@@ -1519,30 +1389,18 @@ export type WebviewMessage =
   | LoadMessagesRequest
   | LoadSessionsRequest
   | RequestSessionModelUsageMessage
-  | RequestCloudSessionsMessage
-  | RequestGitRemoteUrlMessage
-  | LoginRequest
-  | LogoutRequest
-  | RefreshProfileRequest
-  | RequestProviderUsageMessage
-  | RefreshProviderUsageMessage
   | OpenExternalRequest
   | OpenSettingsPanelRequest
   | RequestAgentManagerSettingsMessage
   | RequestAgentManagerSettingsBranchesMessage
   | SetAgentManagerDefaultBaseBranchMessage
   | ConfigureAgentManagerSetupScriptMessage
-  | OpenProfilePanelRequest
   | OpenVSCodeSettingsRequest
   | OpenConfigFileRequest
-  | OpenMarketplacePanelRequest
   | OpenAgentManagerRequest
   | OpenAdvancedWorktreeRequest
-  | OpenKiloClawRequest
   | OpenFileRequest
   | ValidateFilesRequest
-  | CancelLoginRequest
-  | SetOrganizationRequest
   | WebviewReadyRequest
   | WebviewFocusChangedRequest
   | AgentManagerFocusChangedRequest
@@ -1569,8 +1427,6 @@ export type WebviewMessage =
   | DeleteSessionRequest
   | RenameSessionRequest
   | ExportSessionTranscriptRequest
-  | RequestAutocompleteSettingsMessage
-  | RequestChatCompletionMessage
   | SpeechToTextPrewarmMessage
   | SpeechToTextStartMessage
   | SpeechToTextStopMessage
@@ -1580,7 +1436,6 @@ export type WebviewMessage =
   | RequestFilePickerMessage
   | RequestTerminalContextMessage
   | RequestGitChangesContextMessage
-  | ChatCompletionAcceptedMessage
   | UpdateSettingRequest
   | RequestTimelineSettingMessage
   | RequestThroughputSettingMessage
@@ -1597,19 +1452,15 @@ export type WebviewMessage =
   | RequestIndexingSettingsMessage
   | SetIndexingConsentMessage
   | RequestChatSettingsMessage
-  | RequestKiloEmbeddingModelsMessage
   | UpdateConfigMessage
   | OpenSettingsTabRequest
   | RequestNotificationSettingsMessage
   | TestNotificationMessage
   | ResetAllSettingsRequest
-  | ResetReadNotificationsRequest
   | SettingsTabChangedMessage
   | SyncSessionRequest
   | UnsyncSessionRequest
   | CreateWorktreeSessionRequest
-  | RequestNotificationsMessage
-  | DismissNotificationMessage
   | CreateWorktreeRequest
   | DeleteWorktreeRequest
   | RemoveStaleWorktreeRequest
@@ -1623,7 +1474,6 @@ export type WebviewMessage =
   | PersistSessionRequest
   | ForgetSessionRequest
   | RenameWorktreeRequest
-  | TelemetryRequest
   | RequestRepoInfoMessage
   | RequestStateMessage
   | RequestProjectsMessage
@@ -1655,8 +1505,6 @@ export type WebviewMessage =
   | SetReviewMarkdownRenderRequest
   | PersistVariantRequest
   | RequestVariantsMessage
-  | RequestCloudSessionDataMessage
-  | ImportAndSendMessage
   | RequestBranchesMessage
   | ImportFromBranchRequest
   | ImportFromPRRequest
@@ -1705,11 +1553,6 @@ export type WebviewMessage =
   | RequestSandboxDefaultMessage
   | SetSandboxDefaultMessage
   | ToggleSandboxMessage
-  | FetchMarketplaceDataMessage
-  | FilterMarketplaceItemsMessage
-  | InstallMarketplaceItemMessage
-  | RemoveInstalledMarketplaceItemMessage
-  | DismissAgentMigrationBannerMessage
   | ConnectProviderMessage
   | AuthorizeProviderOAuthMessage
   | CompleteProviderOAuthMessage

@@ -3,30 +3,26 @@ import { parseSpeechToTextCatalog } from "../../src/speech-to-text/catalog"
 import { DEFAULT_SPEECH_TO_TEXT_MODEL } from "../../src/speech-to-text/models"
 
 describe("speech-to-text discovery", () => {
-  it("keeps transcription catalog metadata authoritative and exposes additions", () => {
+  it("parses local provider/model references from the backend catalog", () => {
     const models = parseSpeechToTextCatalog([
       {
         id: "fish-audio/transcribe-1",
-        name: "Fish Audio: Transcribe 1",
+        name: "fish-audio/transcribe-1",
       },
       {
         id: "openai/gpt-4o-mini-transcribe",
-        name: "OpenAI: GPT-4o Mini Transcribe",
+        name: "openai/gpt-4o-mini-transcribe",
       },
       {
-        id: "openai/whisper-1",
-        name: "Whisper 1",
+        id: "whisper/whisper-1",
+        name: "whisper/whisper-1",
       },
     ])
 
     expect(models).toEqual([
-      { id: "fish-audio/transcribe-1", label: "Transcribe 1", provider: "Fish Audio" },
-      {
-        id: "openai/gpt-4o-mini-transcribe",
-        label: "GPT-4o Mini Transcribe",
-        provider: "OpenAI",
-      },
-      { id: "openai/whisper-1", label: "Whisper 1", provider: "openai" },
+      { id: "fish-audio/transcribe-1", label: "transcribe-1", provider: "fish-audio" },
+      { id: "openai/gpt-4o-mini-transcribe", label: "gpt-4o-mini-transcribe", provider: "openai" },
+      { id: "whisper/whisper-1", label: "whisper-1", provider: "whisper" },
     ])
   })
 

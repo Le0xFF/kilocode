@@ -471,7 +471,7 @@ describe("fetchProviderData", () => {
     expect("key" in item).toBe(false)
   })
 
-  it("uses local Kilo auth status instead of profile availability", async () => {
+  it("drops the removed Kilo provider from auth states", async () => {
     const client = {
       provider: {
         list: async () => ({
@@ -483,30 +483,24 @@ describe("fetchProviderData", () => {
         }),
         auth: async () => ({ data: {} }),
       },
-      kilo: {
-        authStatus: async () => ({ data: { authenticated: true, type: "oauth" } }),
-      },
     } as unknown as Parameters<typeof fetchProviderData>[0]
 
     const result = await fetchProviderData(client, "/tmp")
 
-    expect(result.authStates).toEqual({ kilo: "oauth" })
+    expect(result.authStates).toEqual({})
   })
 
-  it("does not infer Kilo speech access without stored Gateway auth", async () => {
+  it("reports no auth state for providers without stored credentials", async () => {
     const client = {
       provider: {
         list: async () => ({
           data: {
-            all: [{ id: "kilo", name: "Kilo Gateway", source: "config", key: "configured", env: [], models: {} }],
-            connected: ["kilo"],
-            default: { kilo: "kilo-auto/frontier" },
+            all: [{ id: "mylocal", name: "My Local", source: "config", key: "", env: [], models: {} }],
+            connected: ["mylocal"],
+            default: {},
           },
         }),
         auth: async () => ({ data: {} }),
-      },
-      kilo: {
-        authStatus: async () => ({ data: { authenticated: false } }),
       },
     } as unknown as Parameters<typeof fetchProviderData>[0]
 

@@ -79,3 +79,16 @@ Not runnable from root: `bun test` (deliberately exits 1), old root scripts (`de
 
 - **Vendoring/offline**: replace `packages/opencode` with a prebuilt CLI binary (`CLI_DIST_DIR`), then drop batch-B packages (`tui`, `server`, `llm`, `schema`, `protocol`, `codemode`, `script`, `effect-*`, `http-recorder`) and the `prepare:cli-binary`/`prepare:sdk` steps. Separate effort.
 - Full offline operation of the extension (no network at install/build) is a separate follow-up.
+
+## Online-services removal (this branch, step 13)
+
+The online Kilo surface has been stripped from both the extension and the CLI so the product runs fully offline against user-configured local OpenAI-compatible providers (llama.cpp, vLLM, Ollama). Removed: Kilo Gateway auth/profile/balance, marketplace, KiloClaw, cloud sessions, remote notifications, PostHog telemetry, gateway autocomplete (FIM / next-edit), the `kilo` provider, `/kilo/*` + `/telemetry/*` HTTP groups, KiloSessions ingest/share/presence/export, and the `generate-image` / `websearch-kilo-exa` tools. Speech-to-text and image generation now target local endpoints via the regenerated `client.mediaLocal.*` SDK routes.
+
+Dead code that remains in the workspace (kept, not deleted):
+
+- `packages/kilo-gateway/` — still imported by `packages/core/src/v1/config/provider.ts` (`PROMPTS`, `AI_SDK_PROVIDERS`) and a few residual CLI sites (`core/src/plugin/provider/kilo.ts`, `opencode/src/kilocode/provider/provider.ts`). Kept as a conservative dead dependency (assumption A2); physical removal is deferred until those imports are relocated or dropped.
+- `packages/kilo-telemetry/` — no longer declared by any package's `dependencies`; it survives only because the root workspace list keeps it. Safe to delete once the last reference is gone.
+- Orphaned i18n keys for removed UI (`profile.*`, `deviceAuth.*`, `session.cloud.*`, `notifications.action.*`, etc.) are retained across all locales and protected in `tests/unit/i18n-unused-keys.test.ts` rather than mass-deleted.
+- The generated SDK client exposes an empty legacy `kilo` namespace getter (`client.kilo`) so pre-regen call sites keep typechecking; the underlying routes are gone.
+
+Removed dependencies: `openai` and `js-tiktoken` (extension); `@kilocode/kilo-telemetry` (CLI, done earlier) and the extension's `@kilocode/kilo-gateway` (done in step 11). `@anthropic-ai/sdk` stays (type-only, used by legacy-migration per A9).

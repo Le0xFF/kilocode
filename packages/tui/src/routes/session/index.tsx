@@ -93,7 +93,6 @@ import { usePathFormatter } from "../../context/path-format"
 import { KiloErrorBlock } from "@/kilocode/components/kilo-error-display"
 import { splitDiffHunks } from "@/kilocode/tui/diff"
 import { RoutedModelMeta } from "@/kilocode/cli/cmd/tui/routes/session/routed-model-meta"
-import { submitFeedback } from "@/kilocode/cli/cmd/tui/feedback"
 import { MemorySessionTui } from "@/kilocode/cli/cmd/tui/routes/session/memory"
 import { formatMarkdownTables } from "../../util/markdown"
 // kilocode_change end
@@ -151,10 +150,6 @@ const sessionBindingCommands = [
   "session.message.next",
   "session.message.previous",
   "messages.copy",
-  // kilocode_change start - message feedback
-  "messages.feedback.up",
-  "messages.feedback.down",
-  // kilocode_change end
   "session.copy",
   "session.export",
   "session.child.first",
@@ -1018,20 +1013,6 @@ export function Session() {
         dialog.clear()
       },
     },
-    // kilocode_change start - message feedback
-    {
-      title: "Rate last assistant message helpful",
-      value: "messages.feedback.up",
-      category: "Session",
-      run: () => submitFeedback("up", dialog, { toast, session, messages }),
-    },
-    {
-      title: "Rate last assistant message not helpful",
-      value: "messages.feedback.down",
-      category: "Session",
-      run: () => submitFeedback("down", dialog, { toast, session, messages }),
-    },
-    // kilocode_change end
     {
       title: "Copy session transcript",
       value: "session.copy",

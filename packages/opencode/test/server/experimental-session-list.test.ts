@@ -1,5 +1,5 @@
 // kilocode_change - new file
-import { afterEach, beforeEach, describe, expect, mock, spyOn, test } from "bun:test"
+import { afterEach, describe, expect, mock, test } from "bun:test"
 import { $ } from "bun"
 import path from "path"
 import type { InstanceContext } from "../../src/project/instance-context"
@@ -7,12 +7,7 @@ import { InstanceRef } from "../../src/effect/instance-ref"
 import * as Log from "@opencode-ai/core/util/log"
 import { resetDatabase } from "../fixture/db"
 import { tmpdir, withTestInstance } from "../fixture/fixture"
-import { RemoteSender } from "../../src/kilo-sessions/remote-sender"
 import { Effect } from "effect"
-
-beforeEach(() => {
-  spyOn(RemoteSender, "create").mockReturnValue({ handle() {}, dispose() {} })
-})
 
 Log.init({ print: false })
 

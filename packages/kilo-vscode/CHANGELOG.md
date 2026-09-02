@@ -4,6 +4,8 @@
 
 ### Minor Changes
 
+- Removed the online Kilo services so the extension runs fully offline. Gone: Kilo Gateway auth/profile/balance, marketplace, KiloClaw, cloud sessions, remote notifications, PostHog telemetry, and gateway-powered autocomplete (FIM / next-edit). Speech-to-text and image generation now target user-configured local OpenAI-compatible endpoints (llama.cpp, vLLM, Ollama). Chat/agent, Agent Manager, local indexing, MCP, snapshot/worktree, and browser automation all work with local providers configured as custom OpenAI-compatible entries.
+
 - [#13512](https://github.com/Kilo-Org/kilocode/pull/13512) [`13a9673`](https://github.com/Kilo-Org/kilocode/commit/13a9673d08cfc69eebb89898861a1ee80278f226) - Reference other Agent Manager worktrees with a searchable @ picker that prioritizes recently opened worktrees. Share paths, branches, and session IDs without attaching diffs or chat history. Keep picker results in sync when clearing search.
 
 - [#13533](https://github.com/Kilo-Org/kilocode/pull/13533) [`6d15d18`](https://github.com/Kilo-Org/kilocode/commit/6d15d18fa766aaf6a478b63aa98c10ffd23e3d4c) - Choose a separate model for conversation compaction in Context settings.

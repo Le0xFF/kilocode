@@ -29,6 +29,16 @@ const log = Log.create({ service: "claw-chat" })
 
 type SDK = ReturnType<typeof useSDK>
 
+// The regenerated SDK dropped the legacy `client.kilo` namespace (the `/kilo/*`
+// gateway routes are gone). KiloClaw still targets it at runtime; read it as an
+// optional dynamic property so a missing namespace degrades to `undefined`
+// instead of throwing.
+function clawClient(sdk: SDK) {
+  return (sdk.client as { kilo?: { claw?: unknown } }).kilo?.claw as
+    | undefined
+    | (Record<string, (...args: never[]) => Promise<unknown>>)
+}
+
 /**
  * Poll the KiloClaw instance status every `interval` ms.
  */
@@ -39,7 +49,7 @@ export function createClawStatus(sdk: SDK, interval = 10_000) {
 
   onMount(() => {
     const poll = async () => {
-      const res = await sdk.client.kilo.claw.status().catch(() => null)
+      const res = await clawClient(sdk)?.status?.().catch(() => null) as { data?: unknown; error?: unknown } | null
       if (res?.data && !res.error) {
         setStatus(res.data as ClawStatus)
         setError(null)
@@ -178,7 +188,7 @@ export function createClawChat(sdk: SDK) {
     })
 
     log.info("fetching status + credentials")
-    const statusRes = await sdk.client.kilo.claw.status().catch(() => null)
+    const statusRes = (await clawClient(sdk)?.status?.().catch(() => null)) as { data?: unknown; error?: unknown } | null
     const statusData = statusRes?.data as (ClawStatus & { userId?: string; sandboxId?: string }) | undefined
     if (!statusRes || statusRes.error || !statusData?.userId || !statusData?.sandboxId) {
       setError(null)
@@ -186,10 +196,10 @@ export function createClawChat(sdk: SDK) {
       return
     }
 
-    const credsRes = await sdk.client.kilo.claw.chatCredentials().catch((e: unknown) => {
-      log.error("chatCredentials() threw", { error: errText(e) })
-      return null
-    })
+const credsRes = (await clawClient(sdk)?.chatCredentials?.().catch((e: unknown) => {
+  log.error("chatCredentials() threw", { error: errText(e) })
+  return null
+})) as { data?: unknown; error?: unknown } | null
 
     if (!credsRes?.data || credsRes.error) {
       setError(credsRes?.data === null ? null : "Failed to fetch chat credentials")

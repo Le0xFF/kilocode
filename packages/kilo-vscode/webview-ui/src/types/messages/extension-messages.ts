@@ -1,11 +1,9 @@
 import type { ProviderAuthAuthorization, ProviderAuthMethod } from "@kilocode/sdk/v2/client"
 import type { DiffSourceCapabilities, DiffSourceDescriptor } from "../../../../src/diff/sources/types"
 import type { PartBatch, PartRemove, PartUpdate } from "../../../../src/shared/stream-messages"
-import type { MarketplaceItem, MarketplaceInstalledMetadata, MarketplaceRelevanceMetadata } from "../marketplace"
 import type { ConnectionState, ServerInfo, SessionStatus } from "./connection"
 import type { FileAttachment, Part } from "./parts"
 import type {
-  CloudSessionInfo,
   Message,
   MessageLoadMode,
   ProjectSessionInfo,
@@ -50,11 +48,8 @@ import type {
   ConfigCollections,
   FeatureFlags,
   IndexingStatus,
-  KiloEmbeddingModelCatalog,
 } from "./config"
 import type { WorkStyle, WorkStyleState } from "../../../../src/shared/work-style-presets"
-import type { KilocodeNotification, ProfileData } from "./profile"
-import type { ProviderUsageLoadedMessage } from "./provider-usage"
 import type {
   AgentManagerApplyWorktreeDiffConflict,
   AgentManagerApplyWorktreeDiffStatus,
@@ -281,41 +276,6 @@ export interface SessionsLoadedMessage {
   preserveSessionIds?: string[]
 }
 
-export interface CloudSessionsLoadedMessage {
-  type: "cloudSessionsLoaded"
-  sessions: CloudSessionInfo[]
-  nextCursor: string | null
-}
-
-export interface GitRemoteUrlLoadedMessage {
-  type: "gitRemoteUrlLoaded"
-  gitUrl: string | null
-}
-
-export interface CloudSessionDataLoadedMessage {
-  type: "cloudSessionDataLoaded"
-  cloudSessionId: string
-  title: string
-  messages: Message[]
-}
-
-export interface CloudSessionImportedMessage {
-  type: "cloudSessionImported"
-  cloudSessionId: string
-  session: SessionInfo
-}
-
-export interface CloudSessionImportFailedMessage {
-  type: "cloudSessionImportFailed"
-  cloudSessionId: string
-  error: string
-}
-
-export interface OpenCloudSessionMessage {
-  type: "openCloudSession"
-  sessionId: string
-}
-
 export interface SelectKiloModelMessage {
   type: "selectKiloModel"
   modelID?: string
@@ -400,34 +360,9 @@ export interface TriggerTaskMessage {
   text: string
 }
 
-export interface ProfileDataMessage {
-  type: "profileData"
-  data: ProfileData | null
-}
-
-export interface DeviceAuthStartedMessage {
-  type: "deviceAuthStarted"
-  code?: string
-  verificationUrl: string
-  expiresIn: number
-}
-
-export interface DeviceAuthCompleteMessage {
-  type: "deviceAuthComplete"
-}
-
-export interface DeviceAuthFailedMessage {
-  type: "deviceAuthFailed"
-  error: string
-}
-
-export interface DeviceAuthCancelledMessage {
-  type: "deviceAuthCancelled"
-}
-
 export interface NavigateMessage {
   type: "navigate"
-  view: "newTask" | "marketplace" | "history" | "profile" | "settings" | "subAgentViewer"
+  view: "newTask" | "history" | "settings" | "subAgentViewer"
   tab?: string
   projectId?: string
 }
@@ -484,11 +419,6 @@ export interface ChatSettingsLoadedMessage {
   }
 }
 
-export interface KiloEmbeddingModelsLoadedMessage {
-  type: "kiloEmbeddingModelsLoaded"
-  catalog: KiloEmbeddingModelCatalog
-}
-
 export interface ImageModelsLoadedMessage {
   type: "imageModelsLoaded"
   models: Array<{ id: string; name: string; description?: string }>
@@ -524,25 +454,6 @@ export interface SkillsLoadedMessage {
 export interface CommandsLoadedMessage {
   type: "commandsLoaded"
   commands: SlashCommandInfo[]
-}
-
-export interface AutocompleteSettingsLoadedMessage {
-  type: "autocompleteSettingsLoaded"
-  settings: {
-    enableAutoTrigger: boolean
-    enableSmartInlineTaskKeybinding: boolean
-    enableChatAutocomplete: boolean
-    /** `null` means "no explicit setting — use the resolved default." */
-    provider: string | null
-    /** `null` means "no explicit setting — use the resolved default." */
-    model: string | null
-  }
-}
-
-export interface ChatCompletionResultMessage {
-  type: "chatCompletionResult"
-  text: string
-  requestId: string
 }
 
 export interface SpeechToTextResultMessage {
@@ -780,12 +691,6 @@ export interface WorkStyleApplyFailedMessage {
   type: "workStyleApplyFailed"
   message: string
   rollbackFailed: boolean
-}
-
-export interface NotificationsLoadedMessage {
-  type: "notificationsLoaded"
-  notifications: KilocodeNotification[]
-  dismissedIds: string[]
 }
 
 // Agent Manager repo info (current branch of the main workspace)
@@ -1318,43 +1223,6 @@ export interface ExtensionDataReadyMessage {
   type: "extensionDataReady"
 }
 
-export interface TelemetryStateMessage {
-  type: "telemetryState"
-  enabled: boolean
-}
-
-// ============================================
-// Marketplace Messages
-// ============================================
-
-export interface MarketplaceDataMessage {
-  type: "marketplaceData"
-  marketplaceItems: MarketplaceItem[]
-  marketplaceInstalledMetadata: MarketplaceInstalledMetadata
-  marketplaceRelevance: MarketplaceRelevanceMetadata
-  errors?: string[]
-  showAgentMigrationBanner?: boolean
-}
-
-export interface MarketplaceInstallResultMessage {
-  type: "marketplaceInstallResult"
-  success: boolean
-  slug: string
-  error?: string
-}
-
-export interface OpenInstallModalMessage {
-  type: "openInstallModal"
-  mpItem: MarketplaceItem
-}
-
-export interface MarketplaceRemoveResultMessage {
-  type: "marketplaceRemoveResult"
-  success: boolean
-  slug: string
-  error?: string
-}
-
 export interface ProviderOAuthReadyMessage {
   type: "providerOAuthReady"
   requestId: string
@@ -1466,30 +1334,19 @@ export type ExtensionMessage =
   | ModelUsageLoadedMessage
   | MessageCreatedMessage
   | SessionsLoadedMessage
-  | CloudSessionsLoadedMessage
-  | GitRemoteUrlLoadedMessage
   | ActionMessage
-  | ProfileDataMessage
-  | ProviderUsageLoadedMessage
-  | DeviceAuthStartedMessage
-  | DeviceAuthCompleteMessage
-  | DeviceAuthFailedMessage
-  | DeviceAuthCancelledMessage
   | NavigateMessage
   | AgentManagerSettingsLoadedMessage
   | AgentManagerSettingsBranchesLoadedMessage
   | IndexingStatusLoadedMessage
   | IndexingSettingsLoadedMessage
   | ChatSettingsLoadedMessage
-  | KiloEmbeddingModelsLoadedMessage
   | ImageModelsLoadedMessage
   | SpeechToTextModelsLoadedMessage
   | ProvidersLoadedMessage
   | AgentsLoadedMessage
   | SkillsLoadedMessage
   | CommandsLoadedMessage
-  | AutocompleteSettingsLoadedMessage
-  | ChatCompletionResultMessage
   | SpeechToTextStartedMessage
   | SpeechToTextCancelledMessage
   | SpeechToTextResultMessage
@@ -1523,7 +1380,6 @@ export type ExtensionMessage =
   | WorkStyleLoadedMessage
   | WorkStyleAppliedMessage
   | WorkStyleApplyFailedMessage
-  | NotificationsLoadedMessage
   | AgentManagerRepoInfoMessage
   | AgentManagerWorktreeSetupMessage
   | AgentManagerSessionAddedMessage
@@ -1549,10 +1405,6 @@ export type ExtensionMessage =
   | AppendReviewCommentsToTerminalMessage
   | TriggerTaskMessage
   | VariantsLoadedMessage
-  | CloudSessionDataLoadedMessage
-  | CloudSessionImportedMessage
-  | CloudSessionImportFailedMessage
-  | OpenCloudSessionMessage
   | SelectKiloModelMessage
   | AgentManagerBranchesMessage
   | AgentManagerImportResultMessage
@@ -1597,10 +1449,6 @@ export type ExtensionMessage =
   | DiffViewerCapabilitiesMessage
   | DiffViewerNoticeMessage
   | DiffViewerBranchesLoadedMessage
-  | MarketplaceDataMessage
-  | MarketplaceInstallResultMessage
-  | MarketplaceRemoveResultMessage
-  | OpenInstallModalMessage
   | ProviderOAuthReadyMessage
   | ProviderConnectedMessage
   | ProviderDisconnectedMessage
@@ -1617,7 +1465,6 @@ export type ExtensionMessage =
   | McpStatusLoadedMessage
   | ClearPendingPromptsMessage
   | ExtensionDataReadyMessage
-  | TelemetryStateMessage
   | RemoteStatusMessage
   | ValidateFilesResultMessage
   | ClipboardWriteResultMessage

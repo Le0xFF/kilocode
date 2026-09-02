@@ -8928,114 +8928,6 @@
         ]
       }
     },
-    "/session/viewed": {
-      "post": {
-        "tags": ["session"],
-        "operationId": "session.viewed",
-        "parameters": [
-          {
-            "name": "directory",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            },
-            "required": false
-          },
-          {
-            "name": "workspace",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            },
-            "required": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Viewed sessions updated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "boolean",
-                  "description": "Viewed sessions updated"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "BadRequest | InvalidRequestError",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/effect_HttpApiError_BadRequest"
-                    },
-                    {
-                      "$ref": "#/components/schemas/InvalidRequestError"
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        },
-        "description": "Notify the server which sessions the user is currently viewing, or clear all.",
-        "summary": "Set viewed sessions",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "viewer": {
-                    "type": "object",
-                    "properties": {
-                      "id": {
-                        "type": "string",
-                        "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|[fF]{8}-[fF]{4}-[fF]{4}-[fF]{4}-[fF]{12})$",
-                        "format": "uuid"
-                      },
-                      "active": {
-                        "type": "boolean"
-                      }
-                    },
-                    "required": ["id", "active"],
-                    "additionalProperties": false
-                  },
-                  "attached": {
-                    "type": "array",
-                    "items": {
-                      "type": "string",
-                      "pattern": "^ses",
-                      "maxLength": 234
-                    },
-                    "maxItems": 1000
-                  },
-                  "visible": {
-                    "type": "array",
-                    "items": {
-                      "type": "string",
-                      "pattern": "^ses",
-                      "maxLength": 234
-                    },
-                    "maxItems": 199
-                  }
-                },
-                "required": ["viewer", "attached", "visible"],
-                "additionalProperties": false
-              }
-            }
-          }
-        },
-        "x-codeSamples": [
-          {
-            "lang": "js",
-            "source": "import { createKiloClient } from \"@kilocode/sdk\"\n\nconst client = createKiloClient()\nawait client.session.viewed({\n  ...\n})"
-          }
-        ]
-      }
-    },
     "/sync/start": {
       "post": {
         "tags": ["sync"],
@@ -12790,11 +12682,15 @@
         ],
         "responses": {
           "200": {
-            "description": "Kilo embedding model catalog",
+            "description": "Configured embedding model ids",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/KiloEmbeddingModelCatalog"
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Configured embedding model ids"
                 }
               }
             }
@@ -12810,8 +12706,8 @@
             }
           }
         },
-        "description": "Retrieve the embedding models available through the active Kilo account.",
-        "summary": "List Kilo embedding models",
+        "description": "List the embedding models configured for local indexing providers.",
+        "summary": "List configured embedding models",
         "x-codeSamples": [
           {
             "lang": "js",
@@ -13318,1782 +13214,6 @@
           {
             "lang": "js",
             "source": "import { createKiloClient } from \"@kilocode/sdk\"\n\nconst client = createKiloClient()\nawait client.interactiveTerminal.close({\n  ...\n})"
-          }
-        ]
-      }
-    },
-    "/kilo/profile": {
-      "get": {
-        "tags": ["kilo"],
-        "operationId": "kilo.profile",
-        "parameters": [
-          {
-            "name": "directory",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            },
-            "required": false
-          },
-          {
-            "name": "workspace",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            },
-            "required": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Profile data",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "profile": {
-                      "type": "object",
-                      "properties": {
-                        "email": {
-                          "type": "string"
-                        },
-                        "name": {
-                          "type": "string"
-                        },
-                        "organizations": {
-                          "type": "array",
-                          "items": {
-                            "type": "object",
-                            "properties": {
-                              "id": {
-                                "type": "string"
-                              },
-                              "name": {
-                                "type": "string"
-                              },
-                              "role": {
-                                "type": "string"
-                              }
-                            },
-                            "required": ["id", "name", "role"],
-                            "additionalProperties": false
-                          }
-                        },
-                        "selectedOrganizationId": {
-                          "type": "string"
-                        },
-                        "hasPersonalAccount": {
-                          "type": "boolean"
-                        }
-                      },
-                      "required": ["email"],
-                      "additionalProperties": false
-                    },
-                    "balance": {
-                      "anyOf": [
-                        {
-                          "type": "object",
-                          "properties": {
-                            "balance": {
-                              "type": "number"
-                            }
-                          },
-                          "required": ["balance"],
-                          "additionalProperties": false
-                        },
-                        {
-                          "type": "null"
-                        }
-                      ]
-                    },
-                    "kiloPass": {
-                      "anyOf": [
-                        {
-                          "type": "object",
-                          "properties": {
-                            "currentPeriodBaseCreditsUsd": {
-                              "type": "number"
-                            },
-                            "currentPeriodUsageUsd": {
-                              "type": "number"
-                            },
-                            "currentPeriodBonusCreditsUsd": {
-                              "type": "number"
-                            },
-                            "nextBillingAt": {
-                              "anyOf": [
-                                {
-                                  "type": "string"
-                                },
-                                {
-                                  "type": "null"
-                                }
-                              ]
-                            }
-                          },
-                          "required": [
-                            "currentPeriodBaseCreditsUsd",
-                            "currentPeriodUsageUsd",
-                            "currentPeriodBonusCreditsUsd"
-                          ],
-                          "additionalProperties": false
-                        },
-                        {
-                          "type": "null"
-                        }
-                      ]
-                    },
-                    "currentOrgId": {
-                      "anyOf": [
-                        {
-                          "type": "string"
-                        },
-                        {
-                          "type": "null"
-                        }
-                      ]
-                    }
-                  },
-                  "required": ["profile", "balance", "kiloPass", "currentOrgId"],
-                  "additionalProperties": false,
-                  "description": "Profile data"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "BadRequest | InvalidRequestError",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/effect_HttpApiError_BadRequest"
-                    },
-                    {
-                      "$ref": "#/components/schemas/InvalidRequestError"
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        },
-        "description": "Fetch user profile and organizations from Kilo Gateway",
-        "summary": "Get Kilo Gateway profile",
-        "x-codeSamples": [
-          {
-            "lang": "js",
-            "source": "import { createKiloClient } from \"@kilocode/sdk\"\n\nconst client = createKiloClient()\nawait client.kilo.profile({\n  ...\n})"
-          }
-        ]
-      }
-    },
-    "/kilo/auth-status": {
-      "get": {
-        "tags": ["kilo"],
-        "operationId": "kilo.authStatus",
-        "parameters": [
-          {
-            "name": "directory",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            },
-            "required": false
-          },
-          {
-            "name": "workspace",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            },
-            "required": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Kilo authentication status",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "authenticated": {
-                      "type": "boolean"
-                    },
-                    "type": {
-                      "type": "string",
-                      "enum": ["api", "oauth"]
-                    }
-                  },
-                  "required": ["authenticated"],
-                  "additionalProperties": false,
-                  "description": "Kilo authentication status"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "BadRequest | InvalidRequestError",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/effect_HttpApiError_BadRequest"
-                    },
-                    {
-                      "$ref": "#/components/schemas/InvalidRequestError"
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        },
-        "description": "Check whether a locally stored Kilo credential can authenticate Gateway requests",
-        "summary": "Get Kilo authentication status",
-        "x-codeSamples": [
-          {
-            "lang": "js",
-            "source": "import { createKiloClient } from \"@kilocode/sdk\"\n\nconst client = createKiloClient()\nawait client.kilo.authStatus({\n  ...\n})"
-          }
-        ]
-      }
-    },
-    "/kilo/modes": {
-      "get": {
-        "tags": ["kilo"],
-        "operationId": "kilo.modes",
-        "parameters": [
-          {
-            "name": "directory",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            },
-            "required": false
-          },
-          {
-            "name": "workspace",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            },
-            "required": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Organization modes list",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "modes": {
-                      "type": "array",
-                      "items": {
-                        "type": "object",
-                        "properties": {
-                          "id": {
-                            "type": "string"
-                          },
-                          "organization_id": {
-                            "type": "string"
-                          },
-                          "name": {
-                            "type": "string"
-                          },
-                          "slug": {
-                            "type": "string"
-                          },
-                          "created_by": {
-                            "type": "string"
-                          },
-                          "created_at": {
-                            "type": "string"
-                          },
-                          "updated_at": {
-                            "type": "string"
-                          },
-                          "config": {
-                            "type": "object",
-                            "properties": {
-                              "roleDefinition": {
-                                "type": "string"
-                              },
-                              "whenToUse": {
-                                "type": "string"
-                              },
-                              "description": {
-                                "type": "string"
-                              },
-                              "customInstructions": {
-                                "type": "string"
-                              },
-                              "groups": {
-                                "type": "array",
-                                "items": {
-                                  "anyOf": [
-                                    {
-                                      "type": "string"
-                                    },
-                                    {
-                                      "type": "array",
-                                      "prefixItems": [
-                                        {
-                                          "type": "string"
-                                        },
-                                        {
-                                          "type": "object",
-                                          "properties": {
-                                            "fileRegex": {
-                                              "anyOf": [
-                                                {
-                                                  "type": "string"
-                                                },
-                                                {
-                                                  "type": "null"
-                                                }
-                                              ]
-                                            },
-                                            "description": {
-                                              "anyOf": [
-                                                {
-                                                  "type": "string"
-                                                },
-                                                {
-                                                  "type": "null"
-                                                }
-                                              ]
-                                            }
-                                          },
-                                          "additionalProperties": false
-                                        }
-                                      ],
-                                      "maxItems": 2,
-                                      "minItems": 2
-                                    }
-                                  ]
-                                }
-                              }
-                            },
-                            "additionalProperties": false
-                          }
-                        },
-                        "required": [
-                          "id",
-                          "organization_id",
-                          "name",
-                          "slug",
-                          "created_by",
-                          "created_at",
-                          "updated_at",
-                          "config"
-                        ],
-                        "additionalProperties": false
-                      }
-                    }
-                  },
-                  "required": ["modes"],
-                  "additionalProperties": false,
-                  "description": "Organization modes list"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BadRequestError"
-                }
-              }
-            }
-          }
-        },
-        "description": "Fetch custom modes defined for the current organization",
-        "summary": "Get organization custom modes",
-        "x-codeSamples": [
-          {
-            "lang": "js",
-            "source": "import { createKiloClient } from \"@kilocode/sdk\"\n\nconst client = createKiloClient()\nawait client.kilo.modes({\n  ...\n})"
-          }
-        ]
-      }
-    },
-    "/kilo/fim": {
-      "post": {
-        "tags": ["kilo"],
-        "operationId": "kilo.fim",
-        "parameters": [
-          {
-            "name": "directory",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            },
-            "required": false
-          },
-          {
-            "name": "workspace",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            },
-            "required": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Streaming FIM completion response",
-            "content": {
-              "text/event-stream": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "choices": {
-                      "type": "array",
-                      "items": {
-                        "type": "object",
-                        "properties": {
-                          "delta": {
-                            "type": "object",
-                            "properties": {
-                              "content": {
-                                "type": "string"
-                              }
-                            }
-                          },
-                          "text": {
-                            "type": "string"
-                          }
-                        }
-                      }
-                    },
-                    "usage": {
-                      "type": "object",
-                      "properties": {
-                        "prompt_tokens": {
-                          "type": "number"
-                        },
-                        "completion_tokens": {
-                          "type": "number"
-                        }
-                      }
-                    },
-                    "cost": {
-                      "type": "number"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "BadRequest | InvalidRequestError",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/effect_HttpApiError_BadRequest"
-                    },
-                    {
-                      "$ref": "#/components/schemas/InvalidRequestError"
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        },
-        "description": "Proxy a Fill-in-the-Middle completion request to the Kilo Gateway",
-        "summary": "FIM completion",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "prefix": {
-                    "type": "string"
-                  },
-                  "suffix": {
-                    "type": "string"
-                  },
-                  "provider": {
-                    "type": "string"
-                  },
-                  "model": {
-                    "type": "string"
-                  },
-                  "maxTokens": {
-                    "type": "number"
-                  },
-                  "temperature": {
-                    "type": "number"
-                  }
-                },
-                "required": ["prefix", "suffix"],
-                "additionalProperties": false
-              }
-            }
-          }
-        },
-        "x-codeSamples": [
-          {
-            "lang": "js",
-            "source": "import { createKiloClient } from \"@kilocode/sdk\"\n\nconst client = createKiloClient()\nawait client.kilo.fim({\n  ...\n})"
-          }
-        ]
-      }
-    },
-    "/kilo/edit": {
-      "post": {
-        "tags": ["kilo"],
-        "operationId": "kilo.edit",
-        "parameters": [
-          {
-            "name": "directory",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            },
-            "required": false
-          },
-          {
-            "name": "workspace",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            },
-            "required": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Next Edit completion",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "content": {
-                      "type": "string"
-                    },
-                    "usage": {
-                      "type": "object",
-                      "properties": {
-                        "prompt_tokens": {
-                          "type": "number"
-                        },
-                        "completion_tokens": {
-                          "type": "number"
-                        }
-                      },
-                      "additionalProperties": false
-                    }
-                  },
-                  "required": ["content"],
-                  "additionalProperties": false,
-                  "description": "Next Edit completion"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "BadRequest | InvalidRequestError",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/effect_HttpApiError_BadRequest"
-                    },
-                    {
-                      "$ref": "#/components/schemas/InvalidRequestError"
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        },
-        "description": "Proxy a Mercury-style Next Edit request. The client supplies structured editor context; the gateway assembles the sentinel-tagged prompt and forwards to the upstream edit endpoint.",
-        "summary": "Next Edit completion",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "provider": {
-                    "type": "string"
-                  },
-                  "model": {
-                    "type": "string"
-                  },
-                  "maxTokens": {
-                    "type": "number"
-                  },
-                  "currentFilePath": {
-                    "type": "string"
-                  },
-                  "currentFileContent": {
-                    "type": "string"
-                  },
-                  "cursorLine": {
-                    "type": "number"
-                  },
-                  "cursorCharacter": {
-                    "type": "number"
-                  },
-                  "editableRegionStartLine": {
-                    "type": "number"
-                  },
-                  "editableRegionEndLine": {
-                    "type": "number"
-                  },
-                  "recentlyViewedSnippets": {
-                    "type": "array",
-                    "items": {
-                      "type": "object",
-                      "properties": {
-                        "filepath": {
-                          "type": "string"
-                        },
-                        "content": {
-                          "type": "string"
-                        }
-                      },
-                      "required": ["filepath", "content"],
-                      "additionalProperties": false
-                    }
-                  },
-                  "editDiffHistory": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    }
-                  }
-                },
-                "required": [
-                  "currentFilePath",
-                  "currentFileContent",
-                  "cursorLine",
-                  "cursorCharacter",
-                  "editableRegionStartLine",
-                  "editableRegionEndLine",
-                  "recentlyViewedSnippets",
-                  "editDiffHistory"
-                ],
-                "additionalProperties": false
-              }
-            }
-          }
-        },
-        "x-codeSamples": [
-          {
-            "lang": "js",
-            "source": "import { createKiloClient } from \"@kilocode/sdk\"\n\nconst client = createKiloClient()\nawait client.kilo.edit({\n  ...\n})"
-          }
-        ]
-      }
-    },
-    "/kilo/audio/transcriptions": {
-      "post": {
-        "tags": ["kilo"],
-        "operationId": "kilo.audio.transcriptions",
-        "parameters": [
-          {
-            "name": "directory",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            },
-            "required": false
-          },
-          {
-            "name": "workspace",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            },
-            "required": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Transcription response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "text": {
-                      "type": "string"
-                    },
-                    "usage": {}
-                  },
-                  "required": ["text"],
-                  "additionalProperties": false,
-                  "description": "Transcription response"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "BadRequest | InvalidRequestError",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/effect_HttpApiError_BadRequest"
-                    },
-                    {
-                      "$ref": "#/components/schemas/InvalidRequestError"
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        },
-        "description": "Proxy an audio transcription request to the Kilo Gateway",
-        "summary": "Speech to text transcription",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "model": {
-                    "type": "string"
-                  },
-                  "input_audio": {
-                    "type": "object",
-                    "properties": {
-                      "data": {
-                        "type": "string"
-                      },
-                      "format": {
-                        "type": "string"
-                      }
-                    },
-                    "required": ["data", "format"],
-                    "additionalProperties": false
-                  },
-                  "language": {
-                    "type": "string"
-                  },
-                  "prompt": {
-                    "type": "string"
-                  },
-                  "temperature": {
-                    "type": "number"
-                  }
-                },
-                "required": ["model", "input_audio"],
-                "additionalProperties": false
-              }
-            }
-          }
-        },
-        "x-codeSamples": [
-          {
-            "lang": "js",
-            "source": "import { createKiloClient } from \"@kilocode/sdk\"\n\nconst client = createKiloClient()\nawait client.kilo.audio.transcriptions({\n  ...\n})"
-          }
-        ]
-      }
-    },
-    "/kilo/models/images": {
-      "get": {
-        "tags": ["kilo"],
-        "operationId": "kilo.models.images",
-        "parameters": [
-          {
-            "name": "directory",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            },
-            "required": false
-          },
-          {
-            "name": "workspace",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            },
-            "required": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Image-capable model list",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "id": {
-                        "type": "string"
-                      },
-                      "name": {
-                        "type": "string"
-                      },
-                      "description": {
-                        "type": "string"
-                      }
-                    },
-                    "required": ["id", "name"],
-                    "additionalProperties": false
-                  },
-                  "description": "Image-capable model list"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "BadRequest | InvalidRequestError",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/effect_HttpApiError_BadRequest"
-                    },
-                    {
-                      "$ref": "#/components/schemas/InvalidRequestError"
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        },
-        "description": "List image-capable models from the Kilo Gateway OpenRouter passthrough",
-        "summary": "Image generation models",
-        "x-codeSamples": [
-          {
-            "lang": "js",
-            "source": "import { createKiloClient } from \"@kilocode/sdk\"\n\nconst client = createKiloClient()\nawait client.kilo.models.images({\n  ...\n})"
-          }
-        ]
-      }
-    },
-    "/kilo/models/transcriptions": {
-      "get": {
-        "tags": ["kilo"],
-        "operationId": "kilo.models.transcriptions",
-        "parameters": [
-          {
-            "name": "directory",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            },
-            "required": false
-          },
-          {
-            "name": "workspace",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            },
-            "required": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Speech-to-text model list",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "id": {
-                        "type": "string"
-                      },
-                      "name": {
-                        "type": "string"
-                      }
-                    },
-                    "required": ["id", "name"],
-                    "additionalProperties": false
-                  },
-                  "description": "Speech-to-text model list"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "BadRequest | InvalidRequestError",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/effect_HttpApiError_BadRequest"
-                    },
-                    {
-                      "$ref": "#/components/schemas/InvalidRequestError"
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        },
-        "description": "List transcription-capable models from the Kilo Gateway catalog",
-        "summary": "Speech-to-text models",
-        "x-codeSamples": [
-          {
-            "lang": "js",
-            "source": "import { createKiloClient } from \"@kilocode/sdk\"\n\nconst client = createKiloClient()\nawait client.kilo.models.transcriptions({\n  ...\n})"
-          }
-        ]
-      }
-    },
-    "/kilo/notifications": {
-      "get": {
-        "tags": ["kilo"],
-        "operationId": "kilo.notifications",
-        "parameters": [
-          {
-            "name": "directory",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            },
-            "required": false
-          },
-          {
-            "name": "workspace",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            },
-            "required": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Notifications list",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "id": {
-                        "type": "string"
-                      },
-                      "title": {
-                        "type": "string"
-                      },
-                      "message": {
-                        "type": "string"
-                      },
-                      "action": {
-                        "type": "object",
-                        "properties": {
-                          "actionText": {
-                            "type": "string"
-                          },
-                          "actionURL": {
-                            "type": "string"
-                          }
-                        },
-                        "required": ["actionText", "actionURL"],
-                        "additionalProperties": false
-                      },
-                      "showIn": {
-                        "type": "array",
-                        "items": {
-                          "type": "string"
-                        }
-                      },
-                      "suggestModelId": {
-                        "type": "string"
-                      }
-                    },
-                    "required": ["id", "title", "message"],
-                    "additionalProperties": false
-                  },
-                  "description": "Notifications list"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "BadRequest | InvalidRequestError",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/effect_HttpApiError_BadRequest"
-                    },
-                    {
-                      "$ref": "#/components/schemas/InvalidRequestError"
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        },
-        "description": "Fetch notifications from Kilo Gateway for CLI display",
-        "summary": "Get Kilo notifications",
-        "x-codeSamples": [
-          {
-            "lang": "js",
-            "source": "import { createKiloClient } from \"@kilocode/sdk\"\n\nconst client = createKiloClient()\nawait client.kilo.notifications({\n  ...\n})"
-          }
-        ]
-      }
-    },
-    "/kilo/organization": {
-      "post": {
-        "tags": ["kilo"],
-        "operationId": "kilo.organization.set",
-        "parameters": [
-          {
-            "name": "directory",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            },
-            "required": false
-          },
-          {
-            "name": "workspace",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            },
-            "required": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Organization updated successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "boolean",
-                  "description": "Organization updated successfully"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "BadRequest | InvalidRequestError",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/effect_HttpApiError_BadRequest"
-                    },
-                    {
-                      "$ref": "#/components/schemas/InvalidRequestError"
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        },
-        "description": "Switch to a different Kilo Gateway organization",
-        "summary": "Update Kilo Gateway organization",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "organizationId": {
-                    "anyOf": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "type": "null"
-                      }
-                    ]
-                  }
-                },
-                "required": ["organizationId"],
-                "additionalProperties": false
-              }
-            }
-          }
-        },
-        "x-codeSamples": [
-          {
-            "lang": "js",
-            "source": "import { createKiloClient } from \"@kilocode/sdk\"\n\nconst client = createKiloClient()\nawait client.kilo.organization.set({\n  ...\n})"
-          }
-        ]
-      }
-    },
-    "/kilo/claw/status": {
-      "get": {
-        "tags": ["kilo"],
-        "operationId": "kilo.claw.status",
-        "parameters": [
-          {
-            "name": "directory",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            },
-            "required": false
-          },
-          {
-            "name": "workspace",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            },
-            "required": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Instance status",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "anyOf": [
-                        {
-                          "type": "string",
-                          "enum": [
-                            "provisioned",
-                            "starting",
-                            "restarting",
-                            "recovering",
-                            "running",
-                            "stopped",
-                            "destroying",
-                            "restoring"
-                          ]
-                        },
-                        {
-                          "type": "null"
-                        }
-                      ]
-                    },
-                    "sandboxId": {
-                      "type": "string"
-                    },
-                    "flyRegion": {
-                      "type": "string"
-                    },
-                    "machineSize": {
-                      "type": "object",
-                      "properties": {
-                        "cpus": {
-                          "type": "number"
-                        },
-                        "memory_mb": {
-                          "type": "number"
-                        }
-                      },
-                      "required": ["cpus", "memory_mb"],
-                      "additionalProperties": false
-                    },
-                    "openclawVersion": {
-                      "anyOf": [
-                        {
-                          "type": "string"
-                        },
-                        {
-                          "type": "null"
-                        }
-                      ]
-                    },
-                    "lastStartedAt": {
-                      "anyOf": [
-                        {
-                          "type": "string"
-                        },
-                        {
-                          "type": "null"
-                        }
-                      ]
-                    },
-                    "lastStoppedAt": {
-                      "anyOf": [
-                        {
-                          "type": "string"
-                        },
-                        {
-                          "type": "null"
-                        }
-                      ]
-                    },
-                    "channelCount": {
-                      "type": "number"
-                    },
-                    "secretCount": {
-                      "type": "number"
-                    },
-                    "userId": {
-                      "type": "string"
-                    },
-                    "botName": {
-                      "anyOf": [
-                        {
-                          "type": "string"
-                        },
-                        {
-                          "type": "null"
-                        }
-                      ]
-                    }
-                  },
-                  "required": ["status"],
-                  "additionalProperties": false,
-                  "description": "Instance status"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BadRequestError"
-                }
-              }
-            }
-          },
-          "503": {
-            "description": "ServiceUnavailable",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/effect_HttpApiError_ServiceUnavailable"
-                }
-              }
-            }
-          }
-        },
-        "description": "Fetch the user's KiloClaw instance status via the KiloClaw worker",
-        "summary": "Get KiloClaw instance status",
-        "x-codeSamples": [
-          {
-            "lang": "js",
-            "source": "import { createKiloClient } from \"@kilocode/sdk\"\n\nconst client = createKiloClient()\nawait client.kilo.claw.status({\n  ...\n})"
-          }
-        ]
-      }
-    },
-    "/kilo/claw/chat-credentials": {
-      "get": {
-        "tags": ["kilo"],
-        "operationId": "kilo.claw.chatCredentials",
-        "parameters": [
-          {
-            "name": "directory",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            },
-            "required": false
-          },
-          {
-            "name": "workspace",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            },
-            "required": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Kilo Chat credentials or null",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "type": "object",
-                      "properties": {
-                        "token": {
-                          "type": "string"
-                        },
-                        "expiresAt": {
-                          "type": "string"
-                        },
-                        "kiloChatUrl": {
-                          "type": "string"
-                        },
-                        "eventServiceUrl": {
-                          "type": "string"
-                        }
-                      },
-                      "required": ["token", "expiresAt", "kiloChatUrl", "eventServiceUrl"],
-                      "additionalProperties": false
-                    },
-                    {
-                      "type": "null"
-                    }
-                  ]
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BadRequestError"
-                }
-              }
-            }
-          }
-        },
-        "description": "Returns the bearer token and endpoint URLs the client uses to talk to the Kilo Chat worker and the Event Service. The bearer is the user's existing long-lived Kilo JWT — kilo-chat and event-service both verify it directly with NEXTAUTH_SECRET, so no separate token mint is needed.",
-        "summary": "Get KiloClaw chat credentials",
-        "x-codeSamples": [
-          {
-            "lang": "js",
-            "source": "import { createKiloClient } from \"@kilocode/sdk\"\n\nconst client = createKiloClient()\nawait client.kilo.claw.chatCredentials({\n  ...\n})"
-          }
-        ]
-      }
-    },
-    "/kilo/cloud-sessions": {
-      "get": {
-        "tags": ["kilo"],
-        "operationId": "kilo.cloudSessions",
-        "parameters": [
-          {
-            "name": "directory",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            },
-            "required": false
-          },
-          {
-            "name": "workspace",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            },
-            "required": false
-          },
-          {
-            "name": "cursor",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            },
-            "required": false
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "schema": {
-              "type": "number"
-            },
-            "required": false
-          },
-          {
-            "name": "gitUrl",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            },
-            "required": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Cloud sessions list",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "cliSessions": {
-                      "type": "array",
-                      "items": {
-                        "type": "object",
-                        "properties": {
-                          "session_id": {
-                            "type": "string"
-                          },
-                          "title": {
-                            "anyOf": [
-                              {
-                                "type": "string"
-                              },
-                              {
-                                "type": "null"
-                              }
-                            ]
-                          },
-                          "created_at": {
-                            "type": "string"
-                          },
-                          "updated_at": {
-                            "type": "string"
-                          },
-                          "version": {
-                            "type": "number"
-                          }
-                        },
-                        "required": ["session_id", "title", "created_at", "updated_at", "version"],
-                        "additionalProperties": false
-                      }
-                    },
-                    "nextCursor": {
-                      "anyOf": [
-                        {
-                          "type": "string"
-                        },
-                        {
-                          "type": "null"
-                        }
-                      ]
-                    }
-                  },
-                  "required": ["cliSessions", "nextCursor"],
-                  "additionalProperties": false,
-                  "description": "Cloud sessions list"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "BadRequest | InvalidRequestError",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/effect_HttpApiError_BadRequest"
-                    },
-                    {
-                      "$ref": "#/components/schemas/InvalidRequestError"
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        },
-        "description": "Fetch cloud CLI sessions from Kilo API",
-        "summary": "Get cloud sessions",
-        "x-codeSamples": [
-          {
-            "lang": "js",
-            "source": "import { createKiloClient } from \"@kilocode/sdk\"\n\nconst client = createKiloClient()\nawait client.kilo.cloudSessions({\n  ...\n})"
-          }
-        ]
-      }
-    },
-    "/kilo/cloud/session/{id}": {
-      "get": {
-        "tags": ["kilo"],
-        "operationId": "kilo.cloud.session.get",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "schema": {
-              "type": "string"
-            },
-            "required": true
-          },
-          {
-            "name": "directory",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            },
-            "required": false
-          },
-          {
-            "name": "workspace",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            },
-            "required": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Cloud session data",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "info": {
-                      "type": "object",
-                      "properties": {
-                        "id": {
-                          "type": "string"
-                        },
-                        "title": {
-                          "type": "string"
-                        },
-                        "time": {
-                          "type": "object",
-                          "properties": {
-                            "created": {
-                              "type": "number"
-                            },
-                            "updated": {
-                              "type": "number"
-                            }
-                          },
-                          "required": ["created", "updated"],
-                          "additionalProperties": false
-                        }
-                      },
-                      "required": ["id", "title", "time"]
-                    },
-                    "messages": {
-                      "type": "array",
-                      "items": {
-                        "type": "object",
-                        "properties": {
-                          "info": {
-                            "type": "object",
-                            "properties": {
-                              "id": {
-                                "type": "string"
-                              },
-                              "sessionID": {
-                                "type": "string"
-                              },
-                              "role": {
-                                "type": "string",
-                                "enum": ["user", "assistant"]
-                              },
-                              "time": {
-                                "type": "object",
-                                "properties": {
-                                  "created": {
-                                    "type": "number"
-                                  },
-                                  "completed": {
-                                    "type": "number"
-                                  }
-                                },
-                                "required": ["created"],
-                                "additionalProperties": false
-                              }
-                            },
-                            "required": ["id", "sessionID", "role", "time"]
-                          },
-                          "parts": {
-                            "type": "array",
-                            "items": {
-                              "type": "object",
-                              "properties": {
-                                "id": {
-                                  "type": "string"
-                                },
-                                "sessionID": {
-                                  "type": "string"
-                                },
-                                "messageID": {
-                                  "type": "string"
-                                },
-                                "type": {
-                                  "type": "string"
-                                }
-                              },
-                              "required": ["id", "sessionID", "messageID", "type"]
-                            }
-                          }
-                        },
-                        "required": ["info", "parts"]
-                      }
-                    }
-                  },
-                  "required": ["info", "messages"],
-                  "additionalProperties": false,
-                  "description": "Cloud session data"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BadRequestError"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/NotFoundError"
-                }
-              }
-            }
-          }
-        },
-        "description": "Fetch full session data from the Kilo cloud for preview",
-        "summary": "Get cloud session",
-        "x-codeSamples": [
-          {
-            "lang": "js",
-            "source": "import { createKiloClient } from \"@kilocode/sdk\"\n\nconst client = createKiloClient()\nawait client.kilo.cloud.session.get({\n  ...\n})"
-          }
-        ]
-      }
-    },
-    "/kilo/cloud/session/import": {
-      "post": {
-        "tags": ["kilo"],
-        "operationId": "kilo.cloud.session.import",
-        "parameters": [
-          {
-            "name": "directory",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            },
-            "required": false
-          },
-          {
-            "name": "workspace",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            },
-            "required": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Imported session info",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "id": {
-                      "type": "string"
-                    },
-                    "title": {
-                      "type": "string"
-                    },
-                    "time": {
-                      "type": "object",
-                      "properties": {
-                        "created": {
-                          "type": "number"
-                        },
-                        "updated": {
-                          "type": "number"
-                        }
-                      },
-                      "required": ["created", "updated"],
-                      "additionalProperties": false
-                    }
-                  },
-                  "required": ["id", "title", "time"],
-                  "description": "Imported session info"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "BadRequest | InvalidRequestError",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/effect_HttpApiError_BadRequest"
-                    },
-                    {
-                      "$ref": "#/components/schemas/InvalidRequestError"
-                    }
-                  ]
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/NotFoundError"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "CloudSessionImportError",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CloudSessionImportError"
-                }
-              }
-            }
-          }
-        },
-        "description": "Download a cloud-synced session and write it to local storage with fresh IDs.",
-        "summary": "Import session from cloud",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "sessionId": {
-                    "type": "string"
-                  }
-                },
-                "required": ["sessionId"],
-                "additionalProperties": false
-              }
-            }
-          }
-        },
-        "x-codeSamples": [
-          {
-            "lang": "js",
-            "source": "import { createKiloClient } from \"@kilocode/sdk\"\n\nconst client = createKiloClient()\nawait client.kilo.cloud.session.import({\n  ...\n})"
           }
         ]
       }
@@ -16986,6 +15106,377 @@
         ]
       }
     },
+    "/media-local/stt/models": {
+      "get": {
+        "tags": ["media-local"],
+        "operationId": "media-local.stt.models",
+        "parameters": [
+          {
+            "name": "directory",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "required": false
+          },
+          {
+            "name": "workspace",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Configured speech-to-text models",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      }
+                    },
+                    "required": ["id", "name"],
+                    "additionalProperties": false
+                  },
+                  "description": "Configured speech-to-text models"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "BadRequest | InvalidRequestError",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/effect_HttpApiError_BadRequest"
+                    },
+                    {
+                      "$ref": "#/components/schemas/InvalidRequestError"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "description": "List speech-to-text models declared in the experimental config.",
+        "summary": "List local speech-to-text models",
+        "x-codeSamples": [
+          {
+            "lang": "js",
+            "source": "import { createKiloClient } from \"@kilocode/sdk\"\n\nconst client = createKiloClient()\nawait client.media-local.stt.models({\n  ...\n})"
+          }
+        ]
+      }
+    },
+    "/media-local/stt/transcribe": {
+      "post": {
+        "tags": ["media-local"],
+        "operationId": "media-local.stt.transcribe",
+        "parameters": [
+          {
+            "name": "directory",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "required": false
+          },
+          {
+            "name": "workspace",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Transcription result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "text": {
+                      "type": "string"
+                    }
+                  },
+                  "required": ["text"],
+                  "additionalProperties": false,
+                  "description": "Transcription result"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "BadRequest | InvalidRequestError",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/effect_HttpApiError_BadRequest"
+                    },
+                    {
+                      "$ref": "#/components/schemas/InvalidRequestError"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "MediaLocalFailedError",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MediaLocalFailedError"
+                }
+              }
+            }
+          }
+        },
+        "description": "Proxy an audio transcription request to the configured local OpenAI-compatible provider.",
+        "summary": "Transcribe audio via a local provider",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "model": {
+                    "type": "string",
+                    "description": "Model reference in providerID/modelID form"
+                  },
+                  "audio": {
+                    "type": "string",
+                    "description": "Base64-encoded audio bytes"
+                  },
+                  "format": {
+                    "type": "string"
+                  },
+                  "language": {
+                    "type": "string"
+                  }
+                },
+                "required": ["model", "audio"],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "js",
+            "source": "import { createKiloClient } from \"@kilocode/sdk\"\n\nconst client = createKiloClient()\nawait client.media-local.stt.transcribe({\n  ...\n})"
+          }
+        ]
+      }
+    },
+    "/media-local/img/models": {
+      "get": {
+        "tags": ["media-local"],
+        "operationId": "media-local.img.models",
+        "parameters": [
+          {
+            "name": "directory",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "required": false
+          },
+          {
+            "name": "workspace",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Configured image generation models",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      }
+                    },
+                    "required": ["id", "name"],
+                    "additionalProperties": false
+                  },
+                  "description": "Configured image generation models"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "BadRequest | InvalidRequestError",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/effect_HttpApiError_BadRequest"
+                    },
+                    {
+                      "$ref": "#/components/schemas/InvalidRequestError"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "description": "List image generation models declared in the experimental config.",
+        "summary": "List local image generation models",
+        "x-codeSamples": [
+          {
+            "lang": "js",
+            "source": "import { createKiloClient } from \"@kilocode/sdk\"\n\nconst client = createKiloClient()\nawait client.media-local.img.models({\n  ...\n})"
+          }
+        ]
+      }
+    },
+    "/media-local/img/generate": {
+      "post": {
+        "tags": ["media-local"],
+        "operationId": "media-local.img.generate",
+        "parameters": [
+          {
+            "name": "directory",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "required": false
+          },
+          {
+            "name": "workspace",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Image generation response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "400": {
+            "description": "BadRequest | InvalidRequestError",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/effect_HttpApiError_BadRequest"
+                    },
+                    {
+                      "$ref": "#/components/schemas/InvalidRequestError"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "MediaLocalFailedError",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MediaLocalFailedError"
+                }
+              }
+            }
+          }
+        },
+        "description": "Proxy an image generation request to the configured local OpenAI-compatible provider.",
+        "summary": "Generate images via a local provider",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "prompt": {
+                    "type": "string"
+                  },
+                  "model": {
+                    "type": "string",
+                    "description": "Model reference in providerID/modelID form"
+                  },
+                  "size": {
+                    "type": "string"
+                  },
+                  "n": {
+                    "anyOf": [
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "string",
+                        "enum": ["NaN"]
+                      },
+                      {
+                        "type": "string",
+                        "enum": ["Infinity"]
+                      },
+                      {
+                        "type": "string",
+                        "enum": ["-Infinity"]
+                      },
+                      {
+                        "type": "string",
+                        "enum": ["Infinity", "-Infinity", "NaN"]
+                      }
+                    ]
+                  }
+                },
+                "required": ["prompt", "model"],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "js",
+            "source": "import { createKiloClient } from \"@kilocode/sdk\"\n\nconst client = createKiloClient()\nawait client.media-local.img.generate({\n  ...\n})"
+          }
+        ]
+      }
+    },
     "/network": {
       "get": {
         "tags": ["network"],
@@ -18701,166 +17192,6 @@
           {
             "lang": "js",
             "source": "import { createKiloClient } from \"@kilocode/sdk\"\n\nconst client = createKiloClient()\nawait client.suggestion.dismiss({\n  ...\n})"
-          }
-        ]
-      }
-    },
-    "/telemetry/capture": {
-      "post": {
-        "tags": ["telemetry"],
-        "operationId": "telemetry.capture",
-        "parameters": [
-          {
-            "name": "directory",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            },
-            "required": false
-          },
-          {
-            "name": "workspace",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            },
-            "required": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Event captured",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "boolean",
-                  "description": "Event captured"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "BadRequest | InvalidRequestError",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/effect_HttpApiError_BadRequest"
-                    },
-                    {
-                      "$ref": "#/components/schemas/InvalidRequestError"
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        },
-        "description": "Forward a telemetry event to PostHog via kilo-telemetry.",
-        "summary": "Capture telemetry event",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "event": {
-                    "type": "string",
-                    "description": "Event name"
-                  },
-                  "properties": {
-                    "type": "object"
-                  }
-                },
-                "required": ["event"],
-                "additionalProperties": false
-              }
-            }
-          }
-        },
-        "x-codeSamples": [
-          {
-            "lang": "js",
-            "source": "import { createKiloClient } from \"@kilocode/sdk\"\n\nconst client = createKiloClient()\nawait client.telemetry.capture({\n  ...\n})"
-          }
-        ]
-      }
-    },
-    "/telemetry/setEnabled": {
-      "post": {
-        "tags": ["telemetry"],
-        "operationId": "telemetry.setEnabled",
-        "parameters": [
-          {
-            "name": "directory",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            },
-            "required": false
-          },
-          {
-            "name": "workspace",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            },
-            "required": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "State updated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "boolean",
-                  "description": "State updated"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "BadRequest | InvalidRequestError",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/effect_HttpApiError_BadRequest"
-                    },
-                    {
-                      "$ref": "#/components/schemas/InvalidRequestError"
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        },
-        "description": "Update the PostHog client's opt-in/out state at runtime. The CLI reads KILO_TELEMETRY_LEVEL once at spawn — this route lets clients (e.g. the VS Code extension) propagate runtime telemetry consent changes.",
-        "summary": "Set PostHog telemetry enabled state",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "enabled": {
-                    "type": "boolean"
-                  }
-                },
-                "required": ["enabled"],
-                "additionalProperties": false
-              }
-            }
-          }
-        },
-        "x-codeSamples": [
-          {
-            "lang": "js",
-            "source": "import { createKiloClient } from \"@kilocode/sdk\"\n\nconst client = createKiloClient()\nawait client.telemetry.setEnabled({\n  ...\n})"
           }
         ]
       }
@@ -26752,9 +25083,6 @@
             "$ref": "#/components/schemas/EventKilocodeNotebookCancelled"
           },
           {
-            "$ref": "#/components/schemas/EventKilo-sessionsRemote-status-changed"
-          },
-          {
             "$ref": "#/components/schemas/EventLspClientDiagnostics"
           },
           {
@@ -29947,9 +28275,6 @@
               },
               {
                 "$ref": "#/components/schemas/EventKilocodeNotebookCancelled"
-              },
-              {
-                "$ref": "#/components/schemas/EventKilo-sessionsRemote-status-changed"
               },
               {
                 "$ref": "#/components/schemas/EventLspClientDiagnostics"
@@ -33448,7 +31773,6 @@
           "provider": {
             "type": "string",
             "enum": [
-              "kilo",
               "openai",
               "ollama",
               "openai-compatible",
@@ -33921,6 +32245,9 @@
                 "ai_sdk_provider": {
                   "type": "string",
                   "enum": ["anthropic", "openai", "openai-compatible", "openrouter"]
+                },
+                "mayTrainOnYourPrompts": {
+                  "type": "boolean"
                 },
                 "release_date": {
                   "type": "string"
@@ -34798,6 +33125,30 @@
               },
               "speech_to_text_model": {
                 "type": "string"
+              },
+              "speech_to_text": {
+                "type": "object",
+                "properties": {
+                  "provider": {
+                    "type": "string"
+                  },
+                  "model": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "image_generation_provider": {
+                "type": "object",
+                "properties": {
+                  "provider": {
+                    "type": "string"
+                  },
+                  "model": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false
               },
               "openTelemetry": {
                 "type": "boolean"
@@ -39133,50 +37484,6 @@
         "required": ["keybinds"],
         "additionalProperties": false
       },
-      "KiloEmbeddingModelCatalog": {
-        "type": "object",
-        "properties": {
-          "defaultModel": {
-            "type": "string"
-          },
-          "models": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "id": {
-                  "type": "string"
-                },
-                "name": {
-                  "type": "string"
-                },
-                "dimension": {
-                  "type": "integer",
-                  "exclusiveMinimum": 0
-                },
-                "scoreThreshold": {
-                  "type": "number",
-                  "minimum": 0,
-                  "maximum": 1
-                },
-                "note": {
-                  "type": "string"
-                }
-              },
-              "required": ["id", "name", "dimension", "scoreThreshold"],
-              "additionalProperties": false
-            }
-          },
-          "aliases": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "string"
-            }
-          }
-        },
-        "required": ["defaultModel", "models", "aliases"],
-        "additionalProperties": false
-      },
       "ConflictError": {
         "type": "object",
         "properties": {
@@ -39234,38 +37541,6 @@
           }
         },
         "required": ["cols", "rows"],
-        "additionalProperties": false
-      },
-      "effect_HttpApiError_Unauthorized": {
-        "type": "object",
-        "properties": {
-          "_tag": {
-            "type": "string",
-            "enum": ["Unauthorized"]
-          }
-        },
-        "required": ["_tag"],
-        "additionalProperties": false
-      },
-      "effect_HttpApiError_ServiceUnavailable": {
-        "type": "object",
-        "properties": {
-          "_tag": {
-            "type": "string",
-            "enum": ["ServiceUnavailable"]
-          }
-        },
-        "required": ["_tag"],
-        "additionalProperties": false
-      },
-      "CloudSessionImportError": {
-        "type": "object",
-        "properties": {
-          "error": {
-            "type": "string"
-          }
-        },
-        "required": ["error"],
         "additionalProperties": false
       },
       "CommandFile": {
@@ -39464,6 +37739,17 @@
           }
         },
         "required": ["items", "generatedAt"],
+        "additionalProperties": false
+      },
+      "effect_HttpApiError_ServiceUnavailable": {
+        "type": "object",
+        "properties": {
+          "_tag": {
+            "type": "string",
+            "enum": ["ServiceUnavailable"]
+          }
+        },
+        "required": ["_tag"],
         "additionalProperties": false
       },
       "NotebookOutput": {
@@ -40288,6 +38574,27 @@
           }
         },
         "required": ["operation", "message"],
+        "additionalProperties": false
+      },
+      "MediaLocalFailedError": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": ["message"],
+        "additionalProperties": false
+      },
+      "effect_HttpApiError_Unauthorized": {
+        "type": "object",
+        "properties": {
+          "_tag": {
+            "type": "string",
+            "enum": ["Unauthorized"]
+          }
+        },
+        "required": ["_tag"],
         "additionalProperties": false
       },
       "KilocodeSessionImportResult": {
@@ -42009,33 +40316,6 @@
               }
             },
             "required": ["requestID", "sessionID", "reason"],
-            "additionalProperties": false
-          }
-        },
-        "required": ["id", "type", "properties"],
-        "additionalProperties": false
-      },
-      "EventKilo-sessionsRemote-status-changed": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "type": {
-            "type": "string",
-            "enum": ["kilo-sessions.remote-status-changed"]
-          },
-          "properties": {
-            "type": "object",
-            "properties": {
-              "enabled": {
-                "type": "boolean"
-              },
-              "connected": {
-                "type": "boolean"
-              }
-            },
-            "required": ["enabled", "connected"],
             "additionalProperties": false
           }
         },
@@ -59608,16 +57888,16 @@
       "description": "Kilo human-driven interactive terminal routes."
     },
     {
-      "name": "kilo",
-      "description": "Kilo Gateway routes."
-    },
-    {
       "name": "kilocode",
       "description": "Kilo-specific routes."
     },
     {
       "name": "anaconda-desktop",
       "description": "Local Anaconda Desktop provider setup routes."
+    },
+    {
+      "name": "media-local",
+      "description": "Local media (speech/image) proxy routes."
     },
     {
       "name": "network",
@@ -59638,10 +57918,6 @@
     {
       "name": "suggestion",
       "description": "Kilo suggestion routes."
-    },
-    {
-      "name": "telemetry",
-      "description": "Kilo telemetry routes."
     },
     {
       "name": "memory",

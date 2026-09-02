@@ -1,26 +1,20 @@
 import { InstanceStore } from "@/project/instance-store"
 import { ModelCache } from "@/provider/model-cache"
-import { KiloViewers } from "@/kilocode/presence/service" // kilocode_change
 import { Effect } from "effect"
 
-export const disposeAllInstancesAfterProviderAuthCallback = Effect.fn(
-  "KiloServer.disposeAllInstancesAfterProviderAuthCallback",
-)(function* () {
-  const store = yield* InstanceStore.Service
-  yield* store.disposeAll()
-})
+export const disposeAllInstancesAfterProviderAuthCallback = (store: InstanceStore.Interface) =>
+  store.disposeAll()
 
-// kilocode_change start - drop the old presence socket; callers invoke this for the "kilo" provider only
-export const invalidatePresence = Effect.fn("KiloServer.invalidatePresence")(function* () {
-  const viewers = yield* KiloViewers.Service
-  yield* viewers.invalidateAuth()
-})
+// kilocode_change start - no-op kept for handler call-sites that used to drop the presence socket on kilo auth changes
+export const invalidatePresence = (): Effect.Effect<void, never, never> => Effect.succeed(undefined)
 // kilocode_change end
 
-export const invalidateAfterProviderAuthChange = Effect.fn("KiloServer.invalidateAfterProviderAuthChange")(function* (
+export const invalidateAfterProviderAuthChange = (
   providerID: string,
-) {
-  const cache = yield* ModelCache.Service
-  yield* cache.clear(providerID)
-  yield* disposeAllInstancesAfterProviderAuthCallback()
-})
+): Effect.Effect<void, never, ModelCache.Service | InstanceStore.Service> =>
+  Effect.gen(function* () {
+    const cache = yield* ModelCache.Service
+    const store = yield* InstanceStore.Service
+    yield* cache.clear(providerID)
+    yield* disposeAllInstancesAfterProviderAuthCallback(store)
+  })

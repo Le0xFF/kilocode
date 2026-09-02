@@ -1,5 +1,4 @@
 import { getErrorMessage } from "../kilo-provider-utils"
-import { PLATFORM } from "./constants"
 import type { ProjectContext } from "./project/context"
 import type { AgentManagerInMessage } from "./types"
 import { versionedName } from "./branch-name"
@@ -233,16 +232,6 @@ async function provisionVersion(
     })
   }
 
-  host.capture("Agent Manager Session Started", {
-    source: PLATFORM,
-    sessionId: session.id,
-    worktreeId: wt.worktree.id,
-    branch: wt.result.branch,
-    multiVersion: true,
-    version: spec.index + 1,
-    totalVersions: spec.versions,
-    groupId: spec.groupId,
-  })
   host.log(`Version ${spec.index + 1} worktree ready: session=${session.id}`)
 
   return {
@@ -273,11 +262,6 @@ async function reconcileSandbox(
       status: "error",
       message: `Failed to configure sandbox: ${err}`,
       worktreeId: wt.worktree.id,
-    })
-    host.capture("Agent Manager Session Error", {
-      source: PLATFORM,
-      error: err,
-      context: "configureSandbox",
     })
     await host.discard(wt.worktree.id, wt.result.path, wt.result.branch, sessionId)
     return false

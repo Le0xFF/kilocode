@@ -11,15 +11,14 @@ import { Component, For, Show, createMemo, createSignal, onCleanup } from "solid
 import { useConfig } from "../../context/config"
 import { useLanguage } from "../../context/language"
 import { useProvider } from "../../context/provider"
-import { useServer } from "../../context/server"
 import { useVSCode } from "../../context/vscode"
 import type { Provider } from "../../types/messages"
 import CustomProviderDialog from "./CustomProviderDialog"
 import ProviderConnectDialog from "./ProviderConnectDialog"
 import ProviderSelectDialog from "./ProviderSelectDialog"
 import { CUSTOM_PROVIDER_ID, isPopularProvider, providerIcon, providerNoteKey, sortProviders } from "./provider-catalog"
-import { disabledProviderOptions, providersWithKiloFallback, visibleConnectedIds } from "./provider-visibility"
-import { isCustomProviderPackage, KILO_PROVIDER_ID } from "../../../../src/shared/provider-model"
+import { disabledProviderOptions } from "./provider-visibility"
+import { isCustomProviderPackage } from "../../../../src/shared/provider-model"
 import { createProviderAction } from "../../utils/provider-action"
 
 type ProviderSource = "env" | "api" | "config" | "custom"
@@ -30,20 +29,16 @@ const ProvidersTab: Component = () => {
   const { config, updateConfig } = useConfig()
   const provider = useProvider()
   const language = useLanguage()
-  const server = useServer()
   const vscode = useVSCode()
   const action = createProviderAction(vscode)
   const [disabled, setDisabled] = createSignal<ProviderOption | undefined>()
 
   onCleanup(action.dispose)
 
-  const kiloLoggedIn = createMemo(() => !!provider.authStates()[KILO_PROVIDER_ID])
-
   const connectedProviders = createMemo(() => {
-    const ids = visibleConnectedIds(provider.connected(), provider.authStates())
     const all = provider.providers()
-    return ids
-      .filter((id) => id !== KILO_PROVIDER_ID)
+    return provider
+      .connected()
       .map((id) => all[id])
       .filter((item): item is Provider => !!item)
   })
@@ -52,17 +47,12 @@ const ProvidersTab: Component = () => {
     const connected = new Set(provider.connected())
     const disabled = new Set(config().disabled_providers ?? [])
     const all = Object.values(provider.providers())
-    return sortProviders(
-      all.filter(
-        (item) =>
-          item.id !== KILO_PROVIDER_ID && isPopularProvider(item) && !connected.has(item.id) && !disabled.has(item.id),
-      ),
-    )
+    return sortProviders(all.filter((item) => isPopularProvider(item) && !connected.has(item.id) && !disabled.has(item.id)))
   })
 
   const disabledProviders = createMemo(() => config().disabled_providers ?? [])
   const disabledIds = createMemo(() => new Set(disabledProviders()))
-  const providers = createMemo(() => providersWithKiloFallback(provider.providers()))
+  const providers = createMemo(() => provider.providers())
   const disabledOptions = createMemo(() => disabledProviderOptions(providers(), disabledProviders()))
 
   function source(item: Provider): ProviderSource | undefined {
@@ -139,14 +129,6 @@ const ProvidersTab: Component = () => {
   }
 
   function connectProvider(item: Provider) {
-    if (item.id === KILO_PROVIDER_ID) {
-      // Route Kilo Gateway sign-in through the Profile view so the user sees
-      // the full device-auth UI (URL, QR, code, timer, cancel). Triggering
-      // `startLogin()` from here alone would run the flow silently with no
-      // way to recover if the browser is dismissed.
-      server.goToLogin()
-      return
-    }
     dialog.show(() => <ProviderConnectDialog providerID={item.id} />)
   }
 
@@ -162,43 +144,7 @@ const ProvidersTab: Component = () => {
 
   return (
     <div>
-      <Show when={!disabledIds().has(KILO_PROVIDER_ID)}>
-        {/* Kilo Gateway — always at the top, not editable */}
-        <Card>
-          <div
-            style={{
-              display: "flex",
-              "align-items": "center",
-              gap: "12px",
-              "min-height": "56px",
-              padding: "12px 0",
-            }}
-          >
-            <ProviderIcon id={providerIcon(KILO_PROVIDER_ID)} width={20} height={20} />
-            <span
-              style={{
-                "font-size": "var(--kilo-font-size-14)",
-                "font-weight": "500",
-                color: "var(--vscode-foreground)",
-              }}
-            >
-              Kilo Gateway
-            </span>
-            <Show
-              when={kiloLoggedIn()}
-              fallback={
-                <Button size="small" variant="secondary" onClick={() => server.goToLogin()}>
-                  {language.t("common.signIn")}
-                </Button>
-              }
-            >
-              <Tag>{language.t("settings.providers.tag.gateway")}</Tag>
-            </Show>
-          </div>
-        </Card>
-      </Show>
-
-      {/* Connected providers (excluding Kilo) */}
+      {/* Connected providers */}
       <h4 style={{ "margin-top": "16px", "margin-bottom": "8px" }}>
         {language.t("settings.providers.section.connected")}
       </h4>

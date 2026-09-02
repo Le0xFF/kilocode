@@ -8,10 +8,6 @@ type VSCode = {
   onMessage: (handler: (message: ExtensionMessage) => void) => () => void
 }
 
-type Server = {
-  goToLogin: () => void
-}
-
 type Lang = {
   t: (key: string) => string
 }
@@ -40,7 +36,7 @@ export type SpeechToText = {
   clear: () => void
 }
 
-export function useSpeechToText(vscode: VSCode, server: Server, lang: Lang): SpeechToText {
+export function useSpeechToText(vscode: VSCode, lang: Lang): SpeechToText {
   const [state, setState] = createSignal<SpeechState>("idle")
   const [error, setError] = createSignal<string | undefined>()
   const active = () => state() === "starting" || state() === "recording" || state() === "transcribing"
@@ -72,10 +68,6 @@ export function useSpeechToText(vscode: VSCode, server: Server, lang: Lang): Spe
     }
 
     if (msg.type === "speechToTextError") {
-      if (msg.code === "not_authenticated") {
-        login()
-        return
-      }
       fail(msg.error)
       return
     }
@@ -144,19 +136,6 @@ export function useSpeechToText(vscode: VSCode, server: Server, lang: Lang): Spe
     cleanup()
     setState("idle")
     setError(undefined)
-  }
-
-  function login() {
-    const message = lang.t("speechToText.error.loginRequired")
-    showToast({
-      variant: "error",
-      title: message,
-      actions: [
-        { label: lang.t("common.signIn"), onClick: server.goToLogin },
-        { label: lang.t("common.dismiss"), onClick: "dismiss" },
-      ],
-    })
-    fail(message, false)
   }
 
   function fail(message: string, toast = true) {

@@ -43,7 +43,7 @@ describe("GPT-5.6 reasoning summaries", () => {
     )
     expect(
       ProviderTransform.options({
-        model: model("openai/gpt-5.6-sol", "@kilocode/kilo-gateway"),
+        model: model("openai/gpt-5.6-sol", "@openrouter/ai-sdk-provider"),
         sessionID: "test-session",
       }).reasoningSummary,
     ).toBe("auto")

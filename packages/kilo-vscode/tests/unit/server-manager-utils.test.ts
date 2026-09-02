@@ -399,6 +399,7 @@ describe("server workspace helpers", () => {
       PATH: "/usr/bin",
       KILO_DISABLE_CHANNEL_DB: "true",
       KILO_EXPERIMENTAL_DISABLE_FILEWATCHER: "true",
+      KILO_DISABLE_MODELS_FETCH: "true",
     })
   })
 })

@@ -347,7 +347,7 @@ When connected to Kilo Gateway, the CLI fetches and displays notifications from 
 
 ## How It Works
 
-1. **On startup**, if the user is authenticated with Kilo Gateway, the CLI fetches notifications from `https://api.kilo.ai/api/users/notifications`
+1. **On startup**, if the user is authenticated with Kilo Gateway, the CLI fetches notifications from the Kilo notifications endpoint
 2. **Filtering**: Only notifications with `showIn` containing `"cli"` (or no `showIn` restriction) are displayed
 3. **Display**: The first notification is shown as a toast notification after a 2-second delay
 

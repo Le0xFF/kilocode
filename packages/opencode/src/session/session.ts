@@ -40,7 +40,6 @@ import { InteractiveTerminal } from "@/kilocode/interactive-terminal"
 import { KiloSession } from "@/kilocode/session"
 import { kiloSessionFork } from "@/kilocode/session/fork-command"
 import { KiloSessionEvent } from "@/kilocode/session/event"
-import { SessionExport } from "@/kilocode/session-export"
 import * as SandboxPolicy from "@/kilocode/sandbox/policy"
 import { carryForkDiff } from "@/kilocode/session-portability/cumulative-diff" // kilocode_change
 // kilocode_change end
@@ -739,9 +738,6 @@ export const layer: Layer.Layer<
             }
             // kilocode_change - migrated from legacy sync.run/sync.remove to EventV2 (events.publish/remove)
             yield* events.publish(SessionV1.Event.Deleted, { sessionID, info: session })
-            // kilocode_change - capture final session-export workspace delta on close/delete
-            const workspaceKey = hasInstance ? yield* InstanceState.directory : undefined // kilocode_change
-            yield* Effect.promise(() => SessionExport.onSessionClose(sessionID, workspaceKey)) // kilocode_change
             yield* events.remove(sessionID)
           }),
         )

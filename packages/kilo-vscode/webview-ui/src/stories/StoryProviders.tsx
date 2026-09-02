@@ -13,7 +13,6 @@
 import { createSignal, createMemo, type ParentComponent } from "solid-js"
 import { VSCodeProvider } from "../context/vscode"
 import { ServerProvider } from "../context/server"
-import { FeedbackProvider } from "../context/feedback"
 import { ProviderContext } from "../context/provider"
 import { flattenModels, findModel as _findModel } from "../context/provider-utils"
 import { ConfigProvider, ConfigContext } from "../context/config"
@@ -30,11 +29,9 @@ import { Diff } from "@kilocode/kilo-ui/diff"
 import { Code } from "@kilocode/kilo-ui/code"
 import { File } from "@kilocode/kilo-ui/file"
 import { SessionContext } from "../context/session"
-import { NotificationsContext } from "../context/notifications"
+import { MemoryProvider } from "../context/memory"
 import { LanguageContext } from "../context/language"
 import { IndexingProvider } from "../context/indexing"
-import { KiloEmbeddingModelsProvider } from "../context/kilo-embedding-models"
-import { MemoryProvider } from "../context/memory"
 import { TranscriptSearchProvider } from "../context/transcript-search"
 import { dict as uiEn } from "@kilocode/kilo-ui/i18n/en"
 import { dict as appEn } from "../i18n/en"
@@ -45,7 +42,6 @@ import { resolveTemplate } from "../context/language-utils"
 import type {
   Config,
   FeatureFlags,
-  KilocodeNotification,
   PermissionRequest,
   ProviderAuthState,
   SessionCloseReason,
@@ -99,7 +95,7 @@ const MOCK_PROVIDERS = {
 const MOCK_MODELS = flattenModels(MOCK_PROVIDERS as any)
 
 /** A synchronous mock ProviderContext — provides models without waiting for a postMessage round-trip. */
-const MockProviderProvider: ParentComponent<{ kiloAuth?: boolean; training?: boolean }> = (props) => {
+const MockProviderProvider: ParentComponent<{ training?: boolean }> = (props) => {
   const models = createMemo(() =>
     MOCK_MODELS.map((model) => ({
       ...model,
@@ -114,7 +110,7 @@ const MockProviderProvider: ParentComponent<{ kiloAuth?: boolean; training?: boo
     models,
     findModel: (sel: any) => _findModel(models(), sel),
     authMethods: () => ({}),
-    authStates: () => (props.kiloAuth ? { kilo: "oauth" } : {}) as Record<string, ProviderAuthState>,
+    authStates: () => ({} as Record<string, ProviderAuthState>),
     isModelValid: () => true,
   }
   return <ProviderContext.Provider value={value}>{props.children}</ProviderContext.Provider>
@@ -135,22 +131,10 @@ export const defaultMockData = {
 }
 
 // ---------------------------------------------------------------------------
-// Mock NotificationsContext value
+// Mock SessionContext value — only the subset used by components
 // ---------------------------------------------------------------------------
 
 function noop() {}
-
-function mockNotificationsValue(items: KilocodeNotification[] = []) {
-  return {
-    notifications: () => items,
-    filteredNotifications: () => items,
-    dismiss: noop,
-  }
-}
-
-// ---------------------------------------------------------------------------
-// Mock SessionContext value — only the subset used by components
-// ---------------------------------------------------------------------------
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return !!value && typeof value === "object" && !Array.isArray(value)
@@ -283,8 +267,6 @@ export function mockSessionValue(overrides?: {
     renameSession: noop,
     syncSession: noop,
     exportSessionTranscript: noop,
-    cloudPreviewId: () => null,
-    selectCloudSession: noop,
   }
 }
 
@@ -297,7 +279,6 @@ interface StoryProvidersProps {
   permissions?: PermissionRequest[]
   questions?: QuestionRequest[]
   suggestions?: SuggestionRequest[]
-  notifications?: KilocodeNotification[]
   status?: string
   sessionID?: string
   /** When provided, injects a mock ConfigContext with this config instead of the real ConfigProvider. */
@@ -310,7 +291,6 @@ interface StoryProvidersProps {
   onProjectConfigChange?: (config: Config) => void
   onOpenDiff?: OpenDiffFn
   onOpenFile?: OpenFileFn
-  kiloAuth?: boolean
   training?: boolean
   /** When true, renders children without the default 12px padding wrapper */
   noPadding?: boolean
@@ -411,72 +391,65 @@ export const StoryProviders: ParentComponent<StoryProvidersProps> = (props) => {
     suggestions: props.suggestions,
     status: props.status,
   })
-  const notifications = mockNotificationsValue(props.notifications)
   const [locale] = createSignal<"en">("en")
   return (
     <VSCodeProvider>
       <ServerProvider>
-        <FeedbackProvider>
-          <ConfigWrapper
-            config={props.config}
-            features={props.features}
-            globalConfig={props.globalConfig}
-            projectConfig={props.projectConfig}
-            onConfigChange={props.onConfigChange}
-            onGlobalConfigChange={props.onGlobalConfigChange}
-            onProjectConfigChange={props.onProjectConfigChange}
-          >
-            <DisplayProvider>
-              <MockProviderProvider kiloAuth={props.kiloAuth} training={props.training}>
-                <DialogProvider>
-                  <LanguageContext.Provider
-                    value={{
-                      locale,
-                      setLocale: noop,
-                      userOverride: () => "" as any,
-                      t,
-                    }}
-                  >
-                    <I18nProvider value={{ locale: () => "en", t, plural }}>
-                      <NotificationsContext.Provider value={notifications}>
-                        <SessionContext.Provider value={session as any}>
-                          <MemoryProvider>
-                            <IndexingProvider>
-                              <KiloEmbeddingModelsProvider>
-                                <DataProvider
-                                  data={data()}
-                                  directory="/project/"
-                                  onOpenDiff={props.onOpenDiff}
-                                  onOpenFile={props.onOpenFile}
-                                >
-                                  <DiffComponentProvider component={Diff}>
-                                    <CodeComponentProvider component={Code}>
-                                      <FileComponentProvider component={File}>
-                                        <MarkedProvider>
-                                          <TranscriptSearchProvider>
-                                            {props.noPadding ? (
-                                              props.children
-                                            ) : (
-                                              <div style={{ padding: "12px" }}>{props.children}</div>
-                                            )}
-                                          </TranscriptSearchProvider>
-                                        </MarkedProvider>
-                                      </FileComponentProvider>
-                                    </CodeComponentProvider>
-                                  </DiffComponentProvider>
-                                </DataProvider>
-                              </KiloEmbeddingModelsProvider>
-                            </IndexingProvider>
-                          </MemoryProvider>
-                        </SessionContext.Provider>
-                      </NotificationsContext.Provider>
-                    </I18nProvider>
-                  </LanguageContext.Provider>
-                </DialogProvider>
-              </MockProviderProvider>
-            </DisplayProvider>
-          </ConfigWrapper>
-        </FeedbackProvider>
+        <ConfigWrapper
+          config={props.config}
+          features={props.features}
+          globalConfig={props.globalConfig}
+          projectConfig={props.projectConfig}
+          onConfigChange={props.onConfigChange}
+          onGlobalConfigChange={props.onGlobalConfigChange}
+          onProjectConfigChange={props.onProjectConfigChange}
+        >
+          <DisplayProvider>
+            <MockProviderProvider training={props.training}>
+              <DialogProvider>
+                <LanguageContext.Provider
+                  value={{
+                    locale,
+                    setLocale: noop,
+                    userOverride: () => "" as any,
+                    t,
+                  }}
+                >
+                  <I18nProvider value={{ locale: () => "en", t, plural }}>
+                    <SessionContext.Provider value={session as any}>
+                      <MemoryProvider>
+                        <IndexingProvider>
+                          <DataProvider
+                            data={data()}
+                            directory="/project/"
+                            onOpenDiff={props.onOpenDiff}
+                            onOpenFile={props.onOpenFile}
+                          >
+                            <DiffComponentProvider component={Diff}>
+                              <CodeComponentProvider component={Code}>
+                                <FileComponentProvider component={File}>
+                                  <MarkedProvider>
+                                    <TranscriptSearchProvider>
+                                      {props.noPadding ? (
+                                        props.children
+                                      ) : (
+                                        <div style={{ padding: "12px" }}>{props.children}</div>
+                                      )}
+                                    </TranscriptSearchProvider>
+                                  </MarkedProvider>
+                                </FileComponentProvider>
+                              </CodeComponentProvider>
+                            </DiffComponentProvider>
+                          </DataProvider>
+                        </IndexingProvider>
+                      </MemoryProvider>
+                    </SessionContext.Provider>
+                  </I18nProvider>
+                </LanguageContext.Provider>
+              </DialogProvider>
+            </MockProviderProvider>
+          </DisplayProvider>
+        </ConfigWrapper>
       </ServerProvider>
     </VSCodeProvider>
   )

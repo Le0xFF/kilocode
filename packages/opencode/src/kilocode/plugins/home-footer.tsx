@@ -72,7 +72,6 @@ function Version(props: { api: TuiPluginApi }) {
 // ---------------------------------------------------------------------------
 
 function View(props: { api: TuiPluginApi }) {
-  const kilo = createMemo(() => props.api.state.provider.some((p) => p.id === "kilo"))
   const sdk = { client: props.api.client }
 
   return (
@@ -91,7 +90,6 @@ function View(props: { api: TuiPluginApi }) {
         <RemoteIndicator
           sdk={sdk}
           theme={props.api.theme.current}
-          kilo={kilo()}
           event={props.api.event}
         />
         <Mcp api={props.api} />

@@ -4,7 +4,6 @@ import { SessionID } from "@/session/schema"
 import { Effect, Layer, Scope, Context } from "effect"
 import { Config } from "@/config/config"
 import { RuntimeFlags } from "@/effect/runtime-flags"
-import { KiloSession } from "@/kilocode/session" // kilocode_change
 
 export interface Interface {
   readonly create: (input?: Session.CreateInput) => Effect.Effect<Session.Info>
@@ -25,13 +24,10 @@ const layer = Layer.effect(
     const share = Effect.fn("SessionShare.share")(function* (sessionID: SessionID) {
       const conf = yield* cfg.get()
       if (conf.share === "disabled") throw new Error("Sharing is disabled in configuration")
-      const result = yield* KiloSession.shareSession(sessionID) // kilocode_change - use Kilo public share URLs
-      yield* session.setShare({ sessionID, share: { url: result.url } })
-      return result
+      return yield* Effect.fail(new Error("Session sharing is not available in this build"))
     })
 
     const unshare = Effect.fn("SessionShare.unshare")(function* (sessionID: SessionID) {
-      yield* KiloSession.unshareSession(sessionID) // kilocode_change - use Kilo public share URLs
       yield* session.setShare({ sessionID, share: undefined })
     })
 
@@ -51,7 +47,7 @@ const layer = Layer.effect(
 export const node = LayerNode.make({
   service: Service,
   layer: layer,
-  deps: [Config.node, Session.node, RuntimeFlags.node], // kilocode_change - Kilo public sharing uses KiloSession
+  deps: [Config.node, Session.node, RuntimeFlags.node],
 })
 
 export * as SessionShare from "./session"

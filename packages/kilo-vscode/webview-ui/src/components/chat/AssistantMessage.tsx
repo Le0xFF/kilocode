@@ -16,7 +16,6 @@ import {
   ToolApprovalProvider,
   resolveToolApproval,
 } from "@kilocode/kilo-ui/message-part"
-import type { MessageFeedbackControls } from "@kilocode/kilo-ui/message-part"
 import type {
   AssistantMessage as SDKAssistantMessage,
   Part as SDKPart,
@@ -104,7 +103,6 @@ interface AssistantMessageProps {
   message: SDKAssistantMessage
   parts?: SDKPart[]
   showAssistantCopyPartID?: string | null
-  feedback?: MessageFeedbackControls
   /** id of the part containing the current chat-search match, if any — forces
    * that part's collapsed tool/reasoning content open so the user can see
    * the highlighted match without manually expanding it first. */
@@ -338,7 +336,6 @@ export const AssistantMessage: Component<AssistantMessageProps> = (props) => {
                                       forceOpen={forceOpen()}
                                       forceOpenFile={forceOpen() ? props.forceOpenFile : undefined}
                                       reasoningAutoCollapse={display.reasoningAutoCollapse()}
-                                      feedback={props.feedback}
                                       throughput={throughputEl()}
                                       readonly={props.readonly}
                                       animate={

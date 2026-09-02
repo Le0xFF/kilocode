@@ -3400,41 +3400,6 @@ describe("ProviderTransform.message - cache control on gateway", () => {
     expect(result[1].content[1].providerOptions?.openai?.promptCacheBreakpoint).toBeUndefined()
   })
 
-  test("kilo gateway with openai gpt-5.6 applies caching options", () => {
-    const model = createModel({
-      providerID: "kilo",
-      api: {
-        id: "openai/gpt-5.6",
-        url: "https://api.kilo.ai/api/gateway",
-        npm: "@kilocode/kilo-gateway",
-      },
-      id: "openai/gpt-5.6",
-    })
-    const msgs = [
-      {
-        role: "system",
-        content: "You are a helpful assistant",
-      },
-      {
-        role: "user",
-        content: "Hello",
-      },
-    ] as any[]
-
-    const result = ProviderTransform.message(msgs, model, {}) as any[]
-
-    expect(result[0].providerOptions.openrouter).toEqual({
-      cacheControl: {
-        type: "ephemeral",
-      },
-    })
-    expect(result[1].providerOptions.openrouter).toEqual({
-      cacheControl: {
-        type: "ephemeral",
-      },
-    })
-  })
-
   test("openai gpt-5.6 with ChatGPT subscription (zero cost heuristic) does not apply promptCacheBreakpoint", () => {
     const model = createModel({
       providerID: "openai",
@@ -4262,31 +4227,6 @@ describe("ProviderTransform.variants", () => {
       expect(result.high).toEqual({ reasoning: { effort: "high" } })
     })
   })
-
-  // kilocode_change start
-  describe("@kilocode/kilo-gateway", () => {
-    test("mercury-2 uses server-provided variants from kilo gateway", () => {
-      const serverVariants = {
-        low: { reasoningEffort: "low" },
-        medium: { reasoningEffort: "medium" },
-        high: { reasoningEffort: "high" },
-      }
-      const model = createMockModel({
-        id: "kilo/inception/mercury-2",
-        providerID: "kilo",
-        api: {
-          id: "inception/mercury-2",
-          url: "https://gateway.kilo.ai",
-          npm: "@kilocode/kilo-gateway",
-        },
-        variants: serverVariants,
-      })
-      const result = ProviderTransform.variants(model)
-      expect(result).toEqual(serverVariants)
-      expect(Object.keys(result)).toEqual(["low", "medium", "high"])
-    })
-  })
-  // kilocode_change end
 
   describe("@ai-sdk/gateway", () => {
     test("configured anthropic aliases route by the API ID", () => {
@@ -5652,55 +5592,6 @@ describe("ProviderTransform.variants", () => {
     }
   })
 
-  // kilocode_change start
-  describe("ProviderTransform.smallOptions", () => {
-    describe("@kilocode/kilo-gateway", () => {
-      test("claude models use their default reasoning effort", () => {
-        const model = createMockModel({
-          id: "kilo/anthropic/claude-sonnet-4",
-          providerID: "kilo",
-          api: {
-            id: "anthropic/claude-sonnet-4",
-            url: "https://gateway.kilo.ai",
-            npm: "@kilocode/kilo-gateway",
-          },
-        })
-        const result = ProviderTransform.smallOptions(model)
-        expect(result).toEqual({ reasoning: { enabled: true } })
-      })
-
-      test("non-claude models use their default reasoning effort", () => {
-        const model = createMockModel({
-          id: "kilo/openai/gpt-4",
-          providerID: "kilo",
-          api: {
-            id: "openai/gpt-4",
-            url: "https://gateway.kilo.ai",
-            npm: "@kilocode/kilo-gateway",
-          },
-        })
-        const result = ProviderTransform.smallOptions(model)
-        expect(result).toEqual({ reasoning: { enabled: true } })
-      })
-
-      test("google models use their default reasoning effort", () => {
-        const model = createMockModel({
-          id: "kilo/google/gemini-2.0-flash",
-          providerID: "kilo",
-          api: {
-            id: "google/gemini-2.0-flash",
-            url: "https://gateway.kilo.ai",
-            npm: "@kilocode/kilo-gateway",
-          },
-        })
-        const result = ProviderTransform.smallOptions(model)
-        expect(result).toEqual({ reasoning: { enabled: true } })
-      })
-    })
-  })
-
-  // kilocode_change end
-
   describe("ai-gateway-provider (cloudflare-ai-gateway)", () => {
     const cfModel = (apiId: string, releaseDate = "2024-01-01") =>
       createMockModel({
@@ -5968,14 +5859,6 @@ describe("ProviderTransform.options - OpenAI Responses API params guard", () => 
   test("includes reasoningSummary for @openrouter/ai-sdk-provider", () => {
     const result = ProviderTransform.options({
       model: gpt5Model("@openrouter/ai-sdk-provider", "openrouter"),
-      sessionID,
-    })
-    expect(result.reasoningSummary).toBe("auto")
-  })
-
-  test("includes reasoningSummary for @kilocode/kilo-gateway", () => {
-    const result = ProviderTransform.options({
-      model: gpt5Model("@kilocode/kilo-gateway", "kilo"),
       sessionID,
     })
     expect(result.reasoningSummary).toBe("auto")

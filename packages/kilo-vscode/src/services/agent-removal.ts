@@ -1,6 +1,5 @@
 import { getErrorMessage } from "../kilo-provider-utils"
 import type { KiloConnectionService } from "./cli-backend"
-import type { RemoveResult } from "./marketplace/types"
 
 interface Input {
   connection: KiloConnectionService
@@ -9,7 +8,13 @@ interface Input {
   scope?: "project" | "global"
 }
 
-export async function removeAgent(input: Input): Promise<RemoveResult> {
+export interface RemoveAgentResult {
+  success: boolean
+  slug: string
+  error?: string
+}
+
+export async function removeAgent(input: Input): Promise<RemoveAgentResult> {
   try {
     const client = await input.connection.getClientAsync(input.directory)
     const result = await client.kilocode.removeAgent({

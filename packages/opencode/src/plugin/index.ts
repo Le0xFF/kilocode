@@ -27,7 +27,6 @@ import { InstanceState } from "@/effect/instance-state"
 import { errorMessage } from "@/util/error"
 import { PluginLoader } from "./loader"
 import { parsePluginSpecifier, readPluginId, readV1Plugin, resolvePluginId } from "./shared"
-import { KiloAuthPlugin } from "@kilocode/kilo-gateway" // kilocode_change
 import { AtomicChatPlugin } from "@kilocode/plugin-atomic-chat" // kilocode_change
 import { AnacondaDesktopPlugin } from "@/kilocode/anaconda-desktop/provider" // kilocode_change
 import { registerAdapter } from "@/control-plane/adapters"
@@ -68,7 +67,6 @@ export function experimentalWebSocketsEnabled(input: { enabled: boolean; channel
 // Built-in plugins that are directly imported (not installed from npm)
 function internalPlugins(flags: RuntimeFlags.Info): PluginInstance[] {
   return [
-    KiloAuthPlugin, // kilocode_change
     AtomicChatPlugin, // kilocode_change
     AnacondaDesktopPlugin, // kilocode_change
     // Temporary rollout: pre-release builds use WebSockets by default; releases require explicit opt-in.

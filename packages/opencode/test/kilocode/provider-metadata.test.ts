@@ -6,7 +6,7 @@ describe("providerMetadata", () => {
     expect(providerMetadata("openai")).toEqual({
       noteKey: "settings.providers.note.openai",
       icon: "openai",
-      priority: 3,
+      priority: 2,
     })
   })
 
@@ -17,11 +17,10 @@ describe("providerMetadata", () => {
     })
   })
 
-  test("uses the Kilo icon for Kilo Gateway", () => {
+  test("uses the Kilo icon for the removed Kilo Gateway provider", () => {
     expect(providerMetadata("kilo")).toEqual({
-      noteKey: "settings.providers.note.kilo",
       icon: "kilo",
-      priority: 0,
+      priority: undefined,
     })
   })
 

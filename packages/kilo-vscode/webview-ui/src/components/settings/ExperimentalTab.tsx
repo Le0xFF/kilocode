@@ -166,10 +166,18 @@ const ExperimentalTab: Component = () => {
               current={imageModels
                 .models()
                 .map((m) => ({ value: m.id, label: m.name }))
-                .find((m) => m.value === experimental().image_generation_model)}
+                .find((m) => m.value === experimental().image_generation_provider?.model)}
               value={(item) => item.value}
               label={(item) => item.label}
-              onSelect={(item) => updateExperimental("image_generation_model", item?.value ?? undefined)}
+              onSelect={(item) => {
+                const model = item?.value
+                if (!model) {
+                  updateExperimental("image_generation_provider", undefined)
+                  return
+                }
+                const [providerID] = model.split("/")
+                updateExperimental("image_generation_provider", { provider: providerID, model })
+              }}
               variant="secondary"
               size="small"
               triggerVariant="settings"

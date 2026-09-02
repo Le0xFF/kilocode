@@ -5,7 +5,6 @@ import { useProvider } from "../src/context/provider"
 import type { EnrichedModel } from "../src/context/provider"
 import { useLanguage } from "../src/context/language"
 import {
-  KILO_GATEWAY_ID,
   freeDataLabel,
   hasByok,
   isDataCollectedModel,
@@ -45,7 +44,7 @@ export const MultiModelSelector: Component<{
 
   const visibleModels = createMemo(() => {
     const c = connected()
-    return models().filter((m) => m.providerID === KILO_GATEWAY_ID || c.includes(m.providerID))
+    return models().filter((m) => c.includes(m.providerID))
   })
 
   const filtered = createMemo(() => {

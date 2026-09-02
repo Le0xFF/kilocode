@@ -1,15 +1,6 @@
 import { beforeEach, describe, expect, it } from "bun:test"
 import * as vscode from "vscode"
-import {
-  autocompleteScope,
-  getNotebookContext,
-  notebookUri,
-  supportsNotebook,
-} from "../../src/services/autocomplete/continuedev/core/autocomplete/notebook"
-import { accessible } from "../../src/services/autocomplete/classic-auto-complete/AutocompleteInlineCompletionProvider"
-import { constructInitialPrefixSuffix } from "../../src/services/autocomplete/continuedev/core/autocomplete/templating/constructPrefixSuffix"
-import type { FileIgnoreController } from "../../src/services/autocomplete/shims/FileIgnoreController"
-import type { AutocompleteInput } from "../../src/services/autocomplete/types"
+import { autocompleteScope, getNotebookContext, notebookUri, supportsNotebook } from "../../src/services/notebook/notebook"
 
 function uri(scheme: string, path: string, fragment = ""): vscode.Uri {
   const value = `${scheme}:${path}${fragment ? `#${fragment}` : ""}`
@@ -136,25 +127,6 @@ describe("notebook context", () => {
     })
   })
 
-  it("uses the active cell language when constructing notebook prompts", async () => {
-    const input: AutocompleteInput = {
-      isUntitledFile: false,
-      completionId: "completion",
-      filepath: "/workspace/example.ipynb",
-      languageId: "javascript",
-      pos: { line: 0, character: 5 },
-      recentlyVisitedRanges: [],
-      recentlyEditedRanges: [],
-      manuallyPassFileContents: "value = 1",
-      injectDetails: "notebook context",
-    }
-
-    const result = await constructInitialPrefixSuffix(input, {} as never)
-
-    expect(result.prefix).toBe("\n// notebook context\nvalue")
-    expect(result.suffix).toBe(" = 1")
-  })
-
   it("resolves file and notebook cell URIs", () => {
     const file = uri("file", "/workspace/file.ts")
     const cell = document("code", "value = 1")
@@ -240,26 +212,5 @@ describe("notebook context", () => {
     expect(notebookUri(current.uri)).toBe(notebook.uri)
     expect(getNotebookContext(current, new vscode.Position(0, 0))).toBeDefined()
     expect(calls).toBe(1)
-  })
-
-  it("validates notebook parent paths regardless of URI scheme", () => {
-    for (const scheme of ["file", "untitled", "memfs"]) {
-      const cell = document(scheme, "value = 1")
-      const notebook = {
-        uri: uri(scheme, `/workspace/${scheme}.ipynb`),
-        getCells: () => [{ kind: vscode.NotebookCellKind.Code, document: cell }],
-      } as vscode.NotebookDocument
-      const paths: string[] = []
-      const controller = {
-        validateAccess: (path: string) => {
-          paths.push(path)
-          return false
-        },
-      } as FileIgnoreController
-      notebooks([notebook])
-
-      expect(accessible(controller, cell)).toBe(false)
-      expect(paths).toEqual([`/workspace/${scheme}.ipynb`])
-    }
   })
 })

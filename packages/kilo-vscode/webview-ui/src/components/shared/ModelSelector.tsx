@@ -34,7 +34,6 @@ import { useVSCode } from "../../context/vscode"
 import type { ModelSelection } from "../../types/messages"
 import { isEnterKeyCommitNotIme } from "../../utils/ime-enter"
 import {
-  KILO_GATEWAY_ID,
   isSmall,
   providerSortKey,
   isFree,
@@ -122,7 +121,7 @@ export interface ModelSelectorBaseProps {
   allowClear?: boolean
   /** Label shown for the clear option */
   clearLabel?: string
-  /** Include the kilo-auto/small model in the list — defaults to false */
+  /** Include auto-small models in the list — defaults to false */
   includeAutoSmall?: boolean
   /** Override the provider catalog for constrained selectors. */
   models?: EnrichedModel[]
@@ -217,14 +216,14 @@ export const ModelSelectorBase: Component<ModelSelectorBaseProps> = (props) => {
     window.addEventListener("mouseup", onUp)
   }
 
-  // Only show models from Kilo Gateway or connected providers.
-  // kilo-auto/small is excluded unless includeAutoSmall is explicitly true.
+  // Only show models from connected providers.
+  // Auto-small models are excluded unless includeAutoSmall is explicitly true.
   const visibleModels = createMemo(() => {
     if (props.models) return props.models
     const c = connected()
     return models().filter((m) => {
       if (!props.includeAutoSmall && isSmall(m)) return false
-      return m.providerID === KILO_GATEWAY_ID || c.includes(m.providerID)
+      return c.includes(m.providerID)
     })
   })
 

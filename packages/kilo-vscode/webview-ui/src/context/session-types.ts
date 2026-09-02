@@ -208,9 +208,6 @@ export interface SessionContextValue {
   syncSession: (sessionID: string, parentSessionID?: string, scope?: "task" | "inspector") => void
   unsyncSession: (sessionID: string, scope?: "task" | "inspector") => void
 
-  // Cloud session preview
-  cloudPreviewId: Accessor<string | null>
-  selectCloudSession: (cloudSessionId: string) => void
   draftSessionID: Accessor<string | undefined>
   setDraftSessionID: (id: string | undefined) => void
   userClearedSession: Accessor<boolean>

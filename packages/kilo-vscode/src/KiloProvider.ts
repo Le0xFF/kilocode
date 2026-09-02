@@ -4,7 +4,6 @@ import * as vscode from "vscode"
 import { TRANSIENT as MEMORY_TRANSIENT } from "@kilocode/kilo-memory/schema"
 import type {
   KiloClient,
-  ProviderUsage,
   Session,
   SessionStatus,
   Event,
@@ -16,19 +15,12 @@ import { MaxCostNudge, type MaxCostChoice } from "@opencode-ai/core/kilocode/cos
 import { type KiloConnectionService, ServerStartupError } from "./services/cli-backend"
 import { previewSound } from "./services/attention"
 import type { EditorContext, IndexingStatus } from "./services/cli-backend/types"
-import { FileIgnoreController } from "./services/autocomplete/shims/FileIgnoreController"
-import { ChatTextAreaAutocomplete } from "./services/autocomplete/chat-autocomplete/ChatTextAreaAutocomplete"
-import { notebookUri } from "./services/autocomplete/continuedev/core/autocomplete/notebook"
+import { FileIgnoreController } from "./services/notebook/FileIgnoreController"
+import { notebookUri } from "./services/notebook/notebook"
 import { buildWebviewHtml, getWebviewFontSize, isCursorHost } from "./utils"
 import { saveImage } from "./kilo-provider/save-image"
 import { handleEditorAction } from "./kilo-provider/editor-actions"
 import { exportTranscript } from "./kilo-provider/export-transcript"
-import {
-  TelemetryProxy,
-  type TelemetryPropertiesProvider,
-  pushTelemetryState,
-  watchTelemetryState,
-} from "./services/telemetry"
 import {
   sessionToWebview,
   indexProvidersById,
@@ -51,7 +43,7 @@ import {
 } from "./kilo-provider-utils"
 import { GitOps } from "./agent-manager/GitOps"
 import { GitStatsPoller, type LocalStats } from "./agent-manager/GitStatsPoller"
-import { createMarketplaceRemover, removeMcp } from "./kilo-provider/remove-config-item"
+import { removeMcp } from "./kilo-provider/remove-config-item"
 import type { RemoteStatusService } from "./services/RemoteStatusService"
 import { resolveProjectDirectory } from "./project-directory"
 import { seedSessionStatuses } from "./session-status"
@@ -74,22 +66,10 @@ import { matchFollowup, recordFollowup, type Followup } from "./kilo-provider/fo
 import { clearCommandsCache, loadCommands } from "./kilo-provider/commands"
 import { fetchMessagePage, MESSAGE_PAGE_LIMIT } from "./kilo-provider/message-page"
 import { editPaths } from "./kilo-provider/session-edits"
-import {
-  dismissNotification,
-  fetchAndSendNotifications as fetchNotifications,
-  resetReadNotifications,
-  type NotificationsContext,
-  type NotificationsMessage,
-} from "./kilo-provider/notifications"
 import { childID } from "./kilo-provider/task-session"
 import { VisibleTaskStreams } from "./kilo-provider/visible-task-streams"
 import { handleNetworkEvent, clearNetworkWaits } from "./kilo-provider/network"
 import { SessionAbort } from "./kilo-provider/abort"
-import {
-  buildAutocompleteSettingsMessage,
-  validAutocompleteSetting,
-  watchAutocompleteConfig,
-} from "./services/autocomplete/settings"
 import { routeEarlyMessage } from "./kilo-provider/early-message"
 import * as ModelState from "./kilo-provider/model-state"
 import { handleModelUsageMessage } from "./kilo-provider/model-usage"
@@ -117,19 +97,6 @@ import {
 } from "./kilo-provider/handlers/migration"
 import type { MigrationSelections } from "./legacy-migration/legacy-types"
 // legacy-migration end
-import {
-  handleLogin,
-  handleLogout,
-  handleSetOrganization,
-  handleRefreshProfile,
-  type AuthContext,
-} from "./kilo-provider/handlers/auth"
-import {
-  handleRequestCloudSessions,
-  handleRequestCloudSessionData,
-  handleImportAndSend,
-  type CloudSessionContext,
-} from "./kilo-provider/handlers/cloud-session"
 import {
   handlePermissionResponse,
   fetchAndSendPendingPermissions,
@@ -170,7 +137,6 @@ import { createAutoApproveBridge } from "./kilo-provider/auto-approve"
 import type { KiloProviderOptions } from "./kilo-provider/options"
 import type { ProjectRef, SessionRef, WorktreeRef } from "./agent-manager/project/route"
 import { indexingConsentStore, registeredProjects } from "./indexing-consent"
-import { fetchKiloEmbeddingModelCatalog } from "@kilocode/kilo-gateway"
 import { fetchImageModels } from "./image-generation/models"
 import { fetchSpeechToTextModels } from "./speech-to-text/catalog"
 import { SPEECH_TO_TEXT_MODELS } from "./speech-to-text/models"
@@ -322,7 +288,7 @@ type ContextRequestMessage =
   | { type: "requestFilePicker"; requestId: string }
   | { type: "requestTerminalContext"; requestId: string; sessionID?: string; agentManagerContext?: string }
 
-export class KiloProvider implements vscode.WebviewViewProvider, TelemetryPropertiesProvider {
+export class KiloProvider implements vscode.WebviewViewProvider {
   public static readonly viewType = "kilo-code.SidebarProvider"
   private readonly instanceId = crypto.randomUUID()
 
@@ -332,7 +298,6 @@ export class KiloProvider implements vscode.WebviewViewProvider, TelemetryProper
   private contextSessionID: string | undefined
   private connectionState: "connecting" | "connected" | "disconnected" | "error" = "connecting"
   private connectionGeneration = 0
-  private loginAttempt = 0
   private isWebviewReady = false
   private readonly extensionVersion =
     vscode.extensions.getExtension("kilocode.kilo-code")?.packageJSON?.version ?? "unknown"
@@ -360,8 +325,6 @@ export class KiloProvider implements vscode.WebviewViewProvider, TelemetryProper
   private cachedGlobalConfig: Config | null = null
   /** Cached indexingStatusLoaded payload so requestIndexingStatus can be served before client is ready */
   private cachedIndexingStatusMessage: unknown = null
-  /** Cached kiloEmbeddingModelsLoaded payload so requestKiloEmbeddingModels is resilient offline. */
-  private cachedKiloEmbeddingModelsMessage: unknown = null
   /** Cached imageModelsLoaded payload so requestImageModels is resilient offline. */
   private cachedImageModelsMessage: unknown = null
   /** Cached mcpStatusLoaded payload so requestMcpStatus can be served before client is ready */
@@ -369,12 +332,6 @@ export class KiloProvider implements vscode.WebviewViewProvider, TelemetryProper
   /** Ref-count of in-flight handleUpdateConfig calls; prevents fetchAndSendConfig from sending stale data */
   private pending = 0
   private configWarningsShown = false
-  /** Cached notificationsLoaded payload */
-  private cachedNotificationsMessage: NotificationsMessage | null = null
-  /** Cached provider usage payload for profile view remounts and temporary disconnects. */
-  private cachedProviderUsageMessage: { type: "providerUsageLoaded"; data: ProviderUsage } | null = null
-  private providerUsageGeneration = 0
-  private pendingKiloModel: { modelID?: string; agent?: string } | null = null
   private pendingReviewComments: { comments: unknown[]; autoSend: boolean }[] = []
   private readyResolvers: (() => void)[] = []
   private promptRecoveryQueued = false
@@ -425,9 +382,7 @@ export class KiloProvider implements vscode.WebviewViewProvider, TelemetryProper
   private migrationCache: MigrationContext["migrationCache"] = new Map()
   /** Guard to prevent checkAndShowMigrationWizard running concurrently. */ // legacy-migration
   private migrationCheckInFlight = false // legacy-migration
-  private unsubscribeNotificationDismiss: (() => void) | null = null
   private unsubscribeLanguageChange: (() => void) | null = null
-  private unsubscribeProfileChange: (() => void) | null = null
   private unsubscribeFavoritesChange: (() => void) | null = null
   private unsubscribeModelSelectorExpanded: (() => void) | null = null
   private unsubscribeMigrationComplete: (() => void) | null = null // legacy-migration
@@ -436,20 +391,16 @@ export class KiloProvider implements vscode.WebviewViewProvider, TelemetryProper
   private unsubscribeSandboxPreference: (() => void) | null = null
   private initConnectionPromise: Promise<void> | null = null
   private webviewMessageDisposable: vscode.Disposable | null = null
-  private autocompleteConfigDisposable: vscode.Disposable | null = null
   private indexingConfigDisposable: vscode.Disposable | null = null
   private chatConfigDisposable: vscode.Disposable | null = null
   private throughputConfigDisposable: vscode.Disposable | null = null
   private autoApprovalReasonConfigDisposable: vscode.Disposable | null = null
-  private telemetryStateDisposable: vscode.Disposable | null = null
   private viewStateDisposable: vscode.Disposable | null = null
   private visibilityDisposable: vscode.Disposable | null = null
   private autoApproveBridge: ReturnType<typeof createAutoApproveBridge> | null = null
-  private readonly marketplaceRemove = createMarketplaceRemover()
 
   private ignoreController: FileIgnoreController | null = null
   private ignoreControllerDir: string | null = null
-  private chatAutocomplete: ChatTextAreaAutocomplete | null = null
   private projectDirectory: string | null | undefined
   private settingsGeneration = 0
   private indexingProjectId: string | undefined
@@ -492,7 +443,6 @@ export class KiloProvider implements vscode.WebviewViewProvider, TelemetryProper
     this.unsubscribeSandboxPreference = this.connectionService.sandboxPreference?.onChange(() => {
       if (this.connectionState === "connected") void this.fetchAndSendSandboxDefault()
     })
-    TelemetryProxy.getInstance().setProvider(this)
   }
 
   setRemoteService(service: RemoteStatusService): void {
@@ -573,8 +523,6 @@ export class KiloProvider implements vscode.WebviewViewProvider, TelemetryProper
   public setProjectDirectory(directory: string | null): void {
     if (this.projectDirectory === directory) return
     this.projectDirectory = directory
-    this.providerUsageGeneration++
-    this.cachedProviderUsageMessage = null
     this.configBindings.clear()
     this.cachedConfigMessage = null
     this.postMessage({ type: "workspaceDirectoryChanged", directory: directory ?? "" })
@@ -591,18 +539,6 @@ export class KiloProvider implements vscode.WebviewViewProvider, TelemetryProper
 
   public setDocumentViewerProvider(provider: import("./DocumentViewerProvider").DocumentViewerProvider): void {
     this.documentViewerProvider = provider
-  }
-
-  getTelemetryProperties(): Record<string, unknown> {
-    return {
-      appName: "kilo-code",
-      appVersion: this.extensionVersion,
-      platform: "vscode",
-      editorName: vscode.env.appName,
-      vscodeVersion: vscode.version,
-      machineId: vscode.env.machineId,
-      vscodeIsTelemetryEnabled: vscode.env.isTelemetryEnabled,
-    }
   }
 
   /**
@@ -625,14 +561,6 @@ export class KiloProvider implements vscode.WebviewViewProvider, TelemetryProper
         error: getErrorMessage(error) || "Connection to CLI backend lost. Retry to reconnect.",
       }),
     })
-  }
-
-  private openMarketplacePanel(directory: unknown): void {
-    if (typeof directory === "string" && directory) {
-      vscode.commands.executeCommand("kilo-code.new.marketplaceButtonClicked", directory)
-      return
-    }
-    vscode.commands.executeCommand("kilo-code.new.marketplaceButtonClicked", this.projectDirectory)
   }
 
   // Strip metadata unused by the webview to keep session switches fast.
@@ -669,7 +597,6 @@ export class KiloProvider implements vscode.WebviewViewProvider, TelemetryProper
       connection: this.connectionService,
       project: () => this.getProjectDirectory(this.currentSession?.id),
       directory: () => this.getWorkspaceDirectory(),
-      remove: this.marketplaceRemove,
       refresh: async () => {
         this.cachedAgentsMessage = null
         this.cachedConfigMessage = null
@@ -696,7 +623,6 @@ export class KiloProvider implements vscode.WebviewViewProvider, TelemetryProper
 
     // Always push connection state first so the UI can render appropriately.
     this.postConnectionState()
-    pushTelemetryState((m) => this.postMessage(m))
 
     // Re-send ready so the webview can recover after refresh.
     if (serverInfo) {
@@ -711,19 +637,7 @@ export class KiloProvider implements vscode.WebviewViewProvider, TelemetryProper
       })
     }
 
-    // Always attempt to fetch+push profile when connected.
-    // Profile returns 401 when user isn't logged into Kilo Gateway — that's expected.
-    // Use fire-and-forget (no throwOnError) to match old getProfile() which returned null on error.
     if (this.connectionState === "connected" && this.client) {
-      console.log("[Kilo New] KiloProvider: 👤 syncWebviewState fetching profile...")
-      const profileResult = await retry(() => this.client!.kilo.profile())
-      const profileData = profileResult.data ?? null
-      console.log("[Kilo New] KiloProvider: 👤 syncWebviewState profile:", profileData ? "received" : "null")
-      this.postMessage({
-        type: "profileData",
-        data: profileData,
-      })
-
       if (this.currentSession) {
         this.refreshSessionDetails(this.currentSession.id, this.getWorkspaceDirectory(this.currentSession.id))
       }
@@ -981,16 +895,6 @@ export class KiloProvider implements vscode.WebviewViewProvider, TelemetryProper
     }
   }
 
-  public openCloudSession(sessionId: string): void {
-    this.postMessage({ type: "openCloudSession", sessionId })
-  }
-
-  public selectKiloModel(modelID?: string, agent?: string): void {
-    if (!modelID && !agent) return
-    this.pendingKiloModel = { ...(modelID && { modelID }), ...(agent && { agent }) }
-    this.flushPendingKiloModel()
-  }
-
   public setContinueInWorktreeHandler(
     handler: (sessionId: string, progress: (status: string, detail?: string, error?: string) => void) => Promise<void>,
   ): void {
@@ -1015,8 +919,6 @@ export class KiloProvider implements vscode.WebviewViewProvider, TelemetryProper
   private setupWebviewMessageHandler(webview: vscode.Webview): void {
     this.webviewMessageDisposable?.dispose()
     this.setFocusTarget("other")
-    this.autocompleteConfigDisposable?.dispose()
-    this.autocompleteConfigDisposable = watchAutocompleteConfig((msg) => this.postMessage(msg))
     this.indexingConfigDisposable?.dispose()
     this.indexingConfigDisposable = watchIndexingConfig(() => void this.sendIndexingSettings())
     this.chatConfigDisposable?.dispose()
@@ -1025,8 +927,6 @@ export class KiloProvider implements vscode.WebviewViewProvider, TelemetryProper
     this.throughputConfigDisposable = watchThroughputConfig((msg) => this.postMessage(msg))
     this.autoApprovalReasonConfigDisposable?.dispose()
     this.autoApprovalReasonConfigDisposable = watchAutoApprovalReasonConfig((msg) => this.postMessage(msg))
-    this.telemetryStateDisposable?.dispose()
-    this.telemetryStateDisposable = watchTelemetryState((msg) => this.postMessage(msg))
     this.webviewMessageDisposable = webview.onDidReceiveMessage(async (message) => {
       const intercepted = await interceptMessage(message, {
         workspaceDir: (sid) => this.getWorkspaceDirectory(sid ?? this.currentSession?.id),
@@ -1085,7 +985,6 @@ export class KiloProvider implements vscode.WebviewViewProvider, TelemetryProper
               turnId,
               directory: sessionId ? this.sessionGitDirectories.get(sessionId) : undefined,
             }),
-          openProfile: () => vscode.commands.executeCommand("kilo-code.new.profileButtonClicked"),
           currentSessionId: this.currentSession?.id,
           createWorktree: async (baseBranch, branchName) => {
             await this.createWorktreeHandler?.(baseBranch, branchName)
@@ -1101,14 +1000,12 @@ export class KiloProvider implements vscode.WebviewViewProvider, TelemetryProper
       this.handleStreamVisibilityMessage(message)
       if (this.handleChildSyncMessage(message)) return
       if (await this.handleMemoryMessage(message)) return
-      if (await this.handleProfileDataMessage(message)) return
       if (this.handleLegacyMigrationMessage(message)) return
       switch (message.type) {
         case "webviewReady":
           console.log("[Kilo New] KiloProvider: ✅ webviewReady received")
           this.isWebviewReady = true
           this.visibleTaskStreams.clear()
-          this.flushPendingKiloModel()
           await this.syncWebviewState("webviewReady")
           this.flushPendingReviewComments()
           this.recoverPendingPrompts()
@@ -1200,37 +1097,14 @@ export class KiloProvider implements vscode.WebviewViewProvider, TelemetryProper
         case "requestSessionModelUsage":
           void this.fetchAndSendSessionModelUsage(message.sessionID, message.requestID)
           break
-        case "login": {
-          const attempt = ++this.loginAttempt
-          await handleLogin(this.authCtx, attempt, () => this.loginAttempt)
-          break
-        }
-        case "cancelLogin":
-          this.loginAttempt++
-          this.postMessage({ type: "deviceAuthCancelled" })
-          break
-        case "logout":
-          await handleLogout(this.authCtx)
-          break
-        case "setOrganization":
-          if (typeof message.organizationId === "string" || message.organizationId === null) {
-            await handleSetOrganization(this.authCtx, message.organizationId)
-          }
-          break
         case "openSettingsPanel":
           vscode.commands.executeCommand("kilo-code.new.settingsButtonClicked", message.tab, message.projectId)
-          break
-        case "openKiloClaw":
-          vscode.commands.executeCommand("kilo-code.new.kiloClawOpen")
           break
         case "openVSCodeSettings":
           vscode.commands.executeCommand("workbench.action.openSettings", message.query)
           break
         case "openConfigFile":
           await openConfig(message.scope, message.labels, this.getProjectDirectory(this.currentSession?.id))
-          break
-        case "openMarketplacePanel":
-          this.openMarketplacePanel(message.directory)
           break
         case "forkSession":
           handleForkSession(this.forkCtx, message.sessionId, message.messageId).catch((e) =>
@@ -1381,11 +1255,6 @@ export class KiloProvider implements vscode.WebviewViewProvider, TelemetryProper
         case "setIndexingConsent":
           await this.setIndexingConsent(message.projectId, message.enabled)
           break
-        case "requestKiloEmbeddingModels":
-          this.fetchAndSendKiloEmbeddingModels().catch((e) =>
-            console.error("[Kilo New] fetchAndSendKiloEmbeddingModels failed:", e),
-          )
-          break
         case "requestImageModels":
           this.fetchAndSendImageModels().catch((e) => console.error("[Kilo New] fetchAndSendImageModels failed:", e))
           break
@@ -1410,27 +1279,11 @@ export class KiloProvider implements vscode.WebviewViewProvider, TelemetryProper
             .update("language", message.locale || undefined, vscode.ConfigurationTarget.Global)
           this.connectionService.notifyLanguageChanged(message.locale as string)
           break
-        case "requestChatCompletion": {
-          if (!this.chatAutocomplete) {
-            this.chatAutocomplete = new ChatTextAreaAutocomplete(this.connectionService)
-          }
-          void this.chatAutocomplete.handle(
-            { type: "requestChatCompletion", text: message.text, requestId: message.requestId },
-            {
-              postMessage: (msg: { type: "chatCompletionResult"; text: string; requestId: string }) =>
-                this.postMessage(msg),
-            },
-          )
-          break
-        }
         case "requestFileSearch":
         case "requestSessionSearch":
         case "requestFilePicker":
         case "requestTerminalContext":
           await this.handleContextRequest(message)
-          break
-        case "chatCompletionAccepted":
-          this.chatAutocomplete?.telemetry.captureAcceptSuggestion(message.suggestionLength)
           break
         case "toggleRemote":
         case "setRemoteEnabled":
@@ -1463,51 +1316,8 @@ export class KiloProvider implements vscode.WebviewViewProvider, TelemetryProper
         case "requestTimelineSetting":
           this.sendTimelineSetting()
           break
-        case "requestNotifications":
-          this.fetchAndSendNotifications().catch((e) =>
-            console.error("[Kilo New] fetchAndSendNotifications failed:", e),
-          )
-          break
-        case "requestCloudSessions":
-          await handleRequestCloudSessions(this.cloudSessionCtx, message)
-          break
-        case "requestGitRemoteUrl":
-          void this.getGitRemoteUrl().then((url) => {
-            this.postMessage({ type: "gitRemoteUrlLoaded", gitUrl: url ?? null })
-          })
-          break
-        case "requestCloudSessionData":
-          void handleRequestCloudSessionData(this.cloudSessionCtx, message.sessionId)
-          break
-        case "importAndSend": {
-          const files = parseMessageFiles(message.files)
-          void handleImportAndSend(
-            this.cloudSessionCtx,
-            message.cloudSessionId,
-            message.text,
-            typeof message.messageID === "string" ? message.messageID : undefined,
-            message.providerID,
-            message.modelID,
-            message.agent,
-            message.variant,
-            files,
-            parseReview(message.review, message.text),
-            typeof message.command === "string" ? message.command : undefined,
-            typeof message.commandArgs === "string" ? message.commandArgs : undefined,
-          )
-          break
-        }
-        case "dismissNotification":
-          await this.handleDismissNotification(message.notificationId)
-          break
         case "resetAllSettings":
           await this.handleResetAllSettings()
-          break
-        case "resetReadNotifications":
-          await resetReadNotifications(this.notificationsContext())
-          break
-        case "telemetry":
-          TelemetryProxy.capture(message.event, message.properties)
           break
         case "persistVariant": {
           const stored = this.extensionContext?.globalState.get<Record<string, string>>("variantSelections") ?? {}
@@ -1569,22 +1379,6 @@ export class KiloProvider implements vscode.WebviewViewProvider, TelemetryProper
     })
     this.webviewMessageDisposable = watchFontSizeConfig((msg) => this.postMessage(msg), this.webviewMessageDisposable)
     this.webviewMessageDisposable = watchWorkStyleConfig((msg) => this.postMessage(msg), this.webviewMessageDisposable)
-  }
-
-  private async handleProfileDataMessage(message: TypedWebviewMessage): Promise<boolean> {
-    if (message.type === "refreshProfile") {
-      await handleRefreshProfile(this.authCtx)
-      return true
-    }
-    if (message.type === "requestProviderUsage") {
-      await this.fetchAndSendProviderUsage()
-      return true
-    }
-    if (message.type === "refreshProviderUsage") {
-      await this.fetchAndSendProviderUsage(true)
-      return true
-    }
-    return false
   }
 
   private handleWebviewFocusMessage(message: TypedWebviewMessage & { focused?: unknown; target?: unknown }): void {
@@ -1753,9 +1547,7 @@ export class KiloProvider implements vscode.WebviewViewProvider, TelemetryProper
     // Clean up any existing subscriptions (e.g., sidebar re-shown)
     this.unsubscribeEvent?.()
     this.unsubscribeState?.()
-    this.unsubscribeNotificationDismiss?.()
     this.unsubscribeLanguageChange?.()
-    this.unsubscribeProfileChange?.()
     this.unsubscribeFavoritesChange?.()
     this.unsubscribeModelSelectorExpanded?.()
     this.unsubscribeClearPendingPrompts?.()
@@ -1766,7 +1558,6 @@ export class KiloProvider implements vscode.WebviewViewProvider, TelemetryProper
 
       // Connect the shared service (no-op if already connected)
       await this.connectionService.connect(workspaceDir)
-      this.flushPendingKiloModel()
 
       // Subscribe to SSE events for this webview (filtered by tracked sessions)
       this.unsubscribeEvent = this.connectionService.onEventFiltered(
@@ -1777,7 +1568,6 @@ export class KiloProvider implements vscode.WebviewViewProvider, TelemetryProper
           if (!event) return false
 
           // Remote status events are global and should always pass through
-          if (event.type === "kilo-sessions.remote-status-changed") return true
           if (event.type === "memory.status" || event.type === "memory.updated" || event.type === "memory.error")
             return true
           const sessionId = this.resolveEventSessionId(event)
@@ -1824,17 +1614,10 @@ export class KiloProvider implements vscode.WebviewViewProvider, TelemetryProper
         this.postConnectionState(error)
 
         if (state === "connected") {
-          this.flushPendingKiloModel()
           // Fire config warnings independently so a failure in the
           // sequential await chain doesn't prevent warnings from being shown
           void this.checkConfigWarnings("state")
           try {
-            // Profile fetch is best-effort — returns 401 when user isn't logged into gateway.
-            const sdkClient = this.client
-            if (sdkClient) {
-              const profileResult = await sdkClient.kilo.profile()
-              this.postMessage({ type: "profileData", data: profileResult.data ?? null })
-            }
             await this.syncWebviewState("sse-connected")
             await this.flushPendingSessionRefresh("sse-connected")
             this.recoverPendingPrompts()
@@ -1848,19 +1631,9 @@ export class KiloProvider implements vscode.WebviewViewProvider, TelemetryProper
         }
       })
 
-      // Subscribe to notification dismiss broadcast from other KiloProvider instances
-      this.unsubscribeNotificationDismiss = this.connectionService.onNotificationDismissed(() => {
-        this.fetchAndSendNotifications()
-      })
-
       // Subscribe to language change broadcast from other KiloProvider instances
       this.unsubscribeLanguageChange = this.connectionService.onLanguageChanged((locale) => {
         this.postMessage({ type: "languageChanged", locale })
-      })
-
-      // Subscribe to profile change broadcast from other KiloProvider instances
-      this.unsubscribeProfileChange = this.connectionService.onProfileChanged((data) => {
-        this.postMessage({ type: "profileData", data })
       })
 
       // Subscribe to favorites change broadcast from other KiloProvider instances
@@ -1919,7 +1692,7 @@ export class KiloProvider implements vscode.WebviewViewProvider, TelemetryProper
       await this.flushPendingSessionRefresh("initializeConnection")
       this.recoverPendingPrompts()
 
-      // Fetch providers, agents, skills, config, notifications, and session statuses in parallel
+      // Fetch providers, agents, skills, config, and session statuses in parallel
       await Promise.all([
         this.fetchAndSendProviders(),
         this.fetchAndSendAgents(),
@@ -1927,7 +1700,6 @@ export class KiloProvider implements vscode.WebviewViewProvider, TelemetryProper
         this.fetchAndSendCommands(),
         this.fetchAndSendConfig(),
         this.fetchAndSendIndexingStatus(),
-        this.fetchAndSendNotifications(),
         this.memory.fetch(),
         this.seedSessionStatusMap(),
       ])
@@ -2499,45 +2271,6 @@ export class KiloProvider implements vscode.WebviewViewProvider, TelemetryProper
     }
   }
 
-  private async fetchAndSendProviderUsage(force = false): Promise<void> {
-    const generation = ++this.providerUsageGeneration
-    const client = this.client
-    if (!client) {
-      this.postMessage(
-        this.cachedProviderUsageMessage ?? {
-          type: "providerUsageLoaded",
-          error: "Provider usage could not be loaded.",
-        },
-      )
-      return
-    }
-
-    const directory = this.getProjectDirectory(this.currentSession?.id)
-    const result = await (
-      force ? client.kilocode.providerUsage.refresh({ directory }) : client.kilocode.providerUsage.get({ directory })
-    ).catch((error) => {
-      console.error("[Kilo New] KiloProvider: Failed to fetch provider usage:", error)
-      return undefined
-    })
-    if (generation !== this.providerUsageGeneration) return
-    if (!result?.data) {
-      if (this.cachedProviderUsageMessage) {
-        this.postMessage(
-          force
-            ? { ...this.cachedProviderUsageMessage, error: "Provider usage could not be refreshed." }
-            : this.cachedProviderUsageMessage,
-        )
-        return
-      }
-      this.postMessage({ type: "providerUsageLoaded", error: "Provider usage could not be loaded." })
-      return
-    }
-
-    const message = { type: "providerUsageLoaded" as const, data: result.data }
-    this.cachedProviderUsageMessage = message
-    this.postMessage(message)
-  }
-
   /** Fetch providers and send to webview. Coalesced: at most one in-flight + one queued. */
   private async fetchAndSendProviders(): Promise<void> {
     const next = ++this.providersGeneration
@@ -2895,13 +2628,6 @@ export class KiloProvider implements vscode.WebviewViewProvider, TelemetryProper
     }
   }
 
-  private async fetchAndSendKiloEmbeddingModels(): Promise<void> {
-    const catalog = await fetchKiloEmbeddingModelCatalog()
-    const message = { type: "kiloEmbeddingModelsLoaded", catalog }
-    this.cachedKiloEmbeddingModelsMessage = message
-    this.postMessage(message)
-  }
-
   private async fetchAndSendImageModels(): Promise<void> {
     const dir = this.getWorkspaceDirectory()
     const result = await fetchImageModels(this.connectionService, dir)
@@ -3101,29 +2827,6 @@ export class KiloProvider implements vscode.WebviewViewProvider, TelemetryProper
     } catch (err) {
       console.warn("[Kilo New] KiloProvider: checkConfigWarnings failed:", { from, err })
     }
-  }
-
-  private notificationsContext(): NotificationsContext {
-    return {
-      context: this.extensionContext,
-      client: this.client,
-      cached: () => this.cachedNotificationsMessage,
-      set: (message) => {
-        this.cachedNotificationsMessage = message
-      },
-      post: (message) => this.postMessage(message),
-      notify: (id) => this.connectionService.notifyNotificationDismissed(id),
-    }
-  }
-
-  private async fetchAndSendNotifications(): Promise<void> {
-    await fetchNotifications(this.notificationsContext())
-  }
-
-  // Cloud session methods extracted to kilo-provider/handlers/cloud-session.ts
-
-  private async handleDismissNotification(notificationId: string): Promise<void> {
-    await dismissNotification(this.notificationsContext(), notificationId)
   }
 
   /** Read attention settings from VS Code config and push to webview. */
@@ -4352,72 +4055,6 @@ export class KiloProvider implements vscode.WebviewViewProvider, TelemetryProper
     }
   }
 
-  // Cloud session handlers extracted to kilo-provider/handlers/cloud-session.ts
-
-  private get cloudSessionCtx(): CloudSessionContext {
-    const self = this
-    return {
-      client: this.client,
-      get currentSession() {
-        return self.currentSession
-      },
-      set currentSession(session) {
-        self.stopCurrentSessionProcesses(session?.id)
-        self.setCurrentSession(session)
-        if (session) self.contextSessionID = session.id
-      },
-      trackedSessionIds: this.trackedSessionIds,
-      connectionService: this.connectionService,
-      postMessage: (msg) => this.postMessage(msg),
-      getWorkspaceDirectory: (sid) => this.getWorkspaceDirectory(sid),
-      gatherEditorContext: () => this.gatherEditorContext(),
-      runWithMessageConfirmation: (id, label, run) => runWithMessageConfirmation(this.confirmations, id, label, run),
-    }
-  }
-
-  // Auth handlers extracted to kilo-provider/handlers/auth.ts
-
-  private get authCtx(): AuthContext {
-    return {
-      client: this.client,
-      postMessage: (msg) => this.postMessage(msg),
-      getWorkspaceDirectory: () => this.getWorkspaceDirectory(),
-      disposeGlobal: () => this.disposeGlobal(),
-      invalidateProviderUsage: () => this.invalidateProviderUsage(),
-      fetchAndSendProviders: () => this.fetchAndSendProviders(),
-      fetchAndSendAgents: () => this.fetchAndSendAgents(),
-      fetchAndSendSpeechToTextModels: () => this.fetchAndSendSpeechToTextModels(),
-    }
-  }
-
-  private invalidateProviderUsage(): void {
-    this.providerUsageGeneration++
-    this.cachedProviderUsageMessage = null
-    this.postMessage({ type: "providerUsageLoaded", reset: true })
-  }
-
-  private async disposeGlobal(): Promise<void> {
-    if (!this.client) return
-
-    await this.client.global
-      .dispose()
-      .catch((e: unknown) => console.warn("[Kilo New] KiloProvider: global.dispose() after org switch failed:", e))
-
-    // Org switch succeeded — refresh profile and providers independently (best-effort)
-    try {
-      const profileResult = await this.client!.kilo.profile()
-      // Broadcast to all webviews (sidebar, profile tab, agent manager, etc.)
-      this.connectionService.notifyProfileChanged(profileResult.data ?? null)
-    } catch (error) {
-      console.error("[Kilo New] KiloProvider: Failed to refresh profile after org switch:", error)
-    }
-    try {
-      await this.fetchAndSendProviders()
-    } catch (error) {
-      console.error("[Kilo New] KiloProvider: Failed to refresh providers after org switch:", error)
-    }
-  }
-
   /**
    * Handle a generic setting update from the webview.
    * The key uses dot notation relative to `kilo-code.new` (e.g. "browserAutomation.enabled").
@@ -4440,7 +4077,6 @@ export class KiloProvider implements vscode.WebviewViewProvider, TelemetryProper
       return
     }
     const { section, leaf } = buildSettingPath(key)
-    if (section === "autocomplete" && !validAutocompleteSetting(leaf, value)) return
     if (section === "indexing" && !validIndexingSetting(leaf, value)) return
     if (section === "chat" && !validChatSetting(leaf, value)) return
     const config = vscode.workspace.getConfiguration(`kilo-code.new${section ? `.${section}` : ""}`)
@@ -4485,12 +4121,9 @@ export class KiloProvider implements vscode.WebviewViewProvider, TelemetryProper
     await this.extensionContext?.globalState.update("variantSelections", undefined)
     await this.extensionContext?.globalState.update("recentModels", undefined)
     await this.extensionContext?.globalState.update("modelUsage", undefined)
-    await this.extensionContext?.globalState.update("kilo.dismissedNotificationIds", undefined)
     await this.extensionContext?.globalState.update("kilo.agentMigrationBannerDismissed", undefined)
-    await this.extensionContext?.globalState.update("kilo.marketplace.dismissedSuggestions", undefined)
 
     // Re-send all settings to the webview so the UI reflects the reset
-    this.postMessage(buildAutocompleteSettingsMessage())
     await this.sendIndexingSettings()
     this.sendBrowserSettings()
     this.sendNotificationSettings()
@@ -4504,9 +4137,6 @@ export class KiloProvider implements vscode.WebviewViewProvider, TelemetryProper
     this.postMessage({ type: "variantsLoaded", variants: {} })
     this.postMessage({ type: "recentsLoaded", recents: [] })
     this.postMessage({ type: "modelUsageLoaded", usage: {} })
-
-    // Re-fetch notifications to reflect cleared dismissed IDs
-    await this.fetchAndSendNotifications()
 
     vscode.window.showInformationMessage("Kilo Code settings have been reset to defaults.")
   }
@@ -4539,7 +4169,6 @@ export class KiloProvider implements vscode.WebviewViewProvider, TelemetryProper
 
   /** Re-fetch all server-side state after an auth change. */
   private async reloadAfterAuthChange(): Promise<void> {
-    this.invalidateProviderUsage()
     await this.fetchAndSendConfig()
     await Promise.all([
       this.fetchAndSendProviders(),
@@ -4547,7 +4176,6 @@ export class KiloProvider implements vscode.WebviewViewProvider, TelemetryProper
       this.fetchAndSendSkills(),
       this.fetchAndSendCommands(),
       this.fetchAndSendIndexingStatus(),
-      this.fetchAndSendNotifications(),
     ])
   }
 
@@ -4695,11 +4323,6 @@ export class KiloProvider implements vscode.WebviewViewProvider, TelemetryProper
    * Filters events by project ID and tracked session IDs so each webview only sees its own sessions.
    */
   private handleEvent(event: ProviderEvent, directory?: string): void {
-    if (event.type === "kilo-sessions.remote-status-changed") {
-      this.remoteService?.updateFromEvent({ enabled: event.properties.enabled, connected: event.properties.connected })
-      return
-    }
-
     if (event.type === "memory.status" || event.type === "memory.updated" || event.type === "memory.error") {
       const props = event.properties as { sessionID?: unknown; detail?: unknown; reason?: unknown }
       const eventSessionID = typeof props.sessionID === "string" ? props.sessionID : undefined
@@ -4975,14 +4598,6 @@ export class KiloProvider implements vscode.WebviewViewProvider, TelemetryProper
     })
   }
 
-  private flushPendingKiloModel(): void {
-    if (!this.webview || !this.isWebviewReady || !this.client || !this.pendingKiloModel) return
-
-    const pending = this.pendingKiloModel
-    this.pendingKiloModel = null
-    this.postMessage({ type: "selectKiloModel", ...pending })
-  }
-
   public async appendReviewComments(comments: unknown[], autoSend = false): Promise<void> {
     this.pendingReviewComments.push({ comments, autoSend })
 
@@ -5017,26 +4632,6 @@ export class KiloProvider implements vscode.WebviewViewProvider, TelemetryProper
 
     for (const entry of pending) {
       this.postMessage({ type: "appendReviewComments", comments: entry.comments, autoSend: entry.autoSend })
-    }
-  }
-
-  /**
-   * Get the git remote URL for the current workspace using VS Code's built-in Git API.
-   * Returns undefined if not in a git repo or no remotes are configured.
-   */
-  private async getGitRemoteUrl(): Promise<string | undefined> {
-    try {
-      const extension = vscode.extensions.getExtension("vscode.git")
-      if (!extension) return undefined
-      const api = extension.isActive ? extension.exports?.getAPI(1) : (await extension.activate())?.getAPI(1)
-      if (!api) return undefined
-      const repo = api.repositories?.[0]
-      if (!repo) return undefined
-      const remote = repo.state?.remotes?.find((r: { name: string }) => r.name === "origin")
-      return remote?.fetchUrl ?? remote?.pushUrl
-    } catch (error) {
-      console.warn("[Kilo New] KiloProvider: Failed to get git remote URL:", error)
-      return undefined
     }
   }
 
@@ -5412,7 +5007,6 @@ export class KiloProvider implements vscode.WebviewViewProvider, TelemetryProper
         self.migrationCheckInFlight = val
       },
       refreshSessions: () => this.refreshSessions(),
-      disposeGlobal: () => this.disposeGlobal(),
       broadcastComplete: () => this.connectionService.notifyMigrationComplete(),
     }
   }
@@ -5465,9 +5059,7 @@ export class KiloProvider implements vscode.WebviewViewProvider, TelemetryProper
     this.statsGitOps?.dispose()
     this.unsubscribeEvent?.()
     this.unsubscribeState?.()
-    this.unsubscribeNotificationDismiss?.()
     this.unsubscribeLanguageChange?.()
-    this.unsubscribeProfileChange?.()
     this.unsubscribeFavoritesChange?.()
     this.unsubscribeModelSelectorExpanded?.()
     this.unsubscribeMigrationComplete?.()
@@ -5477,12 +5069,10 @@ export class KiloProvider implements vscode.WebviewViewProvider, TelemetryProper
     this.viewStateDisposable?.dispose()
     this.visibilityDisposable?.dispose()
     this.webviewMessageDisposable?.dispose()
-    this.autocompleteConfigDisposable?.dispose()
     this.indexingConfigDisposable?.dispose()
     this.chatConfigDisposable?.dispose()
     this.throughputConfigDisposable?.dispose()
     this.autoApprovalReasonConfigDisposable?.dispose()
-    this.telemetryStateDisposable?.dispose()
     this.autoApproveBridge?.dispose()
     this.visibleTaskStreams.clear()
     this.streams.dispose()
@@ -5504,7 +5094,6 @@ export class KiloProvider implements vscode.WebviewViewProvider, TelemetryProper
     this.epochs.clear()
     this.sessionStatusMap.clear()
     this.ignoreController?.dispose()
-    this.chatAutocomplete?.dispose()
     disposeGitChangesTarget()
   }
 }

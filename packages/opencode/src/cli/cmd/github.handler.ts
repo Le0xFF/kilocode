@@ -1,5 +1,4 @@
 import path from "path"
-import { exec } from "child_process"
 import { Filesystem } from "@/util/filesystem"
 import * as prompts from "@clack/prompts"
 import { map, pipe, sortBy, values } from "remeda"
@@ -281,54 +280,7 @@ export const githubInstall = Effect.fn("Cli.github.install")(function* () {
       async function installGitHubApp() {
         const s = prompts.spinner()
         s.start("Installing GitHub app")
-
-        // Get installation
-        const installation = await getInstallation()
-        if (installation) return s.stop("GitHub app already installed")
-
-        // Open browser
-        const url = "https://github.com/apps/kiloconnect" // kilocode_change
-        const command =
-          process.platform === "darwin"
-            ? `open "${url}"`
-            : process.platform === "win32"
-              ? `start "" "${url}"`
-              : `xdg-open "${url}"`
-
-        exec(command, (error) => {
-          if (error) {
-            prompts.log.warn(`Could not open browser. Please visit: ${url}`)
-          }
-        })
-
-        // Wait for installation
-        s.message("Waiting for GitHub app to be installed")
-        const MAX_RETRIES = 120
-        let retries = 0
-        do {
-          const installation = await getInstallation()
-          if (installation) break
-
-          if (retries > MAX_RETRIES) {
-            s.stop(
-              `Failed to detect GitHub app installation. Make sure to install the app for the \`${app.owner}/${app.repo}\` repository.`,
-            )
-            throw new UI.CancelledError()
-          }
-
-          retries++
-          await sleep(1000)
-        } while (true) // oxlint-disable-line no-constant-condition
-
-        s.stop("Installed GitHub app")
-
-        async function getInstallation() {
-          // kilocode_change start - updated to new endpoint
-          return await fetch(`https://api.kilo.ai/api/integrations/github/check-installation?owner=${app.owner}`)
-            .then((res) => res.json())
-            .then((data) => data.installation)
-          // kilocode_change end
-        }
+        s.stop("Please install the GitHub app for your repository, then continue.")
       }
 
       async function addWorkflowFiles() {
@@ -708,7 +660,7 @@ export const githubRun = Effect.fn("Cli.github.run")(function* (args: { event?: 
 
     function normalizeOidcBaseUrl(): string {
       const value = process.env["OIDC_BASE_URL"]
-      if (!value) return "https://api.kilo.ai" // kilocode_change
+      if (!value) throw new Error(`Environment variable "OIDC_BASE_URL" is not set`)
       return value.replace(/\/+$/, "")
     }
 

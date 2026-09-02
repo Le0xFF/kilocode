@@ -1,15 +1,10 @@
 import type { ModelSelection, ModelUsageMap } from "../../types/messages"
 import type { EnrichedModel } from "../../context/provider"
 import { searchMatch } from "../../utils/search-match"
-import {
-  KILO_PROVIDER_ID as KILO_GATEWAY_ID,
-  PROVIDER_PRIORITY as PROVIDER_ORDER,
-  providerOrderIndex,
-} from "../../../../src/shared/provider-model"
+import { PROVIDER_PRIORITY as PROVIDER_ORDER, providerOrderIndex } from "../../../../src/shared/provider-model"
 
-export { KILO_GATEWAY_ID, PROVIDER_ORDER }
+export { PROVIDER_ORDER }
 
-export const KILO_AUTO_SMALL_IDS = new Set(["kilo-auto/small", "auto-small"])
 const AUTO_FALLBACK = "Routes requests automatically."
 
 interface Choice {
@@ -18,9 +13,7 @@ interface Choice {
 }
 
 export function isAuto(model: Pick<EnrichedModel, "providerID" | "id">): boolean {
-  return (
-    model.providerID === KILO_GATEWAY_ID && (model.id.startsWith("kilo-auto/") || KILO_AUTO_SMALL_IDS.has(model.id))
-  )
+  return model.id.startsWith("auto-") || model.id === "auto-small"
 }
 
 export function autoChoices(
@@ -41,7 +34,7 @@ export function autoSummary(model: Pick<EnrichedModel, "options">): string {
 }
 
 export function isSmall(model: Pick<EnrichedModel, "providerID" | "id">): boolean {
-  return model.providerID === KILO_GATEWAY_ID && KILO_AUTO_SMALL_IDS.has(model.id)
+  return model.id === "auto-small"
 }
 
 export function providerSortKey(providerID: string, order: readonly string[] = PROVIDER_ORDER): number {
@@ -132,6 +125,7 @@ export function rankModelSearch(
   query: string,
   options: ModelSearchOptions = {},
 ): EnrichedModel[] {
+  const usage = options.usage
   const groups = new Map<
     string,
     {
@@ -149,13 +143,13 @@ export function rankModelSearch(
   for (const model of models) {
     const score = matchScore(model, query)
     if (score === undefined) continue
-    const usage = usageFor(model, options.usage)
+    const item = usageFor(model, usage)
     const key = logicalModelKey(model)
     const group = groups.get(key) ?? { key, score, count: 0, lastUsed: 0, items: [] }
     group.score = Math.max(group.score, score)
-    group.count += usage.count
-    group.lastUsed = Math.max(group.lastUsed, usage.lastUsed)
-    group.items.push({ model, score, count: usage.count, lastUsed: usage.lastUsed })
+    group.count += item.count
+    group.lastUsed = Math.max(group.lastUsed, item.lastUsed)
+    group.items.push({ model, score, count: item.count, lastUsed: item.lastUsed })
     groups.set(key, group)
   }
 
@@ -210,8 +204,6 @@ export function sanitizeName(name: string): string {
 export function stripSubProviderPrefix(name: string): string {
   const colon = name.indexOf(": ")
   if (colon < 0) return name
-  const prefix = name.slice(0, colon)
-  if (prefix.toLowerCase() === KILO_GATEWAY_ID) return name
   return name.slice(colon + 2)
 }
 
@@ -224,12 +216,9 @@ export function buildTriggerLabel(
   hasProviders: boolean,
   labels: { select: string; noProviders: string; notSet: string },
 ): string {
-  if (resolvedName) {
-    if (providerID === KILO_GATEWAY_ID) return stripSubProviderPrefix(resolvedName)
-    return resolvedName
-  }
+  if (resolvedName) return resolvedName
   if (raw?.providerID && raw?.modelID) {
-    return raw.providerID === KILO_GATEWAY_ID ? raw.modelID : `${raw.providerID} / ${raw.modelID}`
+    return `${raw.providerID} / ${raw.modelID}`
   }
   if (allowClear) return clearLabel || labels.notSet
   return hasProviders ? labels.select : labels.noProviders
