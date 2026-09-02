@@ -30,10 +30,3 @@ export const createCloudPrune = (
 
   return { pendingCloudPrune, prune }
 }
-
-/** Clear a scope only if it still points at the given key. Async failure paths
- * must not clobber scopes the user has navigated to since the operation was
- * started. */
-export function clearIfOn<T>(get: () => T, clear: () => void, key: T) {
-  if (get() === key) clear()
-}

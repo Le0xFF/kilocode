@@ -18,6 +18,7 @@ export const Model = Schema.Struct({
   prompt: Schema.optional(Schema.Literals(PROMPTS)), // kilocode_change
   isFree: Schema.optional(Schema.Boolean), // kilocode_change
   ai_sdk_provider: Schema.optional(Schema.Literals(AI_SDK_PROVIDERS)), // kilocode_change
+  mayTrainOnYourPrompts: Schema.optional(Schema.Boolean), // kilocode_change - prompt-training flag for hide_prompt_training_models filtering
   release_date: Schema.optional(Schema.String),
   attachment: Schema.optional(Schema.Boolean),
   reasoning: Schema.optional(Schema.NullOr(Schema.Boolean)), // kilocode_change - allow null so reasoning can be removed via stripNulls on save

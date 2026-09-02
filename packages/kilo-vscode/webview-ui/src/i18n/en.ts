@@ -364,7 +364,6 @@ export const dict = {
   "settings.providers.section.connected": "Connected providers",
   "settings.providers.connected.empty": "No connected providers",
   "settings.providers.section.popular": "Popular providers",
-  "settings.providers.tag.gateway": "Gateway",
   "settings.providers.tag.environment": "Environment",
   "settings.providers.tag.config": "Config",
   "settings.providers.tag.chatgpt": "ChatGPT",
@@ -626,7 +625,6 @@ export const dict = {
   "settings.webTools.webSearch.description": "Make web search available to models from all providers.",
   "settings.checkpoints.title": "Checkpoints",
   "settings.display.title": "Display",
-  "settings.autocomplete.title": "Autocomplete",
   "settings.notifications.title": "Notifications",
   "settings.context.title": "Context",
   "settings.indexing.title": "Indexing",
@@ -642,10 +640,6 @@ export const dict = {
   "settings.indexing.projectEnable.description": "Enable indexing for this workspace when global indexing is off.",
   "settings.indexing.provider.title": "Embedding provider",
   "settings.indexing.provider.description": "Choose the provider used to generate embeddings for semantic search.",
-  "settings.indexing.kiloModel.title": "Kilo model preset",
-  "settings.indexing.kiloModel.description": "Choose a supported Kilo-hosted embedding model.",
-  "settings.indexing.kiloSignIn.title": "Kilo sign-in required",
-  "settings.indexing.kiloSignIn.description": "Sign in to Kilo to use hosted embeddings.",
   "settings.indexing.model.title": "Embedding model",
   "settings.indexing.model.description": "Override the default embedding model for the selected provider.",
   "settings.indexing.dimension.title": "Vector dimension",
@@ -770,7 +764,6 @@ export const dict = {
   "settings.aboutKiloCode.resetSettings.description":
     "This resets only VS Code extension-specific settings to their default values. Settings shared with the CLI, such as modes and auto-approve rules, are stored in the CLI configuration and will not be reset.",
   "settings.aboutKiloCode.resetSettings.button": "Reset All Settings",
-  "settings.aboutKiloCode.resetSettings.notificationsButton": "Reset Read Notifications",
   "settings.aboutKiloCode.settingsTransfer.title": "Settings Transfer",
   "settings.aboutKiloCode.settingsTransfer.description":
     "Export or import your settings to transfer them between VS Code instances.",
@@ -811,15 +804,6 @@ export const dict = {
 
   "common.add": "Add",
 
-  "settings.autocomplete.model.title": "Autocomplete model",
-  "settings.autocomplete.model.description": "Select the model used for inline code completions",
-  "settings.autocomplete.autoTrigger.title": "Enable automatic inline completions",
-  "settings.autocomplete.autoTrigger.description": "Automatically show inline completion suggestions as you type",
-  "settings.autocomplete.smartKeybinding.title": "Enable smart inline task keybinding",
-  "settings.autocomplete.smartKeybinding.description": "Use a smart keybinding for triggering inline tasks",
-  "settings.autocomplete.chatAutocomplete.title": "Enable chat textarea autocomplete",
-  "settings.autocomplete.chatAutocomplete.description": "Show autocomplete suggestions in the chat textarea",
-  "settings.autocomplete.modelsHint": "To choose which model is used for autocompletions, see the Models settings.",
 
   "settings.notifications.sounds": "Sounds",
   "settings.notifications.enable.title": "Enable Sound Notifications",
@@ -948,7 +932,6 @@ export const dict = {
   "settings.agentBehaviour.addMcp.args.placeholder": "e.g.\n-y\n@modelcontextprotocol/server-filesystem\n/tmp",
   "settings.agentBehaviour.addMcp.url": "Server URL",
   "settings.agentBehaviour.addMcp.url.placeholder": "e.g. http://localhost:3000/sse",
-  "settings.agentBehaviour.mcpBrowseMarketplace": "Browse Marketplace",
   "settings.agentBehaviour.mcpEmpty":
     "No MCP servers configured. Add MCP servers in kilo.jsonc, or ask the agent to add them for you.",
   "settings.agentBehaviour.workflows.description":

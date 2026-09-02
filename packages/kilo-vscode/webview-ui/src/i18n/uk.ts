@@ -401,7 +401,6 @@ export const dict = {
   "settings.providers.section.connected": "Підключені провайдери",
   "settings.providers.connected.empty": "Підключених провайдерів немає",
   "settings.providers.section.popular": "Популярні провайдери",
-  "settings.providers.tag.gateway": "Gateway",
   "settings.providers.tag.environment": "Середовище",
   "settings.providers.tag.config": "Конфігурація",
   "settings.providers.tag.chatgpt": "ChatGPT",
@@ -667,9 +666,6 @@ export const dict = {
   "settings.webTools.webSearch.description": "Зробіть вебпошук доступним для моделей усіх постачальників.",
   "settings.checkpoints.title": "Контрольні точки",
   "settings.display.title": "Відображення",
-  "settings.autocomplete.title": "Автодоповнення",
-  "settings.autocomplete.model.title": "Модель автодоповнення",
-  "settings.autocomplete.model.description": "Виберіть модель для вбудованого (inline) автодоповнення коду",
   "settings.notifications.title": "Сповіщення",
   "settings.context.title": "Контекст",
   "settings.indexing.title": "Індексування",
@@ -782,7 +778,6 @@ export const dict = {
   "settings.aboutKiloCode.resetSettings.description":
     "Це скине лише налаштування, специфічні для розширення VS Code, до стандартних значень. Налаштування, що зберігаються в конфігурації CLI (такі як режими та правила автоматичного схвалення), не будуть скинуті.",
   "settings.aboutKiloCode.resetSettings.button": "Скинути всі налаштування",
-  "settings.aboutKiloCode.resetSettings.notificationsButton": "Reset Read Notifications",
   "settings.aboutKiloCode.settingsTransfer.title": "Перенесення налаштувань",
   "settings.aboutKiloCode.settingsTransfer.description":
     "Експортуйте або імпортуйте налаштування для перенесення між екземплярами VS Code.",
@@ -825,14 +820,6 @@ export const dict = {
 
   "common.add": "Додати",
 
-  "settings.autocomplete.autoTrigger.title": "Увімкнути автоматичні підказки",
-  "settings.autocomplete.autoTrigger.description": "Автоматично показувати підказки під час введення",
-  "settings.autocomplete.smartKeybinding.title": "Увімкнути розумне прив'язування клавіш",
-  "settings.autocomplete.smartKeybinding.description":
-    "Використовувати розумне прив'язування клавіш для активації підказок",
-  "settings.autocomplete.chatAutocomplete.title": "Увімкнути автодоповнення в полі чату",
-  "settings.autocomplete.chatAutocomplete.description": "Показувати підказки автодоповнення в полі введення чату",
-  "settings.autocomplete.modelsHint": "Щоб вибрати модель для автодоповнення, див. Налаштування моделей.",
 
   "settings.notifications.sounds": "Звуки",
   "settings.notifications.enable.title": "Увімкнути звукові сповіщення",
@@ -970,7 +957,6 @@ export const dict = {
   "settings.agentBehaviour.addMcp.args.placeholder": "напр.\n-y\n@modelcontextprotocol/server-filesystem\n/tmp",
   "settings.agentBehaviour.addMcp.url": "URL сервера",
   "settings.agentBehaviour.addMcp.url.placeholder": "напр. http://localhost:3000/sse",
-  "settings.agentBehaviour.mcpBrowseMarketplace": "Переглянути Marketplace",
   "settings.agentBehaviour.mcpEmpty":
     "MCP-серверів не налаштовано. Додайте MCP-сервери до kilo.jsonc або попросіть агента додати їх.",
   "settings.agentBehaviour.workflows.description":
@@ -1260,10 +1246,6 @@ export const dict = {
   "notifications.action.close": "Закрити",
   "notifications.action.tryModel": "Спробувати {{model}}",
   "notifications.action.tryModelGeneric": "Спробувати модель",
-  "settings.indexing.kiloModel.title": "Пресет моделі Kilo",
-  "settings.indexing.kiloModel.description": "Виберіть підтримувану модель Kilo-hosted embeddings.",
-  "settings.indexing.kiloSignIn.title": "Потрібен вхід у Kilo",
-  "settings.indexing.kiloSignIn.description": "Увійдіть у Kilo, щоб використовувати hosted embeddings.",
   // Missing translations - English fallbacks until translated
   "profile.switchingAccount": "Перемикання акаунту…",
   "settings.agentBehaviour.createMode": "Створити новий режим",

@@ -26,10 +26,8 @@ import { ConfigCommand as ConfigCLICommand } from "../cli/cmd/config"
 import { PluginCommand } from "../cli/cmd/plug"
 import { DevSetupCommand, DevAliasCommand } from "./cli/dev-setup"
 import { RollCallCommand } from "./cli/cmd/roll-call"
-import { ProfileCommand } from "./cli/cmd/profile"
 import { DaemonCommand } from "./cli/cmd/daemon"
 import { KiloConsoleCommand } from "./cli/cmd/console"
-import { CloudCommand } from "./cli/cmd/cloud"
 import { HelpCommand } from "./help-command"
 import { InstallationBuildKind } from "@opencode-ai/core/installation/version"
 
@@ -62,7 +60,6 @@ export const commands = [
   ServeCommand,
   ModelsCommand,
   RollCallCommand,
-  ProfileCommand,
   StatsCommand,
   ExportCommand,
   ImportCommand,
@@ -72,7 +69,6 @@ export const commands = [
   RemoteCommand,
   DaemonCommand,
   KiloConsoleCommand,
-  CloudCommand,
   DbCommand,
   ConfigCLICommand,
   ...dev,

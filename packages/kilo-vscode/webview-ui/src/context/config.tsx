@@ -61,15 +61,6 @@ interface ConfigContextValue {
 export const ConfigContext = createContext<ConfigContextValue>()
 
 function loadedSettings(message: ExtensionMessage): Record<string, unknown> | undefined {
-  if (message.type === "autocompleteSettingsLoaded") {
-    return {
-      "autocomplete.enableAutoTrigger": message.settings.enableAutoTrigger,
-      "autocomplete.enableSmartInlineTaskKeybinding": message.settings.enableSmartInlineTaskKeybinding,
-      "autocomplete.enableChatAutocomplete": message.settings.enableChatAutocomplete,
-      "autocomplete.provider": message.settings.provider,
-      "autocomplete.model": message.settings.model,
-    }
-  }
   if (message.type === "indexingSettingsLoaded") {
     return { "indexing.showButtonWhenDisabled": message.settings.showButtonWhenDisabled }
   }
@@ -270,7 +261,6 @@ export const ConfigProvider: ParentComponent = (props) => {
 
   const requestInitialData = () => {
     vscode.postMessage({ type: "requestConfig" })
-    vscode.postMessage({ type: "requestAutocompleteSettings" })
     vscode.postMessage({ type: "requestIndexingSettings" })
     vscode.postMessage({ type: "requestChatSettings" })
   }

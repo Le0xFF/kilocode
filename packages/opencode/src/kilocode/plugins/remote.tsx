@@ -9,7 +9,6 @@ function View(props: { api: TuiPluginApi }) {
       <RemoteIndicator
         sdk={{ client: props.api.client }}
         theme={props.api.theme.current}
-        kilo={true}
         event={props.api.event}
       />
     </box>

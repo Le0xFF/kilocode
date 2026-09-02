@@ -83,7 +83,6 @@ function ctx(overrides: Partial<ContinueContext> = {}): ContinueContext {
     registerWorktreeSession: noop,
     registerSession: noop,
     notifyReady: noop,
-    capture: noop,
     log,
     ...overrides,
   }
@@ -174,10 +173,9 @@ describe("continue-in-worktree steps", () => {
         registerWorktreeSession: () => calls.push("registerWorktreeSession"),
         registerSession: () => calls.push("registerSession"),
         notifyReady: () => calls.push("notifyReady"),
-        capture: () => calls.push("capture"),
       })
       registerSession(c, session("s1"), result("/tmp/wt"), "wt1", "src-session")
-      expect(calls).toEqual(["addSession", "registerWorktreeSession", "notifyReady", "registerSession", "capture"])
+      expect(calls).toEqual(["addSession", "registerWorktreeSession", "notifyReady", "registerSession"])
     })
 
     it("works without state manager", () => {
@@ -187,10 +185,9 @@ describe("continue-in-worktree steps", () => {
         registerWorktreeSession: () => calls.push("registerWorktreeSession"),
         registerSession: () => calls.push("registerSession"),
         notifyReady: () => calls.push("notifyReady"),
-        capture: () => calls.push("capture"),
       })
       registerSession(c, session("s1"), result("/tmp/wt"), "wt1", "src-session")
-      expect(calls).toEqual(["registerWorktreeSession", "notifyReady", "registerSession", "capture"])
+      expect(calls).toEqual(["registerWorktreeSession", "notifyReady", "registerSession"])
     })
   })
 })

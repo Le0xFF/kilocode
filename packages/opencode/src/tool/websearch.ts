@@ -1,13 +1,11 @@
-import { Effect, Option, Schema } from "effect" // kilocode_change - Option added for kilo-exa transport dispatch
+import { Effect, Schema } from "effect" // kilocode_change - provider override resolved via Env.Service by the caller
 import { HttpClient } from "effect/unstable/http"
 import * as Tool from "./tool"
 import * as McpWebSearch from "./mcp-websearch"
-import * as KiloExa from "@/kilocode/tool/websearch-kilo-exa" // kilocode_change - Kilo-REST Exa transport
 import DESCRIPTION from "./websearch.txt"
 import { checksum } from "@opencode-ai/core/util/encode"
 import { InstallationVersion } from "@opencode-ai/core/installation/version"
 import { RuntimeFlags } from "@/effect/runtime-flags"
-import { Auth } from "@/auth" // kilocode_change - source Kilo bearer for Kilo-REST transport
 import { Env } from "@/env" // kilocode_change - config via Env.Service instead of process.env reads
 
 const MAX_RESULTS = 10 // kilocode_change - cap numResults across all transports
@@ -29,7 +27,7 @@ export const Parameters = Schema.Struct({
   }),
 })
 
-const WebSearchProviderSchema = Schema.Literals(["exa", "parallel", "kilo-exa"]) // kilocode_change - kilo-exa env override
+const WebSearchProviderSchema = Schema.Literals(["exa", "parallel"]) // kilocode_change - kilo-exa env override removed
 export type WebSearchProvider = Schema.Schema.Type<typeof WebSearchProviderSchema>
 
 // kilocode_change start - signature reflowed by the added override parameter (KILO_WEBSEARCH_PROVIDER resolved via Env.Service by the caller)
@@ -39,7 +37,7 @@ export function selectWebSearchProvider(
   override?: string,
 ): WebSearchProvider {
   // kilocode_change end
-  if (override === "exa" || override === "parallel" || override === "kilo-exa") return override // kilocode_change - kilo-exa env override
+  if (override === "exa" || override === "parallel") return override // kilocode_change - provider env override
   if (flags.parallel) return "parallel"
   if (flags.exa) return "exa"
 
@@ -48,7 +46,7 @@ export function selectWebSearchProvider(
 
 export function webSearchProviderLabel(provider: unknown) {
   if (provider === "parallel") return "Parallel Web Search"
-  if (provider === "exa" || provider === "kilo-exa") return "Exa Web Search" // kilocode_change - kilo-exa shares label
+  if (provider === "exa") return "Exa Web Search"
   return "Web Search"
 }
 
@@ -114,7 +112,6 @@ export const WebSearchTool = Tool.define(
   Effect.gen(function* () {
     const http = yield* HttpClient.HttpClient
     const flags = yield* RuntimeFlags.Service
-    const authSvc = yield* Auth.Service // kilocode_change - source Kilo bearer for Kilo-REST transport
     const env = yield* Env.Service // kilocode_change - config via Env.Service instead of process.env reads
 
     return {
@@ -140,29 +137,9 @@ export const WebSearchTool = Tool.define(
           )
           // kilocode_change end
           const title = webSearchProviderLabel(provider)
-          // kilocode_change start - Kilo-REST Exa transport
-          // Precedence:
-          //   provider="kilo-exa"          -> kilo-rest  (auth required)
-          //   provider="exa" + EXA_API_KEY -> mcp-exa-byok     (BYOK wins)
-          //   provider="exa" + Kilo auth   -> kilo-rest        (new default for authed users)
-          //   provider="exa" + no auth     -> mcp-exa-unauth   (preserves current fallback)
-          //   provider="parallel"          -> mcp-parallel     (unchanged)
-          const kiloToken = yield* Effect.gen(function* () {
-            if (provider !== "exa" && provider !== "kilo-exa") return undefined as string | undefined
-            const info = yield* authSvc.get("kilo")
-            if (!info) return undefined
-            return info.type === "api" ? info.key : info.type === "oauth" ? info.access : undefined
-          })
+          // kilocode_change start - transport selection (Byok Exa/Parallel only)
           const transport =
-            provider === "kilo-exa"
-              ? "kilo-rest"
-              : provider === "parallel"
-                ? "mcp-parallel"
-                : provider === "exa" && exaKey
-                  ? "mcp-exa-byok"
-                  : provider === "exa" && kiloToken
-                    ? "kilo-rest"
-                    : "mcp-exa-unauth"
+            provider === "parallel" ? "mcp-parallel" : provider === "exa" && exaKey ? "mcp-exa-byok" : "mcp-exa-unauth"
           // kilocode_change end
           // kilocode_change start - add transport to metadata
           yield* ctx.metadata({
@@ -185,21 +162,7 @@ export const WebSearchTool = Tool.define(
             },
           })
 
-          // kilocode_change start - dispatch Kilo-REST transport
-          const result = yield* transport === "kilo-rest"
-            ? kiloToken
-              ? KiloExa.callKiloExa(
-                  http,
-                  {
-                    query: params.query,
-                    type: params.type,
-                    numResults: params.numResults,
-                  },
-                  kiloToken,
-                )
-              : Effect.die(new Error("KILO_WEBSEARCH_PROVIDER=kilo-exa requires Kilo auth; run `kilo auth login`"))
-            : callProvider(http, provider, params, ctx, { exa: exaKey, parallel: parallelKey }) // kilocode_change
-          // kilocode_change end
+          const result = yield* callProvider(http, provider, params, ctx, { exa: exaKey, parallel: parallelKey })
 
           return {
             output: result ?? "No search results found. Please try a different query.",

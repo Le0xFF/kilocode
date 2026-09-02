@@ -1,35 +1,12 @@
 import { afterEach, expect } from "bun:test"
 import { Effect } from "effect"
-import { Server } from "../../../src/server/server"
 import * as Log from "@opencode-ai/core/util/log"
+import { Server } from "../../../src/server/server"
 import { disposeAllInstances, tmpdir } from "../../fixture/fixture"
 import { resetDatabase } from "../../fixture/db"
 import { it } from "../../lib/effect"
 
 void Log.init({ print: false })
-
-const response = {
-  data: [
-    {
-      id: "test/training",
-      name: "Training",
-      context_length: 128000,
-      max_completion_tokens: 4096,
-      architecture: { input_modalities: ["text"], output_modalities: ["text"] },
-      supported_parameters: ["tools", "temperature"],
-      mayTrainOnYourPrompts: true,
-    },
-    {
-      id: "test/private",
-      name: "Private",
-      context_length: 128000,
-      max_completion_tokens: 4096,
-      architecture: { input_modalities: ["text"], output_modalities: ["text"] },
-      supported_parameters: ["tools", "temperature"],
-      mayTrainOnYourPrompts: false,
-    },
-  ],
-}
 
 function record(input: unknown): input is Record<string, unknown> {
   return typeof input === "object" && input !== null && !Array.isArray(input)
@@ -37,9 +14,9 @@ function record(input: unknown): input is Record<string, unknown> {
 
 function models(input: unknown, key: "all" | "providers") {
   if (!record(input) || !Array.isArray(input[key])) return []
-  const kilo = input[key].find((provider) => record(provider) && provider.id === "kilo")
-  if (!record(kilo) || !record(kilo.models)) return []
-  return Object.keys(kilo.models)
+  const mine = input[key].find((provider) => record(provider) && provider.id === "mylocal")
+  if (!record(mine) || !record(mine.models)) return []
+  return Object.keys(mine.models)
 }
 
 function request(path: string, dir: string) {
@@ -58,48 +35,48 @@ afterEach(async () => {
 it.live(
   "filters prompt-training models from both provider catalogs",
   Effect.gen(function* () {
-    const server = yield* Effect.acquireRelease(
-      Effect.sync(() =>
-        Bun.serve({
-          port: 0,
-          fetch() {
-            return Response.json(response)
-          },
-        }),
-      ),
-      (server) => Effect.sync(() => server.stop(true)),
-    )
-    const baseURL = `http://127.0.0.1:${server.port}`
+    const model = (id: string, name: string, mayTrainOnYourPrompts: boolean) => ({
+      id,
+      name,
+      attachment: false,
+      reasoning: false,
+      temperature: false,
+      tool_call: true,
+      release_date: "2025-01-01",
+      limit: { context: 100_000, output: 10_000 },
+      cost: { input: 0, output: 0 },
+      mayTrainOnYourPrompts,
+      options: {},
+    })
     const tmp = yield* Effect.acquireRelease(
       Effect.promise(() =>
         tmpdir({
           config: {
             formatter: false,
             lsp: false,
-            enabled_providers: ["kilo"],
             hide_prompt_training_models: true,
-            provider: { kilo: { options: { baseURL } } },
+            provider: {
+              mylocal: {
+                name: "My Local",
+                npm: "@ai-sdk/openai-compatible",
+                env: [],
+                models: {
+                  training: model("training", "Training", true),
+                  private: model("private", "Private", false),
+                },
+                options: { apiKey: "test-key", baseURL: "http://localhost:11434/v1" },
+              },
+            },
           },
         }),
       ),
       (tmp) => Effect.promise(() => tmp[Symbol.asyncDispose]()),
     )
-    const key = process.env.KILO_API_KEY
-    yield* Effect.acquireRelease(
-      Effect.sync(() => {
-        process.env.KILO_API_KEY = "test-key"
-      }),
-      () =>
-        Effect.sync(() => {
-          if (key === undefined) delete process.env.KILO_API_KEY
-          else process.env.KILO_API_KEY = key
-        }),
-    )
 
     const all = yield* request("/provider", tmp.path)
     const connected = yield* request("/config/providers", tmp.path)
 
-    expect(models(all, "all")).toEqual(["test/private"])
-    expect(models(connected, "providers")).toEqual(["test/private"])
+    expect(models(all, "all")).toEqual(["private"])
+    expect(models(connected, "providers")).toEqual(["private"])
   }),
 )

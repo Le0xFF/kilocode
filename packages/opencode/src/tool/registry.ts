@@ -62,7 +62,6 @@ import { Agent } from "../agent/agent"
 import { Skill } from "../skill"
 import { Permission } from "@/permission"
 import { SessionStatus } from "@/session/status" // kilocode_change
-import { KiloSessions } from "@/kilo-sessions/kilo-sessions" // kilocode_change - provide KiloSessions.Service so the notify_user tool's init resolves
 import { Git } from "@/git" // kilocode_change
 import { BackgroundJob } from "@/background/job"
 import { RuntimeFlags } from "@/effect/runtime-flags"
@@ -538,7 +537,6 @@ export const node = LayerNode.suspend(() =>
       AgentManager.node,
       Notebook.node,
       RepositoryCache.node,
-      KiloSessions.node,
     ],
   }),
 )

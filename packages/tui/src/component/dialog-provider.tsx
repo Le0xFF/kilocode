@@ -198,29 +198,14 @@ export function createDialogProviderOptions() {
                 ))
               }
               if (result.data?.method === "auto") {
-                // kilocode_change start
-                const kilo = KiloProvider.renderAutoMethod({
-                  providerID,
-                  title: method.label,
-                  index,
-                  authorization: result.data!,
-                  useSDK,
-                  useTheme,
-                  DialogModel,
-                })
-                if (kilo) {
-                  dialog.replace(kilo)
-                } else {
-                  // kilocode_change end
-                  dialog.replace(() => (
-                    <AutoMethod
-                      providerID={providerID}
-                      title={method.label}
-                      index={index}
-                      authorization={result.data!}
-                    />
-                  ))
-                } // kilocode_change
+                dialog.replace(() => (
+                  <AutoMethod
+                    providerID={providerID}
+                    title={method.label}
+                    index={index}
+                    authorization={result.data!}
+                  />
+                ))
               }
             }
             if (method.type === "api") {

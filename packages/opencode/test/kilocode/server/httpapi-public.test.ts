@@ -1,18 +1,14 @@
 import { describe, expect, test } from "bun:test"
-import { Result, Schema as EffectSchema } from "effect"
 import { OpenApi } from "effect/unstable/httpapi"
 import { AgentBuilderPaths } from "../../../src/kilocode/server/httpapi/groups/agent-builder"
 import { BackgroundProcessPaths } from "../../../src/kilocode/server/httpapi/groups/background-process"
 import { BranchNamePaths } from "../../../src/kilocode/server/httpapi/groups/branch-name"
 import { ConfigConsolePaths } from "../../../src/kilocode/server/httpapi/groups/config-console"
-import { IndexingPaths, KiloEmbeddingModel } from "../../../src/kilocode/server/httpapi/groups/indexing"
-import { KiloGatewayPaths } from "../../../src/kilocode/server/httpapi/groups/kilo-gateway"
+import { IndexingPaths } from "../../../src/kilocode/server/httpapi/groups/indexing"
 import { KilocodePaths } from "../../../src/kilocode/server/httpapi/groups/kilocode"
 import { MemoryPaths } from "../../../src/kilocode/server/httpapi/groups/memory"
 import { NetworkPaths } from "../../../src/kilocode/server/httpapi/groups/network"
-import { TelemetryPaths } from "../../../src/kilocode/server/httpapi/groups/telemetry"
 import { ExperimentalPaths } from "../../../src/server/routes/instance/httpapi/groups/experimental"
-import { SessionPaths } from "../../../src/server/routes/instance/httpapi/groups/session"
 import { PublicApi } from "../../../src/server/routes/instance/httpapi/public"
 
 type Schema = {
@@ -58,25 +54,6 @@ describe("Kilo PublicApi OpenAPI contract", () => {
     }
   })
 
-  test("constrains embedding model metadata", () => {
-    const accepts = (dimension: number, scoreThreshold: number) =>
-      Result.isSuccess(
-        EffectSchema.decodeUnknownResult(KiloEmbeddingModel)({
-          id: "provider/model",
-          name: "Model",
-          dimension,
-          scoreThreshold,
-        }),
-      )
-
-    expect(accepts(1, 0)).toBe(true)
-    expect(accepts(1024, 1)).toBe(true)
-    expect(accepts(0, 0.5)).toBe(false)
-    expect(accepts(1.5, 0.5)).toBe(false)
-    expect(accepts(1024, -0.1)).toBe(false)
-    expect(accepts(1024, 1.1)).toBe(false)
-  })
-
   test("constrains agent builder route ids", () => {
     const spec = OpenApi.fromApi(PublicApi)
     const save = AgentBuilderPaths.save.replace(":id", "{id}")
@@ -116,7 +93,6 @@ describe("Kilo PublicApi OpenAPI contract", () => {
       { method: "get", path: ExperimentalPaths.worktreeDiff },
       { method: "get", path: ExperimentalPaths.worktreeDiffSummary },
       { method: "get", path: ExperimentalPaths.worktreeDiffFile },
-      { method: "post", path: SessionPaths.viewed },
       { method: "get", path: ConfigConsolePaths.overlay },
       { method: "patch", path: ConfigConsolePaths.overlay },
       { method: "get", path: IndexingPaths.status },
@@ -141,8 +117,6 @@ describe("Kilo PublicApi OpenAPI contract", () => {
       { method: "get", path: NetworkPaths.list },
       { method: "post", path: NetworkPaths.reply },
       { method: "post", path: NetworkPaths.reject },
-      { method: "post", path: TelemetryPaths.capture },
-      { method: "post", path: TelemetryPaths.setEnabled },
       { method: "get", path: ConfigConsolePaths.sources },
       { method: "get", path: ConfigConsolePaths.effective },
       { method: "get", path: ConfigConsolePaths.rules },
@@ -177,14 +151,6 @@ describe("Kilo PublicApi OpenAPI contract", () => {
     }
   })
 
-  test("keeps personal organization resets nullable", () => {
-    const spec = OpenApi.fromApi(PublicApi)
-    const body = spec.paths[KiloGatewayPaths.organization]?.post?.requestBody as Body | undefined
-    const schema = body?.content?.["application/json"]?.schema
-    const props = schema?.properties
-    expect(props?.organizationId).toEqual({ anyOf: [{ type: "string" }, { type: "null" }] })
-  })
-
   test("keeps branch-name responses nullable", () => {
     const spec = OpenApi.fromApi(PublicApi)
     const path = BranchNamePaths.generate.replace(/:([A-Za-z0-9_]+)/g, "{$1}")
@@ -192,52 +158,6 @@ describe("Kilo PublicApi OpenAPI contract", () => {
     const branch = body?.content?.["application/json"]?.schema?.properties?.branch
 
     expect(branch).toEqual({ anyOf: [{ type: "string" }, { type: "null" }] })
-  })
-
-  test("keeps Kilo gateway responses nullable", () => {
-    const spec = OpenApi.fromApi(PublicApi)
-    const response = (path: string) => {
-      const body = spec.paths[path]?.get?.responses?.["200"] as Body | undefined
-      return body?.content?.["application/json"]?.schema
-    }
-
-    const profile = response(KiloGatewayPaths.profile)?.properties
-    expect(profile?.balance).toEqual({ anyOf: [expect.objectContaining({ type: "object" }), { type: "null" }] })
-    expect(profile?.kiloPass).toEqual({ anyOf: [expect.objectContaining({ type: "object" }), { type: "null" }] })
-    expect(profile?.profile?.properties?.selectedOrganizationId).toEqual({ type: "string" })
-    expect(profile?.profile?.properties?.hasPersonalAccount).toEqual({ type: "boolean" })
-    const pass = profile?.kiloPass?.anyOf?.find((item) => item.type === "object")?.properties
-    expect(pass?.nextBillingAt).toEqual({ anyOf: [{ type: "string" }, { type: "null" }] })
-    expect(profile?.currentOrgId).toEqual({ anyOf: [{ type: "string" }, { type: "null" }] })
-
-    const auth = response(KiloGatewayPaths.authStatus)?.properties
-    expect(auth).toEqual({
-      authenticated: { type: "boolean" },
-      type: { type: "string", enum: ["api", "oauth"] },
-    })
-
-    const sessions = response(KiloGatewayPaths.cloudSessions)?.properties
-    expect(sessions?.cliSessions?.items?.properties?.title).toEqual({
-      anyOf: [{ type: "string" }, { type: "null" }],
-    })
-    expect(sessions?.nextCursor).toEqual({ anyOf: [{ type: "string" }, { type: "null" }] })
-
-    const claw = response(KiloGatewayPaths.clawStatus)?.properties
-    expect(claw?.status).toEqual({ anyOf: [expect.objectContaining({ type: "string" }), { type: "null" }] })
-    for (const field of ["openclawVersion", "lastStartedAt", "lastStoppedAt", "botName"]) {
-      expect(claw?.[field]).toEqual({ anyOf: [{ type: "string" }, { type: "null" }] })
-    }
-
-    expect(response(KiloGatewayPaths.clawChatCredentials)).toEqual({
-      anyOf: [expect.objectContaining({ type: "object" }), { type: "null" }],
-    })
-  })
-
-  test("keeps transcription prompts in the public contract", () => {
-    const spec = OpenApi.fromApi(PublicApi)
-    const body = spec.paths[KiloGatewayPaths.audioTranscriptions]?.post?.requestBody as Body | undefined
-    const schema = body?.content?.["application/json"]?.schema
-    expect(schema?.properties?.prompt).toEqual({ type: "string" })
   })
 
   test("keeps provider usage flat and credential-free", () => {
@@ -271,14 +191,5 @@ describe("Kilo PublicApi OpenAPI contract", () => {
         forbidden,
       ).toEqual([])
     }
-  })
-
-  test("documents the transcription model catalog route", () => {
-    const spec = OpenApi.fromApi(PublicApi)
-    const route = spec.paths[KiloGatewayPaths.transcriptionModels]?.get
-    const query = (route?.parameters as Parameter[] | undefined)?.map((item) => item.name)
-
-    expect(query).toEqual(["directory", "workspace"])
-    expect(route?.responses?.["200"]?.content?.["application/json"]?.schema).toMatchObject({ type: "array" })
   })
 })

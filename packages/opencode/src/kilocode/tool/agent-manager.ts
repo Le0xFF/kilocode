@@ -230,13 +230,12 @@ function suggest(all: Candidate[], value: string): string[] {
     .map((entry) => entry[0])
 }
 
-// Prefer the provider the user already uses for the invoking turn, then the Kilo Gateway,
-// so a model name resolves to the provider with the best chance of working
-// without forcing the agent to know about provider plumbing.
+// Prefer the provider the user already uses for the invoking turn, so a model
+// name resolves to the provider with the best chance of working without forcing
+// the agent to know about provider plumbing.
 function rank(providerID: string, preferred: string | undefined): number {
   if (providerID === preferred) return 0
-  if (providerID === "kilo") return 1
-  return 2
+  return 1
 }
 
 function select(

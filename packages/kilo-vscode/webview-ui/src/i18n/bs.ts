@@ -417,10 +417,6 @@ export const dict = {
   "settings.indexing.model.title": "Model embeddinga",
   "settings.indexing.provider.description":
     "Odaberite provajdera koji se koristi za generiranje embeddinga za semantičku pretragu.",
-  "settings.indexing.kiloModel.title": "Preset Kilo modela",
-  "settings.indexing.kiloModel.description": "Odaberite podržani model embeddinga hostovan na Kilo.",
-  "settings.indexing.kiloSignIn.title": "Potrebna je prijava na Kilo",
-  "settings.indexing.kiloSignIn.description": "Prijavite se na Kilo za korištenje hostovanih embeddinga.",
   "settings.indexing.provider.title": "Provajder embeddinga",
   "settings.indexing.providerField.description": "Postavka veze specifična za provajdera.",
   "settings.indexing.qdrantApiKey.description": "Opcionalni API ključ za Qdrant instancu.",
@@ -443,7 +439,6 @@ export const dict = {
   "settings.providers.connected.empty": "Nema povezanih provajdera",
   "settings.providers.section.popular": "Popularni provajderi",
   "settings.providers.select.placeholder": "Odaberi provajdera...",
-  "settings.providers.tag.gateway": "Gateway",
   "settings.providers.tag.environment": "Okruženje",
   "settings.providers.tag.config": "Konfiguracija",
   "settings.providers.tag.chatgpt": "ChatGPT",
@@ -717,10 +712,7 @@ export const dict = {
   "settings.webTools.webSearch.description": "Omogućite web pretragu modelima svih pružalaca.",
   "settings.checkpoints.title": "Kontrolne tačke",
   "settings.display.title": "Prikaz",
-  "settings.autocomplete.title": "Automatsko dovršavanje",
-  "settings.autocomplete.model.title": "Model za automatsko dovršavanje",
-  "settings.autocomplete.model.description": "Odaberite model koji se koristi za inline dovršavanje koda",
-  "settings.notifications.title": "Obavještenja",
+  "settings.notifications.title": "Obaveštenja",
   "settings.context.title": "Kontekst",
 
   "settings.experimental.title": "Eksperimentalno",
@@ -796,7 +788,6 @@ export const dict = {
   "settings.aboutKiloCode.resetSettings.description":
     "Ovo resetuje samo postavke specifične za VS Code ekstenziju na njihove zadane vrijednosti. Postavke koje se dijele s CLI-jem, kao što su načini rada i pravila automatskog odobravanja, pohranjene su u CLI konfiguraciji i neće biti resetovane.",
   "settings.aboutKiloCode.resetSettings.button": "Resetuj sve postavke",
-  "settings.aboutKiloCode.resetSettings.notificationsButton": "Reset Read Notifications",
   "settings.aboutKiloCode.settingsTransfer.title": "Prijenos postavki",
   "settings.aboutKiloCode.settingsTransfer.description":
     "Izvezite ili uvezite postavke za prijenos između VS Code instanci.",
@@ -837,14 +828,6 @@ export const dict = {
 
   "common.add": "Dodaj",
 
-  "settings.autocomplete.autoTrigger.title": "Omogući automatsko inline dovršavanje",
-  "settings.autocomplete.autoTrigger.description": "Automatski prikaži prijedloge inline dovršavanja tokom tipkanja",
-  "settings.autocomplete.smartKeybinding.title": "Omogući pametnu prečicu inline zadatka",
-  "settings.autocomplete.smartKeybinding.description": "Koristi pametnu prečicu za pokretanje inline zadataka",
-  "settings.autocomplete.chatAutocomplete.title": "Omogući automatsko dovršavanje chata",
-  "settings.autocomplete.chatAutocomplete.description": "Prikaži prijedloge automatskog dovršavanja u polju chata",
-  "settings.autocomplete.modelsHint":
-    "Da odaberete koji se model koristi za automatsko dovršavanje, pogledajte postavke Modela.",
   "settings.notifications.sounds": "Zvukovi",
   "settings.notifications.enable.title": "Omogući zvučne obavijesti",
   "settings.notifications.enable.description":
@@ -1012,7 +995,6 @@ export const dict = {
   "settings.agentBehaviour.mcpDetail.command": "Naredba",
   "settings.agentBehaviour.mcpDetail.args": "Argumenti",
   "settings.agentBehaviour.mcpDetail.env": "Okruženje",
-  "settings.agentBehaviour.mcpBrowseMarketplace": "Pregledaj Marketplace",
   "settings.agentBehaviour.mcpEmpty":
     "Nema konfiguriranih MCP servera. Dodajte MCP servere u kilo.jsonc ili zamolite agenta da ih doda.",
   "settings.agentBehaviour.workflows.description":

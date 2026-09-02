@@ -27,7 +27,6 @@ import { MemoryMarker } from "@/kilocode/memory/marker"
 import { KilocodeSystemPrompt } from "@/kilocode/system-prompt"
 import { KiloToolRegistry } from "@/kilocode/tool/registry"
 import ASK_CODE_SWITCH from "./ask-code-switch.txt"
-import { consumeAutoTitle, markAutoTitle } from "@/kilo-sessions/rename-adoptions"
 
 export namespace KiloSessionPrompt {
   const modes = ["ask", "plan", "architect"]
@@ -85,15 +84,11 @@ export namespace KiloSessionPrompt {
     fresh: { title: string } | null | undefined
     isDefaultTitle: (title: string) => boolean
   }): boolean {
-    if (!input.fresh || !input.isDefaultTitle(input.fresh.title)) return false
-    markAutoTitle(input.sessionID, input.title)
-    return true
+    return !input.fresh || input.isDefaultTitle(input.fresh.title)
   }
 
-  /** Clear auto-title mark after a failed setTitle (pair with prepareAutoTitle). */
-  export function clearAutoTitleMark(sessionID: string, title: string) {
-    consumeAutoTitle(sessionID, title)
-  }
+  /** No-op kept for handler call-sites that clear the auto-title mark after a failed setTitle. */
+  export function clearAutoTitleMark(_sessionID: string, _title: string) {}
 
   function mode(name: string) {
     return name.toLowerCase()

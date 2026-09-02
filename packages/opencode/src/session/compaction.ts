@@ -22,8 +22,7 @@ import { serviceUse } from "@opencode-ai/core/effect/service-use"
 import { KiloSessionPromptQueue } from "@/kilocode/session/prompt-queue"
 import { KiloCompactionPayloadRecovery } from "@/kilocode/session/compaction-payload-recovery"
 import { KiloCompactionChunks } from "@/kilocode/session/compaction-chunks"
-import { SessionExport } from "@/kilocode/session-export"
-import { KiloSession } from "@/kilocode/session"
+
 // kilocode_change end
 import { RuntimeFlags } from "@/effect/runtime-flags"
 import { EventV2Bridge } from "@/event-v2-bridge"
@@ -633,36 +632,6 @@ const layer = Layer.effect(
               include: recent, // kilocode_change - released Core V2 readers recognize this field
             })
         }
-        // kilocode_change start - export self-contained compaction capture
-        const parent = KiloSession.resolveParent(input.sessionID)
-        const found = KiloSession.resolveRoot(input.sessionID)
-        const root = parent ? (found === input.sessionID ? parent : found) : input.sessionID
-        const workspace = yield* InstanceState.context
-        SessionExport.compaction({
-          sessionId: input.sessionID,
-          rootSessionId: root,
-          parentSessionId: parent,
-          requestId: msg.id,
-          workspaceKey: workspace.directory,
-          input: {
-            inputMessagesSnapshot: modelMessages,
-            selectedContext: selected.head,
-            previousSummary,
-            prompt: nextPrompt,
-            tailStartId: selected.tail_start_id,
-          },
-          output: {
-            summary: summary ?? "",
-            assistantMessageId: msg.id,
-          },
-          modelId: model.id,
-          durationMs: Math.max(0, Date.now() - msg.time.created),
-          usage: {
-            inputTokens: processor.message.tokens.input,
-            outputTokens: processor.message.tokens.output,
-          },
-        })
-        // kilocode_change end
         yield* prune({ sessionID: input.sessionID, reason: "post-compaction" })
         yield* events.publish(Event.Compacted, { sessionID: input.sessionID })
       }

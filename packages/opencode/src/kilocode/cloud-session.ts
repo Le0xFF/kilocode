@@ -33,19 +33,13 @@ export function localSessionID(args: { cloudFork?: boolean; session?: string }) 
  * response was malformed.
  */
 export async function importCloudSession(
-  client: {
-    kilo: {
-      cloud: {
-        session: {
-          import: (params: { sessionId: string }) => Promise<{ data?: unknown; error?: unknown }>
-        }
-      }
-    }
-  },
+  client: unknown,
   sessionId: string,
 ): Promise<string> {
-  const result = await client.kilo.cloud.session.import({ sessionId })
-  if (result.error) throw new Error(importErrorReason(result.error))
+  const kilo = (client as { kilo?: { cloud?: { session?: { import?: (params: { sessionId: string }) => Promise<{ data?: unknown; error?: unknown }> } } } }).kilo
+  const importFn = kilo?.cloud?.session?.import as ((params: { sessionId: string }) => Promise<{ data?: unknown; error?: unknown }>) | undefined
+  const result = await (importFn ? importFn({ sessionId }) : undefined)
+  if (!result || result.error) throw new Error(importErrorReason(result?.error))
   const id = (result.data as Record<string, unknown>)?.id
   if (typeof id !== "string") throw new Error("cloud session import returned no session id")
   return id

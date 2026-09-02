@@ -42,13 +42,12 @@ const SCRIPT = `
     process.exit(2)
   }
 
-  const [config, setConfig] = createSignal({ disabled_providers: ["kilo"] })
-  const [auth, setAuth] = createSignal({})
+  const [config] = createSignal({})
   const root = document.createElement("div")
   const dispose = render(
     () =>
       createComponent(ProviderContext.Provider, {
-        value: { authStates: auth },
+        value: { authStates: () => ({}) },
         get children() {
           return createComponent(ConfigContext.Provider, {
             value: { config },
@@ -61,21 +60,15 @@ const SCRIPT = `
     root,
   )
 
-  if (sent.length !== 0) fail("prewarmed without Kilo access")
-  setAuth({ kilo: "api" })
-  if (sent.length !== 0) fail("prewarmed while Kilo was disabled")
-  setConfig({})
   if (sent.length !== 1 || sent[0]?.type !== "speechToTextPrewarm") {
-    fail("did not prewarm after Kilo access became available")
+    fail("did not prewarm on mount")
   }
-  setAuth({ kilo: "oauth" })
-  if (sent.length !== 1) fail("prewarmed more than once")
   dispose()
   console.log("${PASS}")
 `
 
 describe("speech-to-text prewarm", () => {
-  it("starts only after Kilo speech access becomes available", () => {
+  it("prewarms on mount in the offline extension", () => {
     const attempts = 3
     const failures: string[] = []
 

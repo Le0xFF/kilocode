@@ -503,11 +503,6 @@ const layer = Layer.effect(
         )
         warnings.push(...legacy.warnings)
 
-        const orgModes = yield* Effect.promise(() => KilocodeConfig.loadOrganizationModes(auth))
-        if (Object.keys(orgModes.agents).length > 0) {
-          result = mergeConfigConcatArrays(result, { agent: orgModes.agents })
-        }
-        warnings.push(...orgModes.warnings)
         let configuredAgents = { ...(result.agent ?? {}) }
         // kilocode_change end
 

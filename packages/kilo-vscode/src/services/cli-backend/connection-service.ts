@@ -13,7 +13,6 @@ type StateListener = (state: ConnectionState, error?: Error) => void
 type SSEEventFilter = (event: SSEPayload, directory?: string) => boolean
 type NotificationDismissListener = (notificationId: string) => void
 type LanguageChangeListener = (locale: string) => void
-type ProfileChangeListener = (data: unknown) => void
 type MigrationCompleteListener = () => void
 type FavoritesChangeListener = (favorites: Array<{ providerID: string; modelID: string }>) => void
 type ModelSelectorExpandedListener = (value: boolean) => void
@@ -102,7 +101,6 @@ export class KiloConnectionService {
   private readonly stateListeners: Set<StateListener> = new Set()
   private readonly notificationDismissListeners: Set<NotificationDismissListener> = new Set()
   private readonly languageChangeListeners: Set<LanguageChangeListener> = new Set()
-  private readonly profileChangeListeners: Set<ProfileChangeListener> = new Set()
   private readonly migrationCompleteListeners: Set<MigrationCompleteListener> = new Set()
   private readonly favoritesChangeListeners: Set<FavoritesChangeListener> = new Set()
   private readonly modelSelectorExpandedListeners: Set<ModelSelectorExpandedListener> = new Set()
@@ -224,7 +222,7 @@ export class KiloConnectionService {
 
   /**
    * Get server config (baseUrl + password). Returns null if not connected.
-   * Used by TelemetryProxy to POST events to the CLI server.
+   * Used to POST events to the CLI server.
    */
   getServerConfig(): ServerConfig | null {
     return this.config
@@ -447,25 +445,6 @@ export class KiloConnectionService {
   }
 
   /**
-   * Subscribe to profile change events broadcast from any KiloProvider. Returns unsubscribe function.
-   */
-  onProfileChanged(listener: ProfileChangeListener): () => void {
-    this.profileChangeListeners.add(listener)
-    return () => {
-      this.profileChangeListeners.delete(listener)
-    }
-  }
-
-  /**
-   * Broadcast a profile change event to all subscribed KiloProvider instances.
-   */
-  notifyProfileChanged(data: unknown): void {
-    for (const listener of this.profileChangeListeners) {
-      listener(data)
-    }
-  }
-
-  /**
    * Subscribe to migration-complete events broadcast from any KiloProvider. Returns unsubscribe function.
    */
   onMigrationComplete(listener: MigrationCompleteListener): () => void {
@@ -683,8 +662,15 @@ export class KiloConnectionService {
 
     this.viewedSending = true
     this.viewedDirty = false
-    void this.client.session
-      .viewed({ viewer: { id: this.viewerId, active: this.active }, attached: [...attached], visible: [...visible] })
+    const viewed = (this.client.session as { viewed?: (p: unknown) => Promise<unknown> }).viewed
+    if (typeof viewed !== "function") {
+      this.viewedSending = false
+      return
+    }
+    void viewed.call(
+      this.client.session,
+      { viewer: { id: this.viewerId, active: this.active }, attached: [...attached], visible: [...visible] },
+    )
       .catch((err) => console.warn("[Kilo New] ConnectionService: viewed flush failed:", err))
       .finally(() => {
         this.viewedSending = false
@@ -704,7 +690,6 @@ export class KiloConnectionService {
     this.explicitAborts.clear()
     this.stateListeners.clear()
     this.notificationDismissListeners.clear()
-    this.profileChangeListeners.clear()
     this.migrationCompleteListeners.clear()
     this.favoritesChangeListeners.clear()
     this.clearPendingPromptsListeners.clear()
@@ -715,10 +700,9 @@ export class KiloConnectionService {
     this.permissionDirectories.clear()
     this.questionDirectories.clear()
     this.questionRevision += 1
-    if (this.client?.session?.viewed) {
-      void this.client.session
-        .viewed({ viewer: { id: this.viewerId, active: false }, attached: [], visible: [] })
-        .catch(() => {})
+    const viewed = (this.client?.session as { viewed?: (p: unknown) => Promise<unknown> } | undefined)?.viewed
+    if (typeof viewed === "function") {
+      void viewed.call(this.client!.session, { viewer: { id: this.viewerId, active: false }, attached: [], visible: [] }).catch(() => {})
     }
     this.attached.clear()
     this.visible.clear()

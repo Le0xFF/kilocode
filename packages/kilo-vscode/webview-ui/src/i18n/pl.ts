@@ -399,7 +399,6 @@ export const dict = {
   "settings.providers.connected.empty": "Brak połączonych dostawców",
   "settings.providers.section.popular": "Popularni dostawcy",
   "settings.providers.select.placeholder": "Wybierz dostawcę...",
-  "settings.providers.tag.gateway": "Gateway",
   "settings.providers.tag.environment": "Środowisko",
   "settings.providers.tag.config": "Konfiguracja",
   "settings.providers.tag.chatgpt": "ChatGPT",
@@ -673,10 +672,8 @@ export const dict = {
   "settings.webTools.webSearch.description": "Udostępnij wyszukiwanie w sieci modelom wszystkich dostawców.",
   "settings.checkpoints.title": "Punkty kontrolne",
   "settings.display.title": "Wyświetlanie",
-  "settings.autocomplete.title": "Autouzupełnianie",
-  "settings.autocomplete.model.title": "Model autouzupełniania",
-  "settings.autocomplete.model.description": "Wybierz model używany do uzupełniania kodu w linii (inline)",
   "settings.notifications.title": "Powiadomienia",
+  "settings.notifications.sounds": "Dźwięki",
   "settings.context.title": "Kontekst",
 
   "settings.experimental.title": "Eksperymentalne",
@@ -753,7 +750,6 @@ export const dict = {
   "settings.aboutKiloCode.resetSettings.description":
     "To resetuje tylko ustawienia specyficzne dla rozszerzenia VS Code do ich domyślnych wartości. Ustawienia współdzielone z CLI, takie jak tryby i reguły automatycznego zatwierdzania, są przechowywane w konfiguracji CLI i nie zostaną zresetowane.",
   "settings.aboutKiloCode.resetSettings.button": "Resetuj wszystkie ustawienia",
-  "settings.aboutKiloCode.resetSettings.notificationsButton": "Reset Read Notifications",
   "settings.aboutKiloCode.settingsTransfer.title": "Przenoszenie ustawień",
   "settings.aboutKiloCode.settingsTransfer.description":
     "Eksportuj lub importuj ustawienia, aby przenosić je między instancjami VS Code.",
@@ -794,14 +790,6 @@ export const dict = {
 
   "common.add": "Dodaj",
 
-  "settings.autocomplete.autoTrigger.title": "Włącz automatyczne uzupełnianie inline",
-  "settings.autocomplete.autoTrigger.description": "Automatycznie pokazuj sugestie uzupełniania podczas pisania",
-  "settings.autocomplete.smartKeybinding.title": "Włącz inteligentny skrót zadania inline",
-  "settings.autocomplete.smartKeybinding.description": "Użyj inteligentnego skrótu do wyzwalania zadań inline",
-  "settings.autocomplete.chatAutocomplete.title": "Włącz autouzupełnianie czatu",
-  "settings.autocomplete.chatAutocomplete.description": "Pokaż sugestie autouzupełniania w polu czatu",
-  "settings.autocomplete.modelsHint": "Aby wybrać model używany do autouzupełniania, zobacz Ustawienia modeli.",
-  "settings.notifications.sounds": "Dźwięki",
   "settings.notifications.enable.title": "Włącz powiadomienia dźwiękowe",
   "settings.notifications.enable.description":
     "Odtwarzaj dźwięki, gdy sesje się zakończą, wystąpi błąd lub będzie potrzebna Twoja reakcja",
@@ -883,10 +871,6 @@ export const dict = {
   "settings.indexing.model.title": "Model osadzania",
   "settings.indexing.provider.description":
     "Wybierz dostawcę używanego do generowania osadzeń dla wyszukiwania semantycznego.",
-  "settings.indexing.kiloModel.title": "Preset modelu Kilo",
-  "settings.indexing.kiloModel.description": "Wybierz obsługiwany model osadzania hostowany przez Kilo.",
-  "settings.indexing.kiloSignIn.title": "Wymagane logowanie do Kilo",
-  "settings.indexing.kiloSignIn.description": "Zaloguj się do Kilo, aby używać hostowanych osadzeń.",
   "settings.indexing.provider.title": "Dostawca osadzania",
   "settings.indexing.providerField.description": "Ustawienie połączenia specyficzne dla dostawcy.",
   "settings.indexing.qdrantApiKey.description": "Opcjonalny klucz API dla instancji Qdrant.",
@@ -1011,7 +995,6 @@ export const dict = {
   "settings.agentBehaviour.mcpDetail.command": "Polecenie",
   "settings.agentBehaviour.mcpDetail.args": "Argumenty",
   "settings.agentBehaviour.mcpDetail.env": "Środowisko",
-  "settings.agentBehaviour.mcpBrowseMarketplace": "Przeglądaj Marketplace",
   "settings.agentBehaviour.mcpEmpty":
     "Brak skonfigurowanych serwerów MCP. Dodaj serwery MCP w kilo.jsonc lub poproś agenta o ich dodanie.",
   "settings.agentBehaviour.workflows.description":

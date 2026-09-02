@@ -424,10 +424,6 @@ export const dict = {
   "settings.indexing.model.title": "Embedding-Modell",
   "settings.indexing.provider.description":
     "Wählen Sie den Anbieter, der für die Generierung von Embeddings für die semantische Suche verwendet wird.",
-  "settings.indexing.kiloModel.title": "Kilo-Modellvoreinstellung",
-  "settings.indexing.kiloModel.description": "Wählen Sie ein unterstütztes von Kilo gehostetes Embedding-Modell.",
-  "settings.indexing.kiloSignIn.title": "Kilo-Anmeldung erforderlich",
-  "settings.indexing.kiloSignIn.description": "Melden Sie sich bei Kilo an, um gehostete Embeddings zu verwenden.",
   "settings.indexing.provider.title": "Embedding-Anbieter",
   "settings.indexing.providerField.description": "Anbieterspezifische Verbindungseinstellung.",
   "settings.indexing.qdrantApiKey.description": "Optionaler API-Schlüssel für die Qdrant-Instanz.",
@@ -450,7 +446,6 @@ export const dict = {
   "settings.providers.connected.empty": "Keine verbundenen Anbieter",
   "settings.providers.section.popular": "Beliebte Anbieter",
   "settings.providers.select.placeholder": "Anbieter auswählen...",
-  "settings.providers.tag.gateway": "Gateway",
   "settings.providers.tag.environment": "Umgebung",
   "settings.providers.tag.config": "Konfiguration",
   "settings.providers.tag.chatgpt": "ChatGPT",
@@ -727,9 +722,6 @@ export const dict = {
   "settings.webTools.webSearch.description": "Machen Sie die Websuche für Modelle aller Anbieter verfügbar.",
   "settings.checkpoints.title": "Prüfpunkte",
   "settings.display.title": "Anzeige",
-  "settings.autocomplete.title": "Autovervollständigung",
-  "settings.autocomplete.model.title": "Autocomplete-Modell",
-  "settings.autocomplete.model.description": "Wählen Sie das Modell für Inline-Code-Vervollständigungen",
   "settings.notifications.title": "Benachrichtigungen",
   "settings.context.title": "Kontext",
 
@@ -808,7 +800,6 @@ export const dict = {
   "settings.aboutKiloCode.resetSettings.description":
     "Dies setzt nur VS Code-erweiterungsspezifische Einstellungen auf ihre Standardwerte zurück. Einstellungen, die mit der CLI geteilt werden, wie Modi und Regeln für die automatische Genehmigung, werden in der CLI-Konfiguration gespeichert und nicht zurückgesetzt.",
   "settings.aboutKiloCode.resetSettings.button": "Alle Einstellungen zurücksetzen",
-  "settings.aboutKiloCode.resetSettings.notificationsButton": "Reset Read Notifications",
   "settings.aboutKiloCode.settingsTransfer.title": "Einstellungen übertragen",
   "settings.aboutKiloCode.settingsTransfer.description":
     "Exportieren oder importieren Sie Ihre Einstellungen, um sie zwischen VS Code-Instanzen zu übertragen.",
@@ -852,16 +843,6 @@ export const dict = {
 
   "common.add": "Hinzufügen",
 
-  "settings.autocomplete.autoTrigger.title": "Automatische Inline-Vervollständigung aktivieren",
-  "settings.autocomplete.autoTrigger.description":
-    "Inline-Vervollständigungsvorschläge beim Tippen automatisch anzeigen",
-  "settings.autocomplete.smartKeybinding.title": "Intelligente Inline-Aufgaben-Tastenkombination aktivieren",
-  "settings.autocomplete.smartKeybinding.description":
-    "Eine intelligente Tastenkombination zum Auslösen von Inline-Aufgaben verwenden",
-  "settings.autocomplete.chatAutocomplete.title": "Chat-Textfeld-Autovervollständigung aktivieren",
-  "settings.autocomplete.chatAutocomplete.description": "Autovervollständigungsvorschläge im Chat-Textfeld anzeigen",
-  "settings.autocomplete.modelsHint":
-    "Um zu wählen, welches Modell für die Autovervollständigung verwendet wird, siehe Modelleinstellungen.",
   "settings.notifications.sounds": "Töne",
   "settings.notifications.enable.title": "Tonbenachrichtigungen aktivieren",
   "settings.notifications.enable.description":
@@ -1033,7 +1014,6 @@ export const dict = {
   "settings.agentBehaviour.mcpDetail.command": "Befehl",
   "settings.agentBehaviour.mcpDetail.args": "Argumente",
   "settings.agentBehaviour.mcpDetail.env": "Umgebung",
-  "settings.agentBehaviour.mcpBrowseMarketplace": "Marketplace durchsuchen",
   "settings.agentBehaviour.mcpEmpty":
     "Keine MCP-Server konfiguriert. Fügen Sie MCP-Server in kilo.jsonc hinzu oder bitten Sie den Agenten, sie hinzuzufügen.",
   "settings.agentBehaviour.workflows.description":

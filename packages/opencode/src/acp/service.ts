@@ -783,13 +783,6 @@ function defaultModelFromConfig(
   const configured = configuredModel ? Provider.parseModel(configuredModel) : undefined
   if (configured && providers[configured.providerID]?.models[configured.modelID]) return configured
 
-  // First-session ACP startup must not scan historical sessions just to infer
-  // a default. Configured model, opencode provider, then sorted best model keep
-  // the protocol response deterministic without extra session/message reads.
-  const kiloProvider = providers[ProviderV2.ID.make("kilo")] // kilocode_change
-  const kiloModel = kiloProvider ? Provider.sort(Object.values(kiloProvider.models))[0] : undefined // kilocode_change
-  if (kiloProvider && kiloModel) return { providerID: kiloProvider.id, modelID: kiloModel.id } // kilocode_change
-
   const best = Provider.sort(Object.values(providers).flatMap((provider) => Object.values(provider.models)))[0]
   if (best) return { providerID: best.providerID, modelID: best.id }
   if (configured) return configured

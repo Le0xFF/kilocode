@@ -92,6 +92,9 @@ const historySdkPatched = generatedSdk.replace(
 if (historySdkPatched === generatedSdk) {
   throw new Error("Session history numeric SDK patch did not apply")
 }
+if (historySdkPatched === generatedSdk) {
+  throw new Error("Session history numeric SDK patch did not apply")
+}
 await Bun.write("./src/v2/gen/sdk.gen.ts", historySdkPatched)
 
 // The legacy SDK generator is retired, but this public Config type remains exported.

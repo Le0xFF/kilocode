@@ -550,11 +550,8 @@ const layer = Layer.effect(
         const authInfo = yield* auth.get(model.providerID).pipe(Effect.orDie)
         const isOpenaiOauth = model.providerID === "openai" && authInfo?.type === "oauth"
 
-        const params = {
-          // kilocode_change start - enable telemetry with custom PostHog tracer
-          experimental_telemetry: KiloAgent.telemetryOptions(cfg),
-          // kilocode_change end
-          temperature: 0.3,
+const params = {
+      temperature: 0.3,
           messages: [
             ...(isOpenaiOauth
               ? []

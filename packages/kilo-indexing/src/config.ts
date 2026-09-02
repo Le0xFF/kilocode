@@ -9,7 +9,6 @@ export { DEFAULT_VECTOR_STORE } from "./indexing/constants"
 export { isFileExtension, normalizeFileExtensions, parseFileExtensions } from "./file-extensions"
 
 const providers = [
-  "kilo",
   "openai",
   "ollama",
   "openai-compatible",

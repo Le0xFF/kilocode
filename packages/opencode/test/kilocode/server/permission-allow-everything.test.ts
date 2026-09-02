@@ -1,18 +1,19 @@
 import { LayerNode } from "@opencode-ai/core/effect/layer-node"
 import { SessionProjector } from "@opencode-ai/core/session/projector"
-import { afterEach, describe, expect, test } from "bun:test"
-import { Flag } from "@opencode-ai/core/flag/flag"
-import { Cause, Effect, Exit, Fiber } from "effect"
+import { describe, expect, test } from "bun:test"
+import { Cause, ConfigProvider, Effect, Exit, Fiber, Layer } from "effect"
+import { HttpRouter } from "effect/unstable/http"
 import { CrossSpawnSpawner } from "@opencode-ai/core/cross-spawn-spawner"
 import { Bus } from "../../../src/bus"
 import * as Config from "../../../src/config/config"
 import { AllowEverythingPermission } from "../../../src/kilocode/permission/allow-everything"
 import { Permission } from "../../../src/permission"
 import { PermissionV1 } from "@opencode-ai/core/v1/permission"
-import { provideTestInstance } from "../../fixture/fixture"
-import { Server } from "../../../src/server/server"
+import { HttpApiApp } from "../../../src/server/routes/instance/httpapi/server"
+import { provideTestInstance, tmpdir } from "../../fixture/fixture"
+import { ServerAuth } from "../../../src/server/auth"
 import { Session } from "../../../src/session/session"
-import { provideTmpdirInstance, tmpdir } from "../../fixture/fixture"
+import { provideTmpdirInstance } from "../../fixture/fixture"
 import { testEffect } from "../../lib/effect"
 
 const env = LayerNode.compile(
@@ -26,30 +27,28 @@ const env = LayerNode.compile(
   ]),
 )
 const it = testEffect(env)
-const original = {
-  password: Flag.KILO_SERVER_PASSWORD,
-  username: Flag.KILO_SERVER_USERNAME,
-  envPassword: process.env.KILO_SERVER_PASSWORD,
-  envUsername: process.env.KILO_SERVER_USERNAME,
+
+const app = () => {
+  const handler = HttpRouter.toWebHandler(
+    HttpApiApp.routes.pipe(
+      Layer.provide(
+        ConfigProvider.layer(
+          ConfigProvider.fromUnknown({
+            KILO_SERVER_PASSWORD: "secret",
+            KILO_SERVER_USERNAME: undefined,
+            KILO_EXPERIMENTAL_DISABLE_FILEWATCHER: process.env.KILO_EXPERIMENTAL_DISABLE_FILEWATCHER ?? "true",
+          }),
+        ),
+      ),
+    ),
+    { disableLogger: true },
+  ).handler
+
+  return (input: string | URL | Request, init?: RequestInit) =>
+    handler(input instanceof Request ? input : new Request(new URL(input, "http://localhost"), init), HttpApiApp.context)
 }
 
-afterEach(() => {
-  Flag.KILO_SERVER_PASSWORD = original.password
-  Flag.KILO_SERVER_USERNAME = original.username
-  if (original.envPassword === undefined) delete process.env.KILO_SERVER_PASSWORD
-  else process.env.KILO_SERVER_PASSWORD = original.envPassword
-  if (original.envUsername === undefined) delete process.env.KILO_SERVER_USERNAME
-  else process.env.KILO_SERVER_USERNAME = original.envUsername
-})
-
-const auth = () => `Basic ${Buffer.from("kilo:secret").toString("base64")}`
-
-const requireAuth = () => {
-  Flag.KILO_SERVER_PASSWORD = "secret"
-  Flag.KILO_SERVER_USERNAME = undefined
-  process.env.KILO_SERVER_PASSWORD = "secret"
-  delete process.env.KILO_SERVER_USERNAME
-}
+const auth = () => ServerAuth.header({ username: "kilo", password: "secret" }) ?? ""
 
 const ask = (input: Permission.AskInput) =>
   Effect.gen(function* () {
@@ -75,26 +74,26 @@ const wait = () =>
 
 describe("AllowEverythingPermission", () => {
   test("handles disable requests through the HTTP endpoint", async () => {
-    requireAuth()
     await using tmp = await tmpdir({ git: true })
+    const request = app()
     await provideTestInstance({
       directory: tmp.path,
       fn: async () => {
-        const blocked = await Server.Default().app.request("/permission/allow-everything", {
+        const blocked = await request("/permission/allow-everything", {
           method: "POST",
           headers: { "Content-Type": "application/json", "x-kilo-directory": tmp.path },
           body: JSON.stringify({ enable: true }),
         })
         expect(blocked.status).toBe(401)
 
-        const enable = await Server.Default().app.request("/permission/allow-everything", {
+        const enable = await request("/permission/allow-everything", {
           method: "POST",
           headers: { "Content-Type": "application/json", "x-kilo-directory": tmp.path, authorization: auth() },
           body: JSON.stringify({ enable: true }),
         })
         expect(enable.status).toBe(200)
 
-        const disable = await Server.Default().app.request("/permission/allow-everything", {
+        const disable = await request("/permission/allow-everything", {
           method: "POST",
           headers: { "Content-Type": "application/json", "x-kilo-directory": tmp.path, authorization: auth() },
           body: JSON.stringify({ enable: false }),

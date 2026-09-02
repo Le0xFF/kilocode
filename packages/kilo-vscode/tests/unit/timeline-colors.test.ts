@@ -110,18 +110,18 @@ describe("timeline labels", () => {
       label(
         {
           ...mkStepFinish(),
-          model: { providerID: "kilo", modelID: "openai/gpt-5.5" },
+          model: { providerID: "openai", modelID: "gpt-5.5" },
         },
         {
           id: "m1",
           sessionID: "s1",
           role: "assistant",
           createdAt: "now",
-          providerID: "kilo",
-          modelID: "kilo-auto/efficient",
+          providerID: "openai",
+          modelID: "auto-efficient",
         },
       ),
-    ).toBe("Step finish · openai/gpt-5.5")
+    ).toBe("Step finish · gpt-5.5")
   })
 
   it("keeps step-finish unchanged for non-auto models", () => {
@@ -129,15 +129,15 @@ describe("timeline labels", () => {
       label(
         {
           ...mkStepFinish(),
-          model: { providerID: "kilo", modelID: "openai/gpt-5.5" },
+          model: { providerID: "openai", modelID: "gpt-5.5" },
         },
         {
           id: "m1",
           sessionID: "s1",
           role: "assistant",
           createdAt: "now",
-          providerID: "kilo",
-          modelID: "openai/gpt-5.5",
+          providerID: "openai",
+          modelID: "gpt-5.5",
         },
       ),
     ).toBe("Step finish")

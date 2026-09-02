@@ -412,10 +412,6 @@ export const dict = {
   "settings.indexing.model.description": "選択したプロバイダーのデフォルト埋め込みモデルを上書きします。",
   "settings.indexing.model.title": "埋め込みモデル",
   "settings.indexing.provider.description": "セマンティック検索用の埋め込みを生成するプロバイダーを選択します。",
-  "settings.indexing.kiloModel.title": "Kiloモデルプリセット",
-  "settings.indexing.kiloModel.description": "サポートされているKiloホスト型埋め込みモデルを選択します。",
-  "settings.indexing.kiloSignIn.title": "Kiloへのサインインが必要です",
-  "settings.indexing.kiloSignIn.description": "ホスト型埋め込みを使用するにはKiloにサインインしてください。",
   "settings.indexing.provider.title": "埋め込みプロバイダー",
   "settings.indexing.providerField.description": "プロバイダー固有の接続設定。",
   "settings.indexing.qdrantApiKey.description": "QdrantインスタンスのオプションのAPIキー。",
@@ -438,7 +434,6 @@ export const dict = {
   "settings.providers.connected.empty": "接続済みプロバイダーはありません",
   "settings.providers.section.popular": "人気のプロバイダー",
   "settings.providers.select.placeholder": "プロバイダーを選択...",
-  "settings.providers.tag.gateway": "Gateway",
   "settings.providers.tag.environment": "環境",
   "settings.providers.tag.config": "設定",
   "settings.providers.tag.chatgpt": "ChatGPT",
@@ -710,10 +705,8 @@ export const dict = {
   "settings.webTools.webSearch.description": "すべてのプロバイダーのモデルでウェブ検索を利用できるようにします。",
   "settings.checkpoints.title": "チェックポイント",
   "settings.display.title": "表示",
-  "settings.autocomplete.title": "オートコンプリート",
-  "settings.autocomplete.model.title": "オートコンプリートモデル",
-  "settings.autocomplete.model.description": "インラインでのコード補完に使用するモデルを選択します",
   "settings.notifications.title": "通知",
+  "settings.notifications.sounds": "サウンド",
   "settings.context.title": "コンテキスト",
 
   "settings.experimental.title": "実験的機能",
@@ -789,7 +782,6 @@ export const dict = {
   "settings.aboutKiloCode.resetSettings.description":
     "これはVS Code拡張機能固有の設定のみをデフォルト値にリセットします。モードや自動承認ルールなど、CLIと共有される設定はCLI設定ファイルに保存されており、リセットされません。",
   "settings.aboutKiloCode.resetSettings.button": "すべての設定をリセット",
-  "settings.aboutKiloCode.resetSettings.notificationsButton": "Reset Read Notifications",
   "settings.aboutKiloCode.settingsTransfer.title": "設定の移行",
   "settings.aboutKiloCode.settingsTransfer.description":
     "VS Code インスタンス間で設定を転送するには、エクスポートまたはインポートしてください。",
@@ -831,14 +823,6 @@ export const dict = {
 
   "common.add": "追加",
 
-  "settings.autocomplete.autoTrigger.title": "自動インライン補完を有効にする",
-  "settings.autocomplete.autoTrigger.description": "入力時にインライン補完の提案を自動的に表示",
-  "settings.autocomplete.smartKeybinding.title": "スマートインラインタスクキーバインドを有効にする",
-  "settings.autocomplete.smartKeybinding.description": "インラインタスクをトリガーするスマートキーバインドを使用",
-  "settings.autocomplete.chatAutocomplete.title": "チャットの自動補完を有効にする",
-  "settings.autocomplete.chatAutocomplete.description": "チャットテキストエリアに自動補完の提案を表示",
-  "settings.autocomplete.modelsHint": "オートコンプリートに使用するモデルを選択するには、モデル設定をご覧ください。",
-  "settings.notifications.sounds": "サウンド",
   "settings.notifications.enable.title": "サウンド通知を有効にする",
   "settings.notifications.enable.description":
     "セッションの完了時、エラーの発生時、またはユーザー入力が必要なときにサウンドを再生します",
@@ -1005,7 +989,6 @@ export const dict = {
   "settings.agentBehaviour.mcpDetail.command": "コマンド",
   "settings.agentBehaviour.mcpDetail.args": "引数",
   "settings.agentBehaviour.mcpDetail.env": "環境",
-  "settings.agentBehaviour.mcpBrowseMarketplace": "マーケットプレイスを閲覧",
   "settings.agentBehaviour.mcpEmpty":
     "MCPサーバーが設定されていません。kilo.jsoncでMCPサーバーを追加するか、エージェントに追加を依頼してください。",
   "settings.agentBehaviour.workflows.description":

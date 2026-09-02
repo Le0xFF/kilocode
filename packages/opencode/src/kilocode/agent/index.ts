@@ -461,12 +461,6 @@ export function hardenSystemAgents<T extends { name: string; permission: Permiss
   }
 }
 
-// Returns experimental_telemetry config for generate calls.
-// AI SDK span recording (ai.* / gen_ai.*) is disabled.
-export function telemetryOptions(_cfg: Config.Info) {
-  return { isEnabled: false as const }
-}
-
 // Patch the base agents map in-place with all kilo-specific changes:
 // - Rename build → code
 // - Patch plan with readOnlyBash, mcpRules, .kilo paths

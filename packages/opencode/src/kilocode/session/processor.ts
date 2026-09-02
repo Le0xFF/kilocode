@@ -1,5 +1,4 @@
 // kilocode_change - new file
-import { Telemetry, type ReviewCommand } from "@kilocode/kilo-telemetry"
 import { SessionNetwork } from "@/session/network"
 import type { SessionID } from "@/session/schema"
 import type { SessionStatus } from "@/session/status"
@@ -7,6 +6,8 @@ import { MessageV2 } from "@/session/message-v2"
 import { isRecord } from "@/util/record"
 import { parseReviewCommand, reviewCommandName } from "@/kilocode/review/command"
 import * as Log from "@opencode-ai/core/util/log"
+
+type ReviewCommand = "review"
 import { Cause, Effect, Exit } from "effect"
 import { Flag } from "@opencode-ai/core/flag/flag"
 import { EffectBridge } from "@/effect/bridge"
@@ -103,34 +104,15 @@ export namespace KiloSessionProcessor {
     }
   }
 
-  /**
-   * Track LLM completion telemetry for a finished step.
-   * Only fires if at least one token bucket is non-zero.
-   */
-  export function trackStep(input: {
+  /** No-op: PostHog telemetry was removed with the online services. */
+  export function trackStep(_input: {
     sessionID: string
     model: { providerID: string; id: string }
     tokens: { input: number; output: number; cache: { read: number; write: number } }
     cost: number
     elapsed: number
     telemetry?: ReviewTelemetry
-  }) {
-    const { tokens } = input
-    if (tokens.input > 0 || tokens.output > 0 || tokens.cache.write > 0 || tokens.cache.read > 0) {
-      Telemetry.trackLlmCompletion({
-        taskId: input.sessionID,
-        ...(input.telemetry ?? {}),
-        apiProvider: input.model.providerID,
-        modelId: input.model.id,
-        inputTokens: tokens.input,
-        outputTokens: tokens.output,
-        cacheReadTokens: tokens.cache.read,
-        cacheWriteTokens: tokens.cache.write,
-        cost: input.cost,
-        completionTime: input.elapsed,
-      })
-    }
-  }
+  }) {}
 
   /** Pure throughput helper re-exported for namespace symmetry. */
   export const computeMetrics: typeof computeMetricsHelper = computeMetricsHelper

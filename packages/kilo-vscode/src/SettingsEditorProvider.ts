@@ -5,11 +5,10 @@ import type { KiloConnectionService } from "./services/cli-backend"
 import type { RemoteStatusService } from "./services/RemoteStatusService"
 import type { AgentManagerSettingsHandler } from "./kilo-provider/options"
 
-type PanelView = "settings" | "profile" | "indexing"
+type PanelView = "settings" | "indexing"
 
 const PANEL_TITLES: Record<PanelView, string> = {
   settings: "Kilo Settings",
-  profile: "Kilo Profile",
   indexing: "Codebase Indexing",
 }
 

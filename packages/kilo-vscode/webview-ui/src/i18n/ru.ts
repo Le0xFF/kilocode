@@ -406,10 +406,6 @@ export const dict = {
   "settings.indexing.status.title": "Статус",
   "settings.indexing.provider.title": "Провайдер эмбеддингов",
   "settings.indexing.provider.description": "Выберите провайдера для генерации эмбеддингов при семантическом поиске.",
-  "settings.indexing.kiloModel.title": "Предустановка модели Kilo",
-  "settings.indexing.kiloModel.description": "Выберите поддерживаемую модель эмбеддингов, размещенную в Kilo.",
-  "settings.indexing.kiloSignIn.title": "Требуется вход в Kilo",
-  "settings.indexing.kiloSignIn.description": "Войдите в Kilo, чтобы использовать размещенные эмбеддинги.",
   "settings.indexing.model.title": "Модель эмбеддингов",
   "settings.indexing.model.description": "Переопределить модель эмбеддингов по умолчанию для выбранного провайдера.",
   "settings.indexing.dimension.title": "Размерность вектора",
@@ -438,7 +434,6 @@ export const dict = {
   "settings.providers.connected.empty": "Нет подключённых провайдеров",
   "settings.providers.section.popular": "Популярные провайдеры",
   "settings.providers.select.placeholder": "Выберите провайдера...",
-  "settings.providers.tag.gateway": "Gateway",
   "settings.providers.tag.environment": "Среда",
   "settings.providers.tag.config": "Конфигурация",
   "settings.providers.tag.chatgpt": "ChatGPT",
@@ -714,10 +709,8 @@ export const dict = {
   "settings.webTools.webSearch.description": "Сделайте веб-поиск доступным для моделей всех провайдеров.",
   "settings.checkpoints.title": "Контрольные точки",
   "settings.display.title": "Отображение",
-  "settings.autocomplete.title": "Автодополнение",
-  "settings.autocomplete.model.title": "Модель автодополнения",
-  "settings.autocomplete.model.description": "Выберите модель для встроенного (inline) автодополнения кода",
   "settings.notifications.title": "Уведомления",
+  "settings.notifications.sounds": "Звуки",
   "settings.context.title": "Контекст",
 
   "settings.experimental.title": "Экспериментальное",
@@ -793,7 +786,6 @@ export const dict = {
   "settings.aboutKiloCode.resetSettings.description":
     "Это сбрасывает только настройки, специфичные для расширения VS Code, до значений по умолчанию. Настройки, общие с CLI, такие как режимы и правила автоматического утверждения, хранятся в конфигурации CLI и не будут сброшены.",
   "settings.aboutKiloCode.resetSettings.button": "Сбросить все настройки",
-  "settings.aboutKiloCode.resetSettings.notificationsButton": "Reset Read Notifications",
   "settings.aboutKiloCode.settingsTransfer.title": "Перенос настроек",
   "settings.aboutKiloCode.settingsTransfer.description":
     "Экспортируйте или импортируйте настройки для переноса между экземплярами VS Code.",
@@ -834,14 +826,6 @@ export const dict = {
 
   "common.add": "Добавить",
 
-  "settings.autocomplete.autoTrigger.title": "Включить автоматическое встроенное дополнение",
-  "settings.autocomplete.autoTrigger.description": "Автоматически показывать предложения дополнения при вводе",
-  "settings.autocomplete.smartKeybinding.title": "Включить умную клавишу встроенной задачи",
-  "settings.autocomplete.smartKeybinding.description": "Использовать умную клавишу для запуска встроенных задач",
-  "settings.autocomplete.chatAutocomplete.title": "Включить автодополнение чата",
-  "settings.autocomplete.chatAutocomplete.description": "Показывать предложения автодополнения в поле чата",
-  "settings.autocomplete.modelsHint": "Чтобы выбрать модель для автодополнения, см. настройки Моделей.",
-  "settings.notifications.sounds": "Звуки",
   "settings.notifications.enable.title": "Включить звуковые уведомления",
   "settings.notifications.enable.description":
     "Воспроизводить звуки при завершении сеансов, возникновении ошибки или необходимости вашего участия",
@@ -1008,7 +992,6 @@ export const dict = {
   "settings.agentBehaviour.mcpDetail.command": "Команда",
   "settings.agentBehaviour.mcpDetail.args": "Аргументы",
   "settings.agentBehaviour.mcpDetail.env": "Окружение",
-  "settings.agentBehaviour.mcpBrowseMarketplace": "Обзор Marketplace",
   "settings.agentBehaviour.mcpEmpty":
     "MCP-серверы не настроены. Добавьте MCP-серверы в kilo.jsonc или попросите агента добавить их.",
   "settings.agentBehaviour.workflows.description":

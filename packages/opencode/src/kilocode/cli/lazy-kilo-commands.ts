@@ -6,22 +6,10 @@ export const KiloConsoleCommand = lazy({
   load: async () => (await import("@/kilocode/cli/cmd/console")).KiloConsoleCommand,
 })
 
-export const CloudCommand = lazy({
-  command: "cloud",
-  describe: "run Cloud Agent tasks",
-  load: async () => (await import("@/kilocode/cli/cmd/cloud")).CloudCommand,
-})
-
 export const RollCallCommand = lazy({
   command: "roll-call <filter>",
   describe: "batch-test text models matching a filter for connectivity and latency",
   load: async () => (await import("@/kilocode/cli/cmd/roll-call")).RollCallCommand,
-})
-
-export const ProfileCommand = lazy({
-  command: "profile",
-  describe: "show Kilo account profile",
-  load: async () => (await import("@/kilocode/cli/cmd/profile")).ProfileCommand,
 })
 
 export const RemoteCommand = lazy({

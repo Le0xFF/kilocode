@@ -15,7 +15,6 @@ import SettingsRow from "./SettingsRow"
 import { DEFAULT_SPEECH_TO_TEXT_MODEL } from "../../../../src/speech-to-text/models"
 import { hasSpeechToTextAccess, selectedSpeechToTextModel } from "../speech-to-text/availability"
 import { speechToTextModelOptions } from "../speech-to-text/model-selector"
-import { AUTOCOMPLETE_SELECTOR_MODELS, getAutocompleteSelection } from "./autocomplete-model-selector"
 import { preserveVariant } from "../../context/session-variant-store"
 
 const ModelsTab: Component = () => {
@@ -24,15 +23,6 @@ const ModelsTab: Component = () => {
   const provider = useProvider()
   const session = useSession()
   const speechModels = useSpeechToTextModels()
-
-  const autocompleteProvider = () => {
-    const v = settings()["autocomplete.provider"]
-    return typeof v === "string" ? v : undefined
-  }
-  const autocompleteModel = () => {
-    const v = settings()["autocomplete.model"]
-    return typeof v === "string" ? v : undefined
-  }
 
   function handleModelSelect(configKey: "model" | "small_model") {
     return (providerID: string, modelID: string) => {
@@ -45,10 +35,14 @@ const ModelsTab: Component = () => {
   }
 
   const subagentModel = createMemo(() => parseModelString(config().subagent_model ?? undefined))
-  const speechModel = createMemo(() => selectedSpeechToTextModel(config(), speechModels.models()))
+  const speechModel = createMemo(() => {
+    const configured = config().experimental?.speech_to_text
+    if (configured?.model) return configured.model
+    return selectedSpeechToTextModel(config(), speechModels.models())
+  })
   const speechOptions = createMemo(() => speechToTextModelOptions(speechModels.models()))
   const speechOption = createMemo(() => speechOptions().find((item) => item.value === speechModel()))
-  const kiloReady = createMemo(() => hasSpeechToTextAccess(config(), provider.authStates()))
+  const kiloReady = createMemo(() => hasSpeechToTextAccess(config()))
   const variantKey = createMemo(() => config().subagent_model ?? undefined)
   const subagentVariants = createMemo(() => Object.keys(provider.findModel(subagentModel())?.variants ?? {}))
   const subagentVariant = createMemo(() => {
@@ -103,18 +97,6 @@ const ModelsTab: Component = () => {
         },
       })
     }
-  }
-
-  function handleAutocompleteModelSelect(providerID: string, modelID: string) {
-    if (!providerID || !modelID) {
-      // Clearing both keys reverts to the resolved server-side default. Users
-      // who pick "Not set" follow future default changes automatically.
-      updateSetting("autocomplete.provider", null)
-      updateSetting("autocomplete.model", null)
-      return
-    }
-    updateSetting("autocomplete.provider", providerID)
-    updateSetting("autocomplete.model", modelID)
   }
 
   return (
@@ -178,22 +160,6 @@ const ModelsTab: Component = () => {
           </div>
         </SettingsRow>
         <SettingsRow
-          title={language.t("settings.autocomplete.model.title")}
-          description={language.t("settings.autocomplete.model.description")}
-        >
-          <ModelSelectorBase
-            value={getAutocompleteSelection(autocompleteProvider(), autocompleteModel())}
-            onSelect={handleAutocompleteModelSelect}
-            placement="bottom-start"
-            models={AUTOCOMPLETE_SELECTOR_MODELS}
-            favorites={false}
-            allowClear
-            clearLabel={language.t("settings.providers.notSet")}
-            label={language.t("settings.autocomplete.model.title")}
-            description={language.t("settings.autocomplete.model.description")}
-          />
-        </SettingsRow>
-        <SettingsRow
           title={language.t("settings.models.speechToTextModel.title")}
           description={
             kiloReady()
@@ -211,14 +177,17 @@ const ModelsTab: Component = () => {
               current={speechOption()}
               value={(item) => item.value}
               label={(item) => `${item.label} (${item.provider})`}
-              onSelect={(item) =>
-                updateConfig({
-                  experimental: {
-                    ...config().experimental,
-                    speech_to_text_model: item?.value ?? DEFAULT_SPEECH_TO_TEXT_MODEL.id,
-                  },
-                })
-              }
+              onSelect={(item) => {
+                  const model = item?.value ?? DEFAULT_SPEECH_TO_TEXT_MODEL.id
+                  const [providerID] = model.split("/")
+                  updateConfig({
+                    experimental: {
+                      ...config().experimental,
+                      speech_to_text_model: model,
+                      speech_to_text: { provider: providerID, model },
+                    },
+                  })
+                }}
               variant="secondary"
               size="small"
               triggerVariant="settings"

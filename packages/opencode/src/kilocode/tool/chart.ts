@@ -1,7 +1,6 @@
 // kilocode_change - new file
 import { Effect, Schema } from "effect"
 import * as Tool from "../../tool/tool"
-import { Telemetry } from "@kilocode/kilo-telemetry"
 
 const Parameters = Schema.Struct({
   title: Schema.String.annotate({
@@ -67,11 +66,9 @@ export const ChartTool = Tool.define(
             }
           }
 
-          Telemetry.trackToolUsed("chart", ctx.sessionID)
-
-          return {
-            title: params.title,
-            output: JSON.stringify(spec),
+return {
+              title: params.title,
+              output: JSON.stringify(spec),
             metadata: { title: params.title, description: params.description } as Meta,
           }
         }).pipe(Effect.orDie),

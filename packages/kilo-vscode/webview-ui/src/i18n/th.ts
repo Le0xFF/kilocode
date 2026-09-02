@@ -405,10 +405,6 @@ export const dict = {
     "เปิดใช้งานการทำดัชนีสำหรับพื้นที่ทำงานนี้เมื่อการทำดัชนีแบบโกลบอลถูกปิดใช้งาน",
   "settings.indexing.provider.title": "ผู้ให้บริการการฝัง",
   "settings.indexing.provider.description": "เลือกผู้ให้บริการที่ใช้สร้างการฝังสำหรับการค้นหาเชิงความหมาย",
-  "settings.indexing.kiloModel.title": "พรีเซ็ตโมเดล Kilo",
-  "settings.indexing.kiloModel.description": "เลือกโมเดลการฝังที่ Kilo โฮสต์และรองรับ",
-  "settings.indexing.kiloSignIn.title": "ต้องลงชื่อเข้าใช้ Kilo",
-  "settings.indexing.kiloSignIn.description": "ลงชื่อเข้าใช้ Kilo เพื่อใช้การฝังแบบโฮสต์",
   "settings.indexing.model.title": "โมเดลการฝัง",
   "settings.indexing.model.description": "แทนที่โมเดลการฝังเริ่มต้นสำหรับผู้ให้บริการที่เลือก",
   "settings.indexing.dimension.title": "ขนาดเวกเตอร์",
@@ -437,7 +433,6 @@ export const dict = {
   "settings.providers.connected.empty": "ไม่มีผู้ให้บริการที่เชื่อมต่อ",
   "settings.providers.section.popular": "ผู้ให้บริการยอดนิยม",
   "settings.providers.select.placeholder": "เลือกผู้ให้บริการ...",
-  "settings.providers.tag.gateway": "Gateway",
   "settings.providers.tag.environment": "สภาพแวดล้อม",
   "settings.providers.tag.config": "กำหนดค่า",
   "settings.providers.tag.chatgpt": "ChatGPT",
@@ -707,10 +702,8 @@ export const dict = {
   "settings.webTools.webSearch.description": "ทำให้โมเดลจากผู้ให้บริการทั้งหมดใช้การค้นหาเว็บได้",
   "settings.checkpoints.title": "จุดตรวจสอบ",
   "settings.display.title": "การแสดงผล",
-  "settings.autocomplete.title": "เติมข้อความอัตโนมัติ",
-  "settings.autocomplete.model.title": "โมเดล Autocomplete",
-  "settings.autocomplete.model.description": "เลือกโมเดลที่ใช้สำหรับการเติมโค้ดแบบอินไลน์ (inline completions)",
   "settings.notifications.title": "การแจ้งเตือน",
+  "settings.notifications.sounds": "เสียง",
   "settings.context.title": "บริบท",
 
   "settings.experimental.title": "ทดลอง",
@@ -784,7 +777,6 @@ export const dict = {
   "settings.aboutKiloCode.resetSettings.description":
     "การดำเนินการนี้จะรีเซ็ตเฉพาะการตั้งค่าเฉพาะของส่วนขยาย VS Code กลับเป็นค่าเริ่มต้นเท่านั้น การตั้งค่าที่ใช้ร่วมกับ CLI เช่น โหมดและกฎการอนุมัติอัตโนมัติ จะถูกเก็บไว้ในการกำหนดค่า CLI และจะไม่ถูกรีเซ็ต",
   "settings.aboutKiloCode.resetSettings.button": "รีเซ็ตการตั้งค่าทั้งหมด",
-  "settings.aboutKiloCode.resetSettings.notificationsButton": "Reset Read Notifications",
   "settings.aboutKiloCode.settingsTransfer.title": "ถ่ายโอนการตั้งค่า",
   "settings.aboutKiloCode.settingsTransfer.description":
     "ส่งออกหรือนำเข้าการตั้งค่าเพื่อถ่ายโอนระหว่างอินสแตนซ์ VS Code",
@@ -823,14 +815,6 @@ export const dict = {
 
   "common.add": "เพิ่ม",
 
-  "settings.autocomplete.autoTrigger.title": "เปิดใช้งานการเติมอัตโนมัติแบบอินไลน์",
-  "settings.autocomplete.autoTrigger.description": "แสดงข้อเสนอแนะการเติมอัตโนมัติระหว่างพิมพ์",
-  "settings.autocomplete.smartKeybinding.title": "เปิดใช้งานปุ่มลัดงานอินไลน์อัจฉริยะ",
-  "settings.autocomplete.smartKeybinding.description": "ใช้ปุ่มลัดอัจฉริยะสำหรับงานอินไลน์",
-  "settings.autocomplete.chatAutocomplete.title": "เปิดใช้งานเติมอัตโนมัติแชท",
-  "settings.autocomplete.chatAutocomplete.description": "แสดงข้อเสนอแนะเติมอัตโนมัติในช่องแชท",
-  "settings.autocomplete.modelsHint": "เลือกโมเดลที่ใช้สำหรับการเติมอัตโนมัติได้ที่การตั้งค่าโมเดล",
-  "settings.notifications.sounds": "เสียง",
   "settings.notifications.enable.title": "เปิดใช้การแจ้งเตือนด้วยเสียง",
   "settings.notifications.enable.description":
     "เล่นเสียงเมื่อเซสชันเสร็จสิ้น เกิดข้อผิดพลาด หรือต้องการให้คุณป้อนข้อมูล",
@@ -995,7 +979,6 @@ export const dict = {
   "settings.agentBehaviour.mcpDetail.command": "คำสั่ง",
   "settings.agentBehaviour.mcpDetail.args": "อาร์กิวเมนต์",
   "settings.agentBehaviour.mcpDetail.env": "สภาพแวดล้อม",
-  "settings.agentBehaviour.mcpBrowseMarketplace": "เรียกดู Marketplace",
   "settings.agentBehaviour.mcpEmpty":
     "ไม่ได้กำหนดค่าเซิร์ฟเวอร์ MCP เพิ่มเซิร์ฟเวอร์ MCP ใน kilo.jsonc หรือขอให้เอเจนต์เพิ่มให้คุณ",
   "settings.agentBehaviour.workflows.description":

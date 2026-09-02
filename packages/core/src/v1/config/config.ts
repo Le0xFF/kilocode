@@ -307,6 +307,24 @@ export const Info = Schema.Struct({
       speech_to_text_model: Schema.optional(Schema.String).annotate({
         description: "Speech-to-text transcription model ID to use for voice input",
       }),
+      // kilocode_change start - local media providers (speech/image) reference a providerID/modelID pair
+      speech_to_text: Schema.optional(
+        Schema.Struct({
+          provider: Schema.optional(Schema.String),
+          model: Schema.optional(Schema.String),
+        }),
+      ).annotate({
+        description: "Local OpenAI-compatible provider and model used for speech-to-text",
+      }),
+      image_generation_provider: Schema.optional(
+        Schema.Struct({
+          provider: Schema.optional(Schema.String),
+          model: Schema.optional(Schema.String),
+        }),
+      ).annotate({
+        description: "Local OpenAI-compatible provider and model used for image generation",
+      }),
+      // kilocode_change end
       openTelemetry: Schema.Boolean.pipe(Schema.optional, Schema.withDecodingDefault(Effect.succeed(true))).annotate({
         description: "Enable telemetry. Set to false to opt-out.",
       }),

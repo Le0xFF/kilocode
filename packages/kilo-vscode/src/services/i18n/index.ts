@@ -4,7 +4,6 @@ import { dict as bs } from "./bs"
 import { dict as da } from "./da"
 import { dict as de } from "./de"
 import { dict as en } from "./en"
-import { type dict as enDict } from "./en"
 import { dict as es } from "./es"
 import { dict as fa } from "./fa"
 import { dict as fr } from "./fr"
@@ -77,7 +76,7 @@ export function getCommitMessageLanguage(vscode: typeof import("vscode")): strin
 
 export function translate(
   locale: string,
-  key: keyof typeof enDict | string,
+key: string,
   vars?: Record<string, string | number>,
 ): string {
   const translations: Record<string, string> = { ...en, ...(bundles[resolveLocale(locale)] ?? {}) }
@@ -90,7 +89,7 @@ export function translate(
   return text
 }
 
-export function t(key: keyof typeof enDict | string, vars?: Record<string, string | number>): string {
+export function t(key: string, vars?: Record<string, string | number>): string {
   const locale = selectedLocale(require("vscode") as typeof import("vscode"))
   return translate(locale, key, vars)
 }

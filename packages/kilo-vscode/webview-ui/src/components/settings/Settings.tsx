@@ -16,7 +16,6 @@ import AutoApproveTab from "./AutoApproveTab"
 import BrowserTab from "./BrowserTab"
 import CheckpointsTab from "./CheckpointsTab"
 import DisplayTab from "./DisplayTab"
-import AutocompleteTab from "./AutocompleteTab"
 import NotificationsTab from "./NotificationsTab"
 import ContextTab from "./ContextTab"
 
@@ -349,10 +348,6 @@ const Settings: Component<SettingsProps> = (props) => {
             <Icon name="eye" />
             <span class="label">{language.t("settings.display.title")}</span>
           </Tabs.Trigger>
-          <Tabs.Trigger value="autocomplete" aria-label={language.t("settings.autocomplete.title")}>
-            <Icon name="code-lines" />
-            <span class="label">{language.t("settings.autocomplete.title")}</span>
-          </Tabs.Trigger>
           <Tabs.Trigger value="notifications" aria-label={language.t("settings.notifications.title")}>
             <Icon name="circle-check" />
             <span class="label">{language.t("settings.notifications.title")}</span>
@@ -425,10 +420,6 @@ const Settings: Component<SettingsProps> = (props) => {
         <Tabs.Content value="display">
           <h3>{language.t("settings.display.title")}</h3>
           <DisplayTab />
-        </Tabs.Content>
-        <Tabs.Content value="autocomplete">
-          <h3>{language.t("settings.autocomplete.title")}</h3>
-          <AutocompleteTab onNavigateToModels={() => onTabChange("models")} />
         </Tabs.Content>
         <Tabs.Content value="notifications">
           <h3>{language.t("settings.notifications.title")}</h3>

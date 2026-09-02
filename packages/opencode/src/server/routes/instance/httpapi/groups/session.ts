@@ -81,20 +81,6 @@ export const RevertPayload = Schema.Struct(Struct.omit(SessionRevert.RevertInput
 export const PermissionResponsePayload = Schema.Struct({
   response: PermissionV1.Reply,
 })
-// kilocode_change start
-const PresenceSessionId = Schema.String.check(Schema.isStartsWith("ses"), Schema.isMaxLength(234)).pipe(
-  Schema.brand("SessionID"),
-)
-export const ViewedPayload = Schema.Struct({
-  viewer: Schema.Struct({
-    id: Schema.String.check(Schema.isUUID()),
-    active: Schema.Boolean,
-  }),
-  attached: Schema.Array(PresenceSessionId).check(Schema.isMaxLength(1000)),
-  visible: Schema.Array(PresenceSessionId).check(Schema.isMaxLength(199)),
-})
-// kilocode_change end
-
 export const SessionPaths = {
   list: root,
   status: `${root}/status`,
@@ -122,7 +108,6 @@ export const SessionPaths = {
   deleteMessage: `${root}/:sessionID/message/:messageID`,
   deletePart: `${root}/:sessionID/message/:messageID/part/:partID`,
   updatePart: `${root}/:sessionID/message/:messageID/part/:partID`,
-  viewed: `${root}/viewed`, // kilocode_change
 } as const
 
 export const SessionApi = HttpApi.make("session")
@@ -463,20 +448,6 @@ export const SessionApi = HttpApi.make("session")
             description: "Update a part in a message.",
           }),
         ),
-        // kilocode_change start
-        HttpApiEndpoint.post("viewed", SessionPaths.viewed, {
-          query: WorkspaceRoutingQuery,
-          payload: ViewedPayload,
-          success: described(Schema.Boolean, "Viewed sessions updated"),
-          error: HttpApiError.BadRequest,
-        }).annotateMerge(
-          OpenApi.annotations({
-            identifier: "session.viewed",
-            summary: "Set viewed sessions",
-            description: "Notify the server which sessions the user is currently viewing, or clear all.",
-          }),
-        ),
-        // kilocode_change end
       )
       .annotateMerge(
         OpenApi.annotations({

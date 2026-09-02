@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, mock, spyOn, test } from "bun:test"
+import { afterEach, beforeEach, describe, expect, mock, test } from "bun:test"
 import { Effect, Schema } from "effect"
 import { Global } from "@opencode-ai/core/global"
 import { MemoryFiles } from "@kilocode/kilo-memory/store"
@@ -8,7 +8,6 @@ import path from "path"
 import { KiloMemory } from "@kilocode/kilo-memory/effect"
 import { MemoryRecallTool } from "@/kilocode/tool/memory-recall"
 import { MessageID, SessionID } from "@/session/schema"
-import { RemoteSender } from "@/kilo-sessions/remote-sender"
 import type { Tool } from "@/tool/tool"
 import { resetDatabase } from "../../fixture/db"
 import { provideTestInstance, tmpdir } from "../../fixture/fixture"
@@ -41,7 +40,6 @@ function user(text: string): Tool.Context {
 
 beforeEach(() => {
   process.env.KILO_EXPERIMENTAL_DISABLE_FILEWATCHER = "true"
-  spyOn(RemoteSender, "create").mockReturnValue({ handle() {}, dispose() {} })
 })
 
 afterEach(async () => {

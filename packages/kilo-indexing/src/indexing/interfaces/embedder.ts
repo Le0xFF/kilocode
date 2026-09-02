@@ -29,7 +29,6 @@ export interface EmbeddingResponse {
 }
 
 export type AvailableEmbedders =
-  | "kilo"
   | "openai"
   | "ollama"
   | "openai-compatible"

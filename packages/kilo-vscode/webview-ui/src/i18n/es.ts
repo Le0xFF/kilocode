@@ -410,10 +410,6 @@ export const dict = {
   "settings.indexing.provider.title": "Proveedor de embeddings",
   "settings.indexing.provider.description":
     "Elige el proveedor utilizado para generar embeddings para búsqueda semántica.",
-  "settings.indexing.kiloModel.title": "Preajuste de modelo de Kilo",
-  "settings.indexing.kiloModel.description": "Elige un modelo de embeddings alojado por Kilo compatible.",
-  "settings.indexing.kiloSignIn.title": "Se requiere iniciar sesión en Kilo",
-  "settings.indexing.kiloSignIn.description": "Inicia sesión en Kilo para usar embeddings alojados.",
   "settings.indexing.model.title": "Modelo de embeddings",
   "settings.indexing.model.description":
     "Anular el modelo de embeddings predeterminado para el proveedor seleccionado.",
@@ -444,7 +440,6 @@ export const dict = {
   "settings.providers.connected.empty": "No hay proveedores conectados",
   "settings.providers.section.popular": "Proveedores populares",
   "settings.providers.select.placeholder": "Seleccionar proveedor...",
-  "settings.providers.tag.gateway": "Gateway",
   "settings.providers.tag.environment": "Entorno",
   "settings.providers.tag.config": "Configuración",
   "settings.providers.tag.chatgpt": "ChatGPT",
@@ -721,9 +716,6 @@ export const dict = {
   "settings.webTools.webSearch.description": "Permite que los modelos de todos los proveedores usen la búsqueda web.",
   "settings.checkpoints.title": "Puntos de control",
   "settings.display.title": "Pantalla",
-  "settings.autocomplete.title": "Autocompletado",
-  "settings.autocomplete.model.title": "Modelo de autocompletado",
-  "settings.autocomplete.model.description": "Selecciona el modelo utilizado para el autocompletado de código en línea",
   "settings.notifications.title": "Notificaciones",
   "settings.context.title": "Contexto",
 
@@ -800,7 +792,6 @@ export const dict = {
   "settings.aboutKiloCode.resetSettings.description":
     "Esto restablece únicamente las configuraciones específicas de la extensión VS Code a sus valores predeterminados. Las configuraciones compartidas con el CLI, como los modos y las reglas de aprobación automática, se almacenan en la configuración del CLI y no serán restablecidas.",
   "settings.aboutKiloCode.resetSettings.button": "Restablecer toda la configuración",
-  "settings.aboutKiloCode.resetSettings.notificationsButton": "Reset Read Notifications",
   "settings.aboutKiloCode.settingsTransfer.title": "Transferencia de ajustes",
   "settings.aboutKiloCode.settingsTransfer.description":
     "Exporta o importa tus ajustes para transferirlos entre instancias de VS Code.",
@@ -844,14 +835,6 @@ export const dict = {
 
   "common.add": "Añadir",
 
-  "settings.autocomplete.autoTrigger.title": "Habilitar completado en línea automático",
-  "settings.autocomplete.autoTrigger.description": "Mostrar automáticamente sugerencias de completado al escribir",
-  "settings.autocomplete.smartKeybinding.title": "Habilitar atajo inteligente de tarea en línea",
-  "settings.autocomplete.smartKeybinding.description": "Usar un atajo inteligente para activar tareas en línea",
-  "settings.autocomplete.chatAutocomplete.title": "Habilitar autocompletado del chat",
-  "settings.autocomplete.chatAutocomplete.description": "Mostrar sugerencias de autocompletado en el chat",
-  "settings.autocomplete.modelsHint":
-    "Para elegir qué modelo se usa para el autocompletado, consulta la configuración de Modelos.",
   "settings.notifications.sounds": "Sonidos",
   "settings.notifications.enable.title": "Activar las notificaciones sonoras",
   "settings.notifications.enable.description":
@@ -1023,7 +1006,6 @@ export const dict = {
   "settings.agentBehaviour.mcpDetail.command": "Comando",
   "settings.agentBehaviour.mcpDetail.args": "Argumentos",
   "settings.agentBehaviour.mcpDetail.env": "Entorno",
-  "settings.agentBehaviour.mcpBrowseMarketplace": "Explorar Marketplace",
   "settings.agentBehaviour.mcpEmpty":
     "No hay servidores MCP configurados. Añada servidores MCP en kilo.jsonc o pida al agente que los añada.",
   "settings.agentBehaviour.workflows.description":

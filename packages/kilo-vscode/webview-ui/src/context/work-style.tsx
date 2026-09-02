@@ -1,11 +1,10 @@
-import { createContext, useContext, createEffect, createMemo, createSignal, onCleanup } from "solid-js"
+import { createContext, useContext, createMemo, createSignal, onCleanup } from "solid-js"
 import type { Accessor, ParentComponent } from "solid-js"
 import { useVSCode } from "./vscode"
 import { useLanguage } from "./language"
 import { resolveWorkStyleOnboarding } from "./work-style-state"
 import { createWorkStyleToasts } from "./onboarding/work-style-toasts"
 import type { ExtensionMessage } from "../types/messages"
-import { TelemetryEventName } from "../../../src/services/telemetry/types"
 import type { WorkStyle, WorkStyleState } from "../../../src/shared/work-style-presets"
 
 export interface WorkStyleContextValue {
@@ -74,30 +73,11 @@ export const WorkStyleProvider: ParentComponent = (props) => {
   function apply(style: WorkStyle) {
     if (applying()) return
     setApplying(true)
-    vscode.postMessage({
-      type: "telemetry",
-      event: TelemetryEventName.WORK_STYLE_SELECTED,
-      properties: { style },
-    })
     vscode.postMessage({ type: "applyWorkStyle", style })
   }
 
   const ready = createMemo(() => !loading())
   const onboarding = createMemo(() => ready() && display())
-  let acknowledged = false
-
-  createEffect(() => {
-    if (!onboarding()) {
-      acknowledged = false
-      return
-    }
-    if (acknowledged) return
-    acknowledged = true
-    vscode.postMessage({
-      type: "telemetry",
-      event: TelemetryEventName.WORK_STYLE_ONBOARDING_SHOWN,
-    })
-  })
 
   const value: WorkStyleContextValue = {
     style,

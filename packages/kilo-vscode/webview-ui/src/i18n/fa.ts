@@ -365,7 +365,6 @@ export const dict = {
   "settings.providers.section.connected": "ارائه‌دهندگان متصل",
   "settings.providers.connected.empty": "هیچ ارائه‌دهنده متصلی وجود ندارد",
   "settings.providers.section.popular": "ارائه‌دهندگان محبوب",
-  "settings.providers.tag.gateway": "Gateway",
   "settings.providers.tag.environment": "محیط",
   "settings.providers.tag.config": "پیکربندی",
   "settings.providers.tag.chatgpt": "ChatGPT",
@@ -629,7 +628,6 @@ export const dict = {
   "settings.webTools.webSearch.description": "جستجوی وب را برای مدل‌های همه ارائه‌دهندگان در دسترس قرار دهید.",
   "settings.checkpoints.title": "نقاط بازیابی",
   "settings.display.title": "نمایش",
-  "settings.autocomplete.title": "تکمیل خودکار",
   "settings.notifications.title": "اعلان‌ها",
   "settings.context.title": "زمینه",
   "settings.indexing.title": "ایندکس‌گذاری",
@@ -647,10 +645,6 @@ export const dict = {
   "settings.indexing.provider.title": "ارائه‌دهنده جاسازی",
   "settings.indexing.provider.description":
     "ارائه‌دهنده مورد استفاده برای تولید جاسازی‌ها در جستجوی معنایی را انتخاب کنید.",
-  "settings.indexing.kiloModel.title": "پیش‌تنظیم مدل Kilo",
-  "settings.indexing.kiloModel.description": "یک مدل جاسازی میزبانی‌شده توسط Kilo را انتخاب کنید.",
-  "settings.indexing.kiloSignIn.title": "ورود به Kilo الزامی است",
-  "settings.indexing.kiloSignIn.description": "برای استفاده از جاسازی‌های میزبانی‌شده، وارد Kilo شوید.",
   "settings.indexing.model.title": "مدل جاسازی",
   "settings.indexing.model.description": "مدل جاسازی پیش‌فرض برای ارائه‌دهنده انتخاب‌شده را بازنویسی کنید.",
   "settings.indexing.dimension.title": "بُعد برداری",
@@ -774,7 +768,6 @@ export const dict = {
   "settings.aboutKiloCode.resetSettings.description":
     "این گزینه فقط تنظیمات مخصوص افزونه VS Code را به مقادیر پیش‌فرض بازنشانی می‌کند. تنظیمات مشترک با CLI، مانند حالت‌ها و قوانین تأیید خودکار، در پیکربندی CLI ذخیره می‌شوند و بازنشانی نخواهند شد.",
   "settings.aboutKiloCode.resetSettings.button": "بازنشانی همه تنظیمات",
-  "settings.aboutKiloCode.resetSettings.notificationsButton": "بازنشانی اعلان‌های خوانده‌شده",
   "settings.aboutKiloCode.settingsTransfer.title": "انتقال تنظیمات",
   "settings.aboutKiloCode.settingsTransfer.description":
     "تنظیمات خود را برای انتقال بین نمونه‌های VS Code صادر یا وارد کنید.",
@@ -818,15 +811,6 @@ export const dict = {
 
   "common.add": "افزودن",
 
-  "settings.autocomplete.model.title": "مدل تکمیل خودکار",
-  "settings.autocomplete.model.description": "مدل مورد استفاده برای تکمیل‌های درون‌خطی کد را انتخاب کنید",
-  "settings.autocomplete.autoTrigger.title": "فعال‌سازی تکمیل‌های خودکار درون‌خطی",
-  "settings.autocomplete.autoTrigger.description": "پیشنهادهای تکمیل درون‌خطی را هنگام تایپ به‌صورت خودکار نمایش بده",
-  "settings.autocomplete.smartKeybinding.title": "فعال‌سازی میانبر هوشمند وظایف درون‌خطی",
-  "settings.autocomplete.smartKeybinding.description": "از یک میانبر هوشمند برای فعال‌سازی وظایف درون‌خطی استفاده کن",
-  "settings.autocomplete.chatAutocomplete.title": "فعال‌سازی تکمیل خودکار متن چت",
-  "settings.autocomplete.chatAutocomplete.description": "نمایش پیشنهادات تکمیل خودکار در کادر متنی چت",
-  "settings.autocomplete.modelsHint": "برای انتخاب مدل مورد استفاده در تکمیل خودکار، به تنظیمات مدل‌ها مراجعه کنید.",
 
   "settings.notifications.sounds": "صداها",
   "settings.notifications.enable.title": "فعال‌سازی اعلان‌های صوتی",
@@ -955,7 +939,6 @@ export const dict = {
   "settings.agentBehaviour.addMcp.args.placeholder": "مثلاً\n-y\n@modelcontextprotocol/server-filesystem\n/tmp",
   "settings.agentBehaviour.addMcp.url": "URL سرور",
   "settings.agentBehaviour.addMcp.url.placeholder": "مثلاً http://localhost:3000/sse",
-  "settings.agentBehaviour.mcpBrowseMarketplace": "مرور Marketplace",
   "settings.agentBehaviour.mcpEmpty":
     "هیچ سرور MCP پیکربندی نشده است. سرورهای MCP را در kilo.jsonc اضافه کنید، یا از agent بخواهید آن‌ها را برایتان اضافه کند.",
   "settings.agentBehaviour.workflows.description":

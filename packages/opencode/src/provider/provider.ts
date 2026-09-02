@@ -32,15 +32,12 @@ import { ModelStatus } from "./model-status"
 import { RuntimeFlags } from "@/effect/runtime-flags"
 // kilocode_change start
 import {
-  KILO_BUNDLED_PROVIDERS,
   kiloCustomLoaders,
   KILO_MODEL_SCHEMA_EXTENSIONS,
   patchModelsDevModel as patchKiloModel,
   patchConfigModel as patchKiloConfigModel,
   customProviderVariants,
   patchCustomLoaderResult,
-  patchKiloProviderPrivacy,
-  kiloSmallModelPriority,
   buildTimeoutSignal,
   requestTimeout,
   wrapFirstByte,
@@ -149,7 +146,6 @@ const BUNDLED_PROVIDERS: Record<string, () => Promise<(opts: any) => BundledSDK>
   "@ai-sdk/github-copilot": () =>
     import("@opencode-ai/core/github-copilot/copilot-provider").then((m) => m.createOpenaiCompatible),
   "venice-ai-sdk-provider": () => import("venice-ai-sdk-provider").then((m) => m.createVenice),
-  ...KILO_BUNDLED_PROVIDERS, // kilocode_change
 }
 
 type CustomModelLoader = (sdk: any, modelID: string, options?: Record<string, any>, model?: Model) => Promise<any>
@@ -1678,7 +1674,6 @@ const layer = Layer.effect(
           if (provider.options) partial.options = provider.options
           mergeProvider(providerID, partial)
         }
-        patchKiloProviderPrivacy(providers[ProviderV2.ID.make("kilo")], cfg) // kilocode_change
 
         const gitlab = ProviderV2.ID.make("gitlab")
         if (discoveryLoaders[gitlab] && providers[gitlab] && isProviderAllowed(gitlab)) {
@@ -2015,16 +2010,6 @@ const layer = Layer.effect(
         return undefined
       }
 
-      // kilocode_change start - Kilo's auto model is an ID, while upstream priorities are model families.
-      const kiloPriority = kiloSmallModelPriority(providerID)
-      if (kiloPriority) {
-        for (const id of kiloPriority) {
-          const model = provider.models[id]
-          if (model) return model
-        }
-      }
-      // kilocode_change end
-
       const priority = providerID.startsWith("opencode")
         ? ["gpt-nano"]
         : providerID.startsWith("github-copilot")
@@ -2058,11 +2043,6 @@ const layer = Layer.effect(
         }
         if (candidates[0]) return candidates[0]
       }
-
-      // kilocode_change start - fall back to kilo's auto small model
-      const kiloFallback = s.providers[ProviderV2.ID.make("kilo")] ?? s.catalog[ProviderV2.ID.make("kilo")]
-      if (kiloFallback?.models["kilo-auto/small"]) return kiloFallback.models["kilo-auto/small"]
-      // kilocode_change end
 
       return undefined
     })

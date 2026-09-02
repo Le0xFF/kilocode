@@ -1,20 +1,16 @@
+// kilocode_change - new file
 import { RemoteExitRpc } from "@/kilocode/cli/cmd/tui/remote-exit-rpc"
-import { RemoteExit } from "@/kilo-sessions/remote-exit"
 
 export function createWorkerRemoteExit(emit: (event: string, data: undefined) => void) {
-  let unregister: (() => void) | undefined
+  let registered = false
 
   const gone = () => {
-    unregister?.()
-    unregister = undefined
+    registered = false
   }
 
   return {
     ready() {
-      gone()
-      unregister = RemoteExit.register(async () => {
-        emit(RemoteExitRpc.Event, undefined)
-      })
+      registered = true
     },
     gone,
     shutdown: gone,

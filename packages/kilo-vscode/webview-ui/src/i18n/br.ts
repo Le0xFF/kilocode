@@ -402,7 +402,6 @@ export const dict = {
   "settings.providers.connected.empty": "Nenhum provedor conectado",
   "settings.providers.section.popular": "Provedores populares",
   "settings.providers.select.placeholder": "Selecionar provedor...",
-  "settings.providers.tag.gateway": "Gateway",
   "settings.providers.tag.environment": "Ambiente",
   "settings.providers.tag.config": "Configuração",
   "settings.providers.tag.chatgpt": "ChatGPT",
@@ -677,9 +676,6 @@ export const dict = {
   "settings.webTools.webSearch.description": "Disponibilize a pesquisa na web para modelos de todos os provedores.",
   "settings.checkpoints.title": "Pontos de Verificação",
   "settings.display.title": "Exibição",
-  "settings.autocomplete.title": "Autocompletar",
-  "settings.autocomplete.model.title": "Modelo de autocompletar",
-  "settings.autocomplete.model.description": "Selecione o modelo usado para preenchimento de código inline",
   "settings.notifications.title": "Notificações",
   "settings.context.title": "Contexto",
 
@@ -698,10 +694,6 @@ export const dict = {
     "Habilitar indexação para este workspace quando a indexação global estiver desativada.",
   "settings.indexing.provider.title": "Provedor de embedding",
   "settings.indexing.provider.description": "Escolha o provedor usado para gerar embeddings para busca semântica.",
-  "settings.indexing.kiloModel.title": "Predefinição de modelo do Kilo",
-  "settings.indexing.kiloModel.description": "Escolha um modelo de embedding hospedado pelo Kilo compatível.",
-  "settings.indexing.kiloSignIn.title": "Login no Kilo necessário",
-  "settings.indexing.kiloSignIn.description": "Entre no Kilo para usar embeddings hospedados.",
   "settings.indexing.model.title": "Modelo de embedding",
   "settings.indexing.model.description": "Substituir o modelo de embedding padrão para o provedor selecionado.",
   "settings.indexing.vectorStore.title": "Armazenamento de vetores",
@@ -797,7 +789,6 @@ export const dict = {
   "settings.aboutKiloCode.resetSettings.description":
     "Isso redefine apenas as configurações específicas da extensão VS Code para seus valores padrão. As configurações compartilhadas com o CLI, como modos e regras de aprovação automática, são armazenadas na configuração do CLI e não serão redefinidas.",
   "settings.aboutKiloCode.resetSettings.button": "Redefinir Todas as Configurações",
-  "settings.aboutKiloCode.resetSettings.notificationsButton": "Reset Read Notifications",
   "settings.aboutKiloCode.settingsTransfer.title": "Transferência de configurações",
   "settings.aboutKiloCode.settingsTransfer.description":
     "Exporte ou importe suas configurações para transferi-las entre instâncias do VS Code.",
@@ -841,15 +832,6 @@ export const dict = {
 
   "common.add": "Adicionar",
 
-  "settings.autocomplete.autoTrigger.title": "Ativar completamento automático inline",
-  "settings.autocomplete.autoTrigger.description":
-    "Mostrar automaticamente sugestões de completamento inline ao digitar",
-  "settings.autocomplete.smartKeybinding.title": "Ativar atalho inteligente de tarefa inline",
-  "settings.autocomplete.smartKeybinding.description": "Usar um atalho inteligente para acionar tarefas inline",
-  "settings.autocomplete.chatAutocomplete.title": "Ativar autocompletar do chat",
-  "settings.autocomplete.chatAutocomplete.description": "Mostrar sugestões de autocompletar no campo de chat",
-  "settings.autocomplete.modelsHint":
-    "Para escolher qual modelo é usado para autocompletar, veja as configurações de Modelos.",
   "settings.notifications.sounds": "Sons",
   "settings.notifications.enable.title": "Ativar notificações sonoras",
   "settings.notifications.enable.description":
@@ -1021,7 +1003,6 @@ export const dict = {
   "settings.agentBehaviour.mcpDetail.command": "Comando",
   "settings.agentBehaviour.mcpDetail.args": "Argumentos",
   "settings.agentBehaviour.mcpDetail.env": "Ambiente",
-  "settings.agentBehaviour.mcpBrowseMarketplace": "Explorar Marketplace",
   "settings.agentBehaviour.mcpEmpty":
     "Nenhum servidor MCP configurado. Adicione servidores MCP em kilo.jsonc ou peça ao agente para adicioná-los.",
   "settings.agentBehaviour.workflows.description":

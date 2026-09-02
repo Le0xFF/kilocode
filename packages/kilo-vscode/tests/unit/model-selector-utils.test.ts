@@ -4,7 +4,6 @@ import {
   buildTriggerLabel,
   stripSubProviderPrefix,
   sanitizeName,
-  KILO_GATEWAY_ID,
   PROVIDER_ORDER,
   freeDataLabel,
   isDataCollectedModel,
@@ -21,14 +20,11 @@ import type { EnrichedModel } from "../../webview-ui/src/context/provider"
 const labels = { select: "Select model", noProviders: "No providers", notSet: "Not set" }
 
 describe("providerSortKey", () => {
-  it("returns 0 for kilo gateway", () => {
-    expect(providerSortKey(KILO_GATEWAY_ID)).toBe(0)
-  })
-
   it("returns correct index for known providers", () => {
-    expect(providerSortKey("anthropic")).toBe(1)
-    expect(providerSortKey("openai")).toBe(3)
-    expect(providerSortKey("google")).toBe(4)
+    expect(providerSortKey("anthropic")).toBe(0)
+    expect(providerSortKey("deepseek")).toBe(1)
+    expect(providerSortKey("openai")).toBe(2)
+    expect(providerSortKey("google")).toBe(3)
   })
 
   it("returns order length for unknown provider", () => {
@@ -48,9 +44,9 @@ describe("providerSortKey", () => {
   })
 
   it("sorts providers correctly when used with sort", () => {
-    const ids = ["google", "anthropic", "kilo", "openai", "deepseek"]
+    const ids = ["google", "anthropic", "deepseek", "openai"]
     const sorted = ids.slice().sort((a, b) => providerSortKey(a) - providerSortKey(b))
-    expect(sorted).toEqual(["kilo", "anthropic", "deepseek", "openai", "google"])
+    expect(sorted).toEqual(["anthropic", "deepseek", "openai", "google"])
   })
 })
 
@@ -64,11 +60,6 @@ describe("stripSubProviderPrefix", () => {
     expect(stripSubProviderPrefix("GPT-4o")).toBe("GPT-4o")
     expect(stripSubProviderPrefix("claude-3-5-sonnet")).toBe("claude-3-5-sonnet")
   })
-
-  it("does not strip 'Kilo: ' prefix", () => {
-    expect(stripSubProviderPrefix("Kilo: Auto")).toBe("Kilo: Auto")
-    expect(stripSubProviderPrefix("kilo: Auto")).toBe("kilo: Auto")
-  })
 })
 
 describe("sanitizeName", () => {
@@ -81,8 +72,8 @@ describe("sanitizeName", () => {
     expect(sanitizeName("Model (FREE)")).toBe("Model")
   })
 
-  it("preserves bare trailing Free in names like 'Kilo Auto Free'", () => {
-    expect(sanitizeName("Kilo Auto Free")).toBe("Kilo Auto Free")
+  it("preserves bare trailing Free in names like 'Auto Free'", () => {
+    expect(sanitizeName("Auto Free")).toBe("Auto Free")
     expect(sanitizeName("Mixtral free")).toBe("Mixtral free")
     expect(sanitizeName("Mistral:free")).toBe("Mistral:free")
     expect(sanitizeName("Gemma-free")).toBe("Gemma-free")
@@ -119,11 +110,10 @@ describe("isFree", () => {
 })
 
 describe("isAuto", () => {
-  it("matches only Kilo Auto model ids", () => {
-    expect(isAuto({ providerID: KILO_GATEWAY_ID, id: "kilo-auto/efficient" })).toBe(true)
-    expect(isAuto({ providerID: KILO_GATEWAY_ID, id: "auto-small" })).toBe(true)
-    expect(isAuto({ providerID: "anthropic", id: "kilo-auto/efficient" })).toBe(false)
-    expect(isAuto({ providerID: KILO_GATEWAY_ID, id: "anthropic/claude-sonnet" })).toBe(false)
+  it("matches auto-prefixed or auto-small model ids", () => {
+    expect(isAuto({ providerID: "openai", id: "auto-efficient" })).toBe(true)
+    expect(isAuto({ providerID: "openai", id: "auto-small" })).toBe(true)
+    expect(isAuto({ providerID: "anthropic", id: "claude-sonnet" })).toBe(false)
   })
 })
 
@@ -132,8 +122,8 @@ describe("autoChoices", () => {
     expect(
       autoChoices(
         {
-          providerID: KILO_GATEWAY_ID,
-          id: "kilo-auto/efficient",
+          providerID: "openai",
+          id: "auto-efficient",
           autoRouting: { models: ["provider/model", "missing/model"] },
         },
         [{ id: "provider/model", name: "Provider: Model" }],
@@ -148,8 +138,8 @@ describe("autoChoices", () => {
     expect(
       autoChoices(
         {
-          providerID: KILO_GATEWAY_ID,
-          id: "kilo-auto/frontier",
+          providerID: "openai",
+          id: "auto-frontier",
           autoRouting: { models: ["provider/model"] },
         },
         [{ id: "provider/model", name: "Provider: Model" }],
@@ -157,18 +147,18 @@ describe("autoChoices", () => {
     ).toEqual([{ id: "provider/model", name: "Model" }])
     expect(
       autoChoices({
-        providerID: KILO_GATEWAY_ID,
-        id: "kilo-auto/free",
+        providerID: "openai",
+        id: "auto-free",
         autoRouting: { models: ["provider/model"] },
       }),
     ).toEqual([{ id: "provider/model", name: "provider/model" }])
   })
 
   it("ignores missing routes and non-Auto models", () => {
-    expect(autoChoices({ providerID: KILO_GATEWAY_ID, id: "kilo-auto/efficient" })).toEqual([])
+    expect(autoChoices({ providerID: "openai", id: "auto-efficient" })).toEqual([])
     expect(
       autoChoices({
-        providerID: KILO_GATEWAY_ID,
+        providerID: "openai",
         id: "anthropic/claude-sonnet",
         autoRouting: { models: ["provider/model"] },
       }),
@@ -195,9 +185,9 @@ describe("autoSummary", () => {
 const SEARCH_MODELS: EnrichedModel[] = [
   { id: "solar-pro", name: "Solar Pro", providerID: "nvidia", providerName: "NVIDIA" },
   { id: "gpt-5.6-sol", name: "GPT-5.6 Sol", providerID: "openai", providerName: "OpenAI" },
-  { id: "gpt-5.6-sol", name: "GPT-5.6 Sol", providerID: "kilo", providerName: "Kilo" },
+  { id: "gpt-5.6-sol", name: "GPT-5.6 Sol", providerID: "anthropic", providerName: "Anthropic" },
   { id: "gpt-5.6", name: "GPT-5.6", providerID: "anthropic", providerName: "Anthropic" },
-  { id: "xai/grok-4.20", name: "SpaceXAI: Grok 4.20", providerID: "kilo", providerName: "Kilo Gateway" },
+  { id: "xai/grok-4.20", name: "SpaceXAI: Grok 4.20", providerID: "xai", providerName: "xAI" },
 ]
 
 describe("rankModelSearch", () => {
@@ -215,9 +205,9 @@ describe("rankModelSearch", () => {
 
   it("keeps provider variants together and uses usage to order equivalent variants", () => {
     const result = rankModelSearch(SEARCH_MODELS, "sol", {
-      usage: { "kilo/gpt-5.6-sol": { count: 4, lastUsed: 10 }, "openai/gpt-5.6-sol": { count: 1, lastUsed: 20 } },
+      usage: { "anthropic/gpt-5.6-sol": { count: 4, lastUsed: 10 }, "openai/gpt-5.6-sol": { count: 1, lastUsed: 20 } },
     })
-    expect(result.slice(0, 2).map((model) => model.providerID)).toEqual(["kilo", "openai"])
+    expect(result.slice(0, 2).map((model) => model.providerID)).toEqual(["anthropic", "openai"])
   })
 
   it("does not let usage make a weaker model beat an exact match", () => {
@@ -259,38 +249,13 @@ describe("hasByok", () => {
 })
 
 describe("buildTriggerLabel", () => {
-  it("returns resolved model name for non-kilo provider unchanged", () => {
+  it("returns resolved model name unchanged", () => {
     expect(buildTriggerLabel("GPT-4o", "openai", null, false, "", true, labels)).toBe("GPT-4o")
   })
 
-  it("strips sub-provider prefix from resolved name for kilo gateway models", () => {
-    expect(buildTriggerLabel("Anthropic: Claude Sonnet", KILO_GATEWAY_ID, null, false, "", true, labels)).toBe(
-      "Claude Sonnet",
-    )
-  })
-
-  it("does not strip prefix for non-kilo provider even if name contains ': '", () => {
-    expect(buildTriggerLabel("Anthropic: Claude Sonnet", "anthropic", null, false, "", true, labels)).toBe(
-      "Anthropic: Claude Sonnet",
-    )
-  })
-
-  it("returns resolved name as-is when providerID is undefined", () => {
-    expect(buildTriggerLabel("GPT-4o", undefined, null, false, "", true, labels)).toBe("GPT-4o")
-  })
-
-  it("does not add provider name to the compact label", () => {
-    expect(buildTriggerLabel("GPT-5.6 Luna", "openai", null, false, "", true, labels)).toBe("GPT-5.6 Luna")
-  })
-
-  it("returns modelID for kilo gateway raw selection", () => {
-    const raw = { providerID: "kilo", modelID: "kilo-auto/frontier" }
-    expect(buildTriggerLabel(undefined, undefined, raw, false, "", true, labels)).toBe("kilo-auto/frontier")
-  })
-
-  it("returns providerID / modelID for non-kilo raw selection", () => {
-    const raw = { providerID: "anthropic", modelID: "claude-3-5-sonnet" }
-    expect(buildTriggerLabel(undefined, undefined, raw, false, "", true, labels)).toBe("anthropic / claude-3-5-sonnet")
+  it("returns providerID / modelID for a raw selection", () => {
+    const raw = { providerID: "openai", modelID: "gpt-4.1" }
+    expect(buildTriggerLabel(undefined, undefined, raw, false, "", true, labels)).toBe("openai / gpt-4.1")
   })
 
   it("returns clearLabel when allowClear and no selection", () => {

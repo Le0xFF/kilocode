@@ -1,9 +1,5 @@
 import { describe, expect, test } from "bun:test"
-import {
-  hasKiloIndexingAuth,
-  resolveKiloIndexingAuth,
-  shouldDefaultIndexingToKilo,
-} from "../../src/kilocode/indexing-auth"
+import { hasKiloIndexingAuth, resolveKiloIndexingAuth } from "../../src/kilocode/indexing-auth"
 
 describe("Kilo indexing auth resolution", () => {
   test("detects auth from explicit indexing Kilo config", () => {
@@ -32,14 +28,5 @@ describe("Kilo indexing auth resolution", () => {
       apiKey: "env-token",
       organizationId: "org_env",
     })
-  })
-
-  test("defaults to Kilo only when no provider or other embedder config is present", () => {
-    const auth = { apiKey: "kilo-token" }
-
-    expect(shouldDefaultIndexingToKilo({}, auth)).toBe(true)
-    expect(shouldDefaultIndexingToKilo({ provider: "openai" }, auth)).toBe(false)
-    expect(shouldDefaultIndexingToKilo({ openai: { apiKey: "openai-key" } }, auth)).toBe(false)
-    expect(shouldDefaultIndexingToKilo({ ollama: { baseUrl: "http://localhost:11434" } }, auth)).toBe(false)
   })
 })

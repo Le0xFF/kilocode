@@ -32,8 +32,6 @@ import { WelcomeEmptyState } from "./WelcomeEmptyState"
 import { TranscriptRowView } from "./TranscriptRow"
 import type { ErrorDisplayProps } from "./ErrorDisplay"
 import { RevertBanner } from "./RevertBanner"
-import { AccountSwitcher } from "../shared/AccountSwitcher"
-import { KiloNotifications } from "./KiloNotifications"
 import { TurnOutcome } from "../shared/TurnOutcome"
 import { QuestionDock } from "./QuestionDock"
 import { Virtualizer, type VirtualizerHandle } from "virtua/solid"
@@ -1260,12 +1258,6 @@ export const MessageList: Component<MessageListProps> = (props) => {
       <Show when={props.announce === false}>
         <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
           {announcement()}
-        </div>
-      </Show>
-      <Show when={isEmpty()}>
-        <div class="welcome-header">
-          <AccountSwitcher class="account-switcher-welcome" />
-          <KiloNotifications sessionID={props.sessionID} />
         </div>
       </Show>
       <div

@@ -18,9 +18,6 @@ import { IndexingProvider } from "./indexing"
 import { MemoryProvider } from "./memory"
 import { SessionProvider } from "./session"
 import { LanguageBridge } from "./language-bridge"
-import { NotificationsProvider } from "./notifications"
-import { FeedbackProvider } from "./feedback"
-import { KiloEmbeddingModelsProvider } from "./kilo-embedding-models"
 import { ImageModelsProvider } from "./image-models"
 import { SpeechToTextModelsProvider } from "./speech-to-text-models"
 import { SpeechToTextPrewarm } from "../components/speech-to-text/SpeechToTextPrewarm"
@@ -77,22 +74,16 @@ const Root: ParentComponent = (props) => (
 
 const Session: ParentComponent = (props) => (
   <IndexingProvider>
-    <KiloEmbeddingModelsProvider>
-      <ImageModelsProvider>
-        <SpeechToTextModelsProvider>
-          <NotificationsProvider>
-            <SessionProvider>{props.children}</SessionProvider>
-          </NotificationsProvider>
-        </SpeechToTextModelsProvider>
-      </ImageModelsProvider>
-    </KiloEmbeddingModelsProvider>
+    <ImageModelsProvider>
+      <SpeechToTextModelsProvider>
+        <SessionProvider>{props.children}</SessionProvider>
+      </SpeechToTextModelsProvider>
+    </ImageModelsProvider>
   </IndexingProvider>
 )
 
 const Chat: ParentComponent = (props) => (
-  <MemoryProvider>
-    <FeedbackProvider>{props.children}</FeedbackProvider>
-  </MemoryProvider>
+  <MemoryProvider>{props.children}</MemoryProvider>
 )
 
 export const ProviderShell = { Root, Session, Chat }

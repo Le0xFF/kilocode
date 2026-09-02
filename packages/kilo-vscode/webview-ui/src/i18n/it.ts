@@ -298,7 +298,6 @@ export const dict = {
   "settings.providers.section.connected": "Provider connessi",
   "settings.providers.connected.empty": "Nessun provider connesso",
   "settings.providers.section.popular": "Provider popolari",
-  "settings.providers.tag.gateway": "Gateway",
   "settings.providers.tag.environment": "Ambiente",
   "settings.providers.tag.config": "Config",
   "settings.providers.tag.chatgpt": "ChatGPT",
@@ -554,7 +553,6 @@ export const dict = {
   "settings.webTools.webSearch.description": "Rendi disponibile la ricerca web ai modelli di tutti i provider.",
   "settings.checkpoints.title": "Checkpoint",
   "settings.display.title": "Visualizzazione",
-  "settings.autocomplete.title": "Autocompletamento",
   "settings.notifications.title": "Notifiche",
   "settings.context.title": "Contesto",
   "settings.indexing.title": "Indicizzazione",
@@ -671,7 +669,6 @@ export const dict = {
   "settings.aboutKiloCode.resetSettings.description":
     "Ripristina solo le impostazioni specifiche dell'estensione VS Code ai valori predefiniti. Le impostazioni condivise con la CLI, come modalità e regole di approvazione automatica, sono salvate nella configurazione CLI e non verranno ripristinate.",
   "settings.aboutKiloCode.resetSettings.button": "Ripristina tutte le impostazioni",
-  "settings.aboutKiloCode.resetSettings.notificationsButton": "Reset Read Notifications",
   "settings.aboutKiloCode.settingsTransfer.title": "Trasferimento impostazioni",
   "settings.aboutKiloCode.settingsTransfer.description":
     "Esporta o importa le impostazioni per trasferirle tra istanze VS Code.",
@@ -706,16 +703,6 @@ export const dict = {
   "settings.language.auto": "Auto (lingua VS Code)",
   "settings.language.current": "Corrente:",
   "common.add": "Aggiungi",
-  "settings.autocomplete.model.title": "Modello autocompletamento",
-  "settings.autocomplete.model.description": "Seleziona il modello usato per i completamenti inline del codice",
-  "settings.autocomplete.autoTrigger.title": "Abilita completamenti inline automatici",
-  "settings.autocomplete.autoTrigger.description":
-    "Mostra automaticamente suggerimenti di completamento inline mentre scrivi",
-  "settings.autocomplete.smartKeybinding.title": "Abilita scorciatoia smart per task inline",
-  "settings.autocomplete.smartKeybinding.description": "Usa una scorciatoia smart per attivare task inline",
-  "settings.autocomplete.chatAutocomplete.title": "Abilita autocompletamento textarea chat",
-  "settings.autocomplete.chatAutocomplete.description":
-    "Mostra suggerimenti di autocompletamento nella textarea della chat",
   "settings.notifications.sounds": "Suoni",
   "settings.notifications.enable.title": "Abilita le notifiche sonore",
   "settings.notifications.enable.description":
@@ -858,7 +845,6 @@ export const dict = {
   "settings.agentBehaviour.addMcp.args.placeholder": "es.\n-y\n@modelcontextprotocol/server-filesystem\n/tmp",
   "settings.agentBehaviour.addMcp.url": "URL server",
   "settings.agentBehaviour.addMcp.url.placeholder": "es. http://localhost:3000/sse",
-  "settings.agentBehaviour.mcpBrowseMarketplace": "Sfoglia Marketplace",
   "settings.agentBehaviour.mcpEmpty":
     "Nessun server MCP configurato. Aggiungi server MCP in kilo.jsonc, o chiedi all'agente di aggiungerli per te.",
   "settings.agentBehaviour.workflows.description":
@@ -1229,8 +1215,6 @@ export const dict = {
     "Nascondi i modelli Kilo Gateway i cui provider potrebbero usare i tuoi prompt per l'addestramento.",
 
   // Autocomplete hint
-  "settings.autocomplete.modelsHint":
-    "Per scegliere quale modello usare per l'autocompletamento, vedi le impostazioni Modelli.",
 
   // Indexing
   "settings.indexing.globalEnable.title": "Abilita globalmente",
@@ -1238,10 +1222,6 @@ export const dict = {
   "settings.indexing.projectEnable.title": "Abilita per questo progetto",
   "settings.indexing.projectEnable.description":
     "Abilita l'indicizzazione per questo workspace quando l'indicizzazione globale è disattivata.",
-  "settings.indexing.kiloModel.title": "Preset modello Kilo",
-  "settings.indexing.kiloModel.description": "Scegli un modello embedding ospitato da Kilo.",
-  "settings.indexing.kiloSignIn.title": "Accesso Kilo richiesto",
-  "settings.indexing.kiloSignIn.description": "Accedi a Kilo per usare gli embedding ospitati.",
 
   // Azure provider
   "provider.connect.azure.endpointType.label": "Seleziona configurazione endpoint Azure",

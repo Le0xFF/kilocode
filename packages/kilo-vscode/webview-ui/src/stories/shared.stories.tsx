@@ -50,7 +50,7 @@ export const ModelSelectorNoProviders: Story = {
     <StoryProviders>
       <div style={{ display: "flex", "align-items": "center", gap: "8px" }}>
         <ModelSelectorBase
-          value={{ providerID: "kilo", modelID: "kilo-auto/frontier" }}
+          value={{ providerID: "openai", modelID: "auto/frontier" }}
           onSelect={() => {}}
           placement="bottom-start"
         />
@@ -61,10 +61,10 @@ export const ModelSelectorNoProviders: Story = {
 
 const ACCESSIBLE_MODELS: EnrichedModel[] = [
   {
-    id: "kilo-auto/efficient",
-    name: "Kilo Auto Efficient",
-    providerID: "kilo",
-    providerName: "Kilo",
+    id: "auto/efficient",
+    name: "Auto Efficient",
+    providerID: "openai",
+    providerName: "OpenAI",
     recommendedIndex: 0,
     options: {
       description:
@@ -73,10 +73,10 @@ const ACCESSIBLE_MODELS: EnrichedModel[] = [
     autoRouting: { models: ["google/gemini-2.5-flash", "anthropic/claude-sonnet-4.6"] },
   },
   {
-    id: "kilo-auto/frontier",
-    name: "Kilo Auto Frontier",
-    providerID: "kilo",
-    providerName: "Kilo",
+    id: "auto/frontier",
+    name: "Auto Frontier",
+    providerID: "openai",
+    providerName: "OpenAI",
     recommendedIndex: 1,
     options: {
       description: "Routes each request to the strongest available models.",
@@ -84,17 +84,17 @@ const ACCESSIBLE_MODELS: EnrichedModel[] = [
     autoRouting: { models: ["openai/gpt-5.5", "anthropic/claude-opus-4.6"] },
   },
   { id: "omega", name: "Omega", providerID: "openai", providerName: "OpenAI", recommendedIndex: 2 },
-  { id: "alpha", name: "Alpha", providerID: "kilo", providerName: "Kilo" },
-  { id: "bravo", name: "Bravo", providerID: "kilo", providerName: "Kilo" },
-  { id: "charlie", name: "Charlie", providerID: "kilo", providerName: "Kilo" },
-  { id: "delta", name: "Delta", providerID: "kilo", providerName: "Kilo" },
-  { id: "echo", name: "Echo", providerID: "kilo", providerName: "Kilo" },
+  { id: "alpha", name: "Alpha", providerID: "openai", providerName: "OpenAI" },
+  { id: "bravo", name: "Bravo", providerID: "openai", providerName: "OpenAI" },
+  { id: "charlie", name: "Charlie", providerID: "openai", providerName: "OpenAI" },
+  { id: "delta", name: "Delta", providerID: "openai", providerName: "OpenAI" },
+  { id: "echo", name: "Echo", providerID: "openai", providerName: "OpenAI" },
   { id: "nova", name: "Nova", providerID: "nvidia", providerName: "NVIDIA" },
   { id: "nemotron", name: "Nemotron", providerID: "nvidia", providerName: "NVIDIA" },
 ]
 
 const AccessibleModelSelector = () => {
-  const [value, setValue] = createSignal<ModelSelection | null>({ providerID: "kilo", modelID: "alpha" })
+  const [value, setValue] = createSignal<ModelSelection | null>({ providerID: "openai", modelID: "alpha" })
 
   return (
     <div style={{ display: "flex", "align-items": "center", gap: "12px" }}>
@@ -129,7 +129,7 @@ export const ModelSelectorSelectedFavorite: Story = {
   render: () => {
     const session = {
       ...mockSessionValue(),
-      favoriteModels: () => [{ providerID: "kilo", modelID: "alpha" }],
+      favoriteModels: () => [{ providerID: "openai", modelID: "alpha" }],
     }
 
     return (
@@ -148,8 +148,8 @@ export const ModelSelectorMostUsed: Story = {
     const session = {
       ...mockSessionValue(),
       modelUsageHistory: () => ({
-        "kilo/alpha": { count: 3, lastUsed: 100 },
-        "kilo/bravo": { count: 12, lastUsed: 200 },
+        "openai/alpha": { count: 3, lastUsed: 100 },
+        "openai/bravo": { count: 12, lastUsed: 200 },
         "nvidia/nova": { count: 7, lastUsed: 300 },
       }),
     }

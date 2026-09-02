@@ -6,14 +6,11 @@ import { type IndexingTelemetryEvent, type VectorStoreSearchResult } from "@kilo
 import { toIndexingConfigInput, type IndexingConfig } from "@kilocode/kilo-indexing/config"
 import { hasIndexingPlugin } from "@kilocode/kilo-indexing/detect"
 import { IndexingStatus, disabledIndexingStatus } from "@kilocode/kilo-indexing/status"
-import { Telemetry } from "@kilocode/kilo-telemetry"
-import { fetchKiloEmbeddingModelCatalog } from "@kilocode/kilo-gateway"
 import { allowed, message } from "@opencode-ai/core/kilocode/fff"
 import { Instance } from "@/kilocode/instance"
 import { Bus } from "@/bus"
 import { Config } from "@/config/config"
 import { AppRuntime } from "@/effect/app-runtime"
-import { Auth } from "@/auth"
 import { makeRuntime } from "@/effect/run-service"
 import { registerDisposer } from "@/effect/instance-registry"
 import { Global } from "@opencode-ai/core/global"
@@ -25,11 +22,9 @@ import { Event as IndexingEvent, Warning as IndexingWarningEvent } from "./index
 import { indexingWarningKey, type IndexingWarning } from "./indexing-warning"
 import { IndexingWorker } from "./indexing-worker-client"
 import { LanceDBRuntime } from "./lancedb"
-import { indexingWithKiloDefault, resolveKiloIndexingAuth, type KiloIndexingAuth } from "./indexing-auth"
 import { primaryWorktree } from "./primary-worktree"
 
 const log = Log.create({ service: "kilocode-indexing" })
-const auth = makeRuntime(Auth.Service, Auth.defaultLayer)
 const consent = new Map<string, boolean>()
 const missing = () => disabledIndexingStatus("Indexing plugin is not enabled for this workspace.")
 const noWorkspace = () =>
@@ -83,130 +78,10 @@ function pending(): z.infer<typeof IndexingStatus> {
   }
 }
 
-async function kiloAuth(cfg: Config.Info): Promise<KiloIndexingAuth> {
-  const info = await auth.runPromise((svc) => svc.get("kilo"))
-  return resolveKiloIndexingAuth({ config: cfg, auth: info })
-}
-
-function enrichKilo(input: ReturnType<typeof toIndexingConfigInput>, auth: KiloIndexingAuth) {
-  if (input.embedderProvider !== "kilo") return input
-
-  return {
-    ...input,
-    kiloApiKey: input.kiloApiKey ?? auth.apiKey,
-    kiloBaseUrl: input.kiloBaseUrl ?? auth.baseUrl,
-    kiloOrganizationId: input.kiloOrganizationId ?? auth.organizationId,
-  }
-}
-
-async function model(input: ReturnType<typeof toIndexingConfigInput>, auth: KiloIndexingAuth) {
-  if (input.embedderProvider !== "kilo" || !input.enabled) return input
-
-  const catalog = await fetchKiloEmbeddingModelCatalog({ baseURL: auth.baseUrl, token: auth.apiKey })
-
-  if (input.modelId) {
-    const id = catalog.aliases[input.modelId] ?? input.modelId
-    const chosen = catalog.models.find((item) => item.id === id)
-    if (catalog.models.length > 0 && !chosen) {
-      throw new IndexingModelError({ model: input.modelId })
-    }
-    if (chosen) {
-      return {
-        ...input,
-        modelId: chosen.id,
-        modelDimension: chosen.dimension,
-        searchMinScore: input.searchMinScore ?? chosen.scoreThreshold,
-      }
-    }
-  }
-
-  const fallback = catalog.aliases[catalog.defaultModel] ?? catalog.defaultModel
-  const found = catalog.models.find((item) => item.id === fallback)
-  if (!found) {
-    if (input.modelId || input.modelDimension) {
-      log.warn("ignoring unsupported Kilo embedding model configuration", { model: input.modelId })
-    }
-    return { ...input, modelId: undefined, modelDimension: undefined }
-  }
-
-  return {
-    ...input,
-    modelId: found.id,
-    modelDimension: found.dimension,
-    searchMinScore: input.searchMinScore ?? found.scoreThreshold,
-  }
-}
-
-function trackTelemetry(event: IndexingTelemetryEvent): void {
-  if (event.type === "started") {
-    Telemetry.trackIndexingStarted({
-      trigger: event.trigger,
-      source: event.source,
-      mode: event.mode,
-      provider: event.provider,
-      vectorStore: event.vectorStore,
-      modelId: event.modelId,
-    })
-    return
-  }
-
-  if (event.type === "completed") {
-    Telemetry.trackIndexingCompleted({
-      trigger: event.trigger,
-      source: event.source,
-      mode: event.mode,
-      provider: event.provider,
-      vectorStore: event.vectorStore,
-      modelId: event.modelId,
-      filesIndexed: event.filesIndexed,
-      filesDiscovered: event.filesDiscovered,
-      totalBlocks: event.totalBlocks,
-      batchErrors: event.batchErrors,
-    })
-    return
-  }
-
-  if (event.type === "file_count") {
-    Telemetry.trackIndexingFileCount({
-      source: event.source,
-      mode: event.mode,
-      provider: event.provider,
-      vectorStore: event.vectorStore,
-      modelId: event.modelId,
-      discovered: event.discovered,
-      candidate: event.candidate,
-    })
-    return
-  }
-
-  if (event.type === "batch_retry") {
-    Telemetry.trackIndexingBatchRetry({
-      source: event.source,
-      mode: event.mode,
-      provider: event.provider,
-      vectorStore: event.vectorStore,
-      modelId: event.modelId,
-      attempt: event.attempt,
-      maxRetries: event.maxRetries,
-      batchSize: event.batchSize,
-      error: event.error,
-    })
-    return
-  }
-
-  Telemetry.trackIndexingError({
-    source: event.source,
-    trigger: event.trigger,
-    mode: event.mode,
-    provider: event.provider,
-    vectorStore: event.vectorStore,
-    modelId: event.modelId,
-    location: event.location,
-    error: event.error,
-    retryCount: event.retryCount,
-    maxRetries: event.maxRetries,
-  })
-}
+// No-op: PostHog telemetry was removed with the online services. The indexing
+// worker still emits indexing telemetry events over its protocol; they are simply
+// no longer forwarded to a remote sink.
+function trackTelemetry(_event: IndexingTelemetryEvent): void {}
 
 export namespace KiloIndexing {
   export const Status = IndexingStatus
@@ -296,23 +171,10 @@ export namespace KiloIndexing {
 
     log.info("initializing project indexing", { workspacePath: dir, baselineDirectory: baseline })
     const root = path.join(Global.Path.state, "indexing")
-    const auth = await kiloAuth(cfg)
     const globalConfig = await AppRuntime.runPromise(Config.Service.use((svc) => svc.getGlobal()))
     const global = globalConfig.indexing
-    const merged = indexingWithKiloDefault({ ...global, ...cfg.indexing }, auth) ?? {}
-    let cfgInput: Awaited<ReturnType<typeof model>>
-    try {
-      cfgInput = await model(
-        enrichKilo(
-          input({ ...merged, enabled: process.env["KILO_PLATFORM"] === "vscode" ? true : merged.enabled }, global),
-          auth,
-        ),
-        auth,
-      )
-    } catch (err) {
-      log.warn("indexing model resolution failed", { err })
-      return track(hit, await inert(() => failed(err)))
-    }
+    const merged = { ...global, ...cfg.indexing }
+    const cfgInput = input({ ...merged, enabled: process.env["KILO_PLATFORM"] === "vscode" ? true : merged.enabled }, global)
     const workspaces = new Set<WorkspaceV2.ID | undefined>([WorkspaceContext.workspaceID])
     const box = { status: pending() }
     const warnings = new Map<string, IndexingWarning>()
@@ -540,18 +402,14 @@ export namespace KiloIndexing {
     return entry.current()
   }
 
-  export async function models() {
-    try {
-      const cfg = await AppRuntime.runPromise(Config.Service.use((svc) => svc.getGlobal()))
-      const auth = await kiloAuth(cfg)
-      const catalog = await fetchKiloEmbeddingModelCatalog({ baseURL: auth.baseUrl, token: auth.apiKey })
-      if (catalog.models.length > 0 || (!auth.baseUrl && !auth.apiKey)) return catalog
-      const fallback = await fetchKiloEmbeddingModelCatalog()
-      return fallback.models.length > 0 ? fallback : catalog
-    } catch (err) {
-      log.warn("falling back to public Kilo embedding model catalog", { err })
-      return fetchKiloEmbeddingModelCatalog()
+  export async function models(): Promise<string[]> {
+    const cfg = await AppRuntime.runPromise(Config.Service.use((svc) => svc.getGlobal()))
+    const globalConfig = await AppRuntime.runPromise(Config.Service.use((svc) => svc.get()))
+    for (const config of [globalConfig.indexing, cfg.indexing]) {
+      if (!config?.model) continue
+      return [config.model]
     }
+    return []
   }
 
   export async function warnings(): Promise<IndexingWarning[]> {

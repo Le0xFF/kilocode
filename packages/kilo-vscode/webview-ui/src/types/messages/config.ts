@@ -48,12 +48,19 @@ export interface WatcherConfig {
   ignore?: string[]
 }
 
+export interface ExperimentalMediaProvider {
+  provider?: string
+  model?: string
+}
+
 export interface ExperimentalConfig {
   batch_tool?: boolean
   image_generation?: boolean
   image_generation_model?: string
+  image_generation_provider?: ExperimentalMediaProvider
   native_notebook_tools?: boolean
   speech_to_text_model?: string
+  speech_to_text?: ExperimentalMediaProvider
   primary_tools?: string[]
   continue_loop_on_deny?: boolean
   mcp_timeout?: number
@@ -71,7 +78,6 @@ export interface CommitMessageConfig {
 }
 
 export type IndexingProvider =
-  | "kilo"
   | "openai"
   | "ollama"
   | "openai-compatible"
@@ -105,20 +111,6 @@ export interface IndexingConfig {
   embeddingBatchSize?: number
   scannerMaxBatchRetries?: number
   fileExtensions?: string[]
-}
-
-export type KiloEmbeddingModel = {
-  id: string
-  name: string
-  dimension: number
-  scoreThreshold: number
-  note?: string
-}
-
-export type KiloEmbeddingModelCatalog = {
-  defaultModel: string
-  models: KiloEmbeddingModel[]
-  aliases: Record<string, string>
 }
 
 export type IndexingStatus = SdkIndexingStatus

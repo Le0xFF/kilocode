@@ -35,6 +35,9 @@ export function resolveManagedServerEnv(env: NodeJS.ProcessEnv): NodeJS.ProcessE
     KILO_DISABLE_CHANNEL_DB: "true",
     // VS Code does not consume the backend's file.watcher.updated events.
     KILO_EXPERIMENTAL_DISABLE_FILEWATCHER: "true",
+    // Offline: never fetch the models.dev catalog. The extension relies on
+    // locally-declared OpenAI-compatible providers with no network access.
+    KILO_DISABLE_MODELS_FETCH: "true",
   }
 }
 
@@ -144,7 +147,6 @@ export class ServerManager {
           KILO_ENABLE_QUESTION_TOOL: "true",
           KILOCODE_FEATURE: "vscode-extension",
           ...indexingEnv,
-          KILO_TELEMETRY_LEVEL: vscode.env.isTelemetryEnabled ? "all" : "off",
           KILO_APP_NAME: "kilo-code",
           KILO_EDITOR_NAME: vscode.env.appName,
           KILO_PLATFORM: "vscode",

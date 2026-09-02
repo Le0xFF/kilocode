@@ -3,10 +3,10 @@ import { beforeEach, describe, expect, mock, spyOn, test } from "bun:test"
 import { EOL } from "node:os"
 import { Effect } from "effect"
 
-// Mock @/kilo-sessions/pr-link before importing the command so the status
+// Mock @/kilocode/pr-link before importing the command so the status
 // handler reads the override/detection from these stubs instead of spawning
 // `gh` or touching real Storage.
-const realPrLink = await import("@/kilo-sessions/pr-link")
+const realPrLink = await import("@/kilocode/pr-link")
 
 let override: { platform: string; prUrl: string; prNumber: number } | { cleared: true } | undefined
 let detected: { platform: string; prUrl: string; prNumber: number } | undefined
@@ -14,7 +14,7 @@ let detected: { platform: string; prUrl: string; prNumber: number } | undefined
 const readOverride = mock(async (_worktree: string) => override)
 const detect = mock(async () => detected)
 
-void mock.module("@/kilo-sessions/pr-link", () => ({
+void mock.module("@/kilocode/pr-link", () => ({
   ...realPrLink,
   readPrLinkOverride: readOverride,
   detectPrLink: detect,

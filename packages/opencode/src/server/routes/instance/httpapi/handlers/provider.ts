@@ -5,10 +5,7 @@ import { Provider } from "@/provider/provider"
 
 import { mapValues, pickBy } from "remeda" // kilocode_change
 import { ModelCache } from "@/provider/model-cache" // kilocode_change
-import {
-  disposeAllInstancesAfterProviderAuthCallback,
-  invalidatePresence,
-} from "@/kilocode/server/provider-auth-lifecycle" // kilocode_change
+import { invalidatePresence } from "@/kilocode/server/provider-auth-lifecycle" // kilocode_change
 import { providerMetadata } from "@/kilocode/provider/metadata" // kilocode_change
 import { filterPromptTrainingModels } from "@/kilocode/provider/model-filter" // kilocode_change
 import { overlay as overlayAnacondaDesktop } from "@/kilocode/anaconda-desktop/provider" // kilocode_change
@@ -118,23 +115,21 @@ export const providerHandlers = HttpApiBuilder.group(InstanceHttpApi, "provider"
       return HttpServerResponse.jsonUnsafe(result ?? null)
     })
 
-    const callback = Effect.fn("ProviderHttpApi.callback")(function* (ctx: {
-      params: { providerID: ProviderV2.ID }
-      payload: ProviderAuth.CallbackInput
-    }) {
-      yield* mapProviderAuthError(
-        svc.callback({
-          providerID: ctx.params.providerID,
-          method: ctx.payload.method,
-          code: ctx.payload.code,
-        }),
-      )
-      // kilocode_change start - drop old-user presence before instance disposal on Kilo OAuth callback
-      if (ctx.params.providerID === "kilo") yield* invalidatePresence()
-      // kilocode_change end
-      yield* disposeAllInstancesAfterProviderAuthCallback() // kilocode_change
-      return true
-    })
+    const callback = (ctx: { params: { providerID: ProviderV2.ID }; payload: ProviderAuth.CallbackInput }) =>
+      Effect.gen(function* () {
+        yield* mapProviderAuthError(
+          svc.callback({
+            providerID: ctx.params.providerID,
+            method: ctx.payload.method,
+            code: ctx.payload.code,
+          }),
+        )
+        // kilocode_change start - drop old-user presence before instance disposal on Kilo OAuth callback
+        if (ctx.params.providerID === "kilo") yield* invalidatePresence()
+        // kilocode_change end
+        yield* cache.clear(ctx.params.providerID) // kilocode_change
+        return true
+      })
 
     return handlers
       .handle("list", list)

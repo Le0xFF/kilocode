@@ -7,7 +7,6 @@ import { onMount, createSignal } from "solid-js"
 import type { Meta, StoryObj } from "storybook-solidjs-vite"
 import { StoryProviders, mockSessionValue } from "./StoryProviders"
 import { SessionContext } from "../context/session"
-import { KiloEmbeddingModelsContext } from "../context/kilo-embedding-models"
 import Settings from "../components/settings/Settings"
 import ProvidersTab from "../components/settings/ProvidersTab"
 import ModelsTab from "../components/settings/ModelsTab"
@@ -157,7 +156,7 @@ export const ModelsAccessibleLabels: Story = {
 export const ModelsSpeechToText: Story = {
   name: "ModelsTab — speech-to-text model",
   render: () => (
-    <StoryProviders kiloAuth config={{ experimental: { speech_to_text_model: "google/chirp-3" } } as any}>
+    <StoryProviders config={{ experimental: { speech_to_text_model: "google/chirp-3" } } as any}>
       <div style={{ "max-height": "700px", overflow: "auto" }}>
         <ModelsTab />
       </div>
@@ -644,36 +643,6 @@ export const IndexingScopeSwitch: Story = {
   },
 }
 
-export const IndexingKiloModelPreset: Story = {
-  name: "IndexingTab - Kilo stale custom model fallback",
-  render: () => {
-    const cfg: Config = {
-      indexing: {
-        provider: "kilo",
-        model: "custom/model",
-        dimension: 2048,
-      },
-    }
-    const catalog = {
-      defaultModel: "provider/model",
-      models: [
-        { id: "provider/model", name: "Provider Model", dimension: 1024, scoreThreshold: 0.4 },
-        { id: "provider/compact", name: "Provider Compact", dimension: 512, scoreThreshold: 0.35 },
-      ],
-      aliases: {},
-    }
-    return (
-      <StoryProviders config={cfg}>
-        <KiloEmbeddingModelsContext.Provider value={{ catalog: () => catalog }}>
-          <div style={{ "max-height": "700px", overflow: "auto" }}>
-            <IndexingTab />
-          </div>
-        </KiloEmbeddingModelsContext.Provider>
-      </StoryProviders>
-    )
-  },
-}
-
 export const IndexingKiloCatalogLoading: Story = {
   name: "IndexingTab - Kilo catalog loading",
   render: () => {
@@ -685,7 +654,6 @@ export const IndexingKiloCatalogLoading: Story = {
       <>
         <StoryProviders
           config={cfg}
-          kiloAuth
           onConfigChange={(next: Config) => setSaved((next.indexing ?? {}) as Record<string, unknown>)}
         >
           <div style={{ "max-height": "700px", overflow: "auto" }}>

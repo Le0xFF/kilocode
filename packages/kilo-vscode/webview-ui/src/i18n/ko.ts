@@ -399,7 +399,6 @@ export const dict = {
   "settings.providers.connected.empty": "연결된 공급자 없음",
   "settings.providers.section.popular": "인기 공급자",
   "settings.providers.select.placeholder": "공급자 선택...",
-  "settings.providers.tag.gateway": "Gateway",
   "settings.providers.tag.environment": "환경",
   "settings.providers.tag.config": "구성",
   "settings.providers.tag.chatgpt": "ChatGPT",
@@ -670,10 +669,8 @@ export const dict = {
   "settings.webTools.webSearch.description": "모든 제공업체의 모델에서 웹 검색을 사용할 수 있도록 합니다.",
   "settings.checkpoints.title": "체크포인트",
   "settings.display.title": "디스플레이",
-  "settings.autocomplete.title": "자동 완성",
-  "settings.autocomplete.model.title": "자동 완성 모델",
-  "settings.autocomplete.model.description": "인라인 코드 완성에 사용되는 모델 선택",
   "settings.notifications.title": "알림",
+  "settings.notifications.sounds": "소리",
   "settings.context.title": "컨텍스트",
 
   "settings.experimental.title": "실험적",
@@ -700,10 +697,6 @@ export const dict = {
   "settings.indexing.model.description": "선택한 공급자의 기본 임베딩 모델을 재정의합니다.",
   "settings.indexing.model.title": "임베딩 모델",
   "settings.indexing.provider.description": "의미 검색을 위한 임베딩 생성에 사용할 공급자를 선택하세요.",
-  "settings.indexing.kiloModel.title": "Kilo 모델 프리셋",
-  "settings.indexing.kiloModel.description": "지원되는 Kilo 호스팅 임베딩 모델을 선택하세요.",
-  "settings.indexing.kiloSignIn.title": "Kilo 로그인이 필요합니다",
-  "settings.indexing.kiloSignIn.description": "호스팅 임베딩을 사용하려면 Kilo에 로그인하세요.",
   "settings.indexing.provider.title": "임베딩 공급자",
   "settings.indexing.providerField.description": "공급자별 연결 설정.",
   "settings.indexing.qdrantApiKey.description": "Qdrant 인스턴스에 대한 선택적 API 키입니다.",
@@ -788,7 +781,6 @@ export const dict = {
   "settings.aboutKiloCode.resetSettings.description":
     "이 기능은 VS Code 확장 프로그램 전용 설정만 기본값으로 초기화합니다. 모드 및 자동 승인 규칙과 같이 CLI와 공유되는 설정은 CLI 구성에 저장되며 초기화되지 않습니다.",
   "settings.aboutKiloCode.resetSettings.button": "모든 설정 초기화",
-  "settings.aboutKiloCode.resetSettings.notificationsButton": "Reset Read Notifications",
   "settings.aboutKiloCode.settingsTransfer.title": "설정 이전",
   "settings.aboutKiloCode.settingsTransfer.description":
     "VS Code 인스턴스 간에 설정을 전송하려면 내보내기 또는 가져오기하세요.",
@@ -828,14 +820,6 @@ export const dict = {
 
   "common.add": "추가",
 
-  "settings.autocomplete.autoTrigger.title": "자동 인라인 완성 활성화",
-  "settings.autocomplete.autoTrigger.description": "입력 시 인라인 완성 제안을 자동으로 표시",
-  "settings.autocomplete.smartKeybinding.title": "스마트 인라인 작업 키바인딩 활성화",
-  "settings.autocomplete.smartKeybinding.description": "인라인 작업을 트리거하는 스마트 키바인딩 사용",
-  "settings.autocomplete.chatAutocomplete.title": "채팅 텍스트 영역 자동완성 활성화",
-  "settings.autocomplete.chatAutocomplete.description": "채팅 텍스트 영역에서 자동완성 제안 표시",
-  "settings.autocomplete.modelsHint": "자동 완성에 사용되는 모델을 선택하려면 모델 설정을 참조하세요.",
-  "settings.notifications.sounds": "소리",
   "settings.notifications.enable.title": "소리 알림 활성화",
   "settings.notifications.enable.description":
     "세션이 완료되거나 오류가 발생하거나 사용자 입력이 필요할 때 소리를 재생합니다",
@@ -999,7 +983,6 @@ export const dict = {
   "settings.agentBehaviour.mcpDetail.command": "명령어",
   "settings.agentBehaviour.mcpDetail.args": "인수",
   "settings.agentBehaviour.mcpDetail.env": "환경",
-  "settings.agentBehaviour.mcpBrowseMarketplace": "마켓플레이스 둘러보기",
   "settings.agentBehaviour.mcpEmpty":
     "MCP 서버가 구성되지 않았습니다. kilo.jsonc에서 MCP 서버를 추가하거나 에이전트에게 추가를 요청하세요.",
   "settings.agentBehaviour.workflows.description":
