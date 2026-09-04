@@ -7,7 +7,6 @@ export const dict = {
   "provider.connect.kiloGateway.byok.suffix": ".",
 
   // Provider settings translations
-  "settings.providers.group.recommended": "Recommended",
   "settings.providers.note.kilo": "Access 500+ AI models",
   "settings.providers.note.opencode": "Curated models including Claude, GPT, Gemini and more",
   "settings.providers.note.anthropic": "Direct access to Claude models, including Pro and Max",
@@ -20,7 +19,6 @@ export const dict = {
 
   // Reasoning block label
   "ui.reasoning.label": "Reasoning",
-
 
   // Plan follow-up question shown after plan_exit. The English strings here must match
   // the canonical `label`/`header`/`question` sent by the backend — those canonical labels

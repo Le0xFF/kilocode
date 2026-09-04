@@ -25,16 +25,16 @@ describe("splitConfigByScope", () => {
     expect(split.project).toEqual({})
   })
 
-  it("writes the speech-to-text model setting to global config", () => {
+  it("writes the image generation model setting to global config", () => {
     const split = splitConfigByScope({
       experimental: {
-        speech_to_text_model: "openai/gpt-4o-mini-transcribe",
+        image_generation_model: "openai/gpt-image-1",
       },
     })
 
     expect(split.global).toEqual({
       experimental: {
-        speech_to_text_model: "openai/gpt-4o-mini-transcribe",
+        image_generation_model: "openai/gpt-image-1",
       },
     })
     expect(split.project).toEqual({})

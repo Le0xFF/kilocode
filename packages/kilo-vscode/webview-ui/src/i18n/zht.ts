@@ -47,18 +47,15 @@ export const anacondaDesktopDict = {
   "provider.anaconda.action.open": "開啟 Anaconda Desktop",
   "provider.anaconda.action.checkAgain": "再次檢查",
   "provider.anaconda.action.continue": "仍要繼續",
-  "provider.anaconda.action.manage": "管理 / 重新整理",
   "provider.anaconda.toast.refreshed.title": "Anaconda Desktop 已重新整理",
   "provider.anaconda.toast.refreshed.description": "使用中的本機伺服器與模型在 Kilo 中已是最新狀態。",
   "settings.providers.note.anacondaDesktop": "執行由 Anaconda Desktop 在本機提供的模型。",
-  "settings.providers.tag.local": "本機",
 } as const
 
 export const dict = {
   ...anacondaDesktopDict,
   ...cloudProviderDict,
 
-  "command.provider.connect": "連接供應商",
 
   "session.activity.waiting": "正在等待回覆或核准。",
   "session.activity.error": "錯誤或連線已中斷。",
@@ -83,9 +80,6 @@ export const dict = {
   "command.session.compact": "精簡工作階段",
   "command.session.export": "匯出會話紀錄",
 
-  "dialog.provider.search.placeholder": "搜尋供應商",
-  "dialog.provider.empty": "找不到供應商",
-  "dialog.provider.group.other": "其他",
   "dialog.provider.tag.recommended": "推薦",
 
   "dialog.model.select.title": "選擇模型",
@@ -95,7 +89,6 @@ export const dict = {
   "dialog.model.expand": "展開",
   "dialog.model.collapse": "收起",
 
-  "dialog.provider.viewAll": "查看更多供應商",
 
   "provider.connect.title": "連線 {{provider}}",
   "provider.connect.selectMethod": "選擇 {{provider}} 的登入方式。",
@@ -141,8 +134,6 @@ export const dict = {
   "provider.disconnect.toast.disconnected.description": "{{provider}} 模型已不再可用。",
   "model.tag.free": "免費",
   "model.tag.dataCollected": "資料可能會用於訓練",
-  "model.group.auto": "自動模型",
-  "model.group.recommended": "推薦",
   "model.group.favorites": "我的最愛",
   "model.group.mostUsed": "最常用",
   "model.favorite.add": "加入我的最愛",
@@ -155,7 +146,6 @@ export const dict = {
   "model.preview.label.average": "預估平均成本",
   "model.preview.label.context": "上下文",
   "model.preview.group.terminalBench": "Terminal Bench 2.0",
-  "model.preview.group.autoEfficientChoices": "模型選擇",
   "model.preview.label.completion": "完成率",
   "model.preview.label.costAttempt": "成本 / 次嘗試",
   "model.preview.value.notSupported": "不支援",
@@ -182,7 +172,6 @@ export const dict = {
   "prompt.action.send": "傳送",
   "prompt.action.continue": "繼續",
   "prompt.action.send.blocked": "請先回答或忽略待處理的問題",
-  "prompt.action.send.recording": "轉錄並傳送",
   "prompt.action.stop": "停止",
   "prompt.action.enhance": "改善提示詞",
   "prompt.action.autoApprove.enable": "啟用自動核准",
@@ -206,16 +195,6 @@ export const dict = {
   "prompt.action.sandbox.description.enabled": "寫入僅限於專案和 Kilo 目錄。",
   "prompt.action.sandbox.description.disabled": "點擊以限制檔案系統寫入和網路存取。",
   "prompt.action.sandbox.description.disabledNetworkAllowed": "點擊以限制檔案系統寫入。沙盒設定仍允許網路存取。",
-
-  "speechToText.tooltip.start": "使用 Kilo Gateway 開始語音輸入",
-  "speechToText.tooltip.shortcut": "點擊或按下 Cmd/Ctrl+K 開始或停止錄音；說話時按住，放開後即可轉錄並提交。",
-  "speechToText.tooltip.starting": "正在啟動麥克風... 請稍後再說。",
-  "speechToText.tooltip.stop": "停止擷取音訊",
-  "speechToText.tooltip.transcribing": "正在轉錄... 點擊取消。",
-  "speechToText.tooltip.error": "語音輸入失敗。點擊清除。",
-  "speechToText.error.title": "語音輸入失敗",
-  "speechToText.error.loginRequired": "登入 Kilo 以使用語音輸入。",
-  "speechToText.error.emptyTranscript": "未偵測到語音。",
 
   "prompt.toast.promptSendFailed.title": "傳送提示失敗",
 
@@ -381,22 +360,21 @@ export const dict = {
 
   "settings.providers.title": "供應商",
   "settings.providers.section.connected": "已連線的供應商",
+  "settings.providers.section.custom": "自訂供應商",
   "settings.providers.connected.empty": "沒有已連線的供應商",
-  "settings.providers.section.popular": "熱門供應商",
   "settings.providers.select.placeholder": "選擇供應商...",
   "settings.providers.tag.environment": "環境",
   "settings.providers.tag.config": "設定",
   "settings.providers.tag.chatgpt": "ChatGPT",
   "settings.providers.tag.custom": "自訂",
   "settings.providers.tag.other": "其他",
-  "settings.providers.tag.customProvider": "自訂提供商",
   "settings.providers.connected.environmentDescription": "從您的環境變數連線",
   "settings.providers.action.signInChatGPT": "使用 ChatGPT 登入",
   "settings.providers.custom.description": "透過基礎 URL 新增自訂提供商。",
   "settings.providers.subagentModel.title": "子代理模型",
   "settings.providers.subagentModel.description": "task-tool 子代理的預設模型和推理工作量。留空以繼承呼叫代理的模型。",
   "settings.models.hidePromptTraining.title": "隱藏使用提示詞訓練的模型",
-  "settings.models.hidePromptTraining.description": "隱藏供應商可能會使用您的提示詞進行訓練的 Kilo Gateway 模型。",
+  "settings.models.hidePromptTraining.description": "隱藏供應商可能會使用您的提示詞進行訓練的模型。",
   "settings.providers.modeModels": "按模式選擇模型",
   "settings.providers.modeModels.description": "為特定模式覆寫預設模型。如果未設定，將使用全域預設模型。",
   "provider.custom.title": "自訂提供商",
@@ -606,7 +584,6 @@ export const dict = {
   "profile.usage.plan.unknown": "方案：狀態未知",
   "profile.usage.action.manage": "管理",
   "profile.usage.action.managePlan": "管理 {{plan}}",
-  "profile.usage.routing": "方案帳單目前有效。Kilo Gateway 路由狀態為 {{state}}。",
   "profile.usage.routingState.disabled": "已停用",
   "profile.usage.routingState.missing": "缺失",
   "profile.usage.routingState.replaced": "已取代",
@@ -784,10 +761,6 @@ export const dict = {
   "settings.experimental.imageGenerationModel.description": "圖像生成模型",
   "settings.experimental.imageGenerationModel.placeholder": "預設 (Auto Router)",
 
-  "settings.models.speechToText.disabledDescription":
-    "啟用並登入 Kilo 供應商以使用 Speech to Text。Speech to Text 目前僅支援透過 Kilo Gateway 使用。",
-  "settings.models.speechToTextModel.title": "語音轉文字模型",
-  "settings.models.speechToTextModel.description": "選擇用於語音輸入的 Kilo Gateway 轉錄模型。",
   "settings.experimental.nativeNotebookTools.title": "原生筆記本工具",
   "settings.experimental.nativeNotebookTools.description": "啟用用於讀取、編輯和執行 VS Code 筆記本的實驗性工具",
   "settings.experimental.continueOnDeny.title": "拒絕後繼續",

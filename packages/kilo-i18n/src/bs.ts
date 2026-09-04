@@ -5,7 +5,6 @@ export const dict = {
   "provider.connect.kiloGateway.byok.suffix": ".",
 
   // Provider settings translations
-  "settings.providers.group.recommended": "Preporučeno",
   "settings.providers.note.kilo": "Pristup za 500+ AI modela",
   "settings.providers.note.opencode": "Odabrani modeli uključujući Claude, GPT, Gemini i još mnogo toga",
   "settings.providers.note.anthropic": "Direktan pristup Claude modelima, uključujući Pro i Max",
@@ -23,7 +22,6 @@ export const dict = {
 
   // Reasoning block label
   "ui.reasoning.label": "Rezonovanje",
-
 
   // Plan follow-up question shown after plan_exit
   "plan.followup.header": "Implementiraj",

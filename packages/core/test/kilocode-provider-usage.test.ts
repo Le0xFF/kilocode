@@ -36,7 +36,7 @@ const catalog = (input?: CatalogInput) => {
       },
     })
     const kiloInfo = ProviderV2.Info.make({
-      id: ProviderV2.ID.kilo,
+      id: ProviderV2.ID.make("kilo"),
       name: "Kilo",
       api: { type: "native", settings: {} },
       request: { headers: {}, body: organization ? { kilocodeOrganizationId: organization } : {} },

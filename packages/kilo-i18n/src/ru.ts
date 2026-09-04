@@ -5,7 +5,6 @@ export const dict = {
   "provider.connect.kiloGateway.byok.suffix": ".",
 
   // Provider settings translations
-  "settings.providers.group.recommended": "Рекомендуемые",
   "settings.providers.note.kilo": "Доступ к 500+ моделям ИИ",
   "settings.providers.note.opencode": "Подобранные модели, включая Claude, GPT, Gemini и другие",
   "settings.providers.note.anthropic": "Прямой доступ к моделям Claude, включая Pro и Max",
@@ -18,7 +17,6 @@ export const dict = {
 
   // Reasoning block label
   "ui.reasoning.label": "Рассуждение",
-
 
   // Plan follow-up question shown after plan_exit
   "plan.followup.header": "Реализовать",

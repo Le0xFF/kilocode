@@ -11,7 +11,7 @@ import {
 
 const tokens = { input: 10, output: 2, reasoning: 1, cache: { read: 20, write: 5 } }
 const models = [
-  { providerID: "kilo", modelID: "qwen/qwen3.7-plus-20260602", steps: 1, cost: 0.01, tokens },
+  { providerID: "lmstudio", modelID: "qwen/qwen3.7-plus-20260602", steps: 1, cost: 0.01, tokens },
   { providerID: "minimax", modelID: "minimax-m3", steps: 1, cost: 0.02, tokens },
 ]
 const usage = {
@@ -20,9 +20,9 @@ const usage = {
   models,
 } satisfies SessionModelUsage
 const providers = {
-  kilo: {
-    id: "kilo",
-    name: "Kilo Gateway",
+  lmstudio: {
+    id: "lmstudio",
+    name: "LM Studio",
     models: {
       "qwen/qwen3.7-plus": { id: "qwen/qwen3.7-plus", name: "Qwen: Qwen3.7 Plus (20% off)" },
     },
@@ -47,7 +47,7 @@ describe("model usage", () => {
     expect(tokenSummary(usage)).toEqual({ input: 10, output: 2, cached: 20 })
     expect(cacheRate(models[0])).toBe("57.1%")
     expect(cacheRate({ ...models[0], tokens: { ...tokens, input: 0, cache: { read: 0, write: 0 } } })).toBe("-")
-    expect(groupModelUsage(models, providers).map((group) => group.providerName)).toEqual(["Kilo Gateway", "MiniMax"])
+    expect(groupModelUsage(models, providers).map((group) => group.providerName)).toEqual(["LM Studio", "MiniMax"])
     expect(modelUsageName(models[0], providers)).toBe("Qwen 3.7 Plus")
     expect(modelUsageName(models[1], providers)).toBe("MiniMax M3")
     expect(modelUsageName({ ...models[0], modelID: "moonshotai/kimi-k2.7-code-20260612" }, {})).toBe("kimi-k2.7-code")

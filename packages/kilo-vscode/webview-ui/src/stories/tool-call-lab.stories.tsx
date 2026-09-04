@@ -44,7 +44,7 @@ const base: SDKAssistantMessage = {
   parentID: "tool-call-lab-user-message",
   time: { created: stamp - 9000, completed: stamp - 1000 },
   modelID: "anthropic/claude-sonnet-4-6",
-  providerID: "kilo",
+  providerID: "lmstudio",
   mode: "default",
   agent: "default",
   path: { cwd: "/project", root: "/project" },
@@ -608,7 +608,7 @@ const blocks: SDKPart[] = [
     metadata: {
       parentSessionId: SID,
       sessionId: CHILD,
-      model: { providerID: "kilo", modelID: "anthropic/claude-sonnet-4-6" },
+      model: { providerID: "lmstudio", modelID: "anthropic/claude-sonnet-4-6" },
       truncated: false,
     },
     time: { start: stamp - 4200, end: stamp - 3800 },

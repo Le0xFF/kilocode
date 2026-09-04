@@ -304,18 +304,7 @@ export const Info = Schema.Struct({
       native_notebook_tools: Schema.optional(Schema.Boolean).annotate({
         description: "Enable native tools for reading, editing, and executing VS Code notebooks",
       }),
-      speech_to_text_model: Schema.optional(Schema.String).annotate({
-        description: "Speech-to-text transcription model ID to use for voice input",
-      }),
-      // kilocode_change start - local media providers (speech/image) reference a providerID/modelID pair
-      speech_to_text: Schema.optional(
-        Schema.Struct({
-          provider: Schema.optional(Schema.String),
-          model: Schema.optional(Schema.String),
-        }),
-      ).annotate({
-        description: "Local OpenAI-compatible provider and model used for speech-to-text",
-      }),
+      // kilocode_change start - local media providers (image) reference a providerID/modelID pair
       image_generation_provider: Schema.optional(
         Schema.Struct({
           provider: Schema.optional(Schema.String),

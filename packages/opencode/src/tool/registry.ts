@@ -78,10 +78,10 @@ import { McpCatalog } from "@/mcp/catalog"
 import { InstanceRef } from "@/effect/instance-ref" // kilocode_change
 
 export function webSearchEnabled(
-  providerID: ProviderV2.ID,
+  _providerID: ProviderV2.ID,
   flags = { exa: Flag.KILO_ENABLE_EXA, parallel: Flag.KILO_ENABLE_PARALLEL },
 ) {
-  return providerID === ProviderV2.ID.kilo || flags.exa || flags.parallel // kilocode_change
+  return flags.exa || flags.parallel // kilocode_change
 }
 
 type TaskDef = Tool.InferDef<typeof TaskTool>

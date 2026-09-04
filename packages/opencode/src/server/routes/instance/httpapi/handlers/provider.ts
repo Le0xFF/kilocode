@@ -2,13 +2,14 @@ import { ProviderAuth } from "@/provider/auth"
 import { Config } from "@/config/config"
 import { ModelsDev } from "@opencode-ai/core/models-dev"
 import { Provider } from "@/provider/provider"
+import { Auth } from "@/auth" // kilocode_change
 
 import { mapValues, pickBy } from "remeda" // kilocode_change
 import { ModelCache } from "@/provider/model-cache" // kilocode_change
-import { invalidatePresence } from "@/kilocode/server/provider-auth-lifecycle" // kilocode_change
 import { providerMetadata } from "@/kilocode/provider/metadata" // kilocode_change
 import { filterPromptTrainingModels } from "@/kilocode/provider/model-filter" // kilocode_change
 import { overlay as overlayAnacondaDesktop } from "@/kilocode/anaconda-desktop/provider" // kilocode_change
+import { inLocalSurface } from "@/kilocode/local-providers" // kilocode_change
 import { Effect, Schema } from "effect"
 import { HttpServerRequest, HttpServerResponse } from "effect/unstable/http"
 import { HttpApiBuilder } from "effect/unstable/httpapi"
@@ -42,17 +43,29 @@ export const providerHandlers = HttpApiBuilder.group(InstanceHttpApi, "provider"
     const provider = yield* Provider.Service
     const svc = yield* ProviderAuth.Service
     const cache = yield* ModelCache.Service // kilocode_change
+    const auth = yield* Auth.Service // kilocode_change
 
     const list = Effect.fn("ProviderHttpApi.list")(function* () {
       const config = yield* cfg.get()
-      const all = overlayAnacondaDesktop(yield* ModelsDev.Service.use((s) => s.get())) // kilocode_change
+      // kilocode_change start
+      // Hard cut: out-of-surface providers are excluded from the raw catalog before any merge with connected.
+      // credentials/connected (+ ids) are computed first because inLocalSurface whitelists them, and so that
+      // a stale auto-connect (e.g. Kilo Gateway) can no longer re-enter `all` via Object.assign below.
+      const credentials = yield* auth.all().pipe(Effect.orDie)
+      const creds = new Set(Object.keys(credentials))
+      const connected = yield* provider.list()
+      const ids = new Set([...Object.keys(config.provider ?? {}), ...creds, ...Object.keys(connected)])
+      const all = overlayAnacondaDesktop(pickBy(yield* ModelsDev.Service.use((s) => s.get()), (_item, id) => inLocalSurface(id, ids)))
+      // The pickBy on `catalog` was removed: `all` is already hard-cut to the local surface, so filtering
+      // again here would be redundant.
+      const catalog = all
+      // kilocode_change end
       const disabled = new Set(config.disabled_providers ?? [])
       const enabled = config.enabled_providers ? new Set(config.enabled_providers) : undefined
-      const filtered: Record<string, (typeof all)[string]> = {}
-      for (const [key, value] of Object.entries(all)) {
+      const filtered: Record<string, (typeof catalog)[string]> = {}
+      for (const [key, value] of Object.entries(catalog)) {
         if ((enabled ? enabled.has(key) : true) && !disabled.has(key)) filtered[key] = value
       }
-      const connected = yield* provider.list()
       // kilocode_change start
       const providers = filterPromptTrainingModels(
         Object.assign(
@@ -83,7 +96,7 @@ export const providerHandlers = HttpApiBuilder.group(InstanceHttpApi, "provider"
       // kilocode_change end
     })
 
-    const auth = Effect.fn("ProviderHttpApi.auth")(function* () {
+    const methods = Effect.fn("ProviderHttpApi.auth")(function* () {
       return yield* svc.methods()
     })
 
@@ -124,16 +137,13 @@ export const providerHandlers = HttpApiBuilder.group(InstanceHttpApi, "provider"
             code: ctx.payload.code,
           }),
         )
-        // kilocode_change start - drop old-user presence before instance disposal on Kilo OAuth callback
-        if (ctx.params.providerID === "kilo") yield* invalidatePresence()
-        // kilocode_change end
         yield* cache.clear(ctx.params.providerID) // kilocode_change
         return true
       })
 
     return handlers
       .handle("list", list)
-      .handle("auth", auth)
+      .handle("auth", methods)
       .handleRaw("authorize", authorizeRaw)
       .handle("callback", callback)
   }),

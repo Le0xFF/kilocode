@@ -238,10 +238,6 @@ import type {
   MediaLocalImgGenerateResponses,
   MediaLocalImgModelsErrors,
   MediaLocalImgModelsResponses,
-  MediaLocalSttModelsErrors,
-  MediaLocalSttModelsResponses,
-  MediaLocalSttTranscribeErrors,
-  MediaLocalSttTranscribeResponses,
   MemoryConfigureErrors,
   MemoryConfigureResponses,
   MemoryCorrectErrors,
@@ -8103,85 +8099,6 @@ export class AnacondaDesktop extends HeyApiClient {
   }
 }
 
-export class Stt extends HeyApiClient {
-  /**
-   * List local speech-to-text models
-   *
-   * List speech-to-text models declared in the experimental config.
-   */
-  public models<ThrowOnError extends boolean = false>(
-    parameters?: {
-      directory?: string
-      workspace?: string
-    },
-    options?: Options<never, ThrowOnError>,
-  ) {
-    const params = buildClientParams(
-      [parameters],
-      [
-        {
-          args: [
-            { in: "query", key: "directory" },
-            { in: "query", key: "workspace" },
-          ],
-        },
-      ],
-    )
-    return (options?.client ?? this.client).get<MediaLocalSttModelsResponses, MediaLocalSttModelsErrors, ThrowOnError>({
-      url: "/media-local/stt/models",
-      ...options,
-      ...params,
-    })
-  }
-
-  /**
-   * Transcribe audio via a local provider
-   *
-   * Proxy an audio transcription request to the configured local OpenAI-compatible provider.
-   */
-  public transcribe<ThrowOnError extends boolean = false>(
-    parameters: {
-      directory?: string
-      workspace?: string
-      model: string
-      audio: string
-      format?: string
-      language?: string
-    },
-    options?: Options<never, ThrowOnError>,
-  ) {
-    const params = buildClientParams(
-      [parameters],
-      [
-        {
-          args: [
-            { in: "query", key: "directory" },
-            { in: "query", key: "workspace" },
-            { in: "body", key: "model" },
-            { in: "body", key: "audio" },
-            { in: "body", key: "format" },
-            { in: "body", key: "language" },
-          ],
-        },
-      ],
-    )
-    return (options?.client ?? this.client).post<
-      MediaLocalSttTranscribeResponses,
-      MediaLocalSttTranscribeErrors,
-      ThrowOnError
-    >({
-      url: "/media-local/stt/transcribe",
-      ...options,
-      ...params,
-      headers: {
-        "Content-Type": "application/json",
-        ...options?.headers,
-        ...params.headers,
-      },
-    })
-  }
-}
-
 export class Img extends HeyApiClient {
   /**
    * List local image generation models
@@ -8262,11 +8179,6 @@ export class Img extends HeyApiClient {
 }
 
 export class MediaLocal extends HeyApiClient {
-  private _stt?: Stt
-  get stt(): Stt {
-    return (this._stt ??= new Stt({ client: this.client }))
-  }
-
   private _img?: Img
   get img(): Img {
     return (this._img ??= new Img({ client: this.client }))

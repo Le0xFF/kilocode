@@ -5,7 +5,6 @@ export const dict = {
   "provider.connect.kiloGateway.byok.suffix": "를 사용하세요.",
 
   // Provider settings translations
-  "settings.providers.group.recommended": "추천",
   "settings.providers.note.kilo": "500개 이상의 AI 모델 이용 가능",
   "settings.providers.note.opencode": "Claude, GPT, Gemini 등을 포함한 엄선된 모델",
   "settings.providers.note.anthropic": "Pro 및 Max를 포함한 Claude 모델에 직접 액세스",
@@ -18,7 +17,6 @@ export const dict = {
 
   // Reasoning block label
   "ui.reasoning.label": "추론",
-
 
   // Plan follow-up question shown after plan_exit
   "plan.followup.header": "구현",

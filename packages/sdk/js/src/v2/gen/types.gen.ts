@@ -109,14 +109,14 @@ export type Event =
   | EventInteractiveTerminalData
   | EventInteractiveTerminalDeleted
   | EventSandboxStatusChanged
-  | EventSuggestionShown
-  | EventSuggestionAccepted
-  | EventSuggestionDismissed
   | EventKilocodeAgentManagerStart
   | EventKilocodeAgentManagerRequested
   | EventKilocodeAgentManagerCancelled
   | EventKilocodeNotebookRequested
   | EventKilocodeNotebookCancelled
+  | EventSuggestionShown
+  | EventSuggestionAccepted
+  | EventSuggestionDismissed
   | EventLspClientDiagnostics
   | EventMemoryStatus1
   | EventMemoryUpdated1
@@ -320,28 +320,6 @@ export type InteractiveTerminalInfo = {
   }
 }
 
-export type SuggestionRequest = {
-  id: string
-  sessionID: string
-  text: string
-  actions: Array<{
-    /**
-     * Button or option label (1-5 words)
-     */
-    label: string
-    description?: string
-    /**
-     * Synthetic user prompt to inject when this action is accepted
-     */
-    prompt: string
-  }>
-  blocking?: boolean
-  tool?: {
-    messageID: string
-    callID: string
-  }
-}
-
 export type AgentManagerRequestId = string
 
 export type AgentManagerFilterState = "idle" | "busy" | "retry" | "offline" | "waiting"
@@ -459,6 +437,28 @@ export type NotebookExecuteRequest = {
 }
 
 export type NotebookRequest = NotebookReadRequest | NotebookEditRequest | NotebookExecuteRequest
+
+export type SuggestionRequest = {
+  id: string
+  sessionID: string
+  text: string
+  actions: Array<{
+    /**
+     * Button or option label (1-5 words)
+     */
+    label: string
+    description?: string
+    /**
+     * Synthetic user prompt to inject when this action is accepted
+     */
+    prompt: string
+  }>
+  blocking?: boolean
+  tool?: {
+    messageID: string
+    callID: string
+  }
+}
 
 export type IndexingStatusState = "Disabled" | "In Progress" | "Complete" | "Error" | "Standby"
 
@@ -1166,14 +1166,14 @@ export type GlobalEvent = {
     | EventInteractiveTerminalData
     | EventInteractiveTerminalDeleted
     | EventSandboxStatusChanged
-    | EventSuggestionShown
-    | EventSuggestionAccepted
-    | EventSuggestionDismissed
     | EventKilocodeAgentManagerStart
     | EventKilocodeAgentManagerRequested
     | EventKilocodeAgentManagerCancelled
     | EventKilocodeNotebookRequested
     | EventKilocodeNotebookCancelled
+    | EventSuggestionShown
+    | EventSuggestionAccepted
+    | EventSuggestionDismissed
     | EventLspClientDiagnostics
     | EventMemoryStatus
     | EventMemoryUpdated
@@ -2678,11 +2678,6 @@ export type Config = {
     image_generation?: boolean
     image_generation_model?: string
     native_notebook_tools?: boolean
-    speech_to_text_model?: string
-    speech_to_text?: {
-      provider?: string
-      model?: string
-    }
     image_generation_provider?: {
       provider?: string
       model?: string
@@ -4919,42 +4914,6 @@ export type EventSandboxStatusChanged = {
   }
 }
 
-export type EventSuggestionShown = {
-  id: string
-  type: "suggestion.shown"
-  properties: SuggestionRequest
-}
-
-export type EventSuggestionAccepted = {
-  id: string
-  type: "suggestion.accepted"
-  properties: {
-    sessionID: string
-    requestID: string
-    index: number
-    action: {
-      /**
-       * Button or option label (1-5 words)
-       */
-      label: string
-      description?: string
-      /**
-       * Synthetic user prompt to inject when this action is accepted
-       */
-      prompt: string
-    }
-  }
-}
-
-export type EventSuggestionDismissed = {
-  id: string
-  type: "suggestion.dismissed"
-  properties: {
-    sessionID: string
-    requestID: string
-  }
-}
-
 export type EventKilocodeAgentManagerStart = {
   id: string
   type: "kilocode.agent_manager.start"
@@ -5006,6 +4965,42 @@ export type EventKilocodeNotebookCancelled = {
     requestID: NotebookRequestId
     sessionID: string
     reason: "cancelled" | "disposed" | "timeout"
+  }
+}
+
+export type EventSuggestionShown = {
+  id: string
+  type: "suggestion.shown"
+  properties: SuggestionRequest
+}
+
+export type EventSuggestionAccepted = {
+  id: string
+  type: "suggestion.accepted"
+  properties: {
+    sessionID: string
+    requestID: string
+    index: number
+    action: {
+      /**
+       * Button or option label (1-5 words)
+       */
+      label: string
+      description?: string
+      /**
+       * Synthetic user prompt to inject when this action is accepted
+       */
+      prompt: string
+    }
+  }
+}
+
+export type EventSuggestionDismissed = {
+  id: string
+  type: "suggestion.dismissed"
+  properties: {
+    sessionID: string
+    requestID: string
   }
 }
 
@@ -16674,82 +16669,6 @@ export type AnacondaDesktopSyncResponses = {
 }
 
 export type AnacondaDesktopSyncResponse = AnacondaDesktopSyncResponses[keyof AnacondaDesktopSyncResponses]
-
-export type MediaLocalSttModelsData = {
-  body?: never
-  path?: never
-  query?: {
-    directory?: string
-    workspace?: string
-  }
-  url: "/media-local/stt/models"
-}
-
-export type MediaLocalSttModelsErrors = {
-  /**
-   * BadRequest | InvalidRequestError
-   */
-  400: EffectHttpApiErrorBadRequest | InvalidRequestError
-}
-
-export type MediaLocalSttModelsError = MediaLocalSttModelsErrors[keyof MediaLocalSttModelsErrors]
-
-export type MediaLocalSttModelsResponses = {
-  /**
-   * Configured speech-to-text models
-   */
-  200: Array<{
-    id: string
-    name: string
-  }>
-}
-
-export type MediaLocalSttModelsResponse = MediaLocalSttModelsResponses[keyof MediaLocalSttModelsResponses]
-
-export type MediaLocalSttTranscribeData = {
-  body?: {
-    /**
-     * Model reference in providerID/modelID form
-     */
-    model: string
-    /**
-     * Base64-encoded audio bytes
-     */
-    audio: string
-    format?: string
-    language?: string
-  }
-  path?: never
-  query?: {
-    directory?: string
-    workspace?: string
-  }
-  url: "/media-local/stt/transcribe"
-}
-
-export type MediaLocalSttTranscribeErrors = {
-  /**
-   * BadRequest | InvalidRequestError
-   */
-  400: EffectHttpApiErrorBadRequest | InvalidRequestError
-  /**
-   * MediaLocalFailedError
-   */
-  502: MediaLocalFailedError
-}
-
-export type MediaLocalSttTranscribeError = MediaLocalSttTranscribeErrors[keyof MediaLocalSttTranscribeErrors]
-
-export type MediaLocalSttTranscribeResponses = {
-  /**
-   * Transcription result
-   */
-  200: {
-    text: string
-  }
-}
-
-export type MediaLocalSttTranscribeResponse = MediaLocalSttTranscribeResponses[keyof MediaLocalSttTranscribeResponses]
 
 export type MediaLocalImgModelsData = {
   body?: never

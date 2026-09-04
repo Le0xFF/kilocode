@@ -1,6 +1,5 @@
 import { routeSuggestionWebviewMessage } from "./handlers/suggestion"
 import * as ModelState from "./model-state"
-import { routeInputToolMessage } from "../services/input-tools"
 import type { KiloConnectionService } from "../services/cli-backend/connection-service"
 import type { SuggestionContext } from "./handlers/suggestion"
 import type { KiloClient } from "@kilocode/sdk/v2/client"
@@ -21,7 +20,6 @@ type Ctx = {
   copy: (text: string) => PromiseLike<void>
   openSessions: (ids: string[]) => void
   activity: (state: unknown) => void
-  speechToTextModels: () => Promise<void>
   modelUsage: (message: ModelUsageMessage) => Promise<void>
   backgroundJobs: (sessionID: string, requestID: string) => Promise<void>
   cancelBackgroundJob: (jobID: string, sessionID: string, requestID: string) => Promise<void>
@@ -131,16 +129,10 @@ export async function routeEarlyMessage(
     ctx.post(buildAutoApprovalReasonSettingMessage())
     return true
   }
-  if (message.type === "requestSpeechToTextModels") {
-    await ctx.speechToTextModels()
-    return true
-  }
   if (message.type === "requestBrowserSettings") {
     ctx.browserSettings()
     return true
   }
   const background = await routeBackgroundMessage(message, ctx)
-  return (
-    background ?? (await routeInputToolMessage(message, { connection: ctx.connection, dir: ctx.dir, post: ctx.post }))
-  )
+  return background ?? false
 }

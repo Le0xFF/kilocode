@@ -1,5 +1,4 @@
 import type { Argv } from "yargs"
-import type { Auth } from "@/auth"
 import * as Log from "@opencode-ai/core/util/log"
 import { InstallationBuildKind, InstallationVersion } from "@opencode-ai/core/installation/version"
 import { KiloShutdown } from "@/kilocode/cli/shutdown"
@@ -19,16 +18,20 @@ import {
 
 const log = Log.create({ service: "kilocode.cli" })
 
+// Local copies of gateway env-var names so the CLI bootstrap stays independent
+// of @kilocode/kilo-gateway (which is only reachable via a heavy dynamic import).
+const ENV_FEATURE = "KILOCODE_FEATURE"
+const ENV_VERSION = "KILOCODE_VERSION"
+
 // All Kilo-specific CLI customization lives here so the shared upstream entrypoint
 // (src/index.ts) only needs a handful of thin call-sites behind kilocode_change markers.
 // This keeps index.ts close to upstream and reduces merge conflicts on every sync.
 //
 // Startup cost note: this module is imported eagerly from src/index.ts, so its static
-// import graph must stay light. Heavy dependencies (telemetry, gateway auth migration,
-// AppRuntime, config, auth, JSON migration) are dynamically imported
-// inside the function that needs them, following the deferral pattern upstream applied
-// in opencode#30453. The registered command modules must follow the same rule: a light
-// top level, with implementation imports inside their handlers.
+// import graph must stay light. Heavy dependencies (telemetry, AppRuntime, config, auth,
+// JSON migration) are dynamically imported inside the function that needs them, following
+// the deferral pattern upstream applied in opencode#30453. The registered command modules
+// must follow the same rule: a light top level, with implementation imports inside their handlers.
 export namespace KiloCli {
   let info = false
   let narrow = false
@@ -71,10 +74,8 @@ export namespace KiloCli {
     const { KiloLog } = await import("@/kilocode/log")
     await KiloLog.init()
 
-    const gateway = await import("@kilocode/kilo-gateway")
-    if (!process.env[gateway.ENV_FEATURE])
-      process.env[gateway.ENV_FEATURE] = process.argv.includes("serve") ? "unknown" : "cli"
-    if (!process.env[gateway.ENV_VERSION]) process.env[gateway.ENV_VERSION] = InstallationVersion
+    if (!process.env[ENV_FEATURE]) process.env[ENV_FEATURE] = process.argv.includes("serve") ? "unknown" : "cli"
+    if (!process.env[ENV_VERSION]) process.env[ENV_VERSION] = InstallationVersion
     process.env.KILO = "1"
 
     // Must run before AppRuntime initializes the SQLite database, or the marker
@@ -82,26 +83,9 @@ export namespace KiloCli {
     const { JsonMigration } = await import("@/kilocode/storage/json-migration")
     await JsonMigration.bootstrap()
 
-    const runtime = narrow ? await import("@/kilocode/cli/bootstrap-runtime") : undefined
-    const app = narrow ? undefined : await import("@/effect/app-runtime")
-
-    const { migrateLegacyKiloAuth } = gateway
-    const getAuth = async () => {
-      if (runtime) return runtime.KiloCliBootstrapRuntime.getAuth()
-      const { Auth } = await import("@/auth")
-      return app!.AppRuntime.runPromise(Auth.Service.use((s) => s.get("kilo")))
-    }
-    const setAuth = async (auth: Auth.Info) => {
-      if (runtime) return runtime.KiloCliBootstrapRuntime.setAuth(auth)
-      const { Auth } = await import("@/auth")
-      return app!.AppRuntime.runPromise(Auth.Service.use((s) => s.set("kilo", auth)))
-    }
-
-    // Migrate legacy Kilo CLI auth (~/.kilocode/cli/config.json) into auth.json if present.
-    await migrateLegacyKiloAuth(
-      async () => (await getAuth()) !== undefined,
-      setAuth,
-    )
+    // Legacy Kilo CLI auth migration (~/.kilocode/cli/config.json → auth.json) is skipped:
+    // it only handled the online Kilo device flow, which is irrelevant for local providers.
+    log.info("skipped legacy Kilo auth migration (offline)")
   }
 
   // Runs from the `finally` block on every exit path.

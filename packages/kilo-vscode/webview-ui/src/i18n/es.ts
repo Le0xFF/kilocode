@@ -46,18 +46,15 @@ export const anacondaDesktopDict = {
   "provider.anaconda.action.open": "Abrir Anaconda Desktop",
   "provider.anaconda.action.checkAgain": "Comprobar de nuevo",
   "provider.anaconda.action.continue": "Continuar de todos modos",
-  "provider.anaconda.action.manage": "Administrar / Actualizar",
   "provider.anaconda.toast.refreshed.title": "Anaconda Desktop actualizado",
   "provider.anaconda.toast.refreshed.description": "El servidor local activo y los modelos están actualizados en Kilo.",
   "settings.providers.note.anacondaDesktop": "Ejecuta un modelo servido localmente por Anaconda Desktop.",
-  "settings.providers.tag.local": "Local",
 } as const
 
 export const dict = {
   ...anacondaDesktopDict,
   ...cloudProviderDict,
 
-  "command.provider.connect": "Conectar proveedor",
 
   "session.activity.waiting": "Esperando una respuesta o aprobación.",
   "session.activity.error": "Error o conexión perdida.",
@@ -85,9 +82,6 @@ export const dict = {
   "command.session.compact": "Compactar sesión",
   "command.session.export": "Exportar transcripción de la sesión",
 
-  "dialog.provider.search.placeholder": "Buscar proveedores",
-  "dialog.provider.empty": "No se encontraron proveedores",
-  "dialog.provider.group.other": "Otro",
   "dialog.provider.tag.recommended": "Recomendado",
 
   "dialog.model.select.title": "Seleccionar modelo",
@@ -97,7 +91,6 @@ export const dict = {
   "dialog.model.expand": "Expandir",
   "dialog.model.collapse": "Contraer",
 
-  "dialog.provider.viewAll": "Ver más proveedores",
 
   "provider.connect.title": "Conectar {{provider}}",
   "provider.connect.selectMethod": "Seleccionar método de inicio de sesión para {{provider}}.",
@@ -146,8 +139,6 @@ export const dict = {
   "provider.disconnect.toast.disconnected.description": "Los modelos de {{provider}} ya no están disponibles.",
   "model.tag.free": "Gratis",
   "model.tag.dataCollected": "Los datos pueden utilizarse para entrenamiento",
-  "model.group.auto": "Modelos automáticos",
-  "model.group.recommended": "Recomendado",
   "model.group.favorites": "Favoritos",
   "model.group.mostUsed": "Más usados",
   "model.favorite.add": "Añadir a favoritos",
@@ -160,7 +151,6 @@ export const dict = {
   "model.preview.label.average": "Costo prom. est.",
   "model.preview.label.context": "Contexto",
   "model.preview.group.terminalBench": "Terminal Bench 2.0",
-  "model.preview.group.autoEfficientChoices": "Opciones de modelo",
   "model.preview.label.completion": "Finalización",
   "model.preview.label.costAttempt": "Costo / intento",
   "model.preview.value.notSupported": "No admitido",
@@ -188,7 +178,6 @@ export const dict = {
   "prompt.action.send": "Enviar",
   "prompt.action.continue": "Continuar",
   "prompt.action.send.blocked": "Responda o descarte la pregunta pendiente primero",
-  "prompt.action.send.recording": "Transcribir y enviar",
   "prompt.action.stop": "Detener",
   "prompt.action.enhance": "Mejorar prompt",
   "prompt.action.autoApprove.enable": "Activar aprobación automática",
@@ -219,17 +208,6 @@ export const dict = {
     "Haz clic para restringir las escrituras en el sistema de archivos y el acceso a la red.",
   "prompt.action.sandbox.description.disabledNetworkAllowed":
     "Haz clic para restringir las escrituras en el sistema de archivos. El acceso a la red seguirá permitido según la configuración de tu sandbox.",
-
-  "speechToText.tooltip.start": "Iniciar entrada de voz con Kilo Gateway",
-  "speechToText.tooltip.shortcut":
-    "Toca o pulsa Cmd/Ctrl+K para iniciar o detener la grabación; mantén pulsado mientras hablas y suéltalo para transcribir y enviar.",
-  "speechToText.tooltip.starting": "Iniciando el micrófono... Espera antes de hablar.",
-  "speechToText.tooltip.stop": "Detener captura",
-  "speechToText.tooltip.transcribing": "Transcribiendo... Haz clic para cancelar.",
-  "speechToText.tooltip.error": "Falló la entrada de voz. Haz clic para borrar.",
-  "speechToText.error.title": "Falló la entrada de voz",
-  "speechToText.error.loginRequired": "Inicia sesión en Kilo para usar la entrada de voz.",
-  "speechToText.error.emptyTranscript": "No se detectó voz.",
 
   "prompt.toast.promptSendFailed.title": "Fallo al enviar prompt",
 
@@ -437,15 +415,14 @@ export const dict = {
 
   "settings.providers.title": "Proveedores",
   "settings.providers.section.connected": "Proveedores conectados",
+  "settings.providers.section.custom": "Proveedores personalizados",
   "settings.providers.connected.empty": "No hay proveedores conectados",
-  "settings.providers.section.popular": "Proveedores populares",
   "settings.providers.select.placeholder": "Seleccionar proveedor...",
   "settings.providers.tag.environment": "Entorno",
   "settings.providers.tag.config": "Configuración",
   "settings.providers.tag.chatgpt": "ChatGPT",
   "settings.providers.tag.custom": "Personalizado",
   "settings.providers.tag.other": "Otro",
-  "settings.providers.tag.customProvider": "Proveedor personalizado",
   "settings.providers.connected.environmentDescription": "Conectado desde tus variables de entorno",
   "settings.providers.action.signInChatGPT": "Iniciar sesión con ChatGPT",
   "settings.providers.custom.description": "Añade un proveedor personalizado por URL base.",
@@ -453,8 +430,7 @@ export const dict = {
   "settings.providers.subagentModel.description":
     "Modelo predeterminado y esfuerzo de razonamiento para los subagentes de task-tool. Déjelo sin configurar para heredar el modelo del agente invocador.",
   "settings.models.hidePromptTraining.title": "Ocultar modelos que entrenan con prompts",
-  "settings.models.hidePromptTraining.description":
-    "Oculta los modelos de Kilo Gateway cuyos proveedores pueden usar tus prompts para entrenamiento.",
+  "settings.models.hidePromptTraining.description": "Oculta los modelos cuyos proveedores pueden usar tus prompts para entrenamiento.",
   "settings.providers.modeModels": "Modelo por modo",
   "settings.providers.modeModels.description":
     "Anula el modelo predeterminado para modos específicos. Si no se establece, se usa el modelo predeterminado global.",
@@ -672,7 +648,6 @@ export const dict = {
   "profile.usage.plan.unknown": "Plan: Estado desconocido",
   "profile.usage.action.manage": "Gestionar",
   "profile.usage.action.managePlan": "Gestionar {{plan}}",
-  "profile.usage.routing": "La facturación del plan está activa. El enrutamiento de Kilo Gateway está {{state}}.",
   "profile.usage.routingState.disabled": "deshabilitado",
   "profile.usage.routingState.missing": "ausente",
   "profile.usage.routingState.replaced": "reemplazado",
@@ -861,11 +836,6 @@ export const dict = {
   "settings.experimental.imageGenerationModel.description": "Modelo de generación de imágenes",
   "settings.experimental.imageGenerationModel.placeholder": "Predeterminado (Auto Router)",
 
-  "settings.models.speechToText.disabledDescription":
-    "Habilita e inicia sesión en el proveedor Kilo para usar Speech to Text. Actualmente, Speech to Text solo es compatible con Kilo Gateway.",
-  "settings.models.speechToTextModel.title": "Modelo de voz a texto",
-  "settings.models.speechToTextModel.description":
-    "Elige el modelo de transcripción de Kilo Gateway para la entrada de voz.",
   "settings.experimental.nativeNotebookTools.title": "Herramientas nativas de notebook",
   "settings.experimental.nativeNotebookTools.description":
     "Habilitar herramientas experimentales para leer, editar y ejecutar notebooks de VS Code",

@@ -6,7 +6,7 @@
 // This module exports patch functions and data that the upstream provider.ts
 // calls at well-defined injection points (each marked with kilocode_change).
 
-import { AI_SDK_PROVIDERS, PROMPTS } from "@kilocode/kilo-gateway"
+import { AI_SDK_PROVIDERS, PROMPTS } from "@opencode-ai/core/v1/config/constants"
 import { DEFAULT_HEADERS } from "@/kilocode/const"
 import { ProviderV2 } from "@opencode-ai/core/provider"
 import { ModelV2 } from "@opencode-ai/core/model"
@@ -50,7 +50,7 @@ export const KILO_MODEL_SCHEMA_EXTENSIONS = {
 
 export function patchModelsDevModel(providerID: string, source: any) {
   return {
-    variants: providerID === "kilo" ? (source.variants ?? {}) : {},
+    variants: {},
     recommendedIndex: source.recommendedIndex,
     prompt: source.prompt,
     isFree: source.isFree,
@@ -141,34 +141,17 @@ type CustomLoaderResult = {
 
 type CustomLoader = (provider: any) => Effect.Effect<CustomLoaderResult>
 
-function shouldUseCopilotResponsesApi(modelID: string): boolean {
-  const match = /^gpt-(\d+)/.exec(modelID)
-  if (!match) return false
-  return Number(match[1]) >= 5 && !modelID.startsWith("gpt-5-mini")
-}
-
-function useLanguageModel(sdk: any) {
-  return sdk.responses === undefined && sdk.chat === undefined
-}
-
 export function kiloCustomLoaders(dep: CustomDep): Record<string, CustomLoader> {
   return {
-    "github-copilot-enterprise": () =>
-      Effect.succeed({
-        autoload: false,
-        async getModel(sdk: any, modelID: string, _options?: Record<string, any>) {
-          if (useLanguageModel(sdk)) return sdk.languageModel(modelID)
-          return shouldUseCopilotResponsesApi(modelID) ? sdk.responses(modelID) : sdk.chat(modelID)
-        },
-        options: {},
-      }),
-
+    // kilocode_change start - offline surface: github-copilot-enterprise was orphaned by the catalog cut
+    // (not in the models.dev snapshot, never config-served); opencode stays per A5 (config-served gate).
     // Override opencode to prevent auto-connecting without credentials
     opencode: () =>
       Effect.succeed({
         autoload: false,
         options: { headers: DEFAULT_HEADERS },
       }),
+    // kilocode_change end
   }
 }
 

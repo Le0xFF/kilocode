@@ -46,7 +46,7 @@ const model = () =>
     cost: { input: 3, output: 15, cache: { read: 0.3, write: 3.75 } },
   })
 
-const kilo = { id: "kilo" } as Provider.Info
+const provider = { id: "lmstudio" } as Provider.Info
 
 // Calculated cost for the `model()` + `baseUsage` pair: 1M input * $3 + 100k output * $15 = 3 + 1.5
 const fallback = 3 + 1.5
@@ -55,7 +55,7 @@ describe("KiloSession.providerCost — Anthropic Messages / OpenAI Responses", (
   test("uses preserved AI SDK raw usage cost_details", () => {
     const result = SessionNs.getUsage({
       model: model(),
-      provider: kilo,
+      provider: provider,
       usage: new Usage({
         inputTokens: baseUsage.inputTokens,
         outputTokens: baseUsage.outputTokens,
@@ -75,7 +75,7 @@ describe("KiloSession.providerCost — Anthropic Messages / OpenAI Responses", (
   test("ignores provider `cost` when no upstream_inference_cost is reported", () => {
     const result = SessionNs.getUsage({
       model: model(),
-      provider: kilo,
+      provider: provider,
       usage: new Usage({
         inputTokens: baseUsage.inputTokens,
         outputTokens: baseUsage.outputTokens,
@@ -92,7 +92,7 @@ describe("KiloSession.providerCost — Vercel AI Gateway", () => {
   test("uses metadata.gateway.marketCost", () => {
     const result = SessionNs.getUsage({
       model: model(),
-      provider: kilo,
+      provider: provider,
       usage: baseUsage,
       metadata: {
         gateway: {
@@ -110,7 +110,7 @@ describe("KiloSession.providerCost — Vercel AI Gateway", () => {
   test("ignores metadata.gateway.cost when marketCost is missing", () => {
     const result = SessionNs.getUsage({
       model: model(),
-      provider: kilo,
+      provider: provider,
       usage: baseUsage,
       metadata: {
         gateway: {
@@ -127,7 +127,7 @@ describe("KiloSession.providerCost — fallback", () => {
   test("falls back to calculated cost when no provider cost is reported", () => {
     const result = SessionNs.getUsage({
       model: model(),
-      provider: kilo,
+      provider: provider,
       usage: baseUsage,
       // No metadata or provider usage cost — should fall back
     })

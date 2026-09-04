@@ -6,7 +6,20 @@ import type { Config } from "../config/config"
 import type { ConfigAgentV1 } from "@opencode-ai/core/v1/config/agent"
 import { ConfigPermissionV1 as ConfigPermission } from "@opencode-ai/core/v1/config/permission"
 import { KilocodePaths } from "./paths"
-import type { OrganizationMode } from "@kilocode/kilo-gateway"
+
+// Minimal local shape of the (removed) Kilo gateway OrganizationMode, sufficient
+// for the cloud-mode conversion below.
+interface OrganizationMode {
+  slug: string
+  name: string
+  config: {
+    roleDefinition?: string
+    customInstructions?: string
+    groups?: Array<string | [string, { fileRegex?: string; description?: string }]>
+    description?: string
+    whenToUse?: string
+  }
+}
 
 export namespace ModesMigrator {
   // Kilocode mode structure

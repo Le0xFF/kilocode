@@ -7,8 +7,8 @@ import { filterPromptTrainingModels, nonEmptyProviders } from "../../../src/kilo
 function model(id: string, training?: boolean): Provider.Model {
   return {
     id: ModelV2.ID.make(id),
-    providerID: ProviderV2.ID.kilo,
-    api: { id: "kilo", url: "https://api.kilo.ai", npm: "@kilocode/kilo-gateway" },
+    providerID: ProviderV2.ID.make("lmstudio"),
+    api: { id: "lmstudio", url: "http://127.0.0.1:1234/v1", npm: "@ai-sdk/openai-compatible" },
     name: id,
     capabilities: {
       temperature: true,
@@ -41,32 +41,33 @@ function provider(id: string, models: Record<string, Provider.Model>): Provider.
 }
 
 describe("prompt-training model filter", () => {
-  test("hides only explicitly marked Kilo Gateway models", () => {
+  test("hides only explicitly marked training models", () => {
     const providers = {
-      kilo: provider("kilo", {
+      lmstudio: provider("lmstudio", {
         training: model("training", true),
         private: model("private", false),
         unknown: model("unknown"),
       }),
       other: provider("other", {
-        training: { ...model("training", true), providerID: ProviderV2.ID.make("other") },
+        // A public model that is not flagged for prompt training stays visible.
+        public: { ...model("public", false), id: ModelV2.ID.make("public"), providerID: ProviderV2.ID.make("other") },
       }),
     }
 
     const result = filterPromptTrainingModels(providers, true)
 
-    expect(Object.keys(result.kilo.models)).toEqual(["private", "unknown"])
-    expect(Object.keys(result.other.models)).toEqual(["training"])
-    expect(Object.keys(providers.kilo.models)).toEqual(["training", "private", "unknown"])
+    expect(Object.keys(result.lmstudio.models)).toEqual(["private", "unknown"])
+    expect(Object.keys(result.other.models)).toEqual(["public"])
+    expect(Object.keys(providers.lmstudio.models)).toEqual(["training", "private", "unknown"])
   })
 
   test("preserves the catalog when disabled", () => {
-    const providers = { kilo: provider("kilo", { training: model("training", true) }) }
+    const providers = { lmstudio: provider("lmstudio", { training: model("training", true) }) }
     expect(filterPromptTrainingModels(providers, false)).toBe(providers)
   })
 
   test("excludes providers without visible models from default selection", () => {
-    const providers = { kilo: provider("kilo", { training: model("training", true) }) }
+    const providers = { lmstudio: provider("lmstudio", { training: model("training", true) }) }
     const visible = filterPromptTrainingModels(providers, true)
     expect(nonEmptyProviders(visible)).toEqual({})
   })

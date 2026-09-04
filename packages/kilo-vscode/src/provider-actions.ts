@@ -168,7 +168,9 @@ export function computeDefaultSelection(
   const configured = parseModelString(cachedConfig?.config?.model)
   if (configured) return configured
   if (vscodePID && vscodeMID) return { providerID: vscodePID, modelID: vscodeMID }
-  throw new Error("No default model available")
+  // No default available (fresh install without a local provider or config.model).
+  // Fail soft: report an empty selection so startup never throws.
+  return { providerID: "", modelID: "" }
 }
 
 type PostMessage = (message: unknown) => void

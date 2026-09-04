@@ -581,8 +581,8 @@ describe("session processor empty tool-calls", () => {
           const processors = yield* SessionProcessor.Service
           const session = yield* Session.Service
           const selection = {
-            providerID: ProviderV2.ID.kilo,
-            modelID: ModelV2.ID.make("kilo-auto/efficient"),
+            providerID: ProviderV2.ID.make("kilo"),
+            modelID: ModelV2.ID.make("openrouter/openai/gpt-5.5-20260423"),
           }
 
           yield* test.reply(

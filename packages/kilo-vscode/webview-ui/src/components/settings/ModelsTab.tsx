@@ -7,14 +7,10 @@ import { useConfig } from "../../context/config"
 import { useLanguage } from "../../context/language"
 import { useProvider } from "../../context/provider"
 import { useSession } from "../../context/session"
-import { useSpeechToTextModels } from "../../context/speech-to-text-models"
 import { parseModelString } from "../../../../src/shared/provider-model"
 import { ModelSelectorBase } from "../shared/ModelSelector"
 import { ThinkingSelectorBase } from "../shared/ThinkingSelector"
 import SettingsRow from "./SettingsRow"
-import { DEFAULT_SPEECH_TO_TEXT_MODEL } from "../../../../src/speech-to-text/models"
-import { hasSpeechToTextAccess, selectedSpeechToTextModel } from "../speech-to-text/availability"
-import { speechToTextModelOptions } from "../speech-to-text/model-selector"
 import { preserveVariant } from "../../context/session-variant-store"
 
 const ModelsTab: Component = () => {
@@ -22,7 +18,6 @@ const ModelsTab: Component = () => {
   const language = useLanguage()
   const provider = useProvider()
   const session = useSession()
-  const speechModels = useSpeechToTextModels()
 
   function handleModelSelect(configKey: "model" | "small_model") {
     return (providerID: string, modelID: string) => {
@@ -35,14 +30,6 @@ const ModelsTab: Component = () => {
   }
 
   const subagentModel = createMemo(() => parseModelString(config().subagent_model ?? undefined))
-  const speechModel = createMemo(() => {
-    const configured = config().experimental?.speech_to_text
-    if (configured?.model) return configured.model
-    return selectedSpeechToTextModel(config(), speechModels.models())
-  })
-  const speechOptions = createMemo(() => speechToTextModelOptions(speechModels.models()))
-  const speechOption = createMemo(() => speechOptions().find((item) => item.value === speechModel()))
-  const kiloReady = createMemo(() => hasSpeechToTextAccess(config()))
   const variantKey = createMemo(() => config().subagent_model ?? undefined)
   const subagentVariants = createMemo(() => Object.keys(provider.findModel(subagentModel())?.variants ?? {}))
   const subagentVariant = createMemo(() => {
@@ -126,7 +113,6 @@ const ModelsTab: Component = () => {
             placement="bottom-start"
             allowClear
             clearLabel={language.t("settings.providers.notSet")}
-            includeAutoSmall
             label={language.t("settings.providers.smallModel.title")}
             description={language.t("settings.providers.smallModel.description")}
           />
@@ -158,46 +144,6 @@ const ModelsTab: Component = () => {
               />
             </Show>
           </div>
-        </SettingsRow>
-        <SettingsRow
-          title={language.t("settings.models.speechToTextModel.title")}
-          description={
-            kiloReady()
-              ? language.t("settings.models.speechToTextModel.description")
-              : language.t("settings.models.speechToText.disabledDescription")
-          }
-        >
-          <Tooltip
-            value={language.t("settings.models.speechToText.disabledDescription")}
-            placement="top"
-            inactive={kiloReady()}
-          >
-            <Select
-              options={speechOptions()}
-              current={speechOption()}
-              value={(item) => item.value}
-              label={(item) => `${item.label} (${item.provider})`}
-              onSelect={(item) => {
-                  const model = item?.value ?? DEFAULT_SPEECH_TO_TEXT_MODEL.id
-                  const [providerID] = model.split("/")
-                  updateConfig({
-                    experimental: {
-                      ...config().experimental,
-                      speech_to_text_model: model,
-                      speech_to_text: { provider: providerID, model },
-                    },
-                  })
-                }}
-              variant="secondary"
-              size="small"
-              triggerVariant="settings"
-              triggerProps={{
-                "aria-label": `${language.t("settings.models.speechToTextModel.title")}: ${speechOption()?.label}`,
-              }}
-              disabled={!kiloReady()}
-              placeholder={DEFAULT_SPEECH_TO_TEXT_MODEL.label}
-            />
-          </Tooltip>
         </SettingsRow>
         <SettingsRow
           title={language.t("settings.models.hidePromptTraining.title")}

@@ -46,18 +46,15 @@ export const anacondaDesktopDict = {
   "provider.anaconda.action.open": "Anaconda Desktop'ı aç",
   "provider.anaconda.action.checkAgain": "Tekrar kontrol et",
   "provider.anaconda.action.continue": "Yine de devam et",
-  "provider.anaconda.action.manage": "Yönet / Yenile",
   "provider.anaconda.toast.refreshed.title": "Anaconda Desktop yenilendi",
   "provider.anaconda.toast.refreshed.description": "Etkin yerel sunucu ve modeller Kilo'da güncel.",
   "settings.providers.note.anacondaDesktop": "Anaconda Desktop tarafından yerel olarak sunulan bir model çalıştırın.",
-  "settings.providers.tag.local": "Yerel",
 } as const
 
 export const dict = {
   ...anacondaDesktopDict,
   ...cloudProviderDict,
 
-  "command.provider.connect": "Sağlayıcı bağla",
 
   "session.activity.waiting": "Yanıt veya onay bekleniyor.",
   "session.activity.error": "Hata veya bağlantı kaybı.",
@@ -85,9 +82,6 @@ export const dict = {
   "command.session.compact": "Oturumu sıkıştır",
   "command.session.export": "Oturum dökümünü dışa aktar",
 
-  "dialog.provider.search.placeholder": "Sağlayıcı ara",
-  "dialog.provider.empty": "Sağlayıcı bulunamadı",
-  "dialog.provider.group.other": "Diğer",
   "dialog.provider.tag.recommended": "Önerilen",
 
   "dialog.model.select.title": "Model seç",
@@ -97,7 +91,6 @@ export const dict = {
   "dialog.model.expand": "Genişlet",
   "dialog.model.collapse": "Daralt",
 
-  "dialog.provider.viewAll": "Daha fazla sağlayıcı göster",
 
   "provider.connect.title": "{{provider}} bağla",
   "provider.connect.selectMethod": "{{provider}} için giriş yöntemini seçin.",
@@ -145,8 +138,6 @@ export const dict = {
 
   "model.tag.free": "Ücretsiz",
   "model.tag.dataCollected": "Veriler eğitim için kullanılabilir",
-  "model.group.auto": "Otomatik Modeller",
-  "model.group.recommended": "Önerilen",
   "model.group.favorites": "Favoriler",
   "model.group.mostUsed": "En çok kullanılan",
   "model.favorite.add": "Favorilere ekle",
@@ -158,7 +149,6 @@ export const dict = {
   "model.preview.label.average": "Tahmini Ort. Maliyet",
   "model.preview.label.context": "Bağlam",
   "model.preview.group.terminalBench": "Terminal Bench 2.0",
-  "model.preview.group.autoEfficientChoices": "Model seçenekleri",
   "model.preview.label.completion": "Tamamlama",
   "model.preview.label.costAttempt": "Maliyet / deneme",
   "model.preview.value.notSupported": "Desteklenmiyor",
@@ -187,7 +177,6 @@ export const dict = {
   "prompt.action.send": "Gönder",
   "prompt.action.continue": "Devam et",
   "prompt.action.send.blocked": "Bekleyen soruyu önce yanıtlayın veya kapatın",
-  "prompt.action.send.recording": "Yazıya dök ve gönder",
   "prompt.action.stop": "Durdur",
   "prompt.action.enhance": "Komutu geliştir",
   "prompt.action.indexing": "İndeksleme ayarları",
@@ -215,17 +204,6 @@ export const dict = {
     "Dosya sistemi yazma işlemlerini ve ağ erişimini kısıtlamak için tıklayın.",
   "prompt.action.sandbox.description.disabledNetworkAllowed":
     "Dosya sistemi yazma işlemlerini kısıtlamak için tıklayın. Sandbox ayarlarınız ağ erişimine izin vermeye devam ediyor.",
-
-  "speechToText.tooltip.start": "Kilo Gateway ile sesli girişi başlatın",
-  "speechToText.tooltip.shortcut":
-    "Kaydı başlatmak veya durdurmak için dokunun ya da Cmd/Ctrl+K tuşlarına basın; konuşurken basılı tutun, ardından metne dönüştürüp göndermek için bırakın.",
-  "speechToText.tooltip.starting": "Mikrofon başlatılıyor... Henüz konuşmayın.",
-  "speechToText.tooltip.stop": "Ses yakalamayı durdur",
-  "speechToText.tooltip.transcribing": "Metne dönüştürülüyor... İptal etmek için tıklayın.",
-  "speechToText.tooltip.error": "Sesli giriş başarısız oldu. Temizlemek için tıklayın.",
-  "speechToText.error.title": "Sesli giriş başarısız oldu",
-  "speechToText.error.loginRequired": "Sesli girişi kullanmak için Kilo'ya giriş yapın.",
-  "speechToText.error.emptyTranscript": "Hiçbir konuşma algılanmadı.",
 
   "prompt.toast.promptSendFailed.title": "Komut gönderilemedi",
 
@@ -396,13 +374,12 @@ export const dict = {
 
   "settings.providers.title": "Sağlayıcılar",
   "settings.providers.section.connected": "Bağlı sağlayıcılar",
+  "settings.providers.section.custom": "Özel sağlayıcılar",
   "settings.providers.connected.empty": "Bağlı sağlayıcı yok",
-  "settings.providers.section.popular": "Popüler sağlayıcılar",
   "settings.providers.tag.environment": "Ortam",
   "settings.providers.tag.config": "Yapılandırma",
   "settings.providers.tag.chatgpt": "ChatGPT",
   "settings.providers.tag.custom": "Özel",
-  "settings.providers.tag.customProvider": "Özel sağlayıcı",
   "settings.providers.tag.other": "Diğer",
   "settings.providers.connected.environmentDescription": "Ortam değişkenlerinizden bağlandı",
   "settings.providers.action.signInChatGPT": "ChatGPT ile oturum aç",
@@ -621,7 +598,6 @@ export const dict = {
   "profile.usage.plan.unknown": "Plan: Durum bilinmiyor",
   "profile.usage.action.manage": "Yönet",
   "profile.usage.action.managePlan": "{{plan}} planını yönet",
-  "profile.usage.routing": "Plan faturalandırması etkin. Kilo Gateway yönlendirmesi {{state}}.",
   "profile.usage.routingState.disabled": "devre dışı",
   "profile.usage.routingState.missing": "eksik",
   "profile.usage.routingState.replaced": "değiştirildi",
@@ -819,7 +795,6 @@ export const dict = {
 
   "common.add": "Ekle",
 
-
   "settings.notifications.sounds": "Sesler",
   "settings.notifications.enable.title": "Sesli bildirimleri etkinleştir",
   "settings.notifications.enable.description":
@@ -847,10 +822,6 @@ export const dict = {
   "settings.experimental.imageGenerationModel.description": "Görüntü oluşturma modeli",
   "settings.experimental.imageGenerationModel.placeholder": "Varsayılan (Auto Router)",
 
-  "settings.models.speechToText.disabledDescription":
-    "Speech to Text kullanmak için Kilo sağlayıcısını etkinleştirin ve giriş yapın. Speech to Text şu anda yalnızca Kilo Gateway ile desteklenmektedir.",
-  "settings.models.speechToTextModel.title": "Sesten metne modeli",
-  "settings.models.speechToTextModel.description": "Sesli giriş için Kilo Gateway transkripsiyon modelini seçin.",
   "settings.experimental.nativeNotebookTools.title": "Yerel Not Defteri Araçları",
   "settings.experimental.nativeNotebookTools.description":
     "VS Code not defterlerini okumak, düzenlemek ve çalıştırmak için deneysel araçları etkinleştir",
@@ -1105,8 +1076,7 @@ export const dict = {
   "settings.providers.subagentModel.description":
     "task-tool alt aracıları için varsayılan model ve akıl yürütme çabası. Çağıran aracının modelini devralmak için boş bırakın.",
   "settings.models.hidePromptTraining.title": "İstemlerle eğitilen modelleri gizle",
-  "settings.models.hidePromptTraining.description":
-    "Sağlayıcıları istemlerinizi eğitim için kullanabilecek Kilo Gateway modellerini gizleyin.",
+  "settings.models.hidePromptTraining.description": "Sağlayıcıları istemlerinizi eğitim için kullanabilecek modelleri gizleyin.",
   "settings.providers.modeModels": "Mod Başına Model",
   "settings.providers.modeModels.description":
     "Belirli modlar için varsayılan modeli geçersiz kılın. Ayarlanmadıysa genel varsayılan model kullanılır.",

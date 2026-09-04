@@ -45,18 +45,15 @@ export const anacondaDesktopDict = {
   "provider.anaconda.action.open": "Open Anaconda Desktop",
   "provider.anaconda.action.checkAgain": "Check again",
   "provider.anaconda.action.continue": "Continue anyway",
-  "provider.anaconda.action.manage": "Manage / Refresh",
   "provider.anaconda.toast.refreshed.title": "Anaconda Desktop refreshed",
   "provider.anaconda.toast.refreshed.description": "The active local server and models are up to date in Kilo.",
   "settings.providers.note.anacondaDesktop": "Run a model served locally by Anaconda Desktop.",
-  "settings.providers.tag.local": "Local",
 } as const
 
 export const dict = {
   ...anacondaDesktopDict,
   ...cloudProviderDict,
 
-  "command.provider.connect": "Connect provider",
 
   "session.activity.waiting": "Waiting for an answer or approval.",
   "session.activity.error": "Error or connection lost.",
@@ -84,9 +81,6 @@ export const dict = {
   "command.session.compact": "Compact session",
   "command.session.export": "Export session transcript",
 
-  "dialog.provider.search.placeholder": "Search providers",
-  "dialog.provider.empty": "No providers found",
-  "dialog.provider.group.other": "Other",
   "dialog.provider.tag.recommended": "Recommended",
 
   "dialog.model.select.title": "Select model",
@@ -96,7 +90,6 @@ export const dict = {
   "dialog.model.expand": "Expand",
   "dialog.model.collapse": "Collapse",
 
-  "dialog.provider.viewAll": "Show more providers",
 
   "provider.connect.title": "Connect {{provider}}",
   "provider.connect.selectMethod": "Select login method for {{provider}}.",
@@ -145,8 +138,6 @@ export const dict = {
 
   "model.tag.free": "Free",
   "model.tag.dataCollected": "Data may be used for training",
-  "model.group.auto": "Auto Models",
-  "model.group.recommended": "Recommended",
   "model.group.favorites": "Favorites",
   "model.group.mostUsed": "Most used",
   "model.favorite.add": "Add to favorites",
@@ -158,7 +149,6 @@ export const dict = {
   "model.preview.label.average": "Est. Average Cost",
   "model.preview.label.context": "Context",
   "model.preview.group.terminalBench": "Terminal Bench 2.0",
-  "model.preview.group.autoEfficientChoices": "Model choices",
   "model.preview.label.completion": "Completion",
   "model.preview.label.costAttempt": "Cost / attempt",
   "model.preview.value.notSupported": "Not supported",
@@ -187,7 +177,6 @@ export const dict = {
   "prompt.action.send": "Send",
   "prompt.action.continue": "Continue",
   "prompt.action.send.blocked": "Answer or dismiss the pending question first",
-  "prompt.action.send.recording": "Transcribe and send",
   "prompt.action.stop": "Stop",
   "prompt.action.enhance": "Enhance prompt",
   "prompt.action.indexing": "Indexing settings",
@@ -215,16 +204,6 @@ export const dict = {
     "Click to restrict filesystem writes. Network access remains allowed by your sandbox settings.",
   "prompt.action.enhanceDescription":
     "The 'Enhance Prompt' button helps improve your prompt by providing additional context, clarification, or rephrasing. Try typing a prompt in here and clicking the button again to see how it works.",
-  "speechToText.tooltip.start": "Start voice input with Kilo Gateway",
-  "speechToText.tooltip.shortcut":
-    "Tap to start or stop recording. Hold while speaking, then release to transcribe and submit.",
-  "speechToText.tooltip.starting": "Starting microphone... Wait to speak.",
-  "speechToText.tooltip.stop": "Recording. Click to stop.",
-  "speechToText.tooltip.transcribing": "Transcribing... Click to cancel.",
-  "speechToText.tooltip.error": "Speech input failed. Click to clear.",
-  "speechToText.error.title": "Speech input failed",
-  "speechToText.error.loginRequired": "Sign in to Kilo to use speech input.",
-  "speechToText.error.emptyTranscript": "No speech was detected.",
 
   "prompt.toast.promptSendFailed.title": "Failed to send prompt",
 
@@ -362,13 +341,12 @@ export const dict = {
 
   "settings.providers.title": "Providers",
   "settings.providers.section.connected": "Connected providers",
+  "settings.providers.section.custom": "Custom providers",
   "settings.providers.connected.empty": "No connected providers",
-  "settings.providers.section.popular": "Popular providers",
   "settings.providers.tag.environment": "Environment",
   "settings.providers.tag.config": "Config",
   "settings.providers.tag.chatgpt": "ChatGPT",
   "settings.providers.tag.custom": "Custom",
-  "settings.providers.tag.customProvider": "Custom provider",
   "settings.providers.tag.other": "Other",
   "settings.providers.connected.environmentDescription": "Connected from your environment variables",
   "settings.providers.action.signInChatGPT": "Sign in with ChatGPT",
@@ -581,7 +559,6 @@ export const dict = {
   "profile.usage.plan.unknown": "Plan: Status unknown",
   "profile.usage.action.manage": "Manage",
   "profile.usage.action.managePlan": "Manage {{plan}}",
-  "profile.usage.routing": "Plan billing is active. Kilo Gateway routing is {{state}}.",
   "profile.usage.routingState.disabled": "disabled",
   "profile.usage.routingState.missing": "missing",
   "profile.usage.routingState.replaced": "replaced",
@@ -804,7 +781,6 @@ export const dict = {
 
   "common.add": "Add",
 
-
   "settings.notifications.sounds": "Sounds",
   "settings.notifications.enable.title": "Enable Sound Notifications",
   "settings.notifications.enable.description":
@@ -832,10 +808,6 @@ export const dict = {
   "settings.experimental.imageGenerationModel.description": "Image Generation Model",
   "settings.experimental.imageGenerationModel.placeholder": "Default (Auto Router)",
 
-  "settings.models.speechToText.disabledDescription":
-    "Enable and sign in to the Kilo provider to use Speech to Text. Speech to Text is currently only supported through Kilo Gateway.",
-  "settings.models.speechToTextModel.title": "Speech to Text Model",
-  "settings.models.speechToTextModel.description": "Choose the Kilo Gateway transcription model for voice input.",
   "settings.experimental.nativeNotebookTools.title": "Native Notebook Tools",
   "settings.experimental.nativeNotebookTools.description":
     "Enable experimental tools for reading, editing, and executing VS Code notebooks",
@@ -1113,8 +1085,7 @@ export const dict = {
   "settings.providers.subagentModel.description":
     "Default model and reasoning effort for task-tool subagents. Leave unset to inherit the calling agent's model.",
   "settings.models.hidePromptTraining.title": "Hide Prompt-Training Models",
-  "settings.models.hidePromptTraining.description":
-    "Hide Kilo Gateway models whose providers may use your prompts for training.",
+  "settings.models.hidePromptTraining.description": "Hide models whose providers may use your prompts for training.",
   "settings.providers.modeModels": "Model per Mode",
   "settings.providers.modeModels.description":
     "Override the default model for specific modes. If not set, the global default model is used.",

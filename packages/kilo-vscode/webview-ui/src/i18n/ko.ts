@@ -48,11 +48,9 @@ export const anacondaDesktopDict = {
   "provider.anaconda.action.open": "Anaconda Desktop 열기",
   "provider.anaconda.action.checkAgain": "다시 확인",
   "provider.anaconda.action.continue": "계속하기",
-  "provider.anaconda.action.manage": "관리 / 새로 고침",
   "provider.anaconda.toast.refreshed.title": "Anaconda Desktop 새로 고침됨",
   "provider.anaconda.toast.refreshed.description": "활성 로컬 서버와 모델이 Kilo에서 최신 상태입니다.",
   "settings.providers.note.anacondaDesktop": "Anaconda Desktop이 로컬에서 제공하는 모델을 실행합니다.",
-  "settings.providers.tag.local": "로컬",
 } as const
 
 type Keys = keyof typeof en
@@ -61,7 +59,6 @@ export const dict = {
   ...anacondaDesktopDict,
   ...cloudProviderDict,
 
-  "command.provider.connect": "공급자 연결",
 
   "session.activity.waiting": "답변 또는 승인을 기다리는 중입니다.",
   "session.activity.error": "오류 또는 연결 끊김.",
@@ -89,9 +86,6 @@ export const dict = {
   "command.session.compact": "세션 압축",
   "command.session.export": "세션 기록 내보내기",
 
-  "dialog.provider.search.placeholder": "공급자 검색",
-  "dialog.provider.empty": "공급자 없음",
-  "dialog.provider.group.other": "기타",
   "dialog.provider.tag.recommended": "추천",
 
   "dialog.model.select.title": "모델 선택",
@@ -101,7 +95,6 @@ export const dict = {
   "dialog.model.expand": "펼치기",
   "dialog.model.collapse": "접기",
 
-  "dialog.provider.viewAll": "더 많은 공급자 보기",
 
   "provider.connect.title": "{{provider}} 연결",
   "provider.connect.selectMethod": "{{provider}} 로그인 방법 선택",
@@ -149,8 +142,6 @@ export const dict = {
   "provider.disconnect.toast.disconnected.description": "{{provider}} 모델을 더 이상 사용할 수 없습니다.",
   "model.tag.free": "무료",
   "model.tag.dataCollected": "데이터가 학습에 사용될 수 있습니다",
-  "model.group.auto": "자동 모델",
-  "model.group.recommended": "추천",
   "model.group.favorites": "즐겨찾기",
   "model.group.mostUsed": "가장 많이 사용됨",
   "model.favorite.add": "즐겨찾기에 추가",
@@ -163,7 +154,6 @@ export const dict = {
   "model.preview.label.average": "예상 평균 비용",
   "model.preview.label.context": "컨텍스트",
   "model.preview.group.terminalBench": "Terminal Bench 2.0",
-  "model.preview.group.autoEfficientChoices": "모델 선택지",
   "model.preview.label.completion": "완료율",
   "model.preview.label.costAttempt": "시도당 비용",
   "model.preview.value.notSupported": "미지원",
@@ -190,7 +180,6 @@ export const dict = {
   "prompt.action.send": "전송",
   "prompt.action.continue": "계속",
   "prompt.action.send.blocked": "먼저 대기 중인 질문에 답하거나 닫아주세요",
-  "prompt.action.send.recording": "텍스트 변환 및 전송",
   "prompt.action.stop": "중지",
   "prompt.action.enhance": "프롬프트 개선",
   "prompt.action.autoApprove.enable": "자동 승인 사용",
@@ -217,17 +206,6 @@ export const dict = {
   "prompt.action.sandbox.description.disabled": "클릭하면 파일 시스템 쓰기와 네트워크 액세스를 제한합니다.",
   "prompt.action.sandbox.description.disabledNetworkAllowed":
     "클릭하면 파일 시스템 쓰기를 제한합니다. 샌드박스 설정에 따라 네트워크 액세스는 계속 허용됩니다.",
-
-  "speechToText.tooltip.start": "Kilo Gateway로 음성 입력 시작",
-  "speechToText.tooltip.shortcut":
-    "탭하거나 Cmd/Ctrl+K를 눌러 녹음을 시작하거나 중지하고, 말하는 동안에는 누르고 있다가 놓으면 음성을 텍스트로 변환해 제출합니다.",
-  "speechToText.tooltip.starting": "마이크를 시작하는 중... 잠시 후 말씀해 주세요.",
-  "speechToText.tooltip.stop": "음성 캡처 중지",
-  "speechToText.tooltip.transcribing": "변환 중... 취소하려면 클릭하세요.",
-  "speechToText.tooltip.error": "음성 입력에 실패했습니다. 지우려면 클릭하세요.",
-  "speechToText.error.title": "음성 입력 실패",
-  "speechToText.error.loginRequired": "음성 입력을 사용하려면 Kilo에 로그인하세요.",
-  "speechToText.error.emptyTranscript": "음성이 감지되지 않았습니다.",
 
   "prompt.toast.promptSendFailed.title": "프롬프트 전송 실패",
 
@@ -396,15 +374,14 @@ export const dict = {
 
   "settings.providers.title": "공급자",
   "settings.providers.section.connected": "연결된 공급자",
+  "settings.providers.section.custom": "사용자 정의 제공업체",
   "settings.providers.connected.empty": "연결된 공급자 없음",
-  "settings.providers.section.popular": "인기 공급자",
   "settings.providers.select.placeholder": "공급자 선택...",
   "settings.providers.tag.environment": "환경",
   "settings.providers.tag.config": "구성",
   "settings.providers.tag.chatgpt": "ChatGPT",
   "settings.providers.tag.custom": "사용자 지정",
   "settings.providers.tag.other": "기타",
-  "settings.providers.tag.customProvider": "사용자 정의 공급자",
   "settings.providers.connected.environmentDescription": "환경 변수에서 연결됨",
   "settings.providers.action.signInChatGPT": "ChatGPT로 로그인",
   "settings.providers.custom.description": "기본 URL로 사용자 정의 공급자를 추가합니다.",
@@ -412,8 +389,7 @@ export const dict = {
   "settings.providers.subagentModel.description":
     "task-tool 하위 에이전트의 기본 모델 및 추론 수준입니다. 호출하는 에이전트의 모델을 상속하려면 비워 두세요.",
   "settings.models.hidePromptTraining.title": "프롬프트를 학습에 사용하는 모델 숨기기",
-  "settings.models.hidePromptTraining.description":
-    "제공업체가 사용자의 프롬프트를 학습에 사용할 수 있는 Kilo Gateway 모델을 숨깁니다.",
+  "settings.models.hidePromptTraining.description": "제공업체가 사용자의 프롬프트를 학습에 사용할 수 있는 모델을 숨깁니다.",
   "settings.providers.modeModels": "모드별 모델",
   "settings.providers.modeModels.description":
     "특정 모드의 기본 모델을 재정의합니다. 설정하지 않으면 전역 기본 모델이 사용됩니다.",
@@ -625,7 +601,6 @@ export const dict = {
   "profile.usage.plan.unknown": "요금제: 상태 알 수 없음",
   "profile.usage.action.manage": "관리",
   "profile.usage.action.managePlan": "{{plan}} 관리",
-  "profile.usage.routing": "요금제 결제가 활성화되어 있습니다. Kilo Gateway 라우팅은 {{state}}입니다.",
   "profile.usage.routingState.disabled": "비활성화 상태",
   "profile.usage.routingState.missing": "누락된 상태",
   "profile.usage.routingState.replaced": "대체된 상태",
@@ -845,10 +820,6 @@ export const dict = {
   "settings.experimental.imageGenerationModel.description": "이미지 생성 모델",
   "settings.experimental.imageGenerationModel.placeholder": "기본값 (Auto Router)",
 
-  "settings.models.speechToText.disabledDescription":
-    "Speech to Text를 사용하려면 Kilo 제공자를 활성화하고 로그인하세요. 현재 Speech to Text는 Kilo Gateway에서만 지원됩니다.",
-  "settings.models.speechToTextModel.title": "음성 텍스트 변환 모델",
-  "settings.models.speechToTextModel.description": "음성 입력에 사용할 Kilo Gateway 변환 모델을 선택하세요.",
   "settings.experimental.nativeNotebookTools.title": "네이티브 노트북 도구",
   "settings.experimental.nativeNotebookTools.description":
     "VS Code 노트북을 읽고, 편집하고, 실행하는 실험적 도구를 활성화합니다",

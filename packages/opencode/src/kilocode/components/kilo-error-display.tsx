@@ -41,7 +41,7 @@ export function KiloErrorBlock(props: KiloErrorBlockProps) {
         >
           <text fg={theme.text}>{title()}</text>
           <text fg={theme.textMuted}>{description()}</text>
-          <text fg={theme.primary}>{"Run /connect or `kilo auth login` to connect to Kilo Gateway"}</text>
+          <text fg={theme.primary}>{"Configure a local provider (or run /connect) in settings"}</text>
         </box>
       </Match>
     </Switch>

@@ -59,8 +59,6 @@ export interface ExperimentalConfig {
   image_generation_model?: string
   image_generation_provider?: ExperimentalMediaProvider
   native_notebook_tools?: boolean
-  speech_to_text_model?: string
-  speech_to_text?: ExperimentalMediaProvider
   primary_tools?: string[]
   continue_loop_on_deny?: boolean
   mcp_timeout?: number

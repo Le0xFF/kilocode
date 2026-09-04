@@ -46,18 +46,15 @@ export const anacondaDesktopDict = {
   "provider.anaconda.action.open": "Открыть Anaconda Desktop",
   "provider.anaconda.action.checkAgain": "Проверить снова",
   "provider.anaconda.action.continue": "Всё равно продолжить",
-  "provider.anaconda.action.manage": "Управление / Обновить",
   "provider.anaconda.toast.refreshed.title": "Anaconda Desktop обновлён",
   "provider.anaconda.toast.refreshed.description": "Активный локальный сервер и модели актуальны в Kilo.",
   "settings.providers.note.anacondaDesktop": "Запустите модель, обслуживаемую локально через Anaconda Desktop.",
-  "settings.providers.tag.local": "Локально",
 } as const
 
 export const dict = {
   ...anacondaDesktopDict,
   ...cloudProviderDict,
 
-  "command.provider.connect": "Подключить провайдера",
 
   "session.activity.waiting": "Ожидается ответ или подтверждение.",
   "session.activity.error": "Ошибка или потеря соединения.",
@@ -85,9 +82,6 @@ export const dict = {
   "command.session.compact": "Сжать сессию",
   "command.session.export": "Экспортировать запись сеанса",
 
-  "dialog.provider.search.placeholder": "Поиск провайдеров",
-  "dialog.provider.empty": "Провайдеры не найдены",
-  "dialog.provider.group.other": "Другие",
   "dialog.provider.tag.recommended": "Рекомендуемые",
 
   "dialog.model.select.title": "Выбрать модель",
@@ -97,7 +91,6 @@ export const dict = {
   "dialog.model.expand": "Развернуть",
   "dialog.model.collapse": "Свернуть",
 
-  "dialog.provider.viewAll": "Показать больше провайдеров",
 
   "provider.connect.title": "Подключить {{provider}}",
   "provider.connect.selectMethod": "Выберите способ входа для {{provider}}.",
@@ -145,8 +138,6 @@ export const dict = {
   "provider.disconnect.toast.disconnected.description": "Модели {{provider}} больше недоступны.",
   "model.tag.free": "Бесплатно",
   "model.tag.dataCollected": "Данные могут использоваться для обучения",
-  "model.group.auto": "Автоматические модели",
-  "model.group.recommended": "Рекомендуемые",
   "model.group.favorites": "Избранное",
   "model.group.mostUsed": "Часто используемые",
   "model.favorite.add": "Добавить в избранное",
@@ -158,7 +149,6 @@ export const dict = {
   "model.preview.label.average": "Средняя стоимость",
   "model.preview.label.context": "Контекст",
   "model.preview.group.terminalBench": "Terminal Bench 2.0",
-  "model.preview.group.autoEfficientChoices": "Варианты моделей",
   "model.preview.label.completion": "Выполнение",
   "model.preview.label.costAttempt": "Стоимость / попытка",
   "model.preview.value.notSupported": "Не поддерживается",
@@ -186,7 +176,6 @@ export const dict = {
   "prompt.action.send": "Отправить",
   "prompt.action.continue": "Продолжить",
   "prompt.action.send.blocked": "Сначала ответьте на ожидающий вопрос или отклоните его",
-  "prompt.action.send.recording": "Расшифровать и отправить",
   "prompt.action.stop": "Остановить",
   "prompt.action.enhance": "Улучшить промпт",
   "prompt.action.autoApprove.enable": "Включить автоодобрение",
@@ -214,17 +203,6 @@ export const dict = {
   "prompt.action.sandbox.description.disabled": "Нажмите, чтобы ограничить запись в файловую систему и доступ к сети.",
   "prompt.action.sandbox.description.disabledNetworkAllowed":
     "Нажмите, чтобы ограничить запись в файловую систему. Доступ к сети останется разрешённым согласно настройкам песочницы.",
-
-  "speechToText.tooltip.start": "Начать голосовой ввод с Kilo Gateway",
-  "speechToText.tooltip.shortcut":
-    "Коснитесь или нажмите Cmd/Ctrl+K, чтобы начать или остановить запись; удерживайте кнопку во время речи, затем отпустите её, чтобы транскрибировать и отправить.",
-  "speechToText.tooltip.starting": "Запуск микрофона... Пока не говорите.",
-  "speechToText.tooltip.stop": "Остановить захват звука",
-  "speechToText.tooltip.transcribing": "Распознавание... Нажмите для отмены.",
-  "speechToText.tooltip.error": "Ошибка голосового ввода. Нажмите, чтобы очистить.",
-  "speechToText.error.title": "Ошибка голосового ввода",
-  "speechToText.error.loginRequired": "Войдите в Kilo, чтобы использовать голосовой ввод.",
-  "speechToText.error.emptyTranscript": "Речь не обнаружена.",
 
   "prompt.toast.promptSendFailed.title": "Не удалось отправить запрос",
 
@@ -431,15 +409,14 @@ export const dict = {
 
   "settings.providers.title": "Провайдеры",
   "settings.providers.section.connected": "Подключённые провайдеры",
+  "settings.providers.section.custom": "Пользовательские провайдеры",
   "settings.providers.connected.empty": "Нет подключённых провайдеров",
-  "settings.providers.section.popular": "Популярные провайдеры",
   "settings.providers.select.placeholder": "Выберите провайдера...",
   "settings.providers.tag.environment": "Среда",
   "settings.providers.tag.config": "Конфигурация",
   "settings.providers.tag.chatgpt": "ChatGPT",
   "settings.providers.tag.custom": "Пользовательский",
   "settings.providers.tag.other": "Другое",
-  "settings.providers.tag.customProvider": "Пользовательский провайдер",
   "settings.providers.connected.environmentDescription": "Подключён из ваших переменных окружения",
   "settings.providers.action.signInChatGPT": "Войти через ChatGPT",
   "settings.providers.custom.description": "Добавьте пользовательский провайдер по базовому URL.",
@@ -447,8 +424,7 @@ export const dict = {
   "settings.providers.subagentModel.description":
     "Модель по умолчанию и уровень рассуждения для субагентов task-tool. Оставьте пустым, чтобы унаследовать модель вызывающего агента.",
   "settings.models.hidePromptTraining.title": "Скрывать модели, обучающиеся на запросах",
-  "settings.models.hidePromptTraining.description":
-    "Скрывать модели Kilo Gateway, поставщики которых могут использовать ваши запросы для обучения.",
+  "settings.models.hidePromptTraining.description": "Скрывать модели, поставщики которых могут использовать ваши запросы для обучения.",
   "settings.providers.modeModels": "Модель для режима",
   "settings.providers.modeModels.description":
     "Переопределите модель по умолчанию для определённых режимов. Если не задано, используется глобальная модель по умолчанию.",
@@ -665,7 +641,6 @@ export const dict = {
   "profile.usage.plan.unknown": "Тариф: Статус неизвестен",
   "profile.usage.action.manage": "Управлять",
   "profile.usage.action.managePlan": "Управление {{plan}}",
-  "profile.usage.routing": "Оплата тарифа активна. Маршрутизация через Kilo Gateway {{state}}.",
   "profile.usage.routingState.disabled": "отключена",
   "profile.usage.routingState.missing": "отсутствует",
   "profile.usage.routingState.replaced": "заменена",
@@ -851,10 +826,6 @@ export const dict = {
   "settings.experimental.imageGenerationModel.description": "Модель генерации изображений",
   "settings.experimental.imageGenerationModel.placeholder": "По умолчанию (Auto Router)",
 
-  "settings.models.speechToText.disabledDescription":
-    "Включите провайдер Kilo и выполните вход, чтобы использовать Speech to Text. В настоящее время Speech to Text поддерживается только с Kilo Gateway.",
-  "settings.models.speechToTextModel.title": "Модель речи в текст",
-  "settings.models.speechToTextModel.description": "Выберите модель транскрипции Kilo Gateway для голосового ввода.",
   "settings.experimental.nativeNotebookTools.title": "Нативные инструменты блокнотов",
   "settings.experimental.nativeNotebookTools.description":
     "Включить экспериментальные инструменты для чтения, редактирования и выполнения блокнотов VS Code",

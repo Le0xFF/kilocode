@@ -46,17 +46,14 @@ export const anacondaDesktopDict = {
   "provider.anaconda.action.open": "Apri Anaconda Desktop",
   "provider.anaconda.action.checkAgain": "Controlla di nuovo",
   "provider.anaconda.action.continue": "Continua comunque",
-  "provider.anaconda.action.manage": "Gestisci / Aggiorna",
   "provider.anaconda.toast.refreshed.title": "Anaconda Desktop aggiornato",
   "provider.anaconda.toast.refreshed.description": "Il server locale attivo e i modelli sono aggiornati in Kilo.",
   "settings.providers.note.anacondaDesktop": "Esegui un modello servito localmente da Anaconda Desktop.",
-  "settings.providers.tag.local": "Locale",
 } as const
 
 export const dict = {
   ...anacondaDesktopDict,
   ...cloudProviderDict,
-  "command.provider.connect": "Connetti provider",
   "session.activity.waiting": "In attesa di una risposta o approvazione.",
   "session.activity.error": "Errore o connessione persa.",
   "session.activity.retry": "Nuovo tentativo automatico.",
@@ -80,9 +77,6 @@ export const dict = {
   "revert.banner.workspace.enableSnapshots": "Abilita snapshot",
   "revert.disabled.agentBusy": "Attendi che l'agente finisca",
   "command.session.compact": "Compatta sessione",
-  "dialog.provider.search.placeholder": "Cerca provider",
-  "dialog.provider.empty": "Nessun provider trovato",
-  "dialog.provider.group.other": "Altro",
   "dialog.provider.tag.recommended": "Consigliato",
   "dialog.model.select.title": "Seleziona modello",
   "dialog.model.search.placeholder": "Cerca modelli",
@@ -90,7 +84,6 @@ export const dict = {
   "dialog.model.select": "Seleziona",
   "dialog.model.expand": "Espandi",
   "dialog.model.collapse": "Comprimi",
-  "dialog.provider.viewAll": "Mostra altri provider",
   "provider.connect.title": "Connetti {{provider}}",
   "provider.connect.selectMethod": "Seleziona metodo di accesso per {{provider}}.",
   "provider.connect.method.apiKey": "API key",
@@ -126,8 +119,6 @@ export const dict = {
   "provider.disconnect.toast.disconnected.description": "I modelli {{provider}} non sono più disponibili.",
   "model.tag.free": "Gratis",
   "model.tag.dataCollected": "I dati possono essere utilizzati per l'addestramento",
-  "model.group.auto": "Modelli automatici",
-  "model.group.recommended": "Consigliati",
   "model.group.favorites": "Preferiti",
   "model.group.mostUsed": "Più usati",
   "model.favorite.add": "Aggiungi ai preferiti",
@@ -139,7 +130,6 @@ export const dict = {
   "model.preview.label.average": "Costo medio stimato",
   "model.preview.label.context": "Contesto",
   "model.preview.group.terminalBench": "Terminal Bench 2.0",
-  "model.preview.group.autoEfficientChoices": "Opzioni modello",
   "model.preview.label.completion": "Completamento",
   "model.preview.label.costAttempt": "Costo / tentativo",
   "model.preview.value.notSupported": "Non supportato",
@@ -296,13 +286,12 @@ export const dict = {
   "sound.option.yup06": "Sì 06",
   "settings.providers.title": "Provider",
   "settings.providers.section.connected": "Provider connessi",
+  "settings.providers.section.custom": "Provider personalizzati",
   "settings.providers.connected.empty": "Nessun provider connesso",
-  "settings.providers.section.popular": "Provider popolari",
   "settings.providers.tag.environment": "Ambiente",
   "settings.providers.tag.config": "Config",
   "settings.providers.tag.chatgpt": "ChatGPT",
   "settings.providers.tag.custom": "Personalizzato",
-  "settings.providers.tag.customProvider": "Provider personalizzato",
   "settings.providers.tag.other": "Altro",
   "settings.providers.connected.environmentDescription": "Connesso dalle variabili d'ambiente",
   "settings.providers.action.signInChatGPT": "Accedi con ChatGPT",
@@ -510,7 +499,6 @@ export const dict = {
   "profile.usage.plan.unknown": "Piano: Stato sconosciuto",
   "profile.usage.action.manage": "Gestisci",
   "profile.usage.action.managePlan": "Gestisci {{plan}}",
-  "profile.usage.routing": "La fatturazione del piano è attiva. L'instradamento tramite Kilo Gateway è {{state}}.",
   "profile.usage.routingState.disabled": "disabilitato",
   "profile.usage.routingState.missing": "mancante",
   "profile.usage.routingState.replaced": "sostituito",
@@ -1196,10 +1184,6 @@ export const dict = {
   "session.costAlert.stop": "Interrompi",
 
   // Speech to Text
-  "settings.models.speechToText.disabledDescription":
-    "Abilita e accedi al provider Kilo per usare Da voce a testo. Da voce a testo è attualmente supportato solo tramite Kilo Gateway.",
-  "settings.models.speechToTextModel.title": "Modello Da voce a testo",
-  "settings.models.speechToTextModel.description": "Scegli il modello di trascrizione Kilo Gateway per l'input vocale.",
 
   // Compaction limit
   "settings.context.compactionLimit.title": "Limite compattazione automatica",
@@ -1211,8 +1195,7 @@ export const dict = {
   "settings.providers.subagentModel.description":
     "Modello e sforzo di ragionamento predefiniti per i sub-agent del tool task. Lascia non impostato per ereditare il modello dell'agente chiamante.",
   "settings.models.hidePromptTraining.title": "Nascondi i modelli che usano i prompt per l'addestramento",
-  "settings.models.hidePromptTraining.description":
-    "Nascondi i modelli Kilo Gateway i cui provider potrebbero usare i tuoi prompt per l'addestramento.",
+  "settings.models.hidePromptTraining.description": "Nascondi i modelli i cui provider potrebbero usare i tuoi prompt per l'addestramento.",
 
   // Autocomplete hint
 
@@ -1236,7 +1219,6 @@ export const dict = {
   "provider.connect.prompt.required": "{{field}} è obbligatorio",
 
   // Prompt recording
-  "prompt.action.send.recording": "Trascrivi e invia",
 
   // Session export
   "command.session.export": "Esporta trascrizione sessione",
@@ -1257,16 +1239,6 @@ export const dict = {
     "Accedi di nuovo con ChatGPT, quindi invia di nuovo il tuo messaggio per continuare a usare i modelli Codex.",
 
   // Speech to Text tooltips and errors
-  "speechToText.tooltip.start": "Avvia input vocale con Kilo Gateway",
-  "speechToText.tooltip.shortcut":
-    "Tocca o premi Cmd/Ctrl+K per avviare o interrompere la registrazione; tieni premuto mentre parli e rilascia per trascrivere e inviare.",
-  "speechToText.tooltip.starting": "Avvio del microfono... Attendi prima di parlare.",
-  "speechToText.tooltip.stop": "Interrompi acquisizione",
-  "speechToText.tooltip.transcribing": "Trascrizione... Fai clic per annullare.",
-  "speechToText.tooltip.error": "Input vocale fallito. Fai clic per cancellare.",
-  "speechToText.error.title": "Input vocale fallito",
-  "speechToText.error.loginRequired": "Accedi a Kilo per usare l'input vocale.",
-  "speechToText.error.emptyTranscript": "Nessun parlato rilevato.",
   "chat.search.placeholder": "Cerca nella chat…",
   "chat.search.toggle": "Cerca nella chat",
   "chat.search.matchCase": "Maiuscole/minuscole",

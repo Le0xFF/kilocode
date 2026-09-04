@@ -1,7 +1,7 @@
 export * as ConfigProviderV1 from "./provider"
 
 import { Schema } from "effect"
-import { PROMPTS, AI_SDK_PROVIDERS } from "@kilocode/kilo-gateway" // kilocode_change
+import { PROMPTS, AI_SDK_PROVIDERS } from "./constants" // kilocode_change
 import { PositiveInt } from "../../schema"
 
 export const ModelStatus = Schema.Literals(["alpha", "beta", "deprecated", "active"])

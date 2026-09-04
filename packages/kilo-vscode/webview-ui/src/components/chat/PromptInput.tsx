@@ -24,8 +24,6 @@ import { useProvider } from "../../context/provider"
 import { ModelSelector } from "../shared/ModelSelector"
 import { ModeSwitcher } from "../shared/ModeSwitcher"
 import { SandboxButtonBase, SandboxTooltipContent } from "../shared/SandboxButton"
-import { SpeechToTextButton } from "../speech-to-text/SpeechToTextButton"
-import { canUseSpeechToText, selectedSpeechToTextModel } from "../speech-to-text/availability"
 import { ThinkingSelector } from "../shared/ThinkingSelector"
 import { useFileMention } from "../../hooks/useFileMention"
 import type { MentionResult, WorktreeReference } from "../../hooks/file-mention-utils"
@@ -34,9 +32,6 @@ import { useGitChangesContext } from "../../hooks/useGitChangesContext"
 import { hasTerminalMention } from "../../hooks/terminal-context-utils"
 import { hasGitChangesMention } from "../../hooks/git-changes-context-utils"
 import { useSlashCommand } from "../../hooks/useSlashCommand"
-import { useSpeechToText } from "../speech-to-text/useSpeechToText"
-import { useSpeechToTextModels } from "../../context/speech-to-text-models"
-import { createSpeechShortcut } from "../speech-to-text/shortcut"
 import { useImageAttachments, type ImageAttachment } from "../../hooks/useImageAttachments"
 import { convertToMentionPath } from "../../utils/path-mentions"
 import { SessionMentionPicker } from "./SessionMentionPicker"
@@ -367,9 +362,6 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
     requestSandbox()
   })
 
-  const speech = useSpeechToText(vscode, language)
-  const speechModels = useSpeechToTextModels()
-
   const replaceReviewComments = (next: ReviewCommentEntry[]) => {
     setReviewComments(next)
     if (next.length === 0) {
@@ -549,25 +541,17 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
       globalConfig(),
     )
   const isDisabled = () => !server.isConnected() || locked()
-  const canUseSpeech = () => canUseSpeechToText(config())
-  const speechModel = () => {
-    const configured = config().experimental?.speech_to_text
-    if (configured?.model) return configured.model
-    return selectedSpeechToTextModel(config(), speechModels.models())
-  }
   const hasInput = () => text().trim().length > 0 || imageAttach.images().length > 0 || reviewComments().length > 0
   const sendReady = () => !isDisabled() && !terminal.pending() && !git.pending() && !props.blocked?.()
-  const canContinue = () => speech.state() === "idle" && !hasInput() && session.canResume()
-  const canSend = () =>
-    sendReady() && (speech.state() === "recording" || (!speech.active() && (hasInput() || canContinue())))
-  const canSendContinue = () => sendReady() && !speech.active() && canContinue()
+  const canContinue = () => !hasInput() && session.canResume()
+  const canSend = () => sendReady() && (hasInput() || canContinue())
+  const canSendContinue = () => sendReady() && canContinue()
   const sendLabel = () => {
     if (props.blocked?.()) return language.t("prompt.action.send.blocked")
-    if (speech.state() === "recording") return language.t("prompt.action.send.recording")
     if (canSendContinue()) return language.t("prompt.action.continue")
     return language.t("prompt.action.send")
   }
-  const showStop = () => isBusy() && !hasInput() && speech.state() !== "recording"
+  const showStop = () => isBusy() && !hasInput()
   const highlightMentions = () => {
     const paths = new Set(mention.mentionedPaths())
     for (const token of mention.mentionedSessions().keys()) paths.add(token)
@@ -587,7 +571,7 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
   }
 
   const canEdit = () =>
-    server.isConnected() && !hasInput() && !enhancing() && !speech.active() && !terminal.pending() && !git.pending()
+    server.isConnected() && !hasInput() && !enhancing() && !terminal.pending() && !git.pending()
   createEffect(() => props.onEditReady?.(canEdit()))
 
   const edit = async (request: NonNullable<PromptInputProps["edit"]>) => {
@@ -1011,77 +995,8 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
     vscode.postMessage({ type: "enhancePrompt", text: draft, requestId: `enhance-${draftKey()}-${enhanceCounter}` })
   }
 
-  const insertSpeechText = (value: string) => {
-    const ref = textareaRef
-    const current = text()
-    const start = ref?.selectionStart ?? current.length
-    const end = ref?.selectionEnd ?? start
-    const result = insertSpacedText(current, value, start, end)
-
-    setText(result.text)
-    if (!ref) return
-    ref.value = result.text
-    ref.setSelectionRange(result.pos, result.pos)
-    ref.focus()
-    adjustHeight()
-    syncHighlightScroll()
-  }
-
-  const startSpeech = () => {
-    speech.start({ model: speechModel(), insert: insertSpeechText })
-  }
-
-  const transcribeAndSend = () => {
-    const key = draftKey()
-    const id = sid()
-    const context = ctx()
-    const value = text()
-    const comments = reviewComments()
-    const images = imageAttach.images()
-    speech.stop({
-      done: () => void handleSend(),
-      ready: () =>
-        draftKey() === key &&
-        sid() === id &&
-        ctx() === context &&
-        text() === value &&
-        reviewComments() === comments &&
-        imageAttach.images() === images,
-    })
-  }
-
-  const shortcut = createSpeechShortcut({
-    speech,
-    disabled: () => !canUseSpeech() || isDisabled(),
-    start: startSpeech,
-    finish: (submit) => {
-      if (submit) {
-        transcribeAndSend()
-        return
-      }
-      speech.stop()
-    },
-  })
-  const speechDown = (e: KeyboardEvent): boolean => {
-    if (!shortcut.down(e)) return false
-    e.preventDefault()
-    e.stopPropagation()
-    return true
-  }
-  const speechUp = (e: KeyboardEvent): boolean => {
-    if (!shortcut.up(e)) return false
-    e.preventDefault()
-    e.stopPropagation()
-    return true
-  }
-  onCleanup(shortcut.reset)
-
   const handleSendClick = () => {
-    if (speech.state() !== "recording" || !canSend()) {
-      void handleSend()
-      return
-    }
-    transcribeAndSend()
+    void handleSend()
   }
 
   const runMemory = (memory: NonNullable<ReturnType<typeof parseMemoryCommand>>) => {
@@ -1101,7 +1016,7 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
       adjustHeight()
       return false
     }
-    if (isDisabled() || speech.active() || terminal.pending() || git.pending() || props.blocked?.()) return false
+    if (isDisabled() || terminal.pending() || git.pending() || props.blocked?.()) return false
     const status = projectMemory.status()
     if (
       memory.kind === "operation" &&
@@ -1198,7 +1113,7 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
     }
     const message = draft && review ? `${review}\n\n${draft}` : draft || review
     const data = review ? { version: 1 as const, comments: pending } : undefined
-    if ((!message && imgs.length === 0) || !sendReady() || speech.active()) return
+    if ((!message && imgs.length === 0) || !sendReady()) return
 
     const mentionFiles = mention.parseFileAttachments(draft)
     const imgFiles = imgs.map((img) => ({ mime: img.mime, url: img.dataUrl, filename: img.filename }))
@@ -1490,13 +1405,7 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
             placeholder={placeholder()}
             value={text()}
             onInput={handleInput}
-            onKeyDown={(e) => {
-              if (speechDown(e)) return
-              handleKeyDown(e)
-            }}
-            onKeyUp={(e) => {
-              if (speechUp(e)) return
-            }}
+            onKeyDown={handleKeyDown}
             onPaste={handlePaste}
             onClick={() => {}}
             onFocus={() => {
@@ -1595,9 +1504,6 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
               <WandSparkles size={16} class={enhancing() ? "enhance-spinner" : ""} />
             </Button>
           </Tooltip>
-          <Show when={canUseSpeech()}>
-            <SpeechToTextButton speech={speech} disabled={isDisabled()} start={startSpeech} label={language.t} />
-          </Show>
           <Show
             when={showStop()}
             fallback={

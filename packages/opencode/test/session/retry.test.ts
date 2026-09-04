@@ -268,7 +268,7 @@ describe("session.retry.retryable", () => {
       }).toObject(),
     )
 
-    expect(SessionRetry.retryable(error, "kilo")).toBeUndefined()
+    expect(SessionRetry.retryable(error, "lmstudio")).toBeUndefined()
   })
   // kilocode_change end
 })

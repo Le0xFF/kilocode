@@ -17,10 +17,10 @@ function makeProvider(id: string, models: string[]): Provider {
   return result
 }
 
-const KILO_AUTO: ModelSelection = { providerID: "kilo", modelID: "kilo-auto/free" }
+const FALLBACK: ModelSelection = { providerID: "lmstudio", modelID: "qwen3" }
 
 const providers: Record<string, Provider> = {
-  kilo: makeProvider("kilo", ["kilo-auto/free"]),
+  lmstudio: makeProvider("lmstudio", ["qwen3"]),
   anthropic: makeProvider("anthropic", ["claude-sonnet-4"]),
   openai: makeProvider("openai", ["gpt-4.1"]),
 }
@@ -28,8 +28,8 @@ const providers: Record<string, Provider> = {
 function env(): ResolveEnv {
   return {
     providers,
-    connected: ["kilo", "anthropic", "openai"],
-    fallback: KILO_AUTO,
+    connected: ["lmstudio", "anthropic", "openai"],
+    fallback: FALLBACK,
     getModeModel: () => null,
     getGlobalModel: () => null,
   }
@@ -61,7 +61,7 @@ describe("per-session model selection", () => {
 
     // Session B (no override) keeps the default model.
     const sessionB = getSessionModel(updated, e, "session-b", "code")
-    expect(sessionB).toEqual(KILO_AUTO)
+    expect(sessionB).toEqual(FALLBACK)
   })
 
   it("each session preserves its own model independently", () => {
@@ -185,7 +185,7 @@ describe("per-mode model memory", () => {
     // Simulate mode switch: clear session override (like selectAgent does)
     const cleared = { ...store, sessionOverrides: {} }
 
-    expect(getSelected(cleared, e, "session-a", "code")).toEqual(KILO_AUTO)
+    expect(getSelected(cleared, e, "session-a", "code")).toEqual(FALLBACK)
   })
 
   it("different modes remember their own model independently", () => {

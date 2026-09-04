@@ -9,28 +9,6 @@ export const mediaLocalHandlers = HttpApiBuilder.group(InstanceHttpApi, "media-l
   Effect.gen(function* () {
     const config = yield* Config.Service
 
-    const sttModels = Effect.fn("MediaLocalHttpApi.sttModels")(function* () {
-      const cfg = yield* config.get()
-      return yield* MediaLocal.sttModels(cfg)
-    })
-
-    const sttTranscribe = Effect.fn("MediaLocalHttpApi.sttTranscribe")(function* (ctx: {
-      payload: { model: string; audio: string; format?: string; language?: string }
-    }) {
-      const cfg = yield* config.get()
-      return yield* MediaLocal.transcribe({
-        cfg,
-        model: ctx.payload.model,
-        audio: ctx.payload.audio,
-        format: ctx.payload.format,
-        language: ctx.payload.language,
-      }).pipe(
-        Effect.catchDefect((defect: unknown) =>
-          defect instanceof UpstreamError ? Effect.fail(new MediaLocalFailedError({ message: defect.message })) : Effect.die(defect),
-        ),
-      )
-    })
-
     const imgModels = Effect.fn("MediaLocalHttpApi.imgModels")(function* () {
       const cfg = yield* config.get()
       return yield* MediaLocal.imgModels(cfg)
@@ -53,6 +31,6 @@ export const mediaLocalHandlers = HttpApiBuilder.group(InstanceHttpApi, "media-l
       )
     })
 
-    return handlers.handle("sttModels", sttModels).handle("sttTranscribe", sttTranscribe).handle("imgModels", imgModels).handle("imgGenerate", imgGenerate)
+    return handlers.handle("imgModels", imgModels).handle("imgGenerate", imgGenerate)
   }),
 )

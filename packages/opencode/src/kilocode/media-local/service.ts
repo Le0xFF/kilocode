@@ -55,16 +55,6 @@ function parseJson(text: string): unknown {
 export class UpstreamError extends Error {}
 
 export namespace MediaLocal {
-  export const sttModels = Effect.fn("MediaLocal.sttModels")(function* (cfg: Config.Info) {
-    const models: Model[] = []
-    const speech = cfg.experimental?.speech_to_text
-    const ref = speech?.provider && speech.model ? `${speech.provider}/${speech.model}` : undefined
-    if (ref) models.push({ id: ref, name: ref })
-    const legacy = cfg.experimental?.speech_to_text_model
-    if (legacy && !models.some((item) => item.id === legacy)) models.push({ id: legacy, name: legacy })
-    return models
-  })
-
   export const imgModels = Effect.fn("MediaLocal.imgModels")(function* (cfg: Config.Info) {
     const models: Model[] = []
     const image = cfg.experimental?.image_generation_provider
@@ -73,30 +63,6 @@ export namespace MediaLocal {
     const legacy = cfg.experimental?.image_generation_model
     if (legacy && !models.some((item) => item.id === legacy)) models.push({ id: legacy, name: legacy })
     return models
-  })
-
-  export const transcribe = Effect.fn("MediaLocal.transcribe")(function* (input: {
-    cfg: Config.Info
-    model: string
-    audio: string
-    format?: string
-    language?: string
-  }) {
-    const end = resolveEndpoint(input.cfg, input.model, "audio/transcriptions")
-    const form = new FormData()
-    form.append("model", input.model.split("/").at(-1) ?? input.model)
-    const bytes = Uint8Array.from(atob(input.audio), (c) => c.charCodeAt(0))
-    const mime = input.format ? `audio/${input.format}` : "application/octet-stream"
-    form.append("file", new Blob([bytes], { type: mime }), "audio")
-    if (input.language) form.append("language", input.language)
-    const res = yield* Effect.promise(() => fetch(end.url, { method: "POST", headers: authHeader(end.apiKey), body: form }))
-    const body = yield* Effect.promise(() => res.text())
-    if (!res.ok) throw new UpstreamError(`Upstream error (${res.status}): ${body.slice(0, 500)}`)
-    const parsed = parseJson(body)
-    const result = typeof parsed === "object" && parsed !== null ? (parsed as Record<string, unknown>) : {}
-    const out = result.text ?? result["transcription"] ?? ""
-    const str = typeof out === "string" ? out : Array.isArray(out) ? out.join("") : ""
-    return { text: str }
   })
 
   export const generate = Effect.fn("MediaLocal.generate")(function* (input: {

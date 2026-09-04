@@ -5,38 +5,6 @@ import { PROVIDER_PRIORITY as PROVIDER_ORDER, providerOrderIndex } from "../../.
 
 export { PROVIDER_ORDER }
 
-const AUTO_FALLBACK = "Routes requests automatically."
-
-interface Choice {
-  id: string
-  name: string
-}
-
-export function isAuto(model: Pick<EnrichedModel, "providerID" | "id">): boolean {
-  return model.id.startsWith("auto-") || model.id === "auto-small"
-}
-
-export function autoChoices(
-  model: Pick<EnrichedModel, "providerID" | "id" | "autoRouting">,
-  catalog: readonly Pick<EnrichedModel, "id" | "name">[] = [],
-): readonly Choice[] {
-  if (!isAuto(model)) return []
-  const ids = model.autoRouting?.models
-  if (!ids?.length) return []
-  const names = new Map(catalog.map((item) => [item.id, stripSubProviderPrefix(sanitizeName(item.name))]))
-  return ids.map((id) => ({ id, name: names.get(id) ?? id }))
-}
-
-export function autoSummary(model: Pick<EnrichedModel, "options">): string {
-  const raw = model.options?.description?.split(/\n\s*\n/)[0]
-  if (!raw) return AUTO_FALLBACK
-  return raw.replace(/\s+/g, " ").trim() || AUTO_FALLBACK
-}
-
-export function isSmall(model: Pick<EnrichedModel, "providerID" | "id">): boolean {
-  return model.id === "auto-small"
-}
-
 export function providerSortKey(providerID: string, order: readonly string[] = PROVIDER_ORDER): number {
   return providerOrderIndex(providerID, order as typeof PROVIDER_ORDER)
 }
