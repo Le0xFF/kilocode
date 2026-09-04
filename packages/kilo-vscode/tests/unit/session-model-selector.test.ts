@@ -3,7 +3,7 @@ import { createModelSelector } from "../../webview-ui/src/context/session-model-
 
 describe("model selector", () => {
   it("carries the active session variant for the selected model", () => {
-    const selected = { providerID: "kilo", modelID: "old" }
+    const selected = { providerID: "lmstudio", modelID: "old" }
     const next: Array<{ id: string; selection: typeof selected }> = []
     const variants: Array<{ value: string | undefined; session: string | undefined }> = []
     const hidden: string[] = []
@@ -18,16 +18,16 @@ describe("model selector", () => {
       hide: (id) => hidden.push(id),
     })
 
-    selector.select("kilo", "new")
+    selector.select("lmstudio", "new")
 
-    const model = { providerID: "kilo", modelID: "new" }
+    const model = { providerID: "lmstudio", modelID: "new" }
     expect(next).toEqual([{ id: "session", selection: model }])
     expect(variants).toEqual([{ value: "high", session: "session" }])
     expect(hidden).toEqual(["session"])
   })
 
   it("retains a session variant without persisting a global model selection", () => {
-    const selected = { providerID: "kilo", modelID: "old" }
+    const selected = { providerID: "lmstudio", modelID: "old" }
     const models: Array<{ id: string; selection: typeof selected }> = []
     const variants: Array<{ value: string | undefined; session: string | undefined }> = []
     const selector = createModelSelector({
@@ -41,9 +41,9 @@ describe("model selector", () => {
       hide: () => undefined,
     })
 
-    selector.session("session", "kilo", "new")
+    selector.session("session", "lmstudio", "new")
 
-    const model = { providerID: "kilo", modelID: "new" }
+    const model = { providerID: "lmstudio", modelID: "new" }
     expect(models).toEqual([{ id: "session", selection: model }])
     expect(variants).toEqual([{ value: "high", session: "session" }])
   })

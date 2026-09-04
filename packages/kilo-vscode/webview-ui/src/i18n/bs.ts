@@ -46,18 +46,15 @@ export const anacondaDesktopDict = {
   "provider.anaconda.action.open": "Otvori Anaconda Desktop",
   "provider.anaconda.action.checkAgain": "Provjeri ponovo",
   "provider.anaconda.action.continue": "Ipak nastavi",
-  "provider.anaconda.action.manage": "Upravljaj / Osvježi",
   "provider.anaconda.toast.refreshed.title": "Anaconda Desktop osvježen",
   "provider.anaconda.toast.refreshed.description": "Aktivni lokalni server i modeli su ažurirani u Kilu.",
   "settings.providers.note.anacondaDesktop": "Pokrenite model koji lokalno poslužuje Anaconda Desktop.",
-  "settings.providers.tag.local": "Lokalno",
 } as const
 
 export const dict = {
   ...anacondaDesktopDict,
   ...cloudProviderDict,
 
-  "command.provider.connect": "Poveži provajdera",
 
   "session.activity.waiting": "Čeka se odgovor ili odobrenje.",
   "session.activity.error": "Greška ili prekinuta veza.",
@@ -85,9 +82,6 @@ export const dict = {
   "command.session.compact": "Sažmi sesiju",
   "command.session.export": "Izvezi transkript sesije",
 
-  "dialog.provider.search.placeholder": "Pretraži provajdere",
-  "dialog.provider.empty": "Nema pronađenih provajdera",
-  "dialog.provider.group.other": "Ostalo",
   "dialog.provider.tag.recommended": "Preporučeno",
 
   "dialog.model.select.title": "Odaberi model",
@@ -97,7 +91,6 @@ export const dict = {
   "dialog.model.expand": "Proširi",
   "dialog.model.collapse": "Skupi",
 
-  "dialog.provider.viewAll": "Prikaži više provajdera",
 
   "provider.connect.title": "Poveži {{provider}}",
   "provider.connect.selectMethod": "Odaberi način prijave za {{provider}}.",
@@ -146,8 +139,6 @@ export const dict = {
 
   "model.tag.free": "Besplatno",
   "model.tag.dataCollected": "Podaci se mogu koristiti za obuku",
-  "model.group.auto": "Automatski modeli",
-  "model.group.recommended": "Preporučeno",
   "model.group.favorites": "Favoriti",
   "model.group.mostUsed": "Najčešće korišteni",
   "model.favorite.add": "Dodaj u favorite",
@@ -159,7 +150,6 @@ export const dict = {
   "model.preview.label.average": "Procj. prosječni trošak",
   "model.preview.label.context": "Kontekst",
   "model.preview.group.terminalBench": "Terminal Bench 2.0",
-  "model.preview.group.autoEfficientChoices": "Izbori modela",
   "model.preview.label.completion": "Završetak",
   "model.preview.label.costAttempt": "Trošak / pokušaj",
   "model.preview.value.notSupported": "Nije podržano",
@@ -188,7 +178,6 @@ export const dict = {
   "prompt.action.send": "Pošalji",
   "prompt.action.continue": "Nastavi",
   "prompt.action.send.blocked": "Prvo odgovorite ili odbacite pitanje na čekanju",
-  "prompt.action.send.recording": "Transkribuj i pošalji",
   "prompt.action.stop": "Zaustavi",
   "prompt.action.enhance": "Poboljšaj prompt",
   "prompt.action.autoApprove.enable": "Uključi automatsko odobravanje",
@@ -217,17 +206,6 @@ export const dict = {
   "prompt.action.sandbox.description.disabled": "Kliknite da ograničite pisanje u datotečni sistem i pristup mreži.",
   "prompt.action.sandbox.description.disabledNetworkAllowed":
     "Kliknite da ograničite pisanje u datotečni sistem. Pristup mreži ostaje dozvoljen prema vašim sandbox postavkama.",
-
-  "speechToText.tooltip.start": "Započni glasovni unos sa Kilo Gateway",
-  "speechToText.tooltip.shortcut":
-    "Dodirnite dugme ili pritisnite Cmd/Ctrl+K da pokrenete ili zaustavite snimanje; držite dugme pritisnutim dok govorite, a zatim ga otpustite da biste pretvorili govor u tekst i poslali ga.",
-  "speechToText.tooltip.starting": "Pokretanje mikrofona... Sačekajte prije nego što progovorite.",
-  "speechToText.tooltip.stop": "Zaustavi hvatanje zvuka",
-  "speechToText.tooltip.transcribing": "Prepisivanje... Kliknite da otkažete.",
-  "speechToText.tooltip.error": "Glasovni unos nije uspio. Kliknite da očistite.",
-  "speechToText.error.title": "Glasovni unos nije uspio",
-  "speechToText.error.loginRequired": "Prijavite se na Kilo da koristite glasovni unos.",
-  "speechToText.error.emptyTranscript": "Govor nije otkriven.",
 
   "prompt.toast.promptSendFailed.title": "Neuspješno slanje upita",
 
@@ -436,15 +414,14 @@ export const dict = {
 
   "settings.providers.title": "Provajderi",
   "settings.providers.section.connected": "Povezani provajderi",
+  "settings.providers.section.custom": "Prilagođeni pružaoci",
   "settings.providers.connected.empty": "Nema povezanih provajdera",
-  "settings.providers.section.popular": "Popularni provajderi",
   "settings.providers.select.placeholder": "Odaberi provajdera...",
   "settings.providers.tag.environment": "Okruženje",
   "settings.providers.tag.config": "Konfiguracija",
   "settings.providers.tag.chatgpt": "ChatGPT",
   "settings.providers.tag.custom": "Prilagođeno",
   "settings.providers.tag.other": "Ostalo",
-  "settings.providers.tag.customProvider": "Prilagođeni provajder",
   "settings.providers.connected.environmentDescription": "Povezano iz vaših varijabli okruženja",
   "settings.providers.action.signInChatGPT": "Prijavi se putem ChatGPT",
   "settings.providers.custom.description": "Dodaj prilagođeni provajder putem osnovnog URL-a.",
@@ -452,8 +429,7 @@ export const dict = {
   "settings.providers.subagentModel.description":
     "Zadani model i napor zaključivanja za podagente task-tool-a. Ostavite nepodešeno da naslijedi model pozivnog agenta.",
   "settings.models.hidePromptTraining.title": "Sakrij modele koji treniraju na promptovima",
-  "settings.models.hidePromptTraining.description":
-    "Sakrij Kilo Gateway modele čiji pružaoci mogu koristiti vaše promptove za treniranje.",
+  "settings.models.hidePromptTraining.description": "Sakrij modele čiji pružaoci mogu koristiti vaše promptove za treniranje.",
   "settings.providers.modeModels": "Model po režimu",
   "settings.providers.modeModels.description":
     "Zamijenite podrazumijevani model za određene režime. Ako nije postavljeno, koristi se globalni podrazumijevani model.",
@@ -668,7 +644,6 @@ export const dict = {
   "profile.usage.plan.unknown": "Plan: Status nepoznat",
   "profile.usage.action.manage": "Upravljaj",
   "profile.usage.action.managePlan": "Upravljaj planom {{plan}}",
-  "profile.usage.routing": "Naplata plana je aktivna. Kilo Gateway usmjeravanje je {{state}}.",
   "profile.usage.routingState.disabled": "onemogućeno",
   "profile.usage.routingState.missing": "odsutno",
   "profile.usage.routingState.replaced": "zamijenjeno",
@@ -854,10 +829,6 @@ export const dict = {
   "settings.experimental.imageGenerationModel.description": "Model za generisanje slika",
   "settings.experimental.imageGenerationModel.placeholder": "Zadano (Auto Router)",
 
-  "settings.models.speechToText.disabledDescription":
-    "Omogućite i prijavite se na Kilo provajder da biste koristili Speech to Text. Speech to Text je trenutno podržan samo uz Kilo Gateway.",
-  "settings.models.speechToTextModel.title": "Model govora u tekst",
-  "settings.models.speechToTextModel.description": "Odaberite Kilo Gateway model za transkripciju za glasovni unos.",
   "settings.experimental.nativeNotebookTools.title": "Izvorni alati za bilježnice",
   "settings.experimental.nativeNotebookTools.description":
     "Omogući eksperimentalne alate za čitanje, uređivanje i izvršavanje VS Code bilježnica",

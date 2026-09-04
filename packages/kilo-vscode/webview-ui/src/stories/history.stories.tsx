@@ -73,7 +73,7 @@ const WithSessions: ParentComponent<{ sessions?: typeof mockSessions }> = (props
     questionErrors: () => new Set<string>(),
     scopedPermissions: () => [] as any[],
     scopedQuestions: () => [] as any[],
-    selected: () => ({ providerID: "kilo", modelID: "anthropic/claude-sonnet-4-6" }),
+    selected: () => ({ providerID: "lmstudio", modelID: "anthropic/claude-sonnet-4-6" }),
     selectModel: noop,
     costBreakdown: () => [],
     contextUsage: () => undefined,

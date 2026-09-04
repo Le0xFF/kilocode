@@ -12,13 +12,6 @@ export const MediaModelInfo = Schema.Struct({
   name: Schema.String,
 })
 
-export const TranscribePayload = Schema.Struct({
-  model: Schema.String.annotate({ description: "Model reference in providerID/modelID form" }),
-  audio: Schema.String.annotate({ description: "Base64-encoded audio bytes" }),
-  format: Schema.optional(Schema.String).annotate({ description: "Audio container format (e.g. webm, wav)" }),
-  language: Schema.optional(Schema.String),
-})
-
 export const GeneratePayload = Schema.Struct({
   prompt: Schema.String,
   model: Schema.String.annotate({ description: "Model reference in providerID/modelID form" }),
@@ -37,29 +30,6 @@ export const MediaLocalApi = HttpApi.make("kilocode")
   .add(
     HttpApiGroup.make("media-local")
       .add(
-        HttpApiEndpoint.get("sttModels", `${root}/stt/models`, {
-          query: WorkspaceRoutingQuery,
-          success: described(ModelListResponse, "Configured speech-to-text models"),
-          error: HttpApiError.BadRequest,
-        }).annotateMerge(
-          OpenApi.annotations({
-            identifier: "media-local.stt.models",
-            summary: "List local speech-to-text models",
-            description: "List speech-to-text models declared in the experimental config.",
-          }),
-        ),
-        HttpApiEndpoint.post("sttTranscribe", `${root}/stt/transcribe`, {
-          query: WorkspaceRoutingQuery,
-          payload: TranscribePayload,
-          success: described(Schema.Struct({ text: Schema.String }), "Transcription result"),
-          error: [HttpApiError.BadRequest, MediaLocalFailedError],
-        }).annotateMerge(
-          OpenApi.annotations({
-            identifier: "media-local.stt.transcribe",
-            summary: "Transcribe audio via a local provider",
-            description: "Proxy an audio transcription request to the configured local OpenAI-compatible provider.",
-          }),
-        ),
         HttpApiEndpoint.get("imgModels", `${root}/img/models`, {
           query: WorkspaceRoutingQuery,
           success: described(ModelListResponse, "Configured image generation models"),
@@ -87,7 +57,7 @@ export const MediaLocalApi = HttpApi.make("kilocode")
       .annotateMerge(
         OpenApi.annotations({
           title: "media-local",
-          description: "Local media (speech/image) proxy routes.",
+          description: "Local media (image) proxy routes.",
         }),
       )
       .middleware(InstanceContextMiddleware)

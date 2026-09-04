@@ -46,18 +46,15 @@ export const anacondaDesktopDict = {
   "provider.anaconda.action.open": "Anaconda Desktop を開く",
   "provider.anaconda.action.checkAgain": "再確認",
   "provider.anaconda.action.continue": "このまま続行",
-  "provider.anaconda.action.manage": "管理 / 更新",
   "provider.anaconda.toast.refreshed.title": "Anaconda Desktop を更新しました",
   "provider.anaconda.toast.refreshed.description": "アクティブなローカルサーバーとモデルが Kilo で最新になりました。",
   "settings.providers.note.anacondaDesktop": "Anaconda Desktop によってローカルで提供されるモデルを実行します。",
-  "settings.providers.tag.local": "ローカル",
 } as const
 
 export const dict = {
   ...anacondaDesktopDict,
   ...cloudProviderDict,
 
-  "command.provider.connect": "プロバイダーに接続",
 
   "session.activity.waiting": "回答または承認を待っています。",
   "session.activity.error": "エラーまたは接続切断。",
@@ -85,9 +82,6 @@ export const dict = {
   "command.session.compact": "セッションを圧縮",
   "command.session.export": "セッション記録をエクスポート",
 
-  "dialog.provider.search.placeholder": "プロバイダーを検索",
-  "dialog.provider.empty": "プロバイダーが見つかりません",
-  "dialog.provider.group.other": "その他",
   "dialog.provider.tag.recommended": "推奨",
 
   "dialog.model.select.title": "モデルを選択",
@@ -97,7 +91,6 @@ export const dict = {
   "dialog.model.expand": "展開",
   "dialog.model.collapse": "折りたたむ",
 
-  "dialog.provider.viewAll": "さらにプロバイダーを表示",
 
   "provider.connect.title": "{{provider}}を接続",
   "provider.connect.selectMethod": "{{provider}}のログイン方法を選択してください。",
@@ -145,8 +138,6 @@ export const dict = {
   "provider.disconnect.toast.disconnected.description": "{{provider}}のモデルは利用できなくなりました。",
   "model.tag.free": "無料",
   "model.tag.dataCollected": "データがトレーニングに使用される場合があります",
-  "model.group.auto": "自動モデル",
-  "model.group.recommended": "推奨",
   "model.group.favorites": "お気に入り",
   "model.group.mostUsed": "よく使うモデル",
   "model.favorite.add": "お気に入りに追加",
@@ -159,7 +150,6 @@ export const dict = {
   "model.preview.label.average": "推定平均コスト",
   "model.preview.label.context": "コンテキスト",
   "model.preview.group.terminalBench": "Terminal Bench 2.0",
-  "model.preview.group.autoEfficientChoices": "モデルの選択肢",
   "model.preview.label.completion": "完了率",
   "model.preview.label.costAttempt": "試行あたりのコスト",
   "model.preview.value.notSupported": "未対応",
@@ -187,7 +177,6 @@ export const dict = {
   "prompt.action.send": "送信",
   "prompt.action.continue": "続行",
   "prompt.action.send.blocked": "最初に保留中の質問に答えるか、閉じてください",
-  "prompt.action.send.recording": "文字起こしして送信",
   "prompt.action.stop": "停止",
   "prompt.action.enhance": "プロンプトを改善",
   "prompt.action.autoApprove.enable": "自動承認を有効化",
@@ -216,17 +205,6 @@ export const dict = {
     "クリックすると、ファイルシステムへの書き込みとネットワークアクセスを制限します。",
   "prompt.action.sandbox.description.disabledNetworkAllowed":
     "クリックすると、ファイルシステムへの書き込みを制限します。サンドボックス設定により、ネットワークアクセスは引き続き許可されます。",
-
-  "speechToText.tooltip.start": "Kilo Gatewayで音声入力を開始",
-  "speechToText.tooltip.shortcut":
-    "タップまたは Cmd/Ctrl+K を押して録音を開始／停止し、話している間は押し続け、離すと文字起こしして送信します。",
-  "speechToText.tooltip.starting": "マイクを起動中... まだ話さないでください。",
-  "speechToText.tooltip.stop": "音声キャプチャを停止",
-  "speechToText.tooltip.transcribing": "文字起こし中... クリックしてキャンセル。",
-  "speechToText.tooltip.error": "音声入力に失敗しました。クリックしてクリア。",
-  "speechToText.error.title": "音声入力に失敗しました",
-  "speechToText.error.loginRequired": "音声入力を使用するにはKiloにサインインしてください。",
-  "speechToText.error.emptyTranscript": "音声が検出されませんでした。",
 
   "prompt.toast.promptSendFailed.title": "プロンプトの送信に失敗しました",
 
@@ -431,15 +409,14 @@ export const dict = {
 
   "settings.providers.title": "プロバイダー",
   "settings.providers.section.connected": "接続済みプロバイダー",
+  "settings.providers.section.custom": "カスタムプロバイダー",
   "settings.providers.connected.empty": "接続済みプロバイダーはありません",
-  "settings.providers.section.popular": "人気のプロバイダー",
   "settings.providers.select.placeholder": "プロバイダーを選択...",
   "settings.providers.tag.environment": "環境",
   "settings.providers.tag.config": "設定",
   "settings.providers.tag.chatgpt": "ChatGPT",
   "settings.providers.tag.custom": "カスタム",
   "settings.providers.tag.other": "その他",
-  "settings.providers.tag.customProvider": "カスタムプロバイダー",
   "settings.providers.connected.environmentDescription": "環境変数から接続されています",
   "settings.providers.action.signInChatGPT": "ChatGPT でサインイン",
   "settings.providers.custom.description": "ベース URL でカスタムプロバイダーを追加します。",
@@ -447,8 +424,7 @@ export const dict = {
   "settings.providers.subagentModel.description":
     "task-tool サブエージェントのデフォルトモデルと推論の労力。呼び出し元のエージェントのモデルを継承する場合は未設定のままにしてください。",
   "settings.models.hidePromptTraining.title": "プロンプトを学習に使用するモデルを非表示",
-  "settings.models.hidePromptTraining.description":
-    "プロバイダーがプロンプトを学習に使用する可能性のある Kilo Gateway モデルを非表示にします。",
+  "settings.models.hidePromptTraining.description": "プロバイダーがプロンプトを学習に使用する可能性のあるモデルを非表示にします。",
   "settings.providers.modeModels": "モードごとのモデル",
   "settings.providers.modeModels.description":
     "特定のモードのデフォルトモデルを上書きします。設定されていない場合、グローバルデフォルトモデルが使用されます。",
@@ -661,7 +637,6 @@ export const dict = {
   "profile.usage.plan.unknown": "プラン：ステータス不明",
   "profile.usage.action.manage": "管理",
   "profile.usage.action.managePlan": "{{plan}} を管理",
-  "profile.usage.routing": "プランの請求は有効です。Kilo Gatewayのルーティングは{{state}}です。",
   "profile.usage.routingState.disabled": "無効",
   "profile.usage.routingState.missing": "欠落",
   "profile.usage.routingState.replaced": "置換済み",
@@ -848,10 +823,6 @@ export const dict = {
   "settings.experimental.imageGenerationModel.description": "画像生成モデル",
   "settings.experimental.imageGenerationModel.placeholder": "デフォルト (Auto Router)",
 
-  "settings.models.speechToText.disabledDescription":
-    "Speech to Text を使用するには、Kilo プロバイダーを有効にしてサインインしてください。現在、Speech to Text は Kilo Gateway でのみサポートされています。",
-  "settings.models.speechToTextModel.title": "音声認識モデル",
-  "settings.models.speechToTextModel.description": "音声入力に使用するKilo Gateway文字起こしモデルを選択します。",
   "settings.experimental.nativeNotebookTools.title": "ネイティブノートブックツール",
   "settings.experimental.nativeNotebookTools.description":
     "VS Codeノートブックの読み取り、編集、実行を行う実験的なツールを有効にします",

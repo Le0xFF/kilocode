@@ -20,7 +20,7 @@ const PANEL_TITLES: Record<PanelView, string> = {
  * reveals the existing panel instead of creating a duplicate.
  *
  * Uses a full KiloProvider under the hood so each panel has
- * the same backend connectivity (config, providers, profile, auth)
+ * the same backend connectivity (config, providers, agents)
  * as the sidebar.
  */
 export class SettingsEditorProvider implements vscode.Disposable {
@@ -106,7 +106,7 @@ export class SettingsEditorProvider implements vscode.Disposable {
     }
 
     // Create a dedicated KiloProvider for this panel so it has full
-    // backend connectivity (config, providers, agents, profile, auth).
+    // backend connectivity (config, providers, agents).
     const provider = new KiloProvider(this.extensionUri, this.connectionService, this.context, {
       projectDirectory,
       hideTopBar: true,

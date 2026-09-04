@@ -104,5 +104,5 @@ it.instance(
         }),
     )
   }),
-  { config: { disabled_providers: ["kilo", "apertis"] } },
+  { config: { disabled_providers: ["kilo", "apertis"], provider: { acme: {} } } },
 )

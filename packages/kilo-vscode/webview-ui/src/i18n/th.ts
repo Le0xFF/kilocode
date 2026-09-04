@@ -45,18 +45,15 @@ export const anacondaDesktopDict = {
   "provider.anaconda.action.open": "เปิด Anaconda Desktop",
   "provider.anaconda.action.checkAgain": "ตรวจสอบอีกครั้ง",
   "provider.anaconda.action.continue": "ดำเนินการต่อ",
-  "provider.anaconda.action.manage": "จัดการ / รีเฟรช",
   "provider.anaconda.toast.refreshed.title": "รีเฟรช Anaconda Desktop แล้ว",
   "provider.anaconda.toast.refreshed.description": "เซิร์ฟเวอร์ในเครื่องและโมเดลที่ใช้งานอยู่เป็นปัจจุบันใน Kilo แล้ว",
   "settings.providers.note.anacondaDesktop": "เรียกใช้โมเดลที่ให้บริการในเครื่องโดย Anaconda Desktop",
-  "settings.providers.tag.local": "ในเครื่อง",
 } as const
 
 export const dict = {
   ...anacondaDesktopDict,
   ...cloudProviderDict,
 
-  "command.provider.connect": "เชื่อมต่อผู้ให้บริการ",
 
   "session.activity.waiting": "กำลังรอคำตอบหรือการอนุมัติ",
   "session.activity.error": "เกิดข้อผิดพลาดหรือการเชื่อมต่อขาดหาย",
@@ -84,9 +81,6 @@ export const dict = {
   "command.session.compact": "บีบอัดเซสชัน",
   "command.session.export": "ส่งออกบันทึกเซสชัน",
 
-  "dialog.provider.search.placeholder": "ค้นหาผู้ให้บริการ",
-  "dialog.provider.empty": "ไม่พบผู้ให้บริการ",
-  "dialog.provider.group.other": "อื่น ๆ",
   "dialog.provider.tag.recommended": "แนะนำ",
 
   "dialog.model.select.title": "เลือกโมเดล",
@@ -96,7 +90,6 @@ export const dict = {
   "dialog.model.expand": "ขยาย",
   "dialog.model.collapse": "ยุบ",
 
-  "dialog.provider.viewAll": "แสดงผู้ให้บริการเพิ่มเติม",
 
   "provider.connect.title": "เชื่อมต่อ {{provider}}",
   "provider.connect.selectMethod": "เลือกวิธีการเข้าสู่ระบบสำหรับ {{provider}}",
@@ -144,8 +137,6 @@ export const dict = {
 
   "model.tag.free": "ฟรี",
   "model.tag.dataCollected": "ข้อมูลอาจถูกนำไปใช้ในการฝึก",
-  "model.group.auto": "โมเดลอัตโนมัติ",
-  "model.group.recommended": "แนะนำ",
   "model.group.favorites": "รายการโปรด",
   "model.group.mostUsed": "ใช้บ่อยที่สุด",
   "model.favorite.add": "เพิ่มในรายการโปรด",
@@ -157,7 +148,6 @@ export const dict = {
   "model.preview.label.average": "ต้นทุนเฉลี่ยโดยประมาณ",
   "model.preview.label.context": "บริบท",
   "model.preview.group.terminalBench": "Terminal Bench 2.0",
-  "model.preview.group.autoEfficientChoices": "ตัวเลือกโมเดล",
   "model.preview.label.completion": "ความสำเร็จ",
   "model.preview.label.costAttempt": "ค่าใช้จ่าย / ครั้ง",
   "model.preview.value.notSupported": "ไม่รองรับ",
@@ -186,7 +176,6 @@ export const dict = {
   "prompt.action.send": "ส่ง",
   "prompt.action.continue": "ดำเนินการต่อ",
   "prompt.action.send.blocked": "โปรดตอบหรือข้ามคำถามที่รอดำเนินการก่อน",
-  "prompt.action.send.recording": "ถอดเสียงและส่ง",
   "prompt.action.stop": "หยุด",
   "prompt.action.enhance": "ปรับปรุงพรอมต์",
   "prompt.action.autoApprove.enable": "เปิดใช้การอนุมัติอัตโนมัติ",
@@ -214,17 +203,6 @@ export const dict = {
   "prompt.action.sandbox.description.disabled": "คลิกเพื่อจำกัดการเขียนในระบบไฟล์และการเข้าถึงเครือข่าย",
   "prompt.action.sandbox.description.disabledNetworkAllowed":
     "คลิกเพื่อจำกัดการเขียนในระบบไฟล์ การตั้งค่า sandbox ของคุณยังคงอนุญาตให้เข้าถึงเครือข่าย",
-
-  "speechToText.tooltip.start": "เริ่มการป้อนข้อมูลด้วยเสียงด้วย Kilo Gateway",
-  "speechToText.tooltip.shortcut":
-    "แตะหรือกด Cmd/Ctrl+K เพื่อเริ่มหรือหยุดบันทึก จากนั้นกดค้างไว้ขณะพูด แล้วปล่อยเพื่อถอดเสียงและส่ง",
-  "speechToText.tooltip.starting": "กำลังเริ่มไมโครโฟน... โปรดรอก่อนพูด",
-  "speechToText.tooltip.stop": "หยุดจับเสียง",
-  "speechToText.tooltip.transcribing": "กำลังถอดเสียง... คลิกเพื่อยกเลิก",
-  "speechToText.tooltip.error": "การป้อนข้อมูลด้วยเสียงล้มเหลว คลิกเพื่อล้าง",
-  "speechToText.error.title": "การป้อนข้อมูลด้วยเสียงล้มเหลว",
-  "speechToText.error.loginRequired": "ลงชื่อเข้าใช้ Kilo เพื่อใช้การป้อนข้อมูลด้วยเสียง",
-  "speechToText.error.emptyTranscript": "ตรวจไม่พบเสียงพูด",
 
   "prompt.toast.promptSendFailed.title": "ไม่สามารถส่งพร้อมท์",
 
@@ -430,15 +408,14 @@ export const dict = {
 
   "settings.providers.title": "ผู้ให้บริการ",
   "settings.providers.section.connected": "ผู้ให้บริการที่เชื่อมต่อ",
+  "settings.providers.section.custom": "ผู้ให้บริการที่กำหนดเอง",
   "settings.providers.connected.empty": "ไม่มีผู้ให้บริการที่เชื่อมต่อ",
-  "settings.providers.section.popular": "ผู้ให้บริการยอดนิยม",
   "settings.providers.select.placeholder": "เลือกผู้ให้บริการ...",
   "settings.providers.tag.environment": "สภาพแวดล้อม",
   "settings.providers.tag.config": "กำหนดค่า",
   "settings.providers.tag.chatgpt": "ChatGPT",
   "settings.providers.tag.custom": "กำหนดเอง",
   "settings.providers.tag.other": "อื่น ๆ",
-  "settings.providers.tag.customProvider": "ผู้ให้บริการที่กำหนดเอง",
   "settings.providers.connected.environmentDescription": "เชื่อมต่อจากตัวแปรสภาพแวดล้อมของคุณ",
   "settings.providers.action.signInChatGPT": "ลงชื่อเข้าใช้ด้วย ChatGPT",
   "settings.providers.custom.description": "เพิ่มผู้ให้บริการแบบกำหนดเองด้วย URL พื้นฐาน",
@@ -446,7 +423,7 @@ export const dict = {
   "settings.providers.subagentModel.description":
     "โมเดลเริ่มต้นและระดับการใช้เหตุผลสำหรับตัวแทนย่อยของ task-tool ปล่อยว่างไว้เพื่อรับค่าโมเดลจากตัวแทนที่เรียก",
   "settings.models.hidePromptTraining.title": "ซ่อนโมเดลที่ใช้พรอมต์ในการฝึก",
-  "settings.models.hidePromptTraining.description": "ซ่อนโมเดล Kilo Gateway ที่ผู้ให้บริการอาจใช้พรอมต์ของคุณในการฝึก",
+  "settings.models.hidePromptTraining.description": "ซ่อนโมเดลที่ผู้ให้บริการอาจใช้พรอมต์ของคุณในการฝึก",
   "settings.providers.modeModels": "โมเดลต่อโหมด",
   "settings.providers.modeModels.description":
     "แทนที่โมเดลเริ่มต้นสำหรับโหมดที่กำหนด หากไม่ได้ตั้งค่า จะใช้โมเดลเริ่มต้นทั่วไป",
@@ -658,7 +635,6 @@ export const dict = {
   "profile.usage.plan.unknown": "แผน: ไม่ทราบสถานะ",
   "profile.usage.action.manage": "จัดการ",
   "profile.usage.action.managePlan": "จัดการ {{plan}}",
-  "profile.usage.routing": "การเรียกเก็บเงินตามแผนเปิดใช้งานอยู่ การกำหนดเส้นทาง Kilo Gateway {{state}}",
   "profile.usage.routingState.disabled": "ปิดใช้งาน",
   "profile.usage.routingState.missing": "ขาดหาย",
   "profile.usage.routingState.replaced": "ถูกแทนที่",
@@ -840,10 +816,6 @@ export const dict = {
   "settings.experimental.imageGenerationModel.description": "โมเดลการสร้างภาพ",
   "settings.experimental.imageGenerationModel.placeholder": "ค่าเริ่มต้น (Auto Router)",
 
-  "settings.models.speechToText.disabledDescription":
-    "เปิดใช้งานและลงชื่อเข้าใช้ผู้ให้บริการ Kilo เพื่อใช้ Speech to Text ปัจจุบัน Speech to Text รองรับเฉพาะกับ Kilo Gateway เท่านั้น",
-  "settings.models.speechToTextModel.title": "โมเดลแปลงเสียงเป็นข้อความ",
-  "settings.models.speechToTextModel.description": "เลือกโมเดลการถอดเสียง Kilo Gateway สำหรับการป้อนข้อมูลด้วยเสียง",
   "settings.experimental.nativeNotebookTools.title": "เครื่องมือโน้ตบุ๊กดั้งเดิม",
   "settings.experimental.nativeNotebookTools.description":
     "เปิดใช้งานเครื่องมือทดลองสำหรับการอ่าน แก้ไข และเรียกใช้โน้ตบุ๊ก VS Code",

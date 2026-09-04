@@ -5,7 +5,6 @@ export const dict = {
   "provider.connect.kiloGateway.byok.suffix": "。",
 
   // Provider settings translations
-  "settings.providers.group.recommended": "推荐",
   "settings.providers.note.kilo": "访问 500+ AI 模型",
   "settings.providers.note.opencode": "精选模型，包括 Claude、GPT、Gemini 等",
   "settings.providers.note.anthropic": "直接访问 Claude 模型，包括 Pro 和 Max",
@@ -18,7 +17,6 @@ export const dict = {
 
   // Reasoning block label
   "ui.reasoning.label": "推理",
-
 
   // Plan follow-up question shown after plan_exit
   "plan.followup.header": "实现",

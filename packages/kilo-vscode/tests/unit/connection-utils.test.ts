@@ -10,7 +10,7 @@ const message = {
   role: "user",
   time: { created: 0 },
   agent: "build",
-  model: { providerID: "kilo", modelID: "test" },
+  model: { providerID: "lmstudio", modelID: "test" },
 } as const
 
 const part = {
@@ -206,7 +206,7 @@ describe("createDuplicateEventFilter", () => {
           id: "e14",
           seq: 6,
           aggregateID: "s6",
-          data: { sessionID: "s6", messageID: "m1", model: { id: "test", providerID: "kilo" } },
+          data: { sessionID: "s6", messageID: "m1", model: { id: "test", providerID: "lmstudio" } },
         }),
       ),
     ).toBe(false)

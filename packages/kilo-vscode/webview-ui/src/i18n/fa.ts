@@ -46,18 +46,15 @@ export const anacondaDesktopDict = {
   "provider.anaconda.action.open": "باز کردن Anaconda Desktop",
   "provider.anaconda.action.checkAgain": "بررسی مجدد",
   "provider.anaconda.action.continue": "ادامه به هر حال",
-  "provider.anaconda.action.manage": "مدیریت / بازنشانی",
   "provider.anaconda.toast.refreshed.title": "Anaconda Desktop بازنشانی شد",
   "provider.anaconda.toast.refreshed.description": "سرور محلی فعال و مدل‌ها در Kilo به‌روز هستند.",
   "settings.providers.note.anacondaDesktop": "یک مدل ارائه‌شده به‌صورت محلی توسط Anaconda Desktop را اجرا کنید.",
-  "settings.providers.tag.local": "محلی",
 } as const
 
 export const dict = {
   ...anacondaDesktopDict,
   ...cloudProviderDict,
 
-  "command.provider.connect": "اتصال به ارائه‌دهنده",
 
   "session.activity.waiting": "در انتظار پاسخ یا تأیید.",
   "session.activity.error": "خطا یا قطع اتصال.",
@@ -85,9 +82,6 @@ export const dict = {
   "command.session.compact": "فشرده‌سازی جلسه",
   "command.session.export": "صدور رونوشت جلسه",
 
-  "dialog.provider.search.placeholder": "جستجوی ارائه‌دهندگان",
-  "dialog.provider.empty": "ارائه‌دهنده‌ای یافت نشد",
-  "dialog.provider.group.other": "سایر",
   "dialog.provider.tag.recommended": "پیشنهادی",
 
   "dialog.model.select.title": "انتخاب مدل",
@@ -97,7 +91,6 @@ export const dict = {
   "dialog.model.expand": "گسترش",
   "dialog.model.collapse": "جمع‌کردن",
 
-  "dialog.provider.viewAll": "نمایش ارائه‌دهندگان بیشتر",
 
   "provider.connect.title": "اتصال به {{provider}}",
   "provider.connect.selectMethod": "روش ورود را برای {{provider}} انتخاب کنید.",
@@ -146,8 +139,6 @@ export const dict = {
 
   "model.tag.free": "رایگان",
   "model.tag.dataCollected": "ممکن است داده‌ها برای آموزش استفاده شوند",
-  "model.group.auto": "مدل‌های خودکار",
-  "model.group.recommended": "پیشنهادی",
   "model.group.favorites": "موردعلاقه‌ها",
   "model.group.mostUsed": "پراستفاده‌ترین",
   "model.favorite.add": "افزودن به موردعلاقه‌ها",
@@ -159,7 +150,6 @@ export const dict = {
   "model.preview.label.average": "هزینه تخمینی میانگین",
   "model.preview.label.context": "زمینه",
   "model.preview.group.terminalBench": "Terminal Bench 2.0",
-  "model.preview.group.autoEfficientChoices": "انتخاب‌های مدل",
   "model.preview.label.completion": "تکمیل",
   "model.preview.label.costAttempt": "هزینه / تلاش",
   "model.preview.value.notSupported": "پشتیبانی نمی‌شود",
@@ -188,7 +178,6 @@ export const dict = {
   "prompt.action.send": "ارسال",
   "prompt.action.continue": "ادامه",
   "prompt.action.send.blocked": "ابتدا به سؤال در انتظار پاسخ دهید یا آن را رد کنید",
-  "prompt.action.send.recording": "رونویسی و ارسال",
   "prompt.action.stop": "توقف",
   "prompt.action.enhance": "بهبود پرامپت",
   "prompt.action.indexing": "تنظیمات ایندکس‌گذاری",
@@ -215,16 +204,6 @@ export const dict = {
     "برای محدود کردن نوشتن در سیستم فایل کلیک کنید. دسترسی به شبکه طبق تنظیمات sandbox شما مجاز است.",
   "prompt.action.enhanceDescription":
     "دکمه «بهبود پرامپت» با ارائه زمینه بیشتر، توضیح یا بازنویسی، به بهتر کردن پرامپت شما کمک می‌کند. یک پرامپت تایپ کنید و دوباره روی دکمه کلیک کنید تا نحوه عملکرد آن را ببینید.",
-  "speechToText.tooltip.start": "شروع ورودی صوتی با Kilo Gateway",
-  "speechToText.tooltip.shortcut":
-    "برای شروع یا توقف ضبط، روی دکمه ضربه بزنید یا Cmd/Ctrl+K را فشار دهید؛ هنگام صحبت دکمه را نگه دارید و سپس رها کنید تا گفتار به متن تبدیل و ارسال شود.",
-  "speechToText.tooltip.starting": "در حال راه‌اندازی میکروفون... منتظر بمانید.",
-  "speechToText.tooltip.stop": "در حال ضبط. برای توقف کلیک کنید.",
-  "speechToText.tooltip.transcribing": "در حال رونویسی... برای لغو کلیک کنید.",
-  "speechToText.tooltip.error": "ورودی صوتی ناموفق بود. برای پاک کردن کلیک کنید.",
-  "speechToText.error.title": "ورودی صوتی ناموفق بود",
-  "speechToText.error.loginRequired": "برای استفاده از ورودی صوتی وارد Kilo شوید.",
-  "speechToText.error.emptyTranscript": "هیچ گفتاری شناسایی نشد.",
 
   "prompt.toast.promptSendFailed.title": "ارسال پرامپت ناموفق بود",
 
@@ -363,13 +342,12 @@ export const dict = {
 
   "settings.providers.title": "ارائه‌دهندگان",
   "settings.providers.section.connected": "ارائه‌دهندگان متصل",
+  "settings.providers.section.custom": "ارائه‌دهنده‌های سفارشی",
   "settings.providers.connected.empty": "هیچ ارائه‌دهنده متصلی وجود ندارد",
-  "settings.providers.section.popular": "ارائه‌دهندگان محبوب",
   "settings.providers.tag.environment": "محیط",
   "settings.providers.tag.config": "پیکربندی",
   "settings.providers.tag.chatgpt": "ChatGPT",
   "settings.providers.tag.custom": "سفارشی",
-  "settings.providers.tag.customProvider": "ارائه‌دهنده سفارشی",
   "settings.providers.tag.other": "سایر",
   "settings.providers.connected.environmentDescription": "از متغیرهای محیطی شما متصل شده است",
   "settings.providers.action.signInChatGPT": "ورود با ChatGPT",
@@ -584,7 +562,6 @@ export const dict = {
   "profile.usage.plan.unknown": "طرح: وضعیت نامشخص",
   "profile.usage.action.manage": "مدیریت",
   "profile.usage.action.managePlan": "مدیریت {{plan}}",
-  "profile.usage.routing": "صورتحساب طرح فعال است. مسیریابی Kilo Gateway {{state}} است.",
   "profile.usage.routingState.disabled": "غیرفعال",
   "profile.usage.routingState.missing": "ناموجود",
   "profile.usage.routingState.replaced": "جایگزین‌شده",
@@ -811,7 +788,6 @@ export const dict = {
 
   "common.add": "افزودن",
 
-
   "settings.notifications.sounds": "صداها",
   "settings.notifications.enable.title": "فعال‌سازی اعلان‌های صوتی",
   "settings.notifications.enable.description": "پخش صدا هنگام تکمیل جلسات، بروز خطا یا نیاز به ورودی شما",
@@ -838,10 +814,6 @@ export const dict = {
   "settings.experimental.imageGenerationModel.description": "مدل تولید تصویر",
   "settings.experimental.imageGenerationModel.placeholder": "پیش‌فرض (مسیریاب خودکار)",
 
-  "settings.models.speechToText.disabledDescription":
-    "برای استفاده از تبدیل گفتار به متن، ارائه‌دهنده Kilo را فعال کرده و وارد شوید. تبدیل گفتار به متن در حال حاضر فقط از طریق Kilo Gateway پشتیبانی می‌شود.",
-  "settings.models.speechToTextModel.title": "مدل تبدیل گفتار به متن",
-  "settings.models.speechToTextModel.description": "مدل رونویسی Kilo Gateway را برای ورودی صوتی انتخاب کنید.",
   "settings.experimental.nativeNotebookTools.title": "ابزارهای بومی Notebook",
   "settings.experimental.nativeNotebookTools.description":
     "ابزارهای آزمایشی برای خواندن، ویرایش و اجرای VS Code notebooks را فعال کنید",
@@ -1126,8 +1098,7 @@ export const dict = {
   "settings.providers.subagentModel.description":
     "مدل پیش‌فرض و میزان استدلال برای زیرعامل‌های ابزار-وظیفه. برای به ارث بردن مدل عامل فراخواننده، خالی بگذارید.",
   "settings.models.hidePromptTraining.title": "پنهان کردن مدل‌های آموزش پرامپت",
-  "settings.models.hidePromptTraining.description":
-    "مدل‌های Kilo Gateway را که ارائه‌دهندگانشان ممکن است از پرامپت‌های شما برای آموزش استفاده کنند پنهان کنید.",
+  "settings.models.hidePromptTraining.description": "مدل‌هایی را که ارائه‌دهندگانشان ممکن است از پرامپت‌های شما برای آموزش استفاده کنند پنهان کنید.",
   "settings.providers.modeModels": "مدل به ازای حالت",
   "settings.providers.modeModels.description":
     "مدل پیش‌فرض را برای حالت‌های خاص بازنویسی کنید. در صورت عدم تنظیم، از مدل پیش‌فرض سراسری استفاده می‌شود.",

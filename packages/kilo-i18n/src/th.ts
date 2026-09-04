@@ -5,7 +5,6 @@ export const dict = {
   "provider.connect.kiloGateway.byok.suffix": "",
 
   // Provider settings translations
-  "settings.providers.group.recommended": "แนะนำ",
   "settings.providers.note.kilo": "เข้าถึงโมเดล AI มากกว่า 500 รายการ",
   "settings.providers.note.opencode": "โมเดลที่คัดสรร รวมถึง Claude, GPT, Gemini และอื่น ๆ",
   "settings.providers.note.anthropic": "เข้าถึงโมเดล Claude โดยตรง รวมถึง Pro และ Max",
@@ -18,7 +17,6 @@ export const dict = {
 
   // Reasoning block label
   "ui.reasoning.label": "การให้เหตุผล",
-
 
   // Plan follow-up question shown after plan_exit
   "plan.followup.header": "ดำเนินการ",

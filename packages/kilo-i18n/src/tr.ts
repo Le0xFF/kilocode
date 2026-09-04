@@ -5,7 +5,6 @@ export const dict = {
   "provider.connect.kiloGateway.byok.suffix": " kullanın.",
 
   // Provider settings translations
-  "settings.providers.group.recommended": "Önerilen",
   "settings.providers.note.kilo": "500+ AI modeline erişim",
   "settings.providers.note.opencode": "Claude, GPT, Gemini ve daha fazlasını içeren seçilmiş modeller",
   "settings.providers.note.anthropic": "Pro ve Max dahil Claude modellerine doğrudan erişim",
@@ -18,7 +17,6 @@ export const dict = {
 
   // Reasoning block label
   "ui.reasoning.label": "Akıl Yürütme",
-
 
   // Plan follow-up question shown after plan_exit
   "plan.followup.header": "Uygula",

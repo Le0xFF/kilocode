@@ -27,7 +27,7 @@
  */
 
 import { spawnSync } from "node:child_process"
-import { readFileSync, writeFileSync } from "node:fs"
+import { existsSync, readFileSync, writeFileSync } from "node:fs"
 import path from "node:path"
 
 const ROOT = path.resolve(import.meta.dir, "..")
@@ -94,6 +94,7 @@ function isSep(row: string) {
 }
 
 function check(file: string): Issue[] {
+  if (!existsSync(path.join(ROOT, file))) return [] // kilocode_change - skip files deleted in the working tree (e.g. kilo-gateway/README.md)
   const src = readFileSync(path.join(ROOT, file), "utf8")
   const lines = src.split("\n")
   const issues: Issue[] = []
@@ -174,6 +175,7 @@ function rewriteRow(row: string, separator: boolean) {
 }
 
 function fix(file: string) {
+  if (!existsSync(path.join(ROOT, file))) return false // kilocode_change - skip files deleted in the working tree
   const src = readFileSync(path.join(ROOT, file), "utf8")
   const lines = src.split("\n")
   let changed = false

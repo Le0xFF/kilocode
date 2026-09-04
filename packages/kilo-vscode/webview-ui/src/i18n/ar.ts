@@ -45,18 +45,15 @@ export const anacondaDesktopDict = {
   "provider.anaconda.action.open": "فتح Anaconda Desktop",
   "provider.anaconda.action.checkAgain": "تحقق مرة أخرى",
   "provider.anaconda.action.continue": "تابع على أي حال",
-  "provider.anaconda.action.manage": "إدارة / تحديث",
   "provider.anaconda.toast.refreshed.title": "تم تحديث Anaconda Desktop",
   "provider.anaconda.toast.refreshed.description": "الخادم المحلي النشط والنماذج محدّثة في Kilo.",
   "settings.providers.note.anacondaDesktop": "شغّل نموذجًا يُقدّم محليًا بواسطة Anaconda Desktop.",
-  "settings.providers.tag.local": "محلي",
 } as const
 
 export const dict = {
   ...anacondaDesktopDict,
   ...cloudProviderDict,
 
-  "command.provider.connect": "اتصال بموفر",
 
   "session.activity.waiting": "في انتظار إجابة أو موافقة.",
   "session.activity.error": "حدث خطأ أو فُقد الاتصال.",
@@ -82,9 +79,6 @@ export const dict = {
   "command.session.compact": "ضغط الجلسة",
   "command.session.export": "تصدير سجل الجلسة",
 
-  "dialog.provider.search.placeholder": "البحث عن موفرين",
-  "dialog.provider.empty": "لم يتم العثور على موفرين",
-  "dialog.provider.group.other": "آخر",
   "dialog.provider.tag.recommended": "موصى به",
 
   "dialog.model.select.title": "تحديد نموذج",
@@ -94,7 +88,6 @@ export const dict = {
   "dialog.model.expand": "توسيع",
   "dialog.model.collapse": "طي",
 
-  "dialog.provider.viewAll": "عرض المزيد من الموفرين",
 
   "provider.connect.title": "اتصال {{provider}}",
   "provider.connect.selectMethod": "حدد طريقة تسجيل الدخول لـ {{provider}}.",
@@ -141,8 +134,6 @@ export const dict = {
   "provider.disconnect.toast.disconnected.description": "لم تعد نماذج {{provider}} متاحة.",
   "model.tag.free": "مجاني",
   "model.tag.dataCollected": "قد تُستخدم البيانات للتدريب",
-  "model.group.auto": "النماذج التلقائية",
-  "model.group.recommended": "موصى به",
   "model.group.favorites": "المفضلة",
   "model.group.mostUsed": "الأكثر استخدامًا",
   "model.favorite.add": "إضافة إلى المفضلة",
@@ -154,7 +145,6 @@ export const dict = {
   "model.preview.label.average": "متوسط التكلفة التقديرية",
   "model.preview.label.context": "السياق",
   "model.preview.group.terminalBench": "Terminal Bench 2.0",
-  "model.preview.group.autoEfficientChoices": "خيارات النماذج",
   "model.preview.label.completion": "الإكمال",
   "model.preview.label.costAttempt": "التكلفة / المحاولة",
   "model.preview.value.notSupported": "غير مدعوم",
@@ -183,7 +173,6 @@ export const dict = {
   "prompt.action.send": "إرسال",
   "prompt.action.continue": "متابعة",
   "prompt.action.send.blocked": "أجب عن السؤال المعلق أو تجاهله أولاً",
-  "prompt.action.send.recording": "تفريغ وإرسال",
   "prompt.action.stop": "توقف",
   "prompt.action.enhance": "تحسين النص",
   "prompt.action.autoApprove.enable": "تفعيل الموافقة التلقائية",
@@ -209,17 +198,6 @@ export const dict = {
   "prompt.action.sandbox.description.disabled": "انقر لتقييد الكتابة في نظام الملفات والوصول إلى الشبكة.",
   "prompt.action.sandbox.description.disabledNetworkAllowed":
     "انقر لتقييد الكتابة في نظام الملفات. يظل الوصول إلى الشبكة مسموحًا وفق إعدادات sandbox.",
-
-  "speechToText.tooltip.start": "بدء الإدخال الصوتي باستخدام Kilo Gateway",
-  "speechToText.tooltip.shortcut":
-    "انقر أو اضغط على Cmd/Ctrl+K لبدء التسجيل أو إيقافه؛ اضغط باستمرار أثناء التحدث ثم اتركه لتحويل الكلام إلى نص وإرساله.",
-  "speechToText.tooltip.starting": "جارٍ تشغيل الميكروفون... يُرجى الانتظار قبل التحدث.",
-  "speechToText.tooltip.stop": "إيقاف التقاط الصوت",
-  "speechToText.tooltip.transcribing": "جاري تحويل الصوت إلى نص... انقر للإلغاء.",
-  "speechToText.tooltip.error": "فشل الإدخال الصوتي. انقر للمسح.",
-  "speechToText.error.title": "فشل الإدخال الصوتي",
-  "speechToText.error.loginRequired": "قم بتسجيل الدخول إلى Kilo لاستخدام الإدخال الصوتي.",
-  "speechToText.error.emptyTranscript": "لم يتم اكتشاف أي كلام.",
 
   "prompt.toast.promptSendFailed.title": "فشل إرسال الموجه",
 
@@ -388,15 +366,14 @@ export const dict = {
 
   "settings.providers.title": "الموفرون",
   "settings.providers.section.connected": "الموفرون المتصلون",
+  "settings.providers.section.custom": "مزودون مخصصون",
   "settings.providers.connected.empty": "لا يوجد موفرون متصلون",
-  "settings.providers.section.popular": "الموفرون الشائعون",
   "settings.providers.select.placeholder": "اختر موفرًا...",
   "settings.providers.tag.environment": "البيئة",
   "settings.providers.tag.config": "التكوين",
   "settings.providers.tag.chatgpt": "ChatGPT",
   "settings.providers.tag.custom": "مخصص",
   "settings.providers.tag.other": "أخرى",
-  "settings.providers.tag.customProvider": "مزود مخصص",
   "settings.providers.connected.environmentDescription": "متصل من متغيرات البيئة الخاصة بك",
   "settings.providers.action.signInChatGPT": "تسجيل الدخول باستخدام ChatGPT",
   "settings.providers.custom.description": "أضف مزودًا مخصصًا عبر عنوان URL الأساسي.",
@@ -404,8 +381,7 @@ export const dict = {
   "settings.providers.subagentModel.description":
     "النموذج الافتراضي وجهد التفكير للوكلاء الفرعيين لـ task-tool. اتركه فارغًا ليرث نموذج الوكيل المستدعي.",
   "settings.models.hidePromptTraining.title": "إخفاء النماذج التي تدرّب على المطالبات",
-  "settings.models.hidePromptTraining.description":
-    "إخفاء نماذج Kilo Gateway التي قد يستخدم مزودوها مطالباتك لأغراض التدريب.",
+  "settings.models.hidePromptTraining.description": "إخفاء النماذج التي قد يستخدم مزودوها مطالباتك لأغراض التدريب.",
   "settings.providers.modeModels": "نموذج لكل وضع",
   "settings.providers.modeModels.description":
     "تجاوز النموذج الافتراضي لأوضاع محددة. إذا لم يتم التعيين، يتم استخدام النموذج الافتراضي العام.",
@@ -617,7 +593,6 @@ export const dict = {
   "profile.usage.plan.unknown": "الخطة: الحالة غير معروفة",
   "profile.usage.action.manage": "إدارة",
   "profile.usage.action.managePlan": "إدارة {{plan}}",
-  "profile.usage.routing": "فوترة الخطة مفعّلة. توجيه Kilo Gateway {{state}}.",
   "profile.usage.routingState.disabled": "معطّل",
   "profile.usage.routingState.missing": "مفقود",
   "profile.usage.routingState.replaced": "تم استبداله",
@@ -832,10 +807,6 @@ export const dict = {
   "settings.experimental.imageGenerationModel.description": "نموذج توليد الصور",
   "settings.experimental.imageGenerationModel.placeholder": "افتراضي (Auto Router)",
 
-  "settings.models.speechToText.disabledDescription":
-    "قم بتمكين وتسجيل الدخول إلى مزود Kilo لاستخدام Speech to Text. ميزة Speech to Text مدعومة حاليًا فقط مع Kilo Gateway.",
-  "settings.models.speechToTextModel.title": "نموذج تحويل الصوت إلى نص",
-  "settings.models.speechToTextModel.description": "اختر نموذج نسخ Kilo Gateway للإدخال الصوتي.",
   "settings.experimental.nativeNotebookTools.title": "أدوات الدفاتر الأصلية",
   "settings.experimental.nativeNotebookTools.description":
     "تمكين الأدوات التجريبية لقراءة دفاتر VS Code وتحريرها وتنفيذها",

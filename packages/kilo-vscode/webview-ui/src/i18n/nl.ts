@@ -46,18 +46,15 @@ export const anacondaDesktopDict = {
   "provider.anaconda.action.open": "Anaconda Desktop openen",
   "provider.anaconda.action.checkAgain": "Opnieuw controleren",
   "provider.anaconda.action.continue": "Toch doorgaan",
-  "provider.anaconda.action.manage": "Beheren / Vernieuwen",
   "provider.anaconda.toast.refreshed.title": "Anaconda Desktop vernieuwd",
   "provider.anaconda.toast.refreshed.description": "De actieve lokale server en modellen zijn up-to-date in Kilo.",
   "settings.providers.note.anacondaDesktop": "Voer een model uit dat lokaal door Anaconda Desktop wordt aangeboden.",
-  "settings.providers.tag.local": "Lokaal",
 } as const
 
 export const dict = {
   ...anacondaDesktopDict,
   ...cloudProviderDict,
 
-  "command.provider.connect": "Provider verbinden",
 
   "session.activity.waiting": "Wachten op een antwoord of goedkeuring.",
   "session.activity.error": "Fout of verbinding verbroken.",
@@ -85,9 +82,6 @@ export const dict = {
   "command.session.compact": "Sessie comprimeren",
   "command.session.export": "Sessietranscript exporteren",
 
-  "dialog.provider.search.placeholder": "Providers zoeken",
-  "dialog.provider.empty": "Geen providers gevonden",
-  "dialog.provider.group.other": "Overige",
   "dialog.provider.tag.recommended": "Aanbevolen",
 
   "dialog.model.select.title": "Model selecteren",
@@ -97,7 +91,6 @@ export const dict = {
   "dialog.model.expand": "Uitvouwen",
   "dialog.model.collapse": "Samenvouwen",
 
-  "dialog.provider.viewAll": "Meer providers tonen",
 
   "provider.connect.title": "Verbind {{provider}}",
   "provider.connect.selectMethod": "Selecteer inlogmethode voor {{provider}}.",
@@ -146,8 +139,6 @@ export const dict = {
 
   "model.tag.free": "Gratis",
   "model.tag.dataCollected": "Gegevens kunnen worden gebruikt voor training",
-  "model.group.auto": "Automatische modellen",
-  "model.group.recommended": "Aanbevolen",
   "model.group.favorites": "Favorieten",
   "model.group.mostUsed": "Meest gebruikt",
   "model.favorite.add": "Toevoegen aan favorieten",
@@ -159,7 +150,6 @@ export const dict = {
   "model.preview.label.average": "Gesch. gem. kosten",
   "model.preview.label.context": "Context",
   "model.preview.group.terminalBench": "Terminal Bench 2.0",
-  "model.preview.group.autoEfficientChoices": "Modelkeuzes",
   "model.preview.label.completion": "Voltooiing",
   "model.preview.label.costAttempt": "Kosten / poging",
   "model.preview.value.notSupported": "Niet ondersteund",
@@ -188,7 +178,6 @@ export const dict = {
   "prompt.action.send": "Verzenden",
   "prompt.action.continue": "Doorgaan",
   "prompt.action.send.blocked": "Beantwoord of negeer eerst de openstaande vraag",
-  "prompt.action.send.recording": "Transcriberen en verzenden",
   "prompt.action.stop": "Stop",
   "prompt.action.enhance": "Prompt verbeteren",
   "prompt.action.indexing": "Indexeringsinstellingen",
@@ -219,17 +208,6 @@ export const dict = {
     "Klik om schrijfbewerkingen in het bestandssysteem en netwerktoegang te beperken.",
   "prompt.action.sandbox.description.disabledNetworkAllowed":
     "Klik om schrijfbewerkingen in het bestandssysteem te beperken. Netwerktoegang blijft toegestaan volgens je sandboxinstellingen.",
-
-  "speechToText.tooltip.start": "Spraakinvoer starten met Kilo Gateway",
-  "speechToText.tooltip.shortcut":
-    "Tik of druk op Cmd/Ctrl+K om de opname te starten of te stoppen; houd de knop ingedrukt terwijl je spreekt en laat deze los om te transcriberen en te verzenden.",
-  "speechToText.tooltip.starting": "Microfoon wordt gestart... Wacht nog even met spreken.",
-  "speechToText.tooltip.stop": "Audio vastleggen stoppen",
-  "speechToText.tooltip.transcribing": "Transcriberen... Klik om te annuleren.",
-  "speechToText.tooltip.error": "Spraakinvoer mislukt. Klik om te wissen.",
-  "speechToText.error.title": "Spraakinvoer mislukt",
-  "speechToText.error.loginRequired": "Meld u aan bij Kilo om spraakinvoer te gebruiken.",
-  "speechToText.error.emptyTranscript": "Er is geen spraak gedetecteerd.",
 
   "prompt.toast.promptSendFailed.title": "Verzenden prompt mislukt",
 
@@ -400,13 +378,12 @@ export const dict = {
 
   "settings.providers.title": "Providers",
   "settings.providers.section.connected": "Gekoppelde providers",
+  "settings.providers.section.custom": "Aangepaste aanbieders",
   "settings.providers.connected.empty": "Geen gekoppelde providers",
-  "settings.providers.section.popular": "Populaire providers",
   "settings.providers.tag.environment": "Omgeving",
   "settings.providers.tag.config": "Config",
   "settings.providers.tag.chatgpt": "ChatGPT",
   "settings.providers.tag.custom": "Aangepast",
-  "settings.providers.tag.customProvider": "Aangepaste provider",
   "settings.providers.tag.other": "Overige",
   "settings.providers.connected.environmentDescription": "Gekoppeld via je omgevingsvariabelen",
   "settings.providers.action.signInChatGPT": "Inloggen met ChatGPT",
@@ -624,7 +601,6 @@ export const dict = {
   "profile.usage.plan.unknown": "Abonnement: Status onbekend",
   "profile.usage.action.manage": "Beheren",
   "profile.usage.action.managePlan": "{{plan}} beheren",
-  "profile.usage.routing": "De abonnementsfacturering is actief. Kilo Gateway-routering is {{state}}.",
   "profile.usage.routingState.disabled": "uitgeschakeld",
   "profile.usage.routingState.missing": "afwezig",
   "profile.usage.routingState.replaced": "vervangen",
@@ -824,7 +800,6 @@ export const dict = {
 
   "common.add": "Toevoegen",
 
-
   "settings.notifications.sounds": "Geluiden",
   "settings.notifications.enable.title": "Geluidsmeldingen inschakelen",
   "settings.notifications.enable.description":
@@ -852,10 +827,6 @@ export const dict = {
   "settings.experimental.imageGenerationModel.description": "Afbeeldingsgeneratiemodel",
   "settings.experimental.imageGenerationModel.placeholder": "Standaard (Auto Router)",
 
-  "settings.models.speechToText.disabledDescription":
-    "Schakel de Kilo-provider in en meld u aan om Speech to Text te gebruiken. Speech to Text wordt momenteel alleen ondersteund met Kilo Gateway.",
-  "settings.models.speechToTextModel.title": "Spraak-naar-tekst-model",
-  "settings.models.speechToTextModel.description": "Kies het Kilo Gateway-transcriptiemodel voor spraakinvoer.",
   "settings.experimental.nativeNotebookTools.title": "Native notebooktools",
   "settings.experimental.nativeNotebookTools.description":
     "Experimentele tools inschakelen voor het lezen, bewerken en uitvoeren van VS Code-notebooks",
@@ -1114,8 +1085,7 @@ export const dict = {
   "settings.providers.subagentModel.description":
     "Standaardmodel en redeneerinspanning voor task-tool subagenten. Laat leeg om het model van de aanroepende agent over te nemen.",
   "settings.models.hidePromptTraining.title": "Modellen die prompts voor training gebruiken verbergen",
-  "settings.models.hidePromptTraining.description":
-    "Verberg Kilo Gateway-modellen waarvan providers je prompts mogelijk voor training gebruiken.",
+  "settings.models.hidePromptTraining.description": "Verberg modellen waarvan providers je prompts mogelijk voor training gebruiken.",
   "settings.providers.modeModels": "Model per Modus",
   "settings.providers.modeModels.description":
     "Overschrijf het standaard model voor specifieke modi. Indien niet ingesteld, wordt het globale standaard model gebruikt.",

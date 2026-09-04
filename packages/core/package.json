@@ -63,7 +63,6 @@
     "@types/mime-types": "3.0.1"
   },
   "dependencies": {
-    "@kilocode/kilo-gateway": "workspace:*",
     "@kilocode/kilo-indexing": "workspace:*",
     "@kilocode/sandbox": "workspace:*",
     "@effect/opentelemetry": "catalog:",

@@ -49,18 +49,15 @@ export const anacondaDesktopDict = {
   "provider.anaconda.action.open": "Åpne Anaconda Desktop",
   "provider.anaconda.action.checkAgain": "Sjekk igjen",
   "provider.anaconda.action.continue": "Fortsett likevel",
-  "provider.anaconda.action.manage": "Administrer / Oppdater",
   "provider.anaconda.toast.refreshed.title": "Anaconda Desktop oppdatert",
   "provider.anaconda.toast.refreshed.description": "Den aktive lokale serveren og modellene er oppdatert i Kilo.",
   "settings.providers.note.anacondaDesktop": "Kjør en modell som serveres lokalt av Anaconda Desktop.",
-  "settings.providers.tag.local": "Lokal",
 } as const
 
 export const dict = {
   ...anacondaDesktopDict,
   ...cloudProviderDict,
 
-  "command.provider.connect": "Koble til leverandør",
 
   "session.activity.waiting": "Venter på et svar eller en godkjenning.",
   "session.activity.error": "Feil eller tilkobling brutt.",
@@ -88,9 +85,6 @@ export const dict = {
   "command.session.compact": "Komprimer sesjon",
   "command.session.export": "Eksporter sesjonsutskrift",
 
-  "dialog.provider.search.placeholder": "Søk etter leverandører",
-  "dialog.provider.empty": "Ingen leverandører funnet",
-  "dialog.provider.group.other": "Andre",
   "dialog.provider.tag.recommended": "Anbefalt",
 
   "dialog.model.select.title": "Velg modell",
@@ -100,7 +94,6 @@ export const dict = {
   "dialog.model.expand": "Utvid",
   "dialog.model.collapse": "Skjul",
 
-  "dialog.provider.viewAll": "Vis flere leverandører",
 
   "provider.connect.title": "Koble til {{provider}}",
   "provider.connect.selectMethod": "Velg innloggingsmetode for {{provider}}.",
@@ -148,8 +141,6 @@ export const dict = {
   "provider.disconnect.toast.disconnected.description": "Modeller fra {{provider}} er ikke lenger tilgjengelige.",
   "model.tag.free": "Gratis",
   "model.tag.dataCollected": "Data kan brukes til trening",
-  "model.group.auto": "Automatiske modeller",
-  "model.group.recommended": "Anbefalt",
   "model.group.favorites": "Favoritter",
   "model.group.mostUsed": "Mest brukt",
   "model.favorite.add": "Legg til i favoritter",
@@ -161,7 +152,6 @@ export const dict = {
   "model.preview.label.average": "Est. snittkostnad",
   "model.preview.label.context": "Kontekst",
   "model.preview.group.terminalBench": "Terminal Bench 2.0",
-  "model.preview.group.autoEfficientChoices": "Modellvalg",
   "model.preview.label.completion": "Fullføring",
   "model.preview.label.costAttempt": "Kostnad / forsøk",
   "model.preview.value.notSupported": "Ikke støttet",
@@ -190,7 +180,6 @@ export const dict = {
   "prompt.action.send": "Send",
   "prompt.action.continue": "Fortsett",
   "prompt.action.send.blocked": "Svar på eller avvis det ventende spørsmålet først",
-  "prompt.action.send.recording": "Transkriber og send",
   "prompt.action.stop": "Stopp",
   "prompt.action.enhance": "Forbedre prompt",
   "prompt.action.autoApprove.enable": "Aktiver automatisk godkjenning",
@@ -221,17 +210,6 @@ export const dict = {
     "Klikk for å begrense skrivetilgang til filsystemet og nettverkstilgang.",
   "prompt.action.sandbox.description.disabledNetworkAllowed":
     "Klikk for å begrense skrivetilgang til filsystemet. Nettverkstilgang er fortsatt tillatt av sandbox-innstillingene dine.",
-
-  "speechToText.tooltip.start": "Start taleinndata med Kilo Gateway",
-  "speechToText.tooltip.shortcut":
-    "Trykk på knappen eller bruk Cmd/Ctrl+K for å starte eller stoppe opptaket; hold knappen inne mens du snakker, og slipp den for å transkribere og sende.",
-  "speechToText.tooltip.starting": "Starter mikrofonen... Vent med å snakke.",
-  "speechToText.tooltip.stop": "Stopp lydfangst",
-  "speechToText.tooltip.transcribing": "Transkriberer... Klikk for å avbryte.",
-  "speechToText.tooltip.error": "Taleinndata mislyktes. Klikk for å tømme.",
-  "speechToText.error.title": "Taleinndata mislyktes",
-  "speechToText.error.loginRequired": "Logg på Kilo for å bruke taleinndata.",
-  "speechToText.error.emptyTranscript": "Ingen tale ble oppdaget.",
 
   "prompt.toast.promptSendFailed.title": "Kunne ikke sende forespørsel",
 
@@ -402,15 +380,14 @@ export const dict = {
 
   "settings.providers.title": "Leverandører",
   "settings.providers.section.connected": "Tilkoblede leverandører",
+  "settings.providers.section.custom": "Egendefinerte leverandører",
   "settings.providers.connected.empty": "Ingen tilkoblede leverandører",
-  "settings.providers.section.popular": "Populære leverandører",
   "settings.providers.select.placeholder": "Velg leverandør...",
   "settings.providers.tag.environment": "Miljø",
   "settings.providers.tag.config": "Konfigurasjon",
   "settings.providers.tag.chatgpt": "ChatGPT",
   "settings.providers.tag.custom": "Tilpasset",
   "settings.providers.tag.other": "Annet",
-  "settings.providers.tag.customProvider": "Egendefinert leverandør",
   "settings.providers.connected.environmentDescription": "Koblet til fra dine miljøvariabler",
   "settings.providers.action.signInChatGPT": "Logg inn med ChatGPT",
   "settings.providers.custom.description": "Legg til en egendefinert leverandør via basis-URL.",
@@ -418,8 +395,7 @@ export const dict = {
   "settings.providers.subagentModel.description":
     "Standardmodell og resonneringsinnsats for task-tool-underagenter. La stå tom for å arve den kallende agentens modell.",
   "settings.models.hidePromptTraining.title": "Skjul modeller som trener på ledetekster",
-  "settings.models.hidePromptTraining.description":
-    "Skjul Kilo Gateway-modeller der leverandørene kan bruke ledetekstene dine til trening.",
+  "settings.models.hidePromptTraining.description": "Skjul modeller der leverandørene kan bruke ledetekstene dine til trening.",
   "settings.providers.modeModels": "Modell per modus",
   "settings.providers.modeModels.description":
     "Overstyr standardmodellen for bestemte moduser. Hvis ikke angitt, brukes den globale standardmodellen.",
@@ -632,7 +608,6 @@ export const dict = {
   "profile.usage.plan.unknown": "Abonnement: Status ukjent",
   "profile.usage.action.manage": "Administrer",
   "profile.usage.action.managePlan": "Administrer {{plan}}",
-  "profile.usage.routing": "Abonnementsfakturering er aktiv. Kilo Gateway-ruting er {{state}}.",
   "profile.usage.routingState.disabled": "deaktivert",
   "profile.usage.routingState.missing": "fraværende",
   "profile.usage.routingState.replaced": "erstattet",
@@ -818,10 +793,6 @@ export const dict = {
   "settings.experimental.imageGenerationModel.description": "Bildegenereringsmodell",
   "settings.experimental.imageGenerationModel.placeholder": "Standard (Auto Router)",
 
-  "settings.models.speechToText.disabledDescription":
-    "Aktiver og logg på Kilo-leverandøren for å bruke Speech to Text. Speech to Text støttes for øyeblikket bare med Kilo Gateway.",
-  "settings.models.speechToTextModel.title": "Tale-til-tekst-modell",
-  "settings.models.speechToTextModel.description": "Velg Kilo Gateway-transkripsjonsmodellen for taleinndata.",
   "settings.experimental.nativeNotebookTools.title": "Innebygde notatbok-verktøy",
   "settings.experimental.nativeNotebookTools.description":
     "Aktiver eksperimentelle verktøy for å lese, redigere og kjøre VS Code-notatbøker",

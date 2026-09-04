@@ -177,7 +177,7 @@ const chatMessages = [
     createdAt: new Date(chatTime + 1000).toISOString(),
     time: { created: chatTime + 1000, completed: chatTime + 5000 },
     modelID: "anthropic/claude-sonnet-4-6",
-    providerID: "kilo",
+    providerID: "lmstudio",
     mode: "default",
     agent: "code",
     path: { cwd: "/project", root: "/project" },

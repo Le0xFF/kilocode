@@ -15106,187 +15106,6 @@
         ]
       }
     },
-    "/media-local/stt/models": {
-      "get": {
-        "tags": ["media-local"],
-        "operationId": "media-local.stt.models",
-        "parameters": [
-          {
-            "name": "directory",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            },
-            "required": false
-          },
-          {
-            "name": "workspace",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            },
-            "required": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Configured speech-to-text models",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "id": {
-                        "type": "string"
-                      },
-                      "name": {
-                        "type": "string"
-                      }
-                    },
-                    "required": ["id", "name"],
-                    "additionalProperties": false
-                  },
-                  "description": "Configured speech-to-text models"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "BadRequest | InvalidRequestError",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/effect_HttpApiError_BadRequest"
-                    },
-                    {
-                      "$ref": "#/components/schemas/InvalidRequestError"
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        },
-        "description": "List speech-to-text models declared in the experimental config.",
-        "summary": "List local speech-to-text models",
-        "x-codeSamples": [
-          {
-            "lang": "js",
-            "source": "import { createKiloClient } from \"@kilocode/sdk\"\n\nconst client = createKiloClient()\nawait client.media-local.stt.models({\n  ...\n})"
-          }
-        ]
-      }
-    },
-    "/media-local/stt/transcribe": {
-      "post": {
-        "tags": ["media-local"],
-        "operationId": "media-local.stt.transcribe",
-        "parameters": [
-          {
-            "name": "directory",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            },
-            "required": false
-          },
-          {
-            "name": "workspace",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            },
-            "required": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Transcription result",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "text": {
-                      "type": "string"
-                    }
-                  },
-                  "required": ["text"],
-                  "additionalProperties": false,
-                  "description": "Transcription result"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "BadRequest | InvalidRequestError",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/effect_HttpApiError_BadRequest"
-                    },
-                    {
-                      "$ref": "#/components/schemas/InvalidRequestError"
-                    }
-                  ]
-                }
-              }
-            }
-          },
-          "502": {
-            "description": "MediaLocalFailedError",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/MediaLocalFailedError"
-                }
-              }
-            }
-          }
-        },
-        "description": "Proxy an audio transcription request to the configured local OpenAI-compatible provider.",
-        "summary": "Transcribe audio via a local provider",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "model": {
-                    "type": "string",
-                    "description": "Model reference in providerID/modelID form"
-                  },
-                  "audio": {
-                    "type": "string",
-                    "description": "Base64-encoded audio bytes"
-                  },
-                  "format": {
-                    "type": "string"
-                  },
-                  "language": {
-                    "type": "string"
-                  }
-                },
-                "required": ["model", "audio"],
-                "additionalProperties": false
-              }
-            }
-          }
-        },
-        "x-codeSamples": [
-          {
-            "lang": "js",
-            "source": "import { createKiloClient } from \"@kilocode/sdk\"\n\nconst client = createKiloClient()\nawait client.media-local.stt.transcribe({\n  ...\n})"
-          }
-        ]
-      }
-    },
     "/media-local/img/models": {
       "get": {
         "tags": ["media-local"],
@@ -25059,15 +24878,6 @@
             "$ref": "#/components/schemas/EventSandboxStatusChanged"
           },
           {
-            "$ref": "#/components/schemas/EventSuggestionShown"
-          },
-          {
-            "$ref": "#/components/schemas/EventSuggestionAccepted"
-          },
-          {
-            "$ref": "#/components/schemas/EventSuggestionDismissed"
-          },
-          {
             "$ref": "#/components/schemas/EventKilocodeAgent_managerStart"
           },
           {
@@ -25081,6 +24891,15 @@
           },
           {
             "$ref": "#/components/schemas/EventKilocodeNotebookCancelled"
+          },
+          {
+            "$ref": "#/components/schemas/EventSuggestionShown"
+          },
+          {
+            "$ref": "#/components/schemas/EventSuggestionAccepted"
+          },
+          {
+            "$ref": "#/components/schemas/EventSuggestionDismissed"
           },
           {
             "$ref": "#/components/schemas/EventLspClientDiagnostics"
@@ -25736,63 +25555,6 @@
         "required": ["id", "sessionID", "pid", "command", "cwd", "status", "cols", "rows", "time"],
         "additionalProperties": false
       },
-      "SuggestionRequest": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "pattern": "^sug"
-          },
-          "sessionID": {
-            "type": "string",
-            "pattern": "^ses"
-          },
-          "text": {
-            "type": "string"
-          },
-          "actions": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "label": {
-                  "type": "string",
-                  "description": "Button or option label (1-5 words)"
-                },
-                "description": {
-                  "type": "string"
-                },
-                "prompt": {
-                  "type": "string",
-                  "description": "Synthetic user prompt to inject when this action is accepted"
-                }
-              },
-              "required": ["label", "prompt"],
-              "additionalProperties": false
-            },
-            "minItems": 1,
-            "maxItems": 2
-          },
-          "blocking": {
-            "type": "boolean"
-          },
-          "tool": {
-            "type": "object",
-            "properties": {
-              "messageID": {
-                "type": "string"
-              },
-              "callID": {
-                "type": "string"
-              }
-            },
-            "required": ["messageID", "callID"],
-            "additionalProperties": false
-          }
-        },
-        "required": ["id", "sessionID", "text", "actions"],
-        "additionalProperties": false
-      },
       "AgentManagerRequestID": {
         "type": "string"
       },
@@ -26170,6 +25932,63 @@
             "$ref": "#/components/schemas/NotebookExecuteRequest"
           }
         ]
+      },
+      "SuggestionRequest": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^sug"
+          },
+          "sessionID": {
+            "type": "string",
+            "pattern": "^ses"
+          },
+          "text": {
+            "type": "string"
+          },
+          "actions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string",
+                  "description": "Button or option label (1-5 words)"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "prompt": {
+                  "type": "string",
+                  "description": "Synthetic user prompt to inject when this action is accepted"
+                }
+              },
+              "required": ["label", "prompt"],
+              "additionalProperties": false
+            },
+            "minItems": 1,
+            "maxItems": 2
+          },
+          "blocking": {
+            "type": "boolean"
+          },
+          "tool": {
+            "type": "object",
+            "properties": {
+              "messageID": {
+                "type": "string"
+              },
+              "callID": {
+                "type": "string"
+              }
+            },
+            "required": ["messageID", "callID"],
+            "additionalProperties": false
+          }
+        },
+        "required": ["id", "sessionID", "text", "actions"],
+        "additionalProperties": false
       },
       "IndexingStatusState": {
         "type": "string",
@@ -28253,15 +28072,6 @@
                 "$ref": "#/components/schemas/EventSandboxStatusChanged"
               },
               {
-                "$ref": "#/components/schemas/EventSuggestionShown"
-              },
-              {
-                "$ref": "#/components/schemas/EventSuggestionAccepted"
-              },
-              {
-                "$ref": "#/components/schemas/EventSuggestionDismissed"
-              },
-              {
                 "$ref": "#/components/schemas/EventKilocodeAgent_managerStart"
               },
               {
@@ -28275,6 +28085,15 @@
               },
               {
                 "$ref": "#/components/schemas/EventKilocodeNotebookCancelled"
+              },
+              {
+                "$ref": "#/components/schemas/EventSuggestionShown"
+              },
+              {
+                "$ref": "#/components/schemas/EventSuggestionAccepted"
+              },
+              {
+                "$ref": "#/components/schemas/EventSuggestionDismissed"
               },
               {
                 "$ref": "#/components/schemas/EventLspClientDiagnostics"
@@ -33122,21 +32941,6 @@
               },
               "native_notebook_tools": {
                 "type": "boolean"
-              },
-              "speech_to_text_model": {
-                "type": "string"
-              },
-              "speech_to_text": {
-                "type": "object",
-                "properties": {
-                  "provider": {
-                    "type": "string"
-                  },
-                  "model": {
-                    "type": "string"
-                  }
-                },
-                "additionalProperties": false
               },
               "image_generation_provider": {
                 "type": "object",
@@ -40053,103 +39857,6 @@
         "required": ["id", "type", "properties"],
         "additionalProperties": false
       },
-      "EventSuggestionShown": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "type": {
-            "type": "string",
-            "enum": ["suggestion.shown"]
-          },
-          "properties": {
-            "$ref": "#/components/schemas/SuggestionRequest"
-          }
-        },
-        "required": ["id", "type", "properties"],
-        "additionalProperties": false
-      },
-      "EventSuggestionAccepted": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "type": {
-            "type": "string",
-            "enum": ["suggestion.accepted"]
-          },
-          "properties": {
-            "type": "object",
-            "properties": {
-              "sessionID": {
-                "type": "string",
-                "pattern": "^ses"
-              },
-              "requestID": {
-                "type": "string",
-                "pattern": "^sug"
-              },
-              "index": {
-                "type": "integer",
-                "minimum": 0
-              },
-              "action": {
-                "type": "object",
-                "properties": {
-                  "label": {
-                    "type": "string",
-                    "description": "Button or option label (1-5 words)"
-                  },
-                  "description": {
-                    "type": "string"
-                  },
-                  "prompt": {
-                    "type": "string",
-                    "description": "Synthetic user prompt to inject when this action is accepted"
-                  }
-                },
-                "required": ["label", "prompt"],
-                "additionalProperties": false
-              }
-            },
-            "required": ["sessionID", "requestID", "index", "action"],
-            "additionalProperties": false
-          }
-        },
-        "required": ["id", "type", "properties"],
-        "additionalProperties": false
-      },
-      "EventSuggestionDismissed": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "type": {
-            "type": "string",
-            "enum": ["suggestion.dismissed"]
-          },
-          "properties": {
-            "type": "object",
-            "properties": {
-              "sessionID": {
-                "type": "string",
-                "pattern": "^ses"
-              },
-              "requestID": {
-                "type": "string",
-                "pattern": "^sug"
-              }
-            },
-            "required": ["sessionID", "requestID"],
-            "additionalProperties": false
-          }
-        },
-        "required": ["id", "type", "properties"],
-        "additionalProperties": false
-      },
       "EventKilocodeAgent_managerStart": {
         "type": "object",
         "properties": {
@@ -40316,6 +40023,103 @@
               }
             },
             "required": ["requestID", "sessionID", "reason"],
+            "additionalProperties": false
+          }
+        },
+        "required": ["id", "type", "properties"],
+        "additionalProperties": false
+      },
+      "EventSuggestionShown": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["suggestion.shown"]
+          },
+          "properties": {
+            "$ref": "#/components/schemas/SuggestionRequest"
+          }
+        },
+        "required": ["id", "type", "properties"],
+        "additionalProperties": false
+      },
+      "EventSuggestionAccepted": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["suggestion.accepted"]
+          },
+          "properties": {
+            "type": "object",
+            "properties": {
+              "sessionID": {
+                "type": "string",
+                "pattern": "^ses"
+              },
+              "requestID": {
+                "type": "string",
+                "pattern": "^sug"
+              },
+              "index": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "action": {
+                "type": "object",
+                "properties": {
+                  "label": {
+                    "type": "string",
+                    "description": "Button or option label (1-5 words)"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "prompt": {
+                    "type": "string",
+                    "description": "Synthetic user prompt to inject when this action is accepted"
+                  }
+                },
+                "required": ["label", "prompt"],
+                "additionalProperties": false
+              }
+            },
+            "required": ["sessionID", "requestID", "index", "action"],
+            "additionalProperties": false
+          }
+        },
+        "required": ["id", "type", "properties"],
+        "additionalProperties": false
+      },
+      "EventSuggestionDismissed": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["suggestion.dismissed"]
+          },
+          "properties": {
+            "type": "object",
+            "properties": {
+              "sessionID": {
+                "type": "string",
+                "pattern": "^ses"
+              },
+              "requestID": {
+                "type": "string",
+                "pattern": "^sug"
+              }
+            },
+            "required": ["sessionID", "requestID"],
             "additionalProperties": false
           }
         },
@@ -57897,7 +57701,7 @@
     },
     {
       "name": "media-local",
-      "description": "Local media (speech/image) proxy routes."
+      "description": "Local media (image) proxy routes."
     },
     {
       "name": "network",

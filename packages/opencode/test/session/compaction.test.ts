@@ -1884,7 +1884,7 @@ describe("SessionNs.getUsage", () => {
     expect(result.cost).toBe(3 + 1.5)
   })
 
-  test("uses upstreamInferenceCost for Kilo provider", () => {
+  test("falls back to regular cost when only OpenRouter usage is reported", () => {
     const model = createModel({
       context: 100_000,
       output: 32_000,
@@ -1894,7 +1894,7 @@ describe("SessionNs.getUsage", () => {
         cache: { read: 0.3, write: 3.75 },
       },
     })
-    const provider = { id: "kilo" } as Provider.Info
+    const provider = { id: "openrouter" } as Provider.Info
     const result = SessionNs.getUsage({
       model,
       provider,
@@ -1902,7 +1902,7 @@ describe("SessionNs.getUsage", () => {
       metadata: {
         openrouter: {
           usage: {
-            cost: 0.01, // OpenRouter 5% fee
+            cost: 0.01, // OpenRouter fee
             costDetails: {
               upstreamInferenceCost: 0.2, // Actual inference cost
             },
@@ -1911,8 +1911,8 @@ describe("SessionNs.getUsage", () => {
       },
     })
 
-    // Should use upstreamInferenceCost for Kilo provider (BYOK)
-    expect(result.cost).toBe(0.2)
+    // With the Kilo Gateway gone, the reported `cost` field is used for any provider
+    expect(result.cost).toBe(0.01)
   })
 
   test("uses regular cost for OpenRouter provider", () => {
@@ -1975,7 +1975,7 @@ describe("SessionNs.getUsage", () => {
     expect(result.cost).toBe(0.3)
   })
 
-  test("uses regular cost when upstreamInferenceCost is missing for Kilo", () => {
+  test("falls back to calculated cost when OpenRouter usage is incomplete", () => {
     const model = createModel({
       context: 100_000,
       output: 32_000,
@@ -1985,7 +1985,7 @@ describe("SessionNs.getUsage", () => {
         cache: { read: 0.3, write: 3.75 },
       },
     })
-    const provider = { id: "kilo" } as Provider.Info
+    const provider = { id: "openrouter" } as Provider.Info
     const result = SessionNs.getUsage({
       model,
       provider,
@@ -1993,15 +1993,14 @@ describe("SessionNs.getUsage", () => {
       metadata: {
         openrouter: {
           usage: {
-            cost: 0.01,
-            // costDetails is missing
+            // neither `cost` nor `upstreamInferenceCost` present
           },
         },
       },
     })
 
-    // When upstream cost is missing for Kilo, fall back to regular cost field
-    expect(result.cost).toBe(0.01)
+    // With no reported cost, fall back to the token-based calculation
+    expect(result.cost).toBe(3 + 1.5)
   })
 
   // Tests for Anthropic Messages / OpenAI Responses / Vercel AI Gateway cost extraction

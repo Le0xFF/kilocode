@@ -46,18 +46,15 @@ export const anacondaDesktopDict = {
   "provider.anaconda.action.open": "Відкрити Anaconda Desktop",
   "provider.anaconda.action.checkAgain": "Перевірити ще раз",
   "provider.anaconda.action.continue": "Усе одно продовжити",
-  "provider.anaconda.action.manage": "Керувати / Оновити",
   "provider.anaconda.toast.refreshed.title": "Anaconda Desktop оновлено",
   "provider.anaconda.toast.refreshed.description": "Активний локальний сервер та моделі актуальні в Kilo.",
   "settings.providers.note.anacondaDesktop": "Запустіть модель, що обслуговується локально через Anaconda Desktop.",
-  "settings.providers.tag.local": "Локальний",
 } as const
 
 export const dict = {
   ...anacondaDesktopDict,
   ...cloudProviderDict,
 
-  "command.provider.connect": "Підключити провайдера",
 
   "session.activity.waiting": "Очікується відповідь або підтвердження.",
   "session.activity.error": "Помилка або втрата з'єднання.",
@@ -85,9 +82,6 @@ export const dict = {
   "command.session.compact": "Стиснути сесію",
   "command.session.export": "Експортувати запис сеансу",
 
-  "dialog.provider.search.placeholder": "Пошук провайдера",
-  "dialog.provider.empty": "Провайдерів не знайдено",
-  "dialog.provider.group.other": "Інші",
   "dialog.provider.tag.recommended": "Рекомендовано",
 
   "dialog.model.select.title": "Вибір моделі",
@@ -97,7 +91,6 @@ export const dict = {
   "dialog.model.expand": "Розгорнути",
   "dialog.model.collapse": "Згорнути",
 
-  "dialog.provider.viewAll": "Показати більше провайдерів",
 
   "provider.connect.title": "Підключити {{provider}}",
   "provider.connect.selectMethod": "Оберіть метод входу для {{provider}}.",
@@ -146,8 +139,6 @@ export const dict = {
 
   "model.tag.free": "Безкоштовно",
   "model.tag.dataCollected": "Дані можуть використовуватися для навчання",
-  "model.group.auto": "Автоматичні моделі",
-  "model.group.recommended": "Рекомендовані",
   "model.group.favorites": "Обране",
   "model.group.mostUsed": "Найчастіше використовувані",
   "model.favorite.add": "Додати до обраного",
@@ -159,7 +150,6 @@ export const dict = {
   "model.preview.label.average": "Орієнт. сер. вартість",
   "model.preview.label.context": "Контекст",
   "model.preview.group.terminalBench": "Terminal Bench 2.0",
-  "model.preview.group.autoEfficientChoices": "Варіанти моделей",
   "model.preview.label.completion": "Виконання",
   "model.preview.label.costAttempt": "Вартість / спроба",
   "model.preview.value.notSupported": "Не підтримується",
@@ -188,7 +178,6 @@ export const dict = {
   "prompt.action.send": "Надіслати",
   "prompt.action.continue": "Продовжити",
   "prompt.action.send.blocked": "Спочатку дайте відповідь або закрийте очікуюче питання",
-  "prompt.action.send.recording": "Транскрибувати та надіслати",
   "prompt.action.stop": "Зупинити",
   "prompt.action.enhance": "Покращити запит",
   "prompt.action.indexing": "Налаштування індексування",
@@ -216,17 +205,6 @@ export const dict = {
   "prompt.action.sandbox.description.disabled": "Натисніть, щоб обмежити запис у файлову систему та доступ до мережі.",
   "prompt.action.sandbox.description.disabledNetworkAllowed":
     "Натисніть, щоб обмежити запис у файлову систему. Доступ до мережі залишиться дозволеним відповідно до налаштувань пісочниці.",
-
-  "speechToText.tooltip.start": "Почати голосове введення з Kilo Gateway",
-  "speechToText.tooltip.shortcut":
-    "Торкніться кнопки або натисніть Cmd/Ctrl+K, щоб почати чи зупинити запис; утримуйте кнопку під час мовлення, а потім відпустіть її, щоб транскрибувати й надіслати.",
-  "speechToText.tooltip.starting": "Запуск мікрофона... Поки що не говоріть.",
-  "speechToText.tooltip.stop": "Зупинити захоплення звуку",
-  "speechToText.tooltip.transcribing": "Транскрибування... Натисніть, щоб скасувати.",
-  "speechToText.tooltip.error": "Помилка голосового введення. Натисніть, щоб очистити.",
-  "speechToText.error.title": "Помилка голосового введення",
-  "speechToText.error.loginRequired": "Увійдіть до Kilo, щоб використовувати голосове введення.",
-  "speechToText.error.emptyTranscript": "Мовлення не виявлено.",
 
   "prompt.toast.promptSendFailed.title": "Не вдалося надіслати запит",
 
@@ -399,13 +377,12 @@ export const dict = {
 
   "settings.providers.title": "Провайдери",
   "settings.providers.section.connected": "Підключені провайдери",
+  "settings.providers.section.custom": "Користувацькі постачальники",
   "settings.providers.connected.empty": "Підключених провайдерів немає",
-  "settings.providers.section.popular": "Популярні провайдери",
   "settings.providers.tag.environment": "Середовище",
   "settings.providers.tag.config": "Конфігурація",
   "settings.providers.tag.chatgpt": "ChatGPT",
   "settings.providers.tag.custom": "Власний",
-  "settings.providers.tag.customProvider": "Власний провайдер",
   "settings.providers.tag.other": "Інші",
   "settings.providers.connected.environmentDescription": "Підключено зі змінних середовища",
   "settings.providers.action.signInChatGPT": "Увійти через ChatGPT",
@@ -622,7 +599,6 @@ export const dict = {
   "profile.usage.plan.unknown": "План: Статус невідомий",
   "profile.usage.action.manage": "Керувати",
   "profile.usage.action.managePlan": "Керування {{plan}}",
-  "profile.usage.routing": "Оплата плану активна. Маршрутизація через Kilo Gateway {{state}}.",
   "profile.usage.routingState.disabled": "вимкнена",
   "profile.usage.routingState.missing": "відсутня",
   "profile.usage.routingState.replaced": "замінена",
@@ -820,7 +796,6 @@ export const dict = {
 
   "common.add": "Додати",
 
-
   "settings.notifications.sounds": "Звуки",
   "settings.notifications.enable.title": "Увімкнути звукові сповіщення",
   "settings.notifications.enable.description":
@@ -848,10 +823,6 @@ export const dict = {
   "settings.experimental.imageGenerationModel.description": "Модель генерації зображень",
   "settings.experimental.imageGenerationModel.placeholder": "За замовчуванням (Auto Router)",
 
-  "settings.models.speechToText.disabledDescription":
-    "Увімкніть провайдер Kilo та виконайте вхід, щоб використовувати Speech to Text. Наразі Speech to Text підтримується лише з Kilo Gateway.",
-  "settings.models.speechToTextModel.title": "Модель мовлення в текст",
-  "settings.models.speechToTextModel.description": "Виберіть модель транскрипції Kilo Gateway для голосового введення.",
   "settings.experimental.nativeNotebookTools.title": "Власні інструменти для блокнотів",
   "settings.experimental.nativeNotebookTools.description":
     "Увімкнути експериментальні інструменти для читання, редагування та виконання блокнотів VS Code",
@@ -1104,8 +1075,7 @@ export const dict = {
   "settings.providers.subagentModel.description":
     "Модель за замовчуванням та рівень міркування для субагентів task-tool. Залиште порожнім, щоб успадкувати модель агента, що викликає.",
   "settings.models.hidePromptTraining.title": "Приховувати моделі, що навчаються на запитах",
-  "settings.models.hidePromptTraining.description":
-    "Приховувати моделі Kilo Gateway, постачальники яких можуть використовувати ваші запити для навчання.",
+  "settings.models.hidePromptTraining.description": "Приховувати моделі, постачальники яких можуть використовувати ваші запити для навчання.",
   "settings.providers.modeModels": "Модель для кожного режиму",
   "settings.providers.modeModels.description":
     "Перевизначити стандартну модель для певних режимів. Якщо не встановлено, використовується загальна стандартна модель.",

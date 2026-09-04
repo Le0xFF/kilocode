@@ -302,8 +302,7 @@ const inputs = Effect.fn("ProviderUsage.inputs")(function* (
     }),
   )
   const kilo = yield* resolve(integrations, Integration.ID.make("kilo"))
-  const kiloProvider = byID.get(ProviderV2.ID.kilo)
-  const configuredOrg = nonempty(process.env.KILO_ORG_ID) ?? nonempty(kiloProvider?.request.body.kilocodeOrganizationId)
+  const configuredOrg = nonempty(process.env.KILO_ORG_ID)
   const organization =
     configuredOrg !== undefined ||
     (kilo.ok && kilo.value?.type === "oauth" && nonempty(kilo.value.metadata?.accountID) !== undefined)

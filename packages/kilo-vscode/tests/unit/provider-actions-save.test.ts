@@ -476,9 +476,9 @@ describe("fetchProviderData", () => {
       provider: {
         list: async () => ({
           data: {
-            all: [{ id: "kilo", name: "Kilo Gateway", source: "custom", env: [], models: {} }],
-            connected: ["kilo"],
-            default: { kilo: "kilo-auto/frontier" },
+            all: [{ id: "lmstudio", name: "LM Studio", source: "custom", env: [], models: {} }],
+            connected: ["lmstudio"],
+            default: { lmstudio: "qwen3" },
           },
         }),
         auth: async () => ({ data: {} }),

@@ -34,7 +34,11 @@ it.instance(
         expect(item.options.resourceName).toBe("saved-resource")
       }),
     ),
-  { config: {} },
+  // kilocode_change - azure is outside the offline local surface; declared in config so it survives
+  // the hard cut. `item.key` now comes from the saved auth, but `options.resourceName` was populated
+  // by the removed azure plugin loader (accountId/resourceName -> options), which no longer exists.
+  // Failing until that loader is re-added or the assertion is re-pointed.
+  { config: { provider: { azure: {} } } },
 )
 
 it.instance(
@@ -48,7 +52,11 @@ it.instance(
         expect(item.options.apiKey).toBe("oauth-access")
       }),
     ),
-  { config: {} },
+  // kilocode_change - gitlab is outside the offline local surface; declared in config so it survives
+  // the hard cut. The oauth -> apiKey mapping came from the removed gitlab plugin loader, but this
+  // assertion still passes because the core api-key path populates `options.apiKey` from the saved
+  // credential's access token. Kept as a canary for the saved-oauth wiring.
+  { config: { provider: { gitlab: {} } } },
 )
 
 it.instance(
@@ -75,5 +83,9 @@ it.instance(
         expect(url).toBe("https://api.cloudflare.com/client/v4/accounts/saved-account/ai/v1/chat/completions")
       }),
     ),
-  { config: {} },
+  // kilocode_change - cloudflare-workers-ai is outside the offline local surface; declared in config so
+  // it survives the hard cut. `item.key` comes from the saved auth, but `options.apiKey` and the
+  // accountId -> baseURL rewrite were provided by the removed cloudflare plugin loader, which no
+  // longer exists. Failing until that loader is re-added or the assertions are re-pointed.
+  { config: { provider: { "cloudflare-workers-ai": {} } } },
 )

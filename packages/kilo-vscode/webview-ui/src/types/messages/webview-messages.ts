@@ -374,27 +374,6 @@ export interface ExportSessionTranscriptRequest {
   sessionID: string
 }
 
-export interface SpeechToTextPrewarmMessage {
-  type: "speechToTextPrewarm"
-}
-
-export interface SpeechToTextStartMessage {
-  type: "speechToTextStart"
-  requestId: string
-  model: string
-  language?: string
-}
-
-export interface SpeechToTextStopMessage {
-  type: "speechToTextStop"
-  requestId: string
-}
-
-export interface SpeechToTextCancelMessage {
-  type: "speechToTextCancel"
-  requestId: string
-}
-
 export interface RequestFileSearchMessage {
   type: "requestFileSearch"
   query: string
@@ -502,10 +481,6 @@ export interface RequestChatSettingsMessage {
 
 export interface RequestImageModelsMessage {
   type: "requestImageModels"
-}
-
-export interface RequestSpeechToTextModelsMessage {
-  type: "requestSpeechToTextModels"
 }
 
 export interface OpenSettingsTabRequest {
@@ -1427,10 +1402,6 @@ export type WebviewMessage =
   | DeleteSessionRequest
   | RenameSessionRequest
   | ExportSessionTranscriptRequest
-  | SpeechToTextPrewarmMessage
-  | SpeechToTextStartMessage
-  | SpeechToTextStopMessage
-  | SpeechToTextCancelMessage
   | RequestFileSearchMessage
   | RequestSessionSearchMessage
   | RequestFilePickerMessage
@@ -1592,7 +1563,6 @@ export type WebviewMessage =
   | AgentManagerTerminalDestinationSelectedRequest
   | AgentManagerTerminalResizeRequest
   | RequestImageModelsMessage
-  | RequestSpeechToTextModelsMessage
 
 // ============================================
 // VS Code API type

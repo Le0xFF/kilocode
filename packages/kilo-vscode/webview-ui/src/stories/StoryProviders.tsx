@@ -67,13 +67,13 @@ const plural = (key: UiI18nPluralKey, count: number, params?: Record<string, str
 // ---------------------------------------------------------------------------
 
 // ---------------------------------------------------------------------------
-// Mock providers — pre-loaded Kilo Gateway model for stories
+// Mock providers — pre-loaded LM Studio model for stories
 // ---------------------------------------------------------------------------
 
 const MOCK_PROVIDERS = {
-  kilo: {
-    id: "kilo",
-    name: "Kilo",
+  lmstudio: {
+    id: "lmstudio",
+    name: "LM Studio",
     env: [] as string[],
     models: {
       "anthropic/claude-sonnet-4-6": {
@@ -104,9 +104,9 @@ const MockProviderProvider: ParentComponent<{ training?: boolean }> = (props) =>
   )
   const value = {
     providers: () => MOCK_PROVIDERS as any,
-    connected: () => ["kilo"],
+    connected: () => ["lmstudio"],
     defaults: () => ({}),
-    defaultSelection: () => ({ providerID: "kilo", modelID: "anthropic/claude-sonnet-4-6" }),
+    defaultSelection: () => ({ providerID: "lmstudio", modelID: "anthropic/claude-sonnet-4-6" }),
     models,
     findModel: (sel: any) => _findModel(models(), sel),
     authMethods: () => ({}),
@@ -216,8 +216,8 @@ export function mockSessionValue(overrides?: {
     scopedPermissions: (sid?: string) => (sid ? permissions.filter((p) => p.sessionID === sid) : permissions),
     scopedQuestions: (sid?: string) => (sid ? qs.filter((q) => q.sessionID === sid) : qs),
     scopedSuggestions: (sid?: string) => (sid ? suggestions.filter((item) => item.sessionID === sid) : suggestions),
-    selected: () => ({ providerID: "kilo", modelID: "anthropic/claude-sonnet-4-6" }),
-    modelForAgent: () => ({ providerID: "kilo", modelID: "anthropic/claude-sonnet-4-6" }),
+    selected: () => ({ providerID: "lmstudio", modelID: "anthropic/claude-sonnet-4-6" }),
+    modelForAgent: () => ({ providerID: "lmstudio", modelID: "anthropic/claude-sonnet-4-6" }),
     selectModel: noop,
     costBreakdown: () => [],
     contextUsage: () => undefined,

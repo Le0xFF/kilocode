@@ -1,7 +1,6 @@
 import { describe, expect, test } from "bun:test"
 import { Effect } from "effect"
 import type { Part, StepFinishPart } from "@kilocode/sdk/v2"
-import { RoutedModelMeta } from "../../src/kilocode/cli/cmd/tui/routes/session/routed-model-meta"
 import { KiloRoutedModel } from "../../src/kilocode/session/routed-model"
 import { ProviderV2 } from "@opencode-ai/core/provider"
 import { ModelV2 } from "@opencode-ai/core/model"
@@ -17,21 +16,6 @@ describe("session routed model", () => {
     )
   }
   const unchecked = (input: unknown) => input as Event
-  const reason = {
-    id: "reasoning",
-    sessionID: "session",
-    messageID: "message",
-    type: "reasoning",
-    text: "thinking",
-    time: { start: 0 },
-  } as Part
-  const text = {
-    id: "text",
-    sessionID: "session",
-    messageID: "message",
-    type: "text",
-    text: "hello",
-  } as Part
   const finish = (model?: StepFinishPart["model"], id = "finish") =>
     ({
       id,
@@ -104,88 +88,28 @@ describe("session routed model", () => {
     expect(KiloRoutedModel.displayName("o3")).toBe("o3")
   })
 
-  test("shows compact labels only for Kilo auto selections", () => {
-    const model = { providerID: "openai", modelID: "gpt-5.5" }
-    const parts = [reason, finish(model)]
-
-    const routed = RoutedModelMeta.info(undefined, parts, false, {
-      providerID: "kilo",
-      modelID: "kilo-auto/efficient",
-    })
-    expect(routed.labels.get("reasoning")).toBe("gpt-5.5")
-    expect(routed.footer).toBe("gpt-5.5")
-    expect(routed.consumed.has("finish")).toBe(true)
-
-    const explicit = RoutedModelMeta.info(undefined, parts, false, {
-      providerID: "openai",
-      modelID: "gpt-5.5",
-    })
-    expect(explicit.labels.size).toBe(0)
-    expect(explicit.consumed.size).toBe(0)
-    expect(explicit.footer).toBeUndefined()
-
-    const same = RoutedModelMeta.info(
-      undefined,
-      [reason, finish({ providerID: "kilo", modelID: "kilo-auto/efficient" })],
-      false,
-      {
-        providerID: "kilo",
-        modelID: "kilo-auto/efficient",
-      },
-    )
-    expect(same.labels.size).toBe(0)
-    expect(same.consumed.size).toBe(0)
-    expect(same.footer).toBeUndefined()
-  })
-
-  test("shows compact footer labels for text-only auto selections", () => {
-    const parts = [text, finish({ providerID: "qwen", modelID: "qwen/qwen3.7-plus" })]
-
-    const routed = RoutedModelMeta.info(undefined, parts, false, {
-      providerID: "kilo",
-      modelID: "kilo-auto/efficient",
-    })
-    expect(routed.labels.size).toBe(0)
-    expect(routed.footer).toBe("qwen 3.7-plus")
-    expect(routed.consumed.has("finish")).toBe(true)
-  })
-
-  test("does not carry compact footer labels across steps", () => {
-    const more = { ...reason, id: "reasoning-2" } as Part
-    const parts = [
-      reason,
-      finish({ providerID: "qwen", modelID: "qwen/qwen3.7-plus" }, "first"),
-      more,
-      finish(undefined, "last"),
-    ]
-
-    const routed = RoutedModelMeta.info(undefined, parts, false, {
-      providerID: "kilo",
-      modelID: "kilo-auto/efficient",
-    })
-    expect(routed.labels.get("reasoning")).toBe("qwen 3.7-plus")
-    expect(routed.labels.has("reasoning-2")).toBe(false)
-    expect(routed.footer).toBeUndefined()
-    expect(routed.consumed.has("first")).toBe(true)
-    expect(routed.consumed.has("last")).toBe(false)
-  })
-
-  test("reads routed model only for selected Kilo auto models", () => {
+  test("reads routed model only for Kilo auto selections that still route", () => {
     const meta = { kilocode: { routedModelID: "openai/gpt-5.5-20260423" } }
 
     expect(
       KiloRoutedModel.readAuto(meta, {
-        providerID: ProviderV2.ID.kilo,
-        modelID: "kilo-auto/efficient",
+        providerID: ProviderV2.ID.make("kilo"),
+        modelID: "openrouter/openai/gpt-5.5-20260423",
       }),
     ).toEqual({
-      providerID: ProviderV2.ID.kilo,
+      providerID: ProviderV2.ID.make("kilo"),
       modelID: ModelV2.ID.make("openai/gpt-5.5-20260423"),
     })
 
     expect(
       KiloRoutedModel.readAuto(meta, {
-        providerID: ProviderV2.ID.kilo,
+        providerID: ProviderV2.ID.make("kilo"),
+        modelID: "kilo-auto/efficient",
+      }),
+    ).toBeUndefined()
+    expect(
+      KiloRoutedModel.readAuto(meta, {
+        providerID: ProviderV2.ID.make("kilo"),
         modelID: "openai/gpt-5.5",
       }),
     ).toBeUndefined()

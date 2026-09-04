@@ -1,14 +1,25 @@
-import {
-  fetchByokEntries,
-  fetchCodingPlanSubscriptions,
-  fetchCodingPlanUsage,
-  type ByokEntry,
-  type CodingPlanQuotaWindow,
-  type CodingPlanSubscription,
-} from "@kilocode/kilo-gateway"
 import type { ProviderUsage } from "@opencode-ai/schema/kilocode/provider-usage"
 
-export { fetchByokEntries, fetchCodingPlanSubscriptions, fetchCodingPlanUsage }
+// The online Kilo coding-plan/BYOK fetchers (and their response shapes) were
+// removed with @kilocode/kilo-gateway. Neutralized to no-op async stubs so the
+// managed adapter keeps compiling; it always resolves to empty state and the
+// provider-usage surface degrades to "no sources".
+export async function fetchByokEntries(_token: string): Promise<unknown[]> {
+  return []
+}
+export async function fetchCodingPlanSubscriptions(_token: string): Promise<unknown[]> {
+  return []
+}
+export async function fetchCodingPlanUsage(
+  _token: string,
+  _subscriptionId: string,
+): Promise<{ subscription: any; fetchedAt: string }> {
+  return { subscription: {}, fetchedAt: "" }
+}
+
+type CodingPlanSubscription = any
+type ByokEntry = any
+type CodingPlanQuotaWindow = any
 
 export interface CloudState {
   plans: Result<CodingPlanSubscription[]>
@@ -67,7 +78,7 @@ function durationMs(period: CodingPlanQuotaWindow["period"]) {
     week: 7 * 24 * 60 * 60 * 1000,
   } as const
   if (period.unit === "month") return undefined
-  return period.value * multipliers[period.unit]
+  return period.value * multipliers[period.unit as keyof typeof multipliers]
 }
 
 function window(subscriptionId: string, value: CodingPlanQuotaWindow): ProviderUsage.UsageWindow {
@@ -104,7 +115,7 @@ export async function managed(
 
   return usage(token, subscription.id)
     .then((usage) => {
-      const windows = usage.subscription.windows.map((item) => window(usage.subscription.id, item))
+      const windows = usage.subscription.windows.map((item: any) => window(usage.subscription.id, item))
       return {
         id,
         providerID: usage.subscription.providerId,

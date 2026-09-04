@@ -20,45 +20,51 @@ function withNvidiaKey<A, E, R>(self: Effect.Effect<A, E, R>) {
 }
 
 it.live("nvidia provider includes KiloCode billing origin header", () =>
-  provideTmpdirInstance(() =>
+  provideTmpdirInstance((dir) =>
     withNvidiaKey(
-      Provider.Service.use((provider) =>
-        Effect.gen(function* () {
-          const providers = yield* provider.list()
-          const headers = providers[ProviderV2.ID.make("nvidia")].options.headers
+      Effect.gen(function* () {
+        yield* Effect.promise(() =>
+          Bun.write(path.join(dir, "opencode.json"), JSON.stringify({ provider: { nvidia: {} } })),
+        )
+        return yield* Provider.Service.use((provider) =>
+          Effect.gen(function* () {
+            const providers = yield* provider.list()
+            const headers = providers[ProviderV2.ID.make("nvidia")].options.headers
 
-          expect(headers["HTTP-Referer"]).toBe("https://kilo.ai/")
-          expect(headers["X-Title"]).toBe("Kilo Code")
-          expect(headers["X-BILLING-INVOKE-ORIGIN"]).toBe("KiloCode")
-        }),
-      ),
+            expect(headers["HTTP-Referer"]).toBe("https://kilo.ai/")
+            expect(headers["X-Title"]).toBe("Kilo Code")
+            expect(headers["X-BILLING-INVOKE-ORIGIN"]).toBe("KiloCode")
+          }),
+        )
+      }),
     ),
   ),
-)
+) // kilocode_change - nvidia is outside the offline local surface; declared in config to survive the cut.
+// The billing-origin headers were injected by the removed nvidia plugin loader, so this still fails
+// until that loader is re-added or the assertions are re-pointed to a live-surface provider.
 
 it.live("nvidia billing origin header can be overridden from config", () =>
   provideTmpdirInstance((dir) =>
-    Effect.gen(function* () {
-      yield* Effect.promise(() =>
-        Bun.write(
-          path.join(dir, "opencode.json"),
-          JSON.stringify({
-            $schema: "https://app.kilo.ai/config.json",
-            provider: {
-              nvidia: {
-                options: {
-                  headers: {
-                    "X-BILLING-INVOKE-ORIGIN": "CustomOrigin",
+    withNvidiaKey(
+      Effect.gen(function* () {
+        yield* Effect.promise(() =>
+          Bun.write(
+            path.join(dir, "opencode.json"),
+            JSON.stringify({
+              $schema: "https://app.kilo.ai/config.json",
+              provider: {
+                nvidia: {
+                  options: {
+                    headers: {
+                      "X-BILLING-INVOKE-ORIGIN": "CustomOrigin",
+                    },
                   },
                 },
               },
-            },
-          }),
-        ),
-      )
-
-      return yield* withNvidiaKey(
-        Provider.Service.use((provider) =>
+            }),
+          ),
+        )
+        return yield* Provider.Service.use((provider) =>
           Effect.gen(function* () {
             const providers = yield* provider.list()
             const headers = providers[ProviderV2.ID.make("nvidia")].options.headers
@@ -67,8 +73,9 @@ it.live("nvidia billing origin header can be overridden from config", () =>
             expect(headers["X-Title"]).toBe("Kilo Code")
             expect(headers["X-BILLING-INVOKE-ORIGIN"]).toBe("CustomOrigin")
           }),
-        ),
-      )
-    }),
+        )
+      }),
+    ),
   ),
-)
+) // kilocode_change - same as above: nvidia is outside the offline local surface; the override
+// assertion depends on the removed nvidia loader injecting the base headers it overrides.

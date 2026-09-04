@@ -9,9 +9,6 @@ import {
   isDataCollectedModel,
   hasByok,
   isFree,
-  isAuto,
-  autoSummary,
-  autoChoices,
   rankModelSearch,
   mostUsedModels,
 } from "../../webview-ui/src/components/shared/model-selector-utils"
@@ -106,79 +103,6 @@ describe("isFree", () => {
     expect(isFree({ isFree: true })).toBe(true)
     expect(isFree({ isFree: false })).toBe(false)
     expect(isFree({})).toBe(false)
-  })
-})
-
-describe("isAuto", () => {
-  it("matches auto-prefixed or auto-small model ids", () => {
-    expect(isAuto({ providerID: "openai", id: "auto-efficient" })).toBe(true)
-    expect(isAuto({ providerID: "openai", id: "auto-small" })).toBe(true)
-    expect(isAuto({ providerID: "anthropic", id: "claude-sonnet" })).toBe(false)
-  })
-})
-
-describe("autoChoices", () => {
-  it("uses backend Auto routes and resolves names when available", () => {
-    expect(
-      autoChoices(
-        {
-          providerID: "openai",
-          id: "auto-efficient",
-          autoRouting: { models: ["provider/model", "missing/model"] },
-        },
-        [{ id: "provider/model", name: "Provider: Model" }],
-      ),
-    ).toEqual([
-      { id: "provider/model", name: "Model" },
-      { id: "missing/model", name: "missing/model" },
-    ])
-  })
-
-  it("shows routes for any Auto model when present", () => {
-    expect(
-      autoChoices(
-        {
-          providerID: "openai",
-          id: "auto-frontier",
-          autoRouting: { models: ["provider/model"] },
-        },
-        [{ id: "provider/model", name: "Provider: Model" }],
-      ),
-    ).toEqual([{ id: "provider/model", name: "Model" }])
-    expect(
-      autoChoices({
-        providerID: "openai",
-        id: "auto-free",
-        autoRouting: { models: ["provider/model"] },
-      }),
-    ).toEqual([{ id: "provider/model", name: "provider/model" }])
-  })
-
-  it("ignores missing routes and non-Auto models", () => {
-    expect(autoChoices({ providerID: "openai", id: "auto-efficient" })).toEqual([])
-    expect(
-      autoChoices({
-        providerID: "openai",
-        id: "anthropic/claude-sonnet",
-        autoRouting: { models: ["provider/model"] },
-      }),
-    ).toEqual([])
-  })
-})
-
-describe("autoSummary", () => {
-  it("uses the first description paragraph for compact tooltips", () => {
-    expect(
-      autoSummary({
-        options: {
-          description: "Routes through available models.\n\nLong details.",
-        },
-      }),
-    ).toBe("Routes through available models.")
-  })
-
-  it("falls back when there is no description", () => {
-    expect(autoSummary({})).toBe("Routes requests automatically.")
   })
 })
 

@@ -14,7 +14,7 @@ import { SessionTable } from "@opencode-ai/core/session/sql"
 import * as Log from "@opencode-ai/core/util/log"
 import type { ProviderMetadata, Usage } from "@opencode-ai/llm"
 import type { Provider } from "@/provider/provider"
-import { ENV_FEATURE } from "@kilocode/kilo-gateway"
+const ENV_FEATURE = "KILOCODE_FEATURE"
 import { existsSync } from "fs"
 import path from "path"
 import { iife } from "@/util/iife"
@@ -203,8 +203,6 @@ export namespace KiloSession {
     provider?: Provider.Info
     providerID: string
   }): number | undefined {
-    const isKilo = (input.provider?.id ?? input.providerID) === "kilo"
-
     const num = (value: unknown): number | undefined => {
       if (value === undefined || value === null) return undefined
       const n = typeof value === "string" ? Number(value) : (value as number)
@@ -216,13 +214,10 @@ export namespace KiloSession {
       | { cost?: number; costDetails?: { upstreamInferenceCost?: number } }
       | undefined
     if (orUsage) {
-      const upstream = num(orUsage.costDetails?.upstreamInferenceCost)
       const regular = num(orUsage.cost)
-      // Kilo doesn't charge a fee on top of the upstream inference cost, so for Kilo
-      // prefer the upstream cost (the user's true spend). For the OpenRouter provider
-      // itself, the regular `cost` field is what the user is billed.
-      const cost = isKilo && upstream !== undefined ? upstream : regular
-      if (cost !== undefined) return cost
+      // The Kilo Gateway wrapper no longer exists, so the reported OpenRouter `cost`
+      // field is what is used for any provider that reports it.
+      if (regular !== undefined) return regular
     }
 
     // 2. Anthropic Messages or OpenAI Responses via OpenRouter. The Kilo Gateway wrapper

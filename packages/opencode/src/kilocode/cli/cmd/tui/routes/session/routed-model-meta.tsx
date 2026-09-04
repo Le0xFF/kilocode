@@ -39,12 +39,11 @@ export namespace RoutedModelMeta {
     return KiloRoutedModel.displayName(text)
   }
 
-  function routed(model: StepFinishPart["model"], message: Message) {
-    if (!model) return undefined
-    if (message.providerID !== "kilo") return undefined
-    if (!message.modelID.startsWith("kilo-auto/")) return undefined
-    if (model.providerID === message.providerID && model.modelID === message.modelID) return undefined
-    return model
+  // The Kilo "auto" routing is gone (the kilo provider no longer exists), so there is
+  // no more routed-model metadata to surface for a message; kept as a no-op so the
+  // label/footer/consumed plumbing below stays typed against StepFinishPart["model"].
+  function routed(_model: StepFinishPart["model"], _message: Message) {
+    return undefined
   }
 
   function finish(parts: Part[], index: number, details: boolean) {

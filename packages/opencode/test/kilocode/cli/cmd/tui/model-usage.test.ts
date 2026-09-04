@@ -54,14 +54,14 @@ describe("TUI model usage", () => {
     expect(isSessionTreeMember({ root: root.id, sessionID: "ses_other", get: () => undefined })).toBeFalse()
     const models = [
       {
-        providerID: "kilo",
+        providerID: "lmstudio",
         modelID: "minimax/minimax-m2",
         steps: 1,
         cost: 0,
         tokens: data.totals.tokens,
       },
       {
-        providerID: "kilo",
+        providerID: "lmstudio",
         modelID: "openai/gpt-5.5-20260423",
         steps: 1,
         cost: 0,
@@ -77,11 +77,11 @@ describe("TUI model usage", () => {
     ]
     expect(
       groupModelsByProvider(models, [
-        { id: "kilo", name: "Kilo Gateway" },
+        { id: "lmstudio", name: "LMStudio" },
         { id: "minimax", name: "MiniMax" },
       ]),
     ).toEqual([
-      { providerID: "kilo", providerName: "Kilo Gateway", models: models.slice(0, 2) },
+      { providerID: "lmstudio", providerName: "LMStudio", models: models.slice(0, 2) },
       { providerID: "minimax", providerName: "MiniMax", models: models.slice(2) },
     ])
     expect(formatRate({ input: 100, output: 0, reasoning: 0, cache: { read: 300, write: 100 } })).toBe("60.0%")

@@ -57,11 +57,10 @@ const WEBVIEW_ROOTS = [
   VSCODE,
   path.join(REPO, "packages/kilo-ui"),
   path.join(REPO, "packages/opencode"),
-  path.join(REPO, "packages/kilo-gateway"),
 ]
 
 const pools = [
-  { name: "app", dict: appEn, roots: WEBVIEW_ROOTS, runtime: ["settings.providers.note.", "profile.", "deviceAuth.", "session.cloud.", "session.tab.cloud", "notifications.action.", "speechToText.error.loginRequired", "common.loadMore", "dialog.provider.tag.recommended"] },
+  { name: "app", dict: appEn, roots: WEBVIEW_ROOTS, runtime: ["settings.providers.note.", "profile.", "deviceAuth.", "session.cloud.", "session.tab.cloud", "notifications.action.", "common.loadMore", "dialog.provider.tag.recommended"] },
   // kilo-i18n also overrides upstream ui.* keys consumed by components in
   // packages/ui/src (and the TUI), so those count as usage too.
   {

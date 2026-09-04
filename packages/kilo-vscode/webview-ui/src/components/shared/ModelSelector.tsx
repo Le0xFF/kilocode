@@ -34,14 +34,11 @@ import { useVSCode } from "../../context/vscode"
 import type { ModelSelection } from "../../types/messages"
 import { isEnterKeyCommitNotIme } from "../../utils/ime-enter"
 import {
-  isSmall,
   providerSortKey,
   isFree,
   isDataCollectedModel,
   hasByok,
-  isAuto,
   freeDataLabel,
-  autoSummary,
   buildTriggerLabel,
   sanitizeName,
   mostUsedModels,
@@ -55,8 +52,6 @@ import { ModelPreview } from "./ModelPreview"
 
 const CLEAR_KEY = "clear"
 const FAVORITES_KEY = "favorites"
-const AUTO_KEY = "auto"
-const RECOMMENDED_KEY = "recommended"
 const MOST_USED_KEY = "most-used"
 
 function modelKey(providerID: string, modelID: string) {
@@ -121,8 +116,6 @@ export interface ModelSelectorBaseProps {
   allowClear?: boolean
   /** Label shown for the clear option */
   clearLabel?: string
-  /** Include auto-small models in the list — defaults to false */
-  includeAutoSmall?: boolean
   /** Override the provider catalog for constrained selectors. */
   models?: EnrichedModel[]
   /** Show favorites group and favorite buttons — defaults to true. */
@@ -217,14 +210,10 @@ export const ModelSelectorBase: Component<ModelSelectorBaseProps> = (props) => {
   }
 
   // Only show models from connected providers.
-  // Auto-small models are excluded unless includeAutoSmall is explicitly true.
   const visibleModels = createMemo(() => {
     if (props.models) return props.models
     const c = connected()
-    return models().filter((m) => {
-      if (!props.includeAutoSmall && isSmall(m)) return false
-      return c.includes(m.providerID)
-    })
+    return models().filter((m) => c.includes(m.providerID))
   })
 
   const hasProviders = () => visibleModels().length > 0
@@ -269,45 +258,24 @@ export const ModelSelectorBase: Component<ModelSelectorBaseProps> = (props) => {
   })
 
   const groups = createMemo<ModelGroup[]>(() => {
-    const autos: EnrichedModel[] = []
-    const recommended: EnrichedModel[] = []
     const mostUsed: EnrichedModel[] = []
     const map = new Map<string, EnrichedModel[]>()
 
     if (!hasSearch() && session) {
-      mostUsed.push(
-        ...mostUsedModels(
-          visibleModels().filter((model) => !isAuto(model) && model.recommendedIndex === undefined),
-          session.modelUsageHistory(),
-          favoriteKeys(),
-        ),
-      )
+      mostUsed.push(...mostUsedModels(visibleModels(), session.modelUsageHistory(), favoriteKeys()))
     }
 
     for (const m of filtered()) {
-      if (isAuto(m)) {
-        autos.push(m)
-        continue
-      }
       if (
         !hasSearch() &&
         mostUsed.some((item) => modelKey(item.providerID, item.id) === modelKey(m.providerID, m.id))
       ) {
         continue
       }
-      if (m.recommendedIndex !== undefined) {
-        recommended.push(m)
-        continue
-      }
       const list = map.get(m.providerID) ?? []
       list.push(m)
       map.set(m.providerID, list)
     }
-
-    autos.sort(
-      (a, b) => (a.recommendedIndex ?? Infinity) - (b.recommendedIndex ?? Infinity) || a.name.localeCompare(b.name),
-    )
-    recommended.sort((a, b) => (a.recommendedIndex ?? Infinity) - (b.recommendedIndex ?? Infinity))
 
     const result: ModelGroup[] = []
 
@@ -320,30 +288,6 @@ export const ModelSelectorBase: Component<ModelSelectorBaseProps> = (props) => {
         rows: favorites.map((m) => ({
           key: rowKey("favorite", m.providerID, m.id),
           kind: "favorite",
-          model: m,
-        })),
-      })
-    }
-
-    if (autos.length > 0) {
-      result.push({
-        key: AUTO_KEY,
-        label: language.t("model.group.auto"),
-        rows: autos.map((m) => ({
-          key: rowKey("model", m.providerID, m.id),
-          kind: "model",
-          model: m,
-        })),
-      })
-    }
-
-    if (recommended.length > 0) {
-      result.push({
-        key: RECOMMENDED_KEY,
-        label: language.t("model.group.recommended"),
-        rows: recommended.map((m) => ({
-          key: rowKey("model", m.providerID, m.id),
-          kind: "model",
           model: m,
         })),
       })
@@ -791,7 +735,6 @@ export const ModelSelectorBase: Component<ModelSelectorBaseProps> = (props) => {
   const describedBy = () => (props.description ? descriptionID : undefined)
   const freeLabel = () => language.t("model.tag.free")
   const dataLabel = () => freeDataLabel(language.t("model.tag.free"), language.t("model.tag.dataCollected"))
-  const autoLabel = (model: EnrichedModel) => autoSummary(model)
   const activeCollectsData = () => {
     const model = activeModel()
     if (!model) return false
@@ -1051,13 +994,6 @@ export const ModelSelectorBase: Component<ModelSelectorBaseProps> = (props) => {
                                       )
                                     })()}
                                   </span>
-                                  <Show when={isAuto(model)}>
-                                    <Tooltip value={autoLabel(model)} placement="top">
-                                      <span class="model-selector-auto-icon" aria-label={autoLabel(model)}>
-                                        <Icon name="models" size="small" />
-                                      </span>
-                                    </Tooltip>
-                                  </Show>
                                   <Show when={isFree(model) || hasByok(model) || isDataCollectedModel(model)}>
                                     <span class="model-selector-free-data">
                                       <Show when={isFree(model) && !hasByok(model)}>

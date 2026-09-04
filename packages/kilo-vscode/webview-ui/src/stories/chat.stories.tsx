@@ -1051,7 +1051,7 @@ const headerMessages: Message[] = [
     createdAt: new Date(headerNow - 10000).toISOString(),
     time: { created: headerNow - 10000 },
     modelID: "anthropic/claude-sonnet-4-6",
-    providerID: "kilo",
+    providerID: "lmstudio",
     mode: "default",
     agent: "code",
     path: { cwd: "/project", root: "/project" },
@@ -1287,7 +1287,7 @@ const usageData = {
     tokens: { input: 25_908_400, output: 52_710, reasoning: 4_220, cache: { read: 10_514_000, write: 80_900 } },
   },
   models: [
-    { providerID: "kilo", modelID: "qwen/qwen3.7-plus-20260602", steps: 3, cost: 0.067214, tokens: usageTokens },
+    { providerID: "lmstudio", modelID: "qwen/qwen3.7-plus-20260602", steps: 3, cost: 0.067214, tokens: usageTokens },
     {
       providerID: "minimax",
       modelID: "minimax-m3",
@@ -1298,9 +1298,9 @@ const usageData = {
   ],
 } satisfies SessionModelUsage
 const usageProviders = {
-  kilo: {
-    id: "kilo",
-    name: "Kilo Gateway",
+  lmstudio: {
+    id: "lmstudio",
+    name: "LM Studio",
     models: {
       "qwen/qwen3.7-plus": { id: "qwen/qwen3.7-plus", name: "Qwen: Qwen3.7 Plus (20% off)" },
     },
@@ -1313,9 +1313,9 @@ const usageProviders = {
 }
 const usageProvider = {
   providers: () => usageProviders,
-  connected: () => ["kilo", "minimax"],
+  connected: () => ["lmstudio", "minimax"],
   defaults: () => ({}),
-  defaultSelection: () => ({ providerID: "kilo", modelID: "qwen/qwen3.7-plus" }),
+  defaultSelection: () => ({ providerID: "lmstudio", modelID: "qwen/qwen3.7-plus" }),
   models: () => [],
   findModel: () => undefined,
   authMethods: () => ({}),

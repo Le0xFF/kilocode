@@ -2,7 +2,6 @@ import { Button } from "@kilocode/kilo-ui/button"
 import { Card } from "@kilocode/kilo-ui/card"
 import { Collapsible } from "@kilocode/kilo-ui/collapsible"
 import { useDialog } from "@kilocode/kilo-ui/context/dialog"
-import { Icon } from "@kilocode/kilo-ui/icon"
 import { ProviderIcon } from "@kilocode/kilo-ui/provider-icon"
 import { Select } from "@kilocode/kilo-ui/select"
 import { Tag } from "@kilocode/kilo-ui/tag"
@@ -15,13 +14,17 @@ import { useVSCode } from "../../context/vscode"
 import type { Provider } from "../../types/messages"
 import CustomProviderDialog from "./CustomProviderDialog"
 import ProviderConnectDialog from "./ProviderConnectDialog"
-import ProviderSelectDialog from "./ProviderSelectDialog"
-import { CUSTOM_PROVIDER_ID, isPopularProvider, providerIcon, providerNoteKey, sortProviders } from "./provider-catalog"
+import { providerIcon } from "./provider-catalog"
 import { disabledProviderOptions } from "./provider-visibility"
 import { isCustomProviderPackage } from "../../../../src/shared/provider-model"
 import { createProviderAction } from "../../utils/provider-action"
 
 type ProviderSource = "env" | "api" | "config" | "custom"
+const LOCAL_SOURCES: ReadonlySet<string> = new Set(["env", "config", "custom"])
+// Safety net mirroring the host whitelist (packages/opencode/src/kilocode/local-providers.ts).
+// The backend already cuts `connected` to this surface (Step 3); this guards against any
+// online built-in leaking into the data. Keep in sync with the host list.
+const LOCAL_PROVIDER_IDS: ReadonlySet<string> = new Set(["lmstudio", "atomic-chat", "privatemode-ai"])
 type ProviderOption = { value: string; label: string }
 
 const ProvidersTab: Component = () => {
@@ -37,23 +40,24 @@ const ProvidersTab: Component = () => {
 
   const connectedProviders = createMemo(() => {
     const all = provider.providers()
+    const configured = new Set(Object.keys(config().provider ?? {}))
     return provider
       .connected()
       .map((id) => all[id])
       .filter((item): item is Provider => !!item)
-  })
-
-  const popularProviders = createMemo(() => {
-    const connected = new Set(provider.connected())
-    const disabled = new Set(config().disabled_providers ?? [])
-    const all = Object.values(provider.providers())
-    return sortProviders(all.filter((item) => isPopularProvider(item) && !connected.has(item.id) && !disabled.has(item.id)))
+      .filter((item) => LOCAL_SOURCES.has(source(item) ?? ""))
+      .filter((item) => LOCAL_PROVIDER_IDS.has(item.id) || configured.has(item.id))
   })
 
   const disabledProviders = createMemo(() => config().disabled_providers ?? [])
-  const disabledIds = createMemo(() => new Set(disabledProviders()))
   const providers = createMemo(() => provider.providers())
-  const disabledOptions = createMemo(() => disabledProviderOptions(providers(), disabledProviders()))
+  // Safety-net surface for the "Disabled providers" picker: whitelist + configured.
+  const localSurface = createMemo(
+    () => new Set([...LOCAL_PROVIDER_IDS, ...Object.keys(config().provider ?? {})]),
+  )
+  const disabledOptions = createMemo(() =>
+    disabledProviderOptions(providers(), disabledProviders(), localSurface()),
+  )
 
   function source(item: Provider): ProviderSource | undefined {
     if (!("source" in item)) return
@@ -63,7 +67,6 @@ const ProvidersTab: Component = () => {
   }
 
   function sourceTag(item: Provider) {
-    if (item.id === "anaconda-desktop") return language.t("settings.providers.tag.local")
     const current = source(item)
     if (current === "env") return language.t("settings.providers.tag.environment")
     if (current === "api") return language.t("provider.connect.method.apiKey")
@@ -126,10 +129,6 @@ const ProvidersTab: Component = () => {
   function disabledName(id: string) {
     const item = providers()[id]
     return item?.name ?? id
-  }
-
-  function connectProvider(item: Provider) {
-    dialog.show(() => <ProviderConnectDialog providerID={item.id} />)
   }
 
   function connectChatGPT(item: Provider) {
@@ -210,11 +209,6 @@ const ProvidersTab: Component = () => {
                       {language.t("settings.providers.action.signInChatGPT")}
                     </Button>
                   </Show>
-                  <Show when={item.id === "anaconda-desktop"}>
-                    <Button size="large" variant="ghost" onClick={() => connectProvider(item)}>
-                      {language.t("provider.anaconda.action.manage")}
-                    </Button>
-                  </Show>
                   <Show when={canDisconnect(item)}>
                     <Show when={isCustom(item)}>
                       <Button size="large" variant="ghost" onClick={() => editProvider(item)}>
@@ -232,63 +226,11 @@ const ProvidersTab: Component = () => {
         </Show>
       </Card>
 
-      {/* Popular providers */}
+      {/* Custom providers */}
       <h4 style={{ "margin-top": "24px", "margin-bottom": "8px" }}>
-        {language.t("settings.providers.section.popular")}
+        {language.t("settings.providers.section.custom")}
       </h4>
       <Card>
-        <For each={popularProviders()}>
-          {(item) => {
-            const noteKey = providerNoteKey(item)
-            return (
-              <div
-                style={{
-                  display: "flex",
-                  "flex-wrap": "wrap",
-                  "align-items": "center",
-                  "justify-content": "space-between",
-                  gap: "16px",
-                  "min-height": "56px",
-                  padding: "12px 0",
-                  "border-bottom": "1px solid var(--border-weak-base)",
-                }}
-              >
-                <div style={{ display: "flex", "flex-direction": "column", "min-width": 0 }}>
-                  <div style={{ display: "flex", "align-items": "center", gap: "12px" }}>
-                    <ProviderIcon id={providerIcon(item)} width={20} height={20} />
-                    <span
-                      style={{
-                        "font-size": "var(--kilo-font-size-14)",
-                        "font-weight": "500",
-                        color: "var(--vscode-foreground)",
-                      }}
-                    >
-                      {item.name}
-                    </span>
-                  </div>
-                  <Show when={noteKey}>
-                    {(key) => (
-                      <span
-                        style={{
-                          "font-size": "var(--kilo-font-size-12)",
-                          color: "var(--text-weak-base, var(--vscode-descriptionForeground))",
-                          "padding-left": "32px",
-                        }}
-                      >
-                        {language.t(key())}
-                      </span>
-                    )}
-                  </Show>
-                </div>
-                <Button size="large" variant="secondary" icon="plus-small" onClick={() => connectProvider(item)}>
-                  {language.t("common.connect")}
-                </Button>
-              </div>
-            )
-          }}
-        </For>
-
-        {/* Custom provider entry */}
         <div
           style={{
             display: "flex",
@@ -298,7 +240,6 @@ const ProvidersTab: Component = () => {
             gap: "16px",
             "min-height": "56px",
             padding: "12px 0",
-            "border-bottom": "1px solid var(--border-weak-base)",
           }}
         >
           <div style={{ display: "flex", "flex-direction": "column", "min-width": 0 }}>
@@ -334,40 +275,6 @@ const ProvidersTab: Component = () => {
             {language.t("common.connect")}
           </Button>
         </div>
-
-        {/* Show more providers — prominent entry point to the full catalog */}
-        <button
-          type="button"
-          onClick={() => dialog.show(() => <ProviderSelectDialog />)}
-          style={{
-            display: "flex",
-            "align-items": "center",
-            "justify-content": "space-between",
-            gap: "16px",
-            width: "100%",
-            "min-height": "56px",
-            padding: "12px 0",
-            background: "none",
-            border: "none",
-            cursor: "pointer",
-            "text-align": "left",
-            color: "var(--vscode-foreground)",
-            font: "inherit",
-          }}
-        >
-          <div style={{ display: "flex", "align-items": "center", gap: "12px", "min-width": 0 }}>
-            <Icon name="providers" size="small" />
-            <span
-              style={{
-                "font-size": "var(--kilo-font-size-14)",
-                "font-weight": "500",
-              }}
-            >
-              {language.t("dialog.provider.viewAll")}
-            </span>
-          </div>
-          <Icon name="chevron-right" size="small" />
-        </button>
       </Card>
 
       {/* Disabled providers — collapsed by default to keep the focus on active providers */}
