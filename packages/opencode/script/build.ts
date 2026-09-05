@@ -145,17 +145,18 @@ function smokeEnv(root: string) {
     XDG_STATE_HOME: path.join(root, "state"),
     KILO_DISABLE_MODELS_FETCH: "1",
     KILO_DISABLE_PROJECT_CONFIG: "1",
-    KILO_CONFIG_CONTENT: JSON.stringify({ enabled_providers: ["anthropic"] }),
-    ANTHROPIC_API_KEY: "dummy",
+    KILO_CONFIG_CONTENT: JSON.stringify({ enabled_providers: ["lmstudio"] }), // kilocode_change - local-snapshot provider; anthropic is no longer embedded offline
+    ANTHROPIC_API_KEY: "dummy", // kilocode_change - inert: no built-in online loader remains to read it
   }
 }
 
 async function smokeModels(binaryPath: string) {
   const root = await fs.promises.mkdtemp(path.join(os.tmpdir(), "kilo-models-"))
   try {
-    const out = await $`${binaryPath} --pure models anthropic`.env(smokeEnv(root)).text()
-    if (out.split(/\r?\n/).some((line) => line.startsWith("anthropic/"))) return
-    throw new Error("Compiled binary did not list Anthropic models from the embedded snapshot")
+    // kilocode_change - the offline snapshot embeds only local providers; lmstudio is present, anthropic no longer.
+    const out = await $`${binaryPath} --pure models lmstudio`.env(smokeEnv(root)).text()
+    if (out.split(/\r?\n/).some((line) => line.startsWith("lmstudio/"))) return
+    throw new Error("Compiled binary did not list LM Studio models from the embedded snapshot")
   } finally {
     await fs.promises
       .rm(root, { recursive: true, force: true })
@@ -315,7 +316,6 @@ for (const item of targets) {
   const workerPath = "./src/cli/tui/worker.ts"
   const treeSitterWorkerPath = "opentui-tree-sitter-worker.js"
   // kilocode_change start
-  const sessionExportWorkerPath = "./src/kilocode/session-export/worker.ts"
   const indexingWorkerPath = "./src/kilocode/indexing-worker.ts"
   // kilocode_change end
 
@@ -354,7 +354,7 @@ for (const item of targets) {
     },
     // kilocode_change start - packages/app was removed; no embedded web UI
     files: { [treeSitterWorkerPath]: treeSitterWorker },
-    entrypoints: ["./src/index.ts", workerPath, treeSitterWorkerPath, sessionExportWorkerPath, indexingWorkerPath],
+    entrypoints: ["./src/index.ts", workerPath, treeSitterWorkerPath, indexingWorkerPath],
     // kilocode_change end
     define: {
       FFF_LIBC: JSON.stringify(item.abi === "musl" ? "musl" : "gnu"),
@@ -363,7 +363,6 @@ for (const item of targets) {
       OTUI_TREE_SITTER_WORKER_PATH: bunfsRoot + treeSitterWorkerPath,
       KILO_WORKER_PATH: workerPath,
       // kilocode_change start
-      KILO_SESSION_EXPORT_WORKER_PATH: sessionExportWorkerPath,
       KILO_INDEXING_WORKER_PATH: indexingWorkerPath,
       KILO_SANDBOX_MUTATION_WORKER_PATH: JSON.stringify(KiloSandboxWorker.filename),
       KILO_SANDBOX_NETWORK_RELAY_PATH: item.os === "linux" ? JSON.stringify(KiloSandboxNetwork.relay) : "undefined",
@@ -415,7 +414,7 @@ for (const item of targets) {
       const versionOutput = await $`${binaryPath} --version`.text()
       console.log(`Smoke test passed: ${versionOutput.trim()}`)
       // kilocode_change start
-      console.log(`Running smoke test: ${binaryPath} --pure models anthropic`)
+      console.log(`Running smoke test: ${binaryPath} --pure models lmstudio`) // kilocode_change - local-snapshot provider
       await smokeModels(binaryPath)
       console.log("Models snapshot smoke test passed")
       await KiloSandboxWorker.smoke(binaryPath)

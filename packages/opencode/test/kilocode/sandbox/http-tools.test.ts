@@ -6,7 +6,7 @@ import { run, type Profile } from "@kilocode/sandbox"
 import { Agent } from "@/agent/agent"
 import * as ToolNetwork from "@/kilocode/sandbox/network"
 import { MessageID, SessionID } from "@/session/schema"
-import * as McpWebSearch from "@/tool/mcp-websearch"
+
 import { Tool } from "@/tool/tool"
 import { Truncate } from "@/tool/truncate"
 import { WebFetchTool } from "@/tool/webfetch"
@@ -53,15 +53,7 @@ const webfetch = Effect.fn("SandboxHttpToolsTest.webfetch")(function* (
   return yield* tool.execute(args, ctx)
 })
 
-const websearch = (http: HttpClient.HttpClient, url: string) =>
-  McpWebSearch.call(
-    http,
-    url,
-    "web_search_exa",
-    McpWebSearch.SearchArgs,
-    { query: "sandbox", type: "auto", numResults: 1, livecrawl: "fallback" },
-    "5 seconds",
-  )
+
 
 describe("model HTTP tool network policy", () => {
   it.instance("allows the actual webfetch tool under an allow profile", () =>
@@ -95,39 +87,5 @@ describe("model HTTP tool network policy", () => {
     }).pipe(Effect.scoped)
   })
 
-  it.instance("allows the websearch provider helper under an allow profile", () =>
-    Effect.gen(function* () {
-      const payload = JSON.stringify({
-        jsonrpc: "2.0",
-        id: 1,
-        result: { content: [{ type: "text", text: "local search results" }] },
-      })
-      const server = yield* serve(() => new Response(payload))
-      const http = yield* HttpClient.HttpClient
-      const result = yield* run(profile("allow"), websearch(http, server.url.toString()))
-      expect(result).toBe("local search results")
-    }).pipe(Effect.scoped),
-  )
-
-  it.instance("denies the websearch provider helper before it reaches the server", () => {
-    let requests = 0
-    return Effect.gen(function* () {
-      const payload = JSON.stringify({
-        jsonrpc: "2.0",
-        id: 1,
-        result: { content: [{ type: "text", text: "unexpected" }] },
-      })
-      const server = yield* serve(() => {
-        requests++
-        return new Response(payload)
-      })
-      const http = yield* HttpClient.HttpClient
-      const exit = yield* Effect.exit(run(profile("deny"), websearch(http, server.url.toString())))
-      expect(Exit.isFailure(exit)).toBe(true)
-      if (Exit.isFailure(exit)) {
-        expect(Cause.pretty(exit.cause)).toContain("Sandbox denied outbound network access")
-      }
-      expect(requests).toBe(0)
-    }).pipe(Effect.scoped)
-  })
+  
 })

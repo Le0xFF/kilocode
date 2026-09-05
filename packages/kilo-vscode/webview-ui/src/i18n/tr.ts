@@ -1,4 +1,3 @@
-import { cloudProviderDict } from "./cloud-provider"
 
 export const anacondaDesktopDict = {
   "provider.anaconda.title.connect": "Anaconda Desktop'a bağlan",
@@ -53,9 +52,6 @@ export const anacondaDesktopDict = {
 
 export const dict = {
   ...anacondaDesktopDict,
-  ...cloudProviderDict,
-
-
   "session.activity.waiting": "Yanıt veya onay bekleniyor.",
   "session.activity.error": "Hata veya bağlantı kaybı.",
   "session.activity.retry": "Otomatik olarak yeniden deneniyor.",
@@ -82,15 +78,12 @@ export const dict = {
   "command.session.compact": "Oturumu sıkıştır",
   "command.session.export": "Oturum dökümünü dışa aktar",
 
-  "dialog.provider.tag.recommended": "Önerilen",
-
   "dialog.model.select.title": "Model seç",
   "dialog.model.search.placeholder": "Model ara",
   "dialog.model.empty": "Model sonucu yok",
   "dialog.model.select": "Seç",
   "dialog.model.expand": "Genişlet",
   "dialog.model.collapse": "Daralt",
-
 
   "provider.connect.title": "{{provider}} bağla",
   "provider.connect.selectMethod": "{{provider}} için giriş yöntemini seçin.",
@@ -217,14 +210,6 @@ export const dict = {
 
   "error.startup.title": "Sunucu bağlantısı başarısız",
 
-  "error.paidModel.title": "Bu modeli kullanmak için giriş yapmalısınız",
-  "error.paidModel.description":
-    "500'den fazla modele erişmek, kredileri maliyetle kullanmak veya kendi anahtarınızı getirmek için giriş yapın ya da hesap oluşturun.",
-  "error.paidModel.action": "Giriş Yap",
-  "error.promotionLimit.title": "Devam etmek için kayıt olmalısınız",
-  "error.promotionLimit.description":
-    "Devam etmek ve 500'den fazla modeli keşfetmek için ücretsiz kayıt olun. 2 dakika sürer, kredi kartı gerekmez. Ya da daha sonra gelin.",
-  "error.promotionLimit.action": "Kayıt Ol",
   "error.providerAuth.title": "{{provider}} oturumunuzu kapattı",
   "error.providerAuth.description": "{{provider}} bağlantısını yeniden kurun ve mesajınızı tekrar gönderin.",
   "error.providerAuth.chatgpt.title": "OpenAI oturumunuzu kapattı",
@@ -249,7 +234,6 @@ export const dict = {
   "ui.permission.toolLabel.patch": "Yama",
   "ui.permission.toolLabel.globSearch": "Glob Araması",
   "ui.permission.toolLabel.grepSearch": "Grep Araması",
-  "ui.permission.toolLabel.webSearch": "Web Araması",
   "ui.permission.toolLabel.list": "Listele",
   "ui.permission.toolLabel.externalDirectory": "Harici Dizine Eriş",
   "ui.permission.toolLabel.webFetch": "Web Getir",
@@ -286,9 +270,6 @@ export const dict = {
   "sidebar.topBar.newTask": "Yeni Görev",
   "sidebar.topBar.history": "Geçmiş",
   "sidebar.topBar.agentManager": "Agent Manager",
-  "sidebar.topBar.kiloClaw": "KiloClaw",
-  "sidebar.topBar.marketplace": "Marketplace",
-  "sidebar.topBar.profile": "Profil",
   "sidebar.topBar.settings": "Ayarlar",
   "sidebar.session.newSession": "Yeni Oturum",
   "sidebar.session.newSession.tooltip": "Mevcut oturumu koruyarak yeni bir konuşma başlatın.",
@@ -492,8 +473,6 @@ export const dict = {
   "settings.permissions.tool.todowrite.description": "Görev listesini güncelle",
   "settings.permissions.tool.webfetch.title": "Web Getir",
   "settings.permissions.tool.webfetch.description": "Bir URL'den içerik getir",
-  "settings.permissions.tool.websearch.title": "Web Ara",
-  "settings.permissions.tool.websearch.description": "Web'de ara",
   "settings.permissions.tool.codesearch.title": "Kod Ara",
   "settings.permissions.tool.codesearch.description": "Web'de kod ara",
   "settings.permissions.tool.external_directory.title": "Harici Dizin",
@@ -519,8 +498,6 @@ export const dict = {
   "session.tab.local": "Local",
   "session.tab.cloud": "Cloud",
   "session.tab.worktree": "Çalışma ağacı",
-  "session.cloud.repoOnly": "Yalnızca bu depo",
-  "session.cloud.import": "Buluttan içe aktar",
   "feedback.button": "Geri Bildirim ve Destek",
   "feedback.dialog.message":
     "Geri bildiriminizi almaktan veya yaşadığınız sorunlarda yardımcı olmaktan mutluluk duyarız.",
@@ -549,97 +526,17 @@ export const dict = {
     "Çalışma alanındaki dosyaları izin istemeden düzenler ve komutları çalıştırır.",
   "workStyle.choice.autonomous.bash": "Çalışma alanında terminal komutlarını onay almadan çalıştırabilir.",
   "workStyle.choice.autonomous.visibility": "Ayrıntılar siz genişletene kadar daraltılmış olarak kalır.",
-  "session.cloud.import.title": "Buluttan içe aktar",
-  "session.cloud.import.placeholder": "Oturum kimliği, URL veya kilo import komutu",
-  "session.cloud.import.button": "İçe Aktar",
-  "session.cloud.import.invalid": "Geçersiz oturum kimliği biçimi",
-  "session.cloud.import.legacy": "Bu, artık desteklenmeyen eski bir oturum gibi görünüyor.",
-  "session.cloud.import.failed": "Bulut oturumu içe aktarılamadı",
-
-  "deviceAuth.toast.urlCopied": "URL panoya kopyalandı",
-  "deviceAuth.toast.codeCopied": "Kod panoya kopyalandı",
-  "deviceAuth.toast.errorCopied": "Hata panoya kopyalandı",
-  "deviceAuth.status.initiating": "Giriş başlatılıyor...",
-  "deviceAuth.title": "Kilo Code'a giriş yap",
-  "deviceAuth.step1": "Adım 1: Bu URL'yi açın",
-  "deviceAuth.action.copyUrl": "URL'yi Kopyala",
-  "deviceAuth.action.openBrowser": "Tarayıcıyı Aç",
-  "deviceAuth.qrCode.alt": "QR Kodu",
-  "deviceAuth.step2": "Adım 2: Bu kodu girin",
-  "deviceAuth.action.clickToCopy": "Kopyalamak için tıklayın",
-  "deviceAuth.status.waiting": "Yetkilendirme bekleniyor...",
-  "deviceAuth.status.success": "Giriş başarılı!",
-  "deviceAuth.status.failed": "Giriş başarısız",
-  "deviceAuth.status.cancelled": "Giriş iptal edildi",
-  "deviceAuth.action.copyError": "Hatayı kopyala",
-  "deviceAuth.action.showDetails": "Ayrıntıları göster",
-  "deviceAuth.action.tryAgain": "Tekrar Dene",
-  "deviceAuth.error.detailsTitle": "Giriş hatası ayrıntıları",
 
   "common.retry": "Tekrar Dene",
   "common.refresh": "Yenile",
   "common.reload": "Yeniden yükle",
   "common.reloadDescription": "Diskten yapılandırma, yetenekler, ajanlar ve komutları yeniden yükle",
 
-  "profile.title": "Profil",
-  "profile.notLoggedIn": "Giriş yapılmadı",
-  "profile.action.login": "Kilo Code ile giriş yap",
-  "profile.balance.title": "Bakiye",
-  "profile.balance.refresh": "Bakiyeyi yenile",
-  "profile.usage.title": "Planlar ve kullanım",
-  "profile.usage.description": "Mevcut plan kotası ve bakiyeleri",
-  "profile.usage.refresh": "Sağlayıcı kullanımını yenile",
-  "profile.usage.empty": "Hiçbir sağlayıcı kullanım kaynağı algılanmadı.",
-  "profile.usage.source.direct": "Doğrudan",
-  "profile.usage.state.stale": "Son güncellenen kullanım verileri gösteriliyor.",
-  "profile.usage.state.unavailable": "Kullanım verileri kullanılamıyor.",
-  "profile.usage.plan.pastDue": "Plan: Ödeme gecikmiş",
-  "profile.usage.plan.canceling": "Plan: Dönem sonunda iptal edilecek",
-  "profile.usage.plan.unknown": "Plan: Durum bilinmiyor",
-  "profile.usage.action.manage": "Yönet",
-  "profile.usage.action.managePlan": "{{plan}} planını yönet",
-  "profile.usage.routingState.disabled": "devre dışı",
-  "profile.usage.routingState.missing": "eksik",
-  "profile.usage.routingState.replaced": "değiştirildi",
-  "profile.usage.routingState.unknown": "bilinmiyor",
-  "profile.usage.window.used": "{{value}} kullanıldı",
-  "profile.usage.window.remaining": "{{value}} kaldı",
-  "profile.usage.window.remainingOf": "{{limit}} içinden {{value}} kaldı",
-  "profile.usage.window.usedOf": "{{limit}} içinden {{value}} kullanıldı",
-  "profile.usage.window.quota": "Kota",
-  "profile.usage.window.daily": "Günlük kota",
-  "profile.usage.window.weekly": "Haftalık kota",
-  "profile.usage.window.monthly": "Aylık kota",
-  "profile.usage.window.hours": "{{count}} saatlik kota",
-  "profile.usage.window.days": "{{count}} günlük kota",
-  "profile.usage.window.weeks": "{{count}} haftalık kota",
-  "profile.usage.window.months": "{{count}} aylık kota",
-  "profile.usage.window.shared": "Paylaşımlı",
-  "profile.usage.window.scoped": "{{resource}} · {{period}}",
-  "profile.usage.reset": "{{date}} tarihinde sıfırlanır",
-  "profile.usage.status.unknown": "Bilinmiyor",
-  "profile.usage.status.unlimited": "Sınırsız",
-  "profile.usage.status.notInPlan": "Plana dahil değil",
-  "profile.usage.status.exhausted": "Tükendi",
-  "profile.action.dashboard": "Kontrol Paneli",
-  "profile.action.topUp": "Bakiye yükle",
-  "profile.pass.subscribe": "Kredi eklemek ve bonus kazanmak için Kilo Pass edinin",
-  "profile.pass.bonus": "Bonus",
-  "profile.pass.usage": "Bu ayki kullanım",
-  "profile.pass.paid": "Ücretli",
-  "profile.pass.meter": "Aylık Kilo Pass kullanımı",
-  "profile.pass.renews": "Yenilenir",
-  "profile.action.logout": "Çıkış Yap",
-
   "settings.agentBehaviour.title": "Ajan Davranışı",
   "settings.autoApprove.title": "Otomatik Onay",
   "settings.webTools.title": "Web Araçları",
   "settings.webTools.description": "Web aramasını ve tarayıcı otomasyonunu yapılandırın.",
-  "settings.webTools.webSearch.enable": "Tüm Sağlayıcılar İçin Etkinleştir",
   "settings.webTools.browserAutomation": "Tarayıcı Otomasyonu",
-  "settings.webTools.webSearch.title": "Web Araması",
-  "settings.webTools.webSearch.description":
-    "Web aramasını tüm sağlayıcıların modelleri için kullanılabilir hale getirin.",
   "settings.checkpoints.title": "Kontrol Noktaları",
   "settings.display.title": "Görünüm",
   "settings.notifications.title": "Bildirimler",
@@ -749,8 +646,6 @@ export const dict = {
   "settings.aboutKiloCode.community": "Topluluk ve Destek",
   "settings.aboutKiloCode.feedback.prefix":
     "Herhangi bir sorunuz veya geri bildiriminiz varsa, lütfen şu adreste bir sorun açın:",
-  "settings.aboutKiloCode.feedback.or": "veya",
-  "settings.aboutKiloCode.support.prefix": "Faturalama veya hesap soruları için Müşteri Desteği ile iletişime geçin:",
   "settings.aboutKiloCode.resetSettings.title": "Ayarları Sıfırla",
   "settings.aboutKiloCode.resetSettings.description":
     "Bu, yalnızca VS Code uzantısına özgü ayarları varsayılan değerlerine sıfırlar. Modlar ve otomatik onay kuralları gibi CLI ile paylaşılan ayarlar, CLI yapılandırmasında depolanır ve sıfırlanmaz.",
@@ -767,11 +662,6 @@ export const dict = {
     "Bu dosya Kilo'nun daha yeni bir sürümünden dışa aktarılmış. Bazı ayarlar göz ardı edilebilir.",
   "settings.aboutKiloCode.importSettings.success":
     "Ayarlar içe aktarıldı. Yukarıdaki değişiklikleri gözden geçirin, ardından Kaydet'e tıklayın.",
-
-  "settings.aboutKiloCode.telemetry.title": "Telemetri",
-  "settings.aboutKiloCode.telemetry.description":
-    "Telemetri, VS Code'un yerleşik telemetri ayarı tarafından kontrol edilir. Devre dışı bırakmak için Ayarlar > Telemetri > Telemetri Düzeyi'ne gidin ve \"off\" olarak ayarlayın. Değişikliği uygulamak için VS Code'u yeniden başlatın.",
-  "settings.aboutKiloCode.telemetry.openSettings": "Telemetri Ayarlarını Aç",
 
   "settings.agentBehaviour.subtab.agents": "Ajanlar",
   "settings.agentBehaviour.subtab.mcpServers": "MCP Sunucuları",
@@ -843,14 +733,6 @@ export const dict = {
     "Agent Manager'da birden fazla depo genelinde oturum ve worktree yönetimini etkinleştirin. Mevcut çalışma alanı deposu her zaman varsayılan projedir.",
   "settings.experimental.mcpTimeout.title": "MCP Zaman Aşımı (ms)",
   "settings.experimental.mcpTimeout.description": "MCP sunucu istekleri için milisaniye cinsinden zaman aşımı",
-  "settings.experimental.remote.title": "Remote Kontrolü",
-  "settings.experimental.remote.description":
-    "Kilo Cloud üzerinden oturumların Remote kontrolünü etkinleştirin. Bu, bu makinedeki CLI'leri de etkileyecektir.",
-  "settings.experimental.remote.current": "Mevcut durum:",
-  "settings.experimental.remote.startup": "Başlangıçta otomatik etkinleştir:",
-  "settings.experimental.remote.active": "Aktif",
-  "settings.experimental.remote.inactive": "Pasif",
-  "settings.experimental.remote.hint": "Geçiş yapmak için sohbette /remote kullanın",
   "settings.experimental.toolToggles": "Araç Açma/Kapatma",
   "settings.sandboxing.enabled.title": "Sandbox",
   "settings.sandboxing.enabled.description":
@@ -975,7 +857,6 @@ export const dict = {
   "settings.autoApprove.tool.todoreadwrite":
     "Görev listesini yönet. Dahili görev listesini okuma ve güncellemeye izin verir.",
   "settings.autoApprove.tool.webfetch": "URL getir. Belirli bir URL'den içerik almaya izin verir.",
-  "settings.autoApprove.tool.websearch": "Web'de ara. Harici web aramaları yapmaya izin verir.",
   "settings.autoApprove.tool.doom_loop":
     "Tekrarlanan aynı eylemleri önle. Aynı araç çağrısı aynı girdiyle tekrarlandığında tetiklenir.",
 
@@ -1087,8 +968,6 @@ export const dict = {
   "settings.providers.select.placeholder": "Sağlayıcı seç...",
 
   "dialog.model.notSet": "Ayarlanmadı",
-
-  "profile.personalAccount": "Kişisel Hesap",
 
   // Agent Manager strings live in webview-ui/agent-manager/i18n/en.ts
 
@@ -1218,7 +1097,6 @@ export const dict = {
   "notifications.action.tryModel": "Dene {{model}}",
   "notifications.action.tryModelGeneric": "Modeli Dene",
   // Missing translations - English fallbacks until translated
-  "profile.switchingAccount": "Hesap değiştiriliyor…",
   "settings.agentBehaviour.createMode": "Yeni Mod Oluştur",
   "settings.agentBehaviour.createMode.button": "Oluştur",
   "settings.agentBehaviour.createMode.cancel": "İptal",

@@ -14,5 +14,9 @@ export const PROMPTS = [
   "gpt55",
 ] as const
 
-export const AI_SDK_PROVIDERS = ["anthropic", "openai", "openai-compatible", "openrouter"] as const
+// kilocode_change - aligned with the packages CustomProviderDialog offers (anthropic/openai/openai-compatible);
+// "openrouter" was dropped: it is not a user-configurable custom provider, and its removal from the literals
+// changes v1 config decode for existing files setting ai_sdk_provider: "openrouter" (optional field on Model) —
+// accepted per the offline contract; that key is only informational for model routing.
+export const AI_SDK_PROVIDERS = ["anthropic", "openai", "openai-compatible"] as const
 // kilocode_change end

@@ -1,4 +1,3 @@
-import { cloudProviderDict } from "./cloud-provider"
 
 export const anacondaDesktopDict = {
   "provider.anaconda.title.connect": "Anaconda Desktop verbinden",
@@ -53,9 +52,6 @@ export const anacondaDesktopDict = {
 
 export const dict = {
   ...anacondaDesktopDict,
-  ...cloudProviderDict,
-
-
   "session.activity.waiting": "Wachten op een antwoord of goedkeuring.",
   "session.activity.error": "Fout of verbinding verbroken.",
   "session.activity.retry": "Automatisch opnieuw proberen.",
@@ -82,15 +78,12 @@ export const dict = {
   "command.session.compact": "Sessie comprimeren",
   "command.session.export": "Sessietranscript exporteren",
 
-  "dialog.provider.tag.recommended": "Aanbevolen",
-
   "dialog.model.select.title": "Model selecteren",
   "dialog.model.search.placeholder": "Modellen zoeken",
   "dialog.model.empty": "Geen modellen gevonden",
   "dialog.model.select": "Selecteren",
   "dialog.model.expand": "Uitvouwen",
   "dialog.model.collapse": "Samenvouwen",
-
 
   "provider.connect.title": "Verbind {{provider}}",
   "provider.connect.selectMethod": "Selecteer inlogmethode voor {{provider}}.",
@@ -221,14 +214,6 @@ export const dict = {
 
   "error.startup.title": "Serververbinding mislukt",
 
-  "error.paidModel.title": "Je moet inloggen om dit model te gebruiken",
-  "error.paidModel.description":
-    "Log in of maak een account aan om toegang te krijgen tot meer dan 500 modellen, credits tegen kostprijs te gebruiken, of je eigen sleutel mee te nemen.",
-  "error.paidModel.action": "Inloggen",
-  "error.promotionLimit.title": "Je moet je registreren om door te gaan",
-  "error.promotionLimit.description":
-    "Registreer je gratis om door te gaan en 500 andere modellen te ontdekken. Duurt 2 minuten, geen creditcard vereist. Of kom later terug.",
-  "error.promotionLimit.action": "Registreren",
   "error.providerAuth.title": "{{provider}} heeft je afgemeld",
   "error.providerAuth.description": "Verbind opnieuw met {{provider}} en stuur je bericht nog een keer.",
   "error.providerAuth.chatgpt.title": "OpenAI heeft je afgemeld",
@@ -252,7 +237,6 @@ export const dict = {
   "ui.permission.toolLabel.patch": "Patchen",
   "ui.permission.toolLabel.globSearch": "Glob Zoeken",
   "ui.permission.toolLabel.grepSearch": "Grep Zoeken",
-  "ui.permission.toolLabel.webSearch": "Web Zoeken",
   "ui.permission.toolLabel.list": "Lijst",
   "ui.permission.toolLabel.externalDirectory": "Externe map openen",
   "ui.permission.toolLabel.webFetch": "Web Ophalen",
@@ -289,9 +273,6 @@ export const dict = {
   "sidebar.topBar.newTask": "Nieuwe Taak",
   "sidebar.topBar.history": "Geschiedenis",
   "sidebar.topBar.agentManager": "Agent Manager",
-  "sidebar.topBar.kiloClaw": "KiloClaw",
-  "sidebar.topBar.marketplace": "Marketplace",
-  "sidebar.topBar.profile": "Profiel",
   "sidebar.topBar.settings": "Instellingen",
   "sidebar.session.newSession": "Nieuwe Sessie",
   "sidebar.session.newSession.tooltip": "Start een nieuw gesprek terwijl je de huidige sessie intact houdt.",
@@ -496,8 +477,6 @@ export const dict = {
   "settings.permissions.tool.todowrite.description": "Werk de todo-lijst bij",
   "settings.permissions.tool.webfetch.title": "Web Ophalen",
   "settings.permissions.tool.webfetch.description": "Haal inhoud op van een URL",
-  "settings.permissions.tool.websearch.title": "Web Zoeken",
-  "settings.permissions.tool.websearch.description": "Zoek op het web",
   "settings.permissions.tool.codesearch.title": "Code Zoeken",
   "settings.permissions.tool.codesearch.description": "Zoek code op het web",
   "settings.permissions.tool.external_directory.title": "Externe Map",
@@ -523,8 +502,6 @@ export const dict = {
   "session.tab.local": "Lokaal",
   "session.tab.cloud": "Cloud",
   "session.tab.worktree": "Werkboom",
-  "session.cloud.repoOnly": "Alleen deze repository",
-  "session.cloud.import": "Importeer uit de cloud",
   "feedback.button": "Feedback & Ondersteuning",
   "feedback.dialog.message": "We horen graag uw feedback of helpen met eventuele problemen die u ervaart.",
   "feedback.dialog.github": "Meld een probleem op GitHub",
@@ -552,96 +529,17 @@ export const dict = {
     "Bewerkt bestanden en voert opdrachten in de werkruimte uit zonder toestemming te vragen.",
   "workStyle.choice.autonomous.bash": "Kan terminalopdrachten in de werkruimte zonder goedkeuring uitvoeren.",
   "workStyle.choice.autonomous.visibility": "Details blijven ingeklapt totdat je ze uitvouwt.",
-  "session.cloud.import.title": "Importeer uit de cloud",
-  "session.cloud.import.placeholder": "Sessie-ID, URL, of kilo import commando",
-  "session.cloud.import.button": "Importeren",
-  "session.cloud.import.invalid": "Ongeldig formaat van sessie-ID",
-  "session.cloud.import.legacy": "Dit lijkt een oude sessie te zijn die niet langer wordt ondersteund.",
-  "session.cloud.import.failed": "Importeren van cloudsessie mislukt",
-
-  "deviceAuth.toast.urlCopied": "URL gekopieerd naar klembord",
-  "deviceAuth.toast.codeCopied": "Code gekopieerd naar klembord",
-  "deviceAuth.toast.errorCopied": "Fout gekopieerd naar klembord",
-  "deviceAuth.status.initiating": "Inloggen starten...",
-  "deviceAuth.title": "Meld je aan bij Kilo Code",
-  "deviceAuth.step1": "Stap 1: Open deze URL",
-  "deviceAuth.action.copyUrl": "Kopieer URL",
-  "deviceAuth.action.openBrowser": "Open Browser",
-  "deviceAuth.qrCode.alt": "QR Code",
-  "deviceAuth.step2": "Stap 2: Voer deze code in",
-  "deviceAuth.action.clickToCopy": "Klik om te kopiëren",
-  "deviceAuth.status.waiting": "Wachten op autorisatie...",
-  "deviceAuth.status.success": "Inloggen succesvol!",
-  "deviceAuth.status.failed": "Inloggen mislukt",
-  "deviceAuth.status.cancelled": "Inloggen geannuleerd",
-  "deviceAuth.action.copyError": "Kopieer fout",
-  "deviceAuth.action.showDetails": "Bekijk details",
-  "deviceAuth.action.tryAgain": "Probeer opnieuw",
-  "deviceAuth.error.detailsTitle": "Inlogfout details",
 
   "common.retry": "Opnieuw proberen",
   "common.refresh": "Vernieuwen",
   "common.reload": "Herladen",
   "common.reloadDescription": "Herlaad configuratie, vaardigheden, agents en opdrachten vanaf schijf",
 
-  "profile.title": "Profiel",
-  "profile.notLoggedIn": "Niet ingelogd",
-  "profile.action.login": "Inloggen met Kilo Code",
-  "profile.balance.title": "Saldo",
-  "profile.balance.refresh": "Saldo vernieuwen",
-  "profile.usage.title": "Abonnementen en gebruik",
-  "profile.usage.description": "Quota en saldi van het huidige abonnement",
-  "profile.usage.refresh": "Providergebruik vernieuwen",
-  "profile.usage.empty": "Geen bronnen voor providergebruik gedetecteerd.",
-  "profile.usage.source.direct": "Direct",
-  "profile.usage.state.stale": "De laatst bijgewerkte gebruiksgegevens worden weergegeven.",
-  "profile.usage.state.unavailable": "Gebruiksgegevens niet beschikbaar.",
-  "profile.usage.plan.pastDue": "Abonnement: Betaling achterstallig",
-  "profile.usage.plan.canceling": "Abonnement: Wordt aan het einde van de periode opgezegd",
-  "profile.usage.plan.unknown": "Abonnement: Status onbekend",
-  "profile.usage.action.manage": "Beheren",
-  "profile.usage.action.managePlan": "{{plan}} beheren",
-  "profile.usage.routingState.disabled": "uitgeschakeld",
-  "profile.usage.routingState.missing": "afwezig",
-  "profile.usage.routingState.replaced": "vervangen",
-  "profile.usage.routingState.unknown": "onbekend",
-  "profile.usage.window.used": "{{value}} gebruikt",
-  "profile.usage.window.remaining": "{{value}} resterend",
-  "profile.usage.window.remainingOf": "{{value}} van {{limit}} resterend",
-  "profile.usage.window.usedOf": "{{value}} van {{limit}} gebruikt",
-  "profile.usage.window.quota": "Quotum",
-  "profile.usage.window.daily": "Dagelijks quotum",
-  "profile.usage.window.weekly": "Wekelijks quotum",
-  "profile.usage.window.monthly": "Maandelijks quotum",
-  "profile.usage.window.hours": "Quotum per {{count}} uur",
-  "profile.usage.window.days": "Quotum per {{count}} dagen",
-  "profile.usage.window.weeks": "Quotum per {{count}} weken",
-  "profile.usage.window.months": "Quotum per {{count}} maanden",
-  "profile.usage.window.shared": "Gedeeld",
-  "profile.usage.window.scoped": "{{resource}} · {{period}}",
-  "profile.usage.reset": "Wordt op {{date}} gereset",
-  "profile.usage.status.unknown": "Onbekend",
-  "profile.usage.status.unlimited": "Onbeperkt",
-  "profile.usage.status.notInPlan": "Niet in abonnement",
-  "profile.usage.status.exhausted": "Opgebruikt",
-  "profile.action.dashboard": "Dashboard",
-  "profile.action.topUp": "Opwaarderen",
-  "profile.pass.subscribe": "Schaf Kilo Pass aan om tegoed toe te voegen en bonussen te verdienen",
-  "profile.pass.bonus": "Bonus",
-  "profile.pass.usage": "Verbruik deze maand",
-  "profile.pass.paid": "Betaald",
-  "profile.pass.meter": "Maandelijks Kilo Pass-verbruik",
-  "profile.pass.renews": "Vernieuwt",
-  "profile.action.logout": "Uitloggen",
-
   "settings.agentBehaviour.title": "Agent Gedrag",
   "settings.autoApprove.title": "Automatisch Goedkeuren",
   "settings.webTools.title": "Webtools",
   "settings.webTools.description": "Configureer zoeken op internet en browserautomatisering.",
-  "settings.webTools.webSearch.enable": "Inschakelen voor alle providers",
   "settings.webTools.browserAutomation": "Browserautomatisering",
-  "settings.webTools.webSearch.title": "Zoeken op internet",
-  "settings.webTools.webSearch.description": "Maak zoeken op internet beschikbaar voor modellen van alle providers.",
   "settings.checkpoints.title": "Controlepunten",
   "settings.display.title": "Weergave",
   "settings.notifications.title": "Meldingen",
@@ -751,9 +649,6 @@ export const dict = {
   "settings.aboutKiloCode.version.label": "Versie:",
   "settings.aboutKiloCode.community": "Community & Ondersteuning",
   "settings.aboutKiloCode.feedback.prefix": "Als je vragen of feedback hebt, voel je vrij om een issue aan te maken op",
-  "settings.aboutKiloCode.feedback.or": "of",
-  "settings.aboutKiloCode.support.prefix":
-    "Voor vragen over facturering of je account, neem contact op met Klantenservice op",
   "settings.aboutKiloCode.resetSettings.title": "Instellingen resetten",
   "settings.aboutKiloCode.resetSettings.description":
     "Dit reset alleen VS Code-extensiespecifieke instellingen naar hun standaardwaarden. Instellingen die gedeeld worden met de CLI, zoals modi en regels voor automatisch goedkeuren, worden opgeslagen in de CLI-configuratie en worden niet gereset.",
@@ -772,11 +667,6 @@ export const dict = {
     "Dit bestand is geëxporteerd vanuit een nieuwere versie van Kilo. Sommige instellingen worden mogelijk genegeerd.",
   "settings.aboutKiloCode.importSettings.success":
     "Instellingen geïmporteerd. Controleer de bovenstaande wijzigingen en klik vervolgens op Opslaan.",
-
-  "settings.aboutKiloCode.telemetry.title": "Telemetrie",
-  "settings.aboutKiloCode.telemetry.description":
-    'Telemetrie wordt beheerd door de ingebouwde telemetrie-instelling van VS Code. Om dit uit te schakelen, gaat u naar Instellingen > Telemetrie > Telemetrieniveau en stelt u dit in op "off". Herstart VS Code om de wijziging toe te passen.',
-  "settings.aboutKiloCode.telemetry.openSettings": "Telemetrie-instellingen openen",
 
   "settings.agentBehaviour.subtab.agents": "Agenten",
   "settings.agentBehaviour.subtab.mcpServers": "MCP Servers",
@@ -849,14 +739,6 @@ export const dict = {
     "Schakel het beheren van sessies en worktrees over meerdere repositories in Agent Manager in. De huidige workspace-repository is altijd het standaardproject.",
   "settings.experimental.mcpTimeout.title": "MCP Timeout (ms)",
   "settings.experimental.mcpTimeout.description": "Timeout voor MCP-serververzoeken in milliseconden",
-  "settings.experimental.remote.title": "Remote-bediening",
-  "settings.experimental.remote.description":
-    "Schakel Remote-bediening van sessies in via Kilo Cloud. Dit heeft ook invloed op CLI's op deze machine.",
-  "settings.experimental.remote.current": "Huidige status:",
-  "settings.experimental.remote.startup": "Automatisch inschakelen bij opstarten:",
-  "settings.experimental.remote.active": "Actief",
-  "settings.experimental.remote.inactive": "Inactief",
-  "settings.experimental.remote.hint": "Gebruik /remote in de chat om te schakelen",
   "settings.experimental.toolToggles": "Tool Schakelaars",
   "settings.sandboxing.enabled.title": "Sandbox",
   "settings.sandboxing.enabled.description":
@@ -984,7 +866,6 @@ export const dict = {
   "settings.autoApprove.tool.todoreadwrite":
     "Takenlijst beheren. Staat het lezen en bijwerken van de interne takenlijst toe.",
   "settings.autoApprove.tool.webfetch": "Een URL ophalen. Staat het ophalen van inhoud van een specifieke URL toe.",
-  "settings.autoApprove.tool.websearch": "Zoek op het web. Staat het uitvoeren van externe web-zoekopdrachten toe.",
   "settings.autoApprove.tool.doom_loop":
     "Voorkom herhaalde identieke acties. Geactiveerd wanneer dezelfde tool call herhaald wordt met identieke invoer.",
 
@@ -1096,9 +977,6 @@ export const dict = {
   "settings.providers.select.placeholder": "Selecteer provider...",
 
   "dialog.model.notSet": "Niet ingesteld",
-
-  "profile.personalAccount": "Persoonlijk Account",
-  "profile.switchingAccount": "Account wisselen…",
 
   // Agent Manager strings live in webview-ui/agent-manager/i18n/en.ts
 

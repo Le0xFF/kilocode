@@ -517,7 +517,7 @@ export function disabled(tools: string[], ruleset: PermissionV1.Ruleset): Set<st
 export const defaultLayer: Layer.Layer<Service> = Layer.suspend(() => AppNodeBuilder.build(node)) // kilocode_change - build from the LayerNode graph
 
 // kilocode_change start — inverse of fromConfig: convert rules back to config format
-const SCALAR_ONLY_PERMISSIONS = new Set(["todowrite", "todoread", "question", "webfetch", "websearch", "doom_loop"])
+const SCALAR_ONLY_PERMISSIONS = new Set(["todowrite", "todoread", "question", "webfetch", "doom_loop"])
 
 export function toConfig(rules: Ruleset): ConfigPermissionV1.Info {
   const result: ConfigPermissionV1.Info = {}

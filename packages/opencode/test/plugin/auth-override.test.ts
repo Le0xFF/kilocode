@@ -40,7 +40,7 @@ function providerAuthLayer(directory: string, plugins: string[]) {
 
 describe("plugin.auth-override", () => {
   it.instance(
-    "user plugin overrides built-in github-copilot auth",
+    "user plugin provides provider auth methods",
     () =>
       Effect.gen(function* () {
         const tmp = yield* TestInstance
@@ -75,11 +75,14 @@ describe("plugin.auth-override", () => {
           .methods()
           .pipe(Effect.provide(providerAuthLayer(plain, [])), provideInstance(plain))
 
+        // kilocode_change - github-copilot is no longer a built-in online plugin; only the user
+        // plugin registers its auth methods. The loaded provider exposes the single method the
+        // plugin declares, while a config with no plugins exposes none for that provider.
         const copilot = methods[ProviderV2.ID.make("github-copilot")]
         expect(copilot).toBeDefined()
         expect(copilot.length).toBe(1)
         expect(copilot[0].label).toBe("Test Override Auth")
-        expect(plainMethods[ProviderV2.ID.make("github-copilot")][0].label).not.toBe("Test Override Auth")
+        expect(plainMethods[ProviderV2.ID.make("github-copilot")]).toBeUndefined()
       }),
     { git: true },
     30000,

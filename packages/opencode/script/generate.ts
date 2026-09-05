@@ -15,6 +15,13 @@ const raw = await (async () => {
   if (process.env.MODELS_DEV_API_JSON) {
     return await Bun.file(process.env.MODELS_DEV_API_JSON).text()
   }
+  // kilocode_change start - committed pruned snapshot: keep only local OpenAI-compatible
+  // providers so every rebuild starts from the same offline surface even without network.
+  const localFile = path.resolve(dir, "models-dev.local.json")
+  if (await Bun.file(localFile).exists()) {
+    return await Bun.file(localFile).text()
+  }
+  // kilocode_change end
   const cached = Bun.file(cacheFile)
   try {
     if (await cached.exists()) {

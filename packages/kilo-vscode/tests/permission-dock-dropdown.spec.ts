@@ -184,19 +184,7 @@ test.describe("Permission Dock Dropdown — edit", () => {
 // Websearch permission — dropdown expanded
 // ---------------------------------------------------------------------------
 
-test.describe("Permission Dock Dropdown — websearch", () => {
-  const STORY_ID = "composite-webview--permission-dock-websearch"
 
-  test("rules expanded — all pending", async ({ page }) => {
-    await page.goto(storyUrl(STORY_ID), { waitUntil: "load" })
-    await disableAnimations(page)
-    await page.waitForSelector("#storybook-root *", { state: "attached" })
-    await openDropdown(page)
-
-    const root = page.locator("#storybook-root")
-    await expect(root).toHaveScreenshot(["permission-dock-dropdown", "websearch-expanded-pending.png"])
-  })
-})
 
 // ---------------------------------------------------------------------------
 // External directory permission — dropdown expanded

@@ -28,15 +28,8 @@ type Project = { id: string; root: string; label: string }
 type TuningKey = "searchMinScore" | "searchMaxResults" | "embeddingBatchSize" | "scannerMaxBatchRetries"
 
 const allProviders: { value: ProviderId; label: string }[] = [
-  { value: "openai", label: "OpenAI" },
   { value: "ollama", label: "Ollama (local)" },
   { value: "openai-compatible", label: "OpenAI-Compatible" },
-  { value: "gemini", label: "Gemini" },
-  { value: "mistral", label: "Mistral" },
-  { value: "vercel-ai-gateway", label: "Vercel AI Gateway" },
-  { value: "bedrock", label: "AWS Bedrock" },
-  { value: "openrouter", label: "OpenRouter" },
-  { value: "voyage", label: "Voyage" },
 ]
 
 const stores: Option[] = [
@@ -60,7 +53,6 @@ function sourceLabel(source: IndexingSource) {
 }
 
 function providerFields(provider: ProviderId | undefined): Array<{ key: string; label: string; placeholder: string }> {
-  if (provider === "openai") return [{ key: "apiKey", label: "API Key", placeholder: "sk-..." }]
   if (provider === "ollama") return [{ key: "baseUrl", label: "Base URL", placeholder: "http://localhost:11434" }]
   if (provider === "openai-compatible") {
     return [
@@ -68,22 +60,6 @@ function providerFields(provider: ProviderId | undefined): Array<{ key: string; 
       { key: "apiKey", label: "API Key (optional)", placeholder: "sk-..." },
     ]
   }
-  if (provider === "gemini") return [{ key: "apiKey", label: "API Key", placeholder: "AI..." }]
-  if (provider === "mistral") return [{ key: "apiKey", label: "API Key", placeholder: "..." }]
-  if (provider === "vercel-ai-gateway") return [{ key: "apiKey", label: "API Key", placeholder: "..." }]
-  if (provider === "bedrock") {
-    return [
-      { key: "region", label: "AWS Region", placeholder: "us-east-1" },
-      { key: "profile", label: "AWS Profile", placeholder: "default" },
-    ]
-  }
-  if (provider === "openrouter") {
-    return [
-      { key: "apiKey", label: "API Key", placeholder: "sk-or-..." },
-      { key: "specificProvider", label: "Specific Provider", placeholder: "optional" },
-    ]
-  }
-  if (provider === "voyage") return [{ key: "apiKey", label: "API Key", placeholder: "pa-..." }]
   return []
 }
 

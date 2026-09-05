@@ -22,16 +22,6 @@ export function DialogModel(props: { providerID?: string }) {
 
   const connected = useConnected()
   const providers = createDialogProviderOptions()
-  // kilocode_change start
-  // Memoize anything that iterates all Kilo models to avoid calculating it for
-  // each Kilo model and tanking the UI at a couple hundred models
-  const kiloRank = createMemo(() => {
-    const provider = sync.data.provider.find((provider) => provider.id === "kilo")
-    const models = provider?.models ?? {}
-    return new Map(Object.entries(models).map(([id, info]) => [id, info.recommendedIndex ?? Infinity] as const))
-  })
-  // kilocode_change end
-
   const showExtra = createMemo(() => connected() && !props.providerID)
 
   // kilocode_change start
@@ -87,7 +77,7 @@ export function DialogModel(props: { providerID?: string }) {
       query: needle,
       footer,
       onSelect,
-      sort: (items) => sortModelOptions(items, props.providerID !== undefined, kiloRank()),
+      sort: (items) => sortModelOptions(items, props.providerID !== undefined),
     })
 
     const popularProviders = !connected()
@@ -184,25 +174,15 @@ export function sortModelOptions<
     title: string
     value?: { providerID: string; modelID: string } // kilocode_change
   },
->(
-  options: T[],
-  newestFirst: boolean,
-  rank: ReadonlyMap<string, number> = new Map(), // kilocode_change
-) {
-  // kilocode_change start - Sort within Recommended / Kilo Gateway
-  const recommended = (option: T) =>
-    option.value?.providerID === "kilo" ? (rank.get(option.value.modelID) ?? Infinity) : 0
-  // kilocode_change end
+>(options: T[], newestFirst: boolean) {
   if (newestFirst)
     return sortBy(
       options,
-      recommended, // kilocode_change
       [(option) => option.releaseDate, "desc"],
       (option) => option.title,
     )
   return sortBy(
     options,
-    recommended, // kilocode_change
     (option) => option.footer === undefined,
     [(option) => option.releaseDate, "desc"], // kilocode_change - free model footers include Kilo disclosure labels
     (option) => option.title,

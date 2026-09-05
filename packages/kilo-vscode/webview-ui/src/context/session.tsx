@@ -92,7 +92,6 @@ import { activeUserMessageID, removeQueuedMessage, visibleMessages as filterVisi
 import { clearSessionDraftDiscarded, deleteDraftsForSession } from "../utils/draft-store"
 import { createAbortState } from "./abort-state"
 import { continuation } from "./session-continuation"
-import { createCloudPrune } from "./session-cloud-prune"
 import { isSameSessionTree } from "./model-usage"
 import { createDraftAgentSeed, resolvePromptAgent } from "./session-agent"
 import { createModelSelector } from "./session-model-selector"
@@ -364,7 +363,7 @@ export const SessionProvider: ParentComponent = (props) => {
 
   function refreshModelUsage() {
     const sessionID = currentSessionID()
-    if (!sessionID || sessionID.startsWith("cloud:")) return
+    if (!sessionID) return
     const requestID = crypto.randomUUID()
     setStore("modelUsage", sessionID, { requestID, data: store.modelUsage[sessionID]?.data })
     vscode.postMessage({ type: "requestSessionModelUsage", sessionID, requestID })
@@ -404,8 +403,6 @@ export const SessionProvider: ParentComponent = (props) => {
       ),
   })
   const agentNames = createMemo(() => new Set(agents().map((agent) => agent.name)))
-
-  const { pendingCloudPrune } = createCloudPrune((m) => setStore("parts", produce(m)), stash)
 
   /** Per-mode model from config (e.g. config.agent.code.model). */
   function getModeModel(agentName: string): ModelSelection | null {
@@ -1335,13 +1332,6 @@ export const SessionProvider: ParentComponent = (props) => {
       const revert = store.sessions[sessionID]?.revert ?? undefined
       if (revert) resetTodos(sessionID, revert)
       recoverPrefs(sessionID, merged)
-
-      const cloudIDs = pendingCloudPrune.get(sessionID)
-      if (cloudIDs?.size) {
-        const live = new Set(messages.map((m) => m.id))
-        for (const id of cloudIDs) stash.remove(id)
-        pendingCloudPrune.delete(sessionID)
-      }
     })
     if (reset) requestAnimationFrame(() => patchPage(sessionID, { lastMutation: undefined }))
   }
@@ -1815,7 +1805,6 @@ export const SessionProvider: ParentComponent = (props) => {
         "sessions",
         produce((sessions) => {
           for (const id of Object.keys(sessions)) {
-            if (id.startsWith("cloud:")) continue
             if (kept?.has(id)) continue
             if (!ids.has(id)) delete sessions[id]
           }
@@ -2434,10 +2423,6 @@ export const SessionProvider: ParentComponent = (props) => {
       console.warn("[Kilo New] Cannot export session transcript: not connected")
       return
     }
-    if (id.startsWith("cloud:")) {
-      console.warn("[Kilo New] Cannot export cloud session transcript")
-      return
-    }
     vscode.postMessage({ type: "exportSessionTranscript", sessionID: id })
   }
 
@@ -2566,7 +2551,6 @@ export const SessionProvider: ParentComponent = (props) => {
 
   const sessions = createMemo(() =>
     Object.values(store.sessions)
-      .filter((s) => !s.id.startsWith("cloud:"))
       .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()),
   )
 

@@ -334,20 +334,7 @@ const layer = Layer.effect(
       if (!("path" in options)) return data
 
       yield* Effect.promise(() => resolveLoadedPlugins(data, options.path))
-      if (!data.$schema) {
-        // kilocode_change start
-        data.$schema = "https://app.kilo.ai/config.json"
-        const original = options.original ?? text
-        const edits = modify(original, ["$schema"], "https://app.kilo.ai/config.json", {
-          formattingOptions: { insertSpaces: true, tabSize: 2 },
-          getInsertionIndex: () => 0,
-        })
-        const updated = applyEdits(original, edits)
-        if (updated !== original) {
-          yield* fs.writeFileString(options.path, updated).pipe(Effect.catch(() => Effect.void))
-        }
-        // kilocode_change end
-      }
+      // kilocode_change - offline build never injects a $schema (remote app.kilo.ai schema removed)
       return data
     })
 
@@ -385,14 +372,12 @@ const layer = Layer.effect(
       globalStamp = yield* KilocodeGlobalConfigStamp.read(fs, Global.Path.config)
       // kilocode_change end
       let result: Info = {}
-      // Seed the default global config with the schema for editor completion, but avoid writing when the user
-      // explicitly routes config through env-provided paths or content.
+      // Seed the default global config, but avoid writing when the user explicitly routes config through
+      // env-provided paths or content. Offline build: no $schema (remote schema removed).
       if (!Flag.KILO_CONFIG && !Flag.KILO_CONFIG_DIR && !Flag.KILO_CONFIG_CONTENT) {
         const file = globalConfigFile()
         if (!existsSync(file)) {
-          yield* fs
-            .writeWithDirs(file, JSON.stringify({ $schema: "https://app.kilo.ai/config.json" }, null, 2))
-            .pipe(Effect.catch(() => Effect.void))
+          yield* fs.writeWithDirs(file, "{}").pipe(Effect.catch(() => Effect.void))
         }
       }
       // kilocode_change - global config is user-owned and trusted to resolve {file:}/{env:} tokens
@@ -411,7 +396,6 @@ const layer = Layer.effect(
             .then(async (mod) => {
               const { provider, model, ...rest } = mod.default
               if (provider && model) result.model = `${provider}/${model}`
-              result["$schema"] = "https://app.kilo.ai/config.json" // kilocode_change
               result = mergeConfig(result, rest)
               await fsNode.writeFile(path.join(Global.Path.config, "config.json"), JSON.stringify(result, null, 2))
               await fsNode.unlink(legacy)
@@ -621,7 +605,6 @@ const layer = Layer.effect(
                   })
                 : {}
               const remoteConfig = mergeConfig(isRecord(wellknown.config) ? wellknown.config : {}, fetchedConfig)
-              if (!remoteConfig.$schema) remoteConfig.$schema = "https://app.kilo.ai/config.json"
               const next = yield* loadConfig(
                 JSON.stringify(remoteConfig),
                 {

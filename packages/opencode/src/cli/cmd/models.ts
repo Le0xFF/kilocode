@@ -20,7 +20,8 @@ export const ModelsCommand = effectCmd({
         type: "boolean",
       })
       .option("refresh", {
-        describe: "refresh the models cache from models.dev",
+        // kilocode_change - kept as an explicit user action; unlike the offline default it reaches out to models.dev
+        describe: "refresh the models cache from models.dev (goes online)",
         type: "boolean",
       }),
   handler: Effect.fn("Cli.models")(function* (args) {

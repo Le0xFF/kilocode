@@ -219,6 +219,8 @@ it.instance("migrates tui-specific keys from kilo.json when tui.json does not ex
         theme: "migrated-theme",
         scroll_speed: 5,
       })
+      // kilocode_change - offline build: migrated tui.json carries no $schema
+      expect(JSON.parse(yield* fs.readFileString(path.join(test.directory, "tui.json"))).$schema).toBeUndefined()
       const server = JSON.parse(yield* fs.readFileString(source))
       expect(server.theme).toBeUndefined()
       expect(server.keybinds).toBeUndefined()

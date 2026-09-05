@@ -190,9 +190,7 @@ describe("openConfig", () => {
     await openConfig("local", labels, root)
 
     expect(win.showQuickPick).toHaveBeenCalled()
-    expect(await Bun.file(cfg).text()).toBe(`{
-  "$schema": "https://app.kilo.ai/config.json"
-}
+    expect(await Bun.file(cfg).text()).toBe(`{}
 `)
     expect(workspace.openTextDocument).toHaveBeenCalledWith(expect.objectContaining({ fsPath: cfg }))
   })

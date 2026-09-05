@@ -82,7 +82,7 @@ export const Flag = {
   KILO_EXPERIMENTAL_DISABLE_COPY_ON_SELECT:
     copy === undefined ? process.platform === "win32" : truthy("KILO_EXPERIMENTAL_DISABLE_COPY_ON_SELECT"),
 
-  KILO_ENABLE_EXA: truthy("KILO_ENABLE_EXA") || KILO_EXPERIMENTAL || truthy("KILO_EXPERIMENTAL_EXA"), // kilocode_change
+  
 
   KILO_EXPERIMENTAL_BASH_DEFAULT_TIMEOUT_MS: number("KILO_EXPERIMENTAL_BASH_DEFAULT_TIMEOUT_MS"), // kilocode_change
 
@@ -100,7 +100,7 @@ export const Flag = {
 
   KILO_EXPERIMENTAL_MARKDOWN: !falsy("KILO_EXPERIMENTAL_MARKDOWN"), // kilocode_change
 
-  KILO_ENABLE_PARALLEL: truthy("KILO_ENABLE_PARALLEL") || truthy("KILO_EXPERIMENTAL_PARALLEL"), // kilocode_change
+  
 
   KILO_MODELS_URL: process.env["KILO_MODELS_URL"],
 

@@ -11,18 +11,13 @@ import { streamText, wrapLanguageModel, type ModelMessage, type Tool } from "ai"
 import type { LLMEvent } from "@opencode-ai/llm"
 import { LLMClient } from "@opencode-ai/llm/route"
 import type { LLMClientService } from "@opencode-ai/llm/route"
-import { GitLabWorkflowLanguageModel } from "gitlab-ai-provider"
 import { ProviderTransform } from "@/provider/transform"
 import { Config } from "@/config/config"
 import type { Agent } from "@/agent/agent"
-import type { MessageV2 } from "./message-v2"
 import { usable } from "./overflow" // kilocode_change
 import { Plugin } from "@/plugin"
 import { Permission } from "@/permission"
 import { EventV2Bridge } from "@/event-v2-bridge"
-import { EventV2 } from "@opencode-ai/core/event"
-import { Wildcard } from "@/util/wildcard"
-import { SessionID } from "@/session/schema"
 import { Auth } from "@/auth"
 // kilocode_change start
 import { KiloLLM } from "@/kilocode/session/llm"
@@ -111,7 +106,8 @@ const live: Layer.Layer<
         ],
         { concurrency: "unbounded" },
       )
-      const isWorkflow = language instanceof GitLabWorkflowLanguageModel
+      // kilocode_change - gitlab workflow support removed with the online plugins; always false
+      const isWorkflow = false
       const base = yield* LLMRequestPrep.prepare({
         ...input,
         provider: item,
@@ -165,93 +161,14 @@ const live: Layer.Layer<
       // from the workflow service are executed via opencode's tool system
       // and results sent back over the WebSocket.
       const bridge = yield* EffectBridge.make()
-      if (language instanceof GitLabWorkflowLanguageModel) {
-        const workflowModel = language as GitLabWorkflowLanguageModel & {
-          sessionID?: string
-          sessionPreapprovedTools?: string[]
-          approvalHandler?: (approvalTools: { name: string; args: string }[]) => Promise<{ approved: boolean }>
-        }
-        workflowModel.sessionID = input.sessionID
-        workflowModel.systemPrompt = prepared.system.join("\n")
-        workflowModel.toolExecutor = async (toolName, argsJson, _requestID) => {
-          const t = prepared.tools[toolName]
-          if (!t || !t.execute) {
-            return { result: "", error: `Unknown tool: ${toolName}` }
-          }
-          try {
-            const result = await t.execute!(JSON.parse(argsJson), {
-              toolCallId: _requestID,
-              messages: input.messages,
-              abortSignal: input.abort,
-            })
-            const output = typeof result === "string" ? result : (result?.output ?? JSON.stringify(result))
-            return {
-              result: output,
-              metadata: typeof result === "object" ? result?.metadata : undefined,
-              title: typeof result === "object" ? result?.title : undefined,
-            }
-          } catch (e: any) {
-            return { result: "", error: e.message ?? String(e) }
-          }
-        }
-
-        const ruleset = Permission.merge(input.agent.permission ?? [], input.permission ?? [])
-        workflowModel.sessionPreapprovedTools = Object.keys(prepared.tools).filter((name) => {
-          const match = ruleset.findLast((rule) => Wildcard.match(name, rule.permission))
-          return !match || match.action !== "ask"
-        })
-
-        const approvedToolsForSession = new Set<string>()
-        workflowModel.approvalHandler = bridge.bind(async (approvalTools) => {
-          const uniqueNames = [...new Set(approvalTools.map((t: { name: string }) => t.name))] as string[]
-          // Auto-approve tools that were already approved in this session
-          // (prevents infinite approval loops for server-side MCP tools)
-          if (uniqueNames.every((name) => approvedToolsForSession.has(name))) {
-            return { approved: true }
-          }
-
-          const id = PermissionV1.ID.ascending()
-          let unsub: EventV2.Unsubscribe | undefined
-          try {
-            unsub = await bridge.promise(
-              events.listen((event) => {
-                if (event.type !== Permission.Event.Replied.type) return Effect.void
-                const data = event.data as EventV2.Data<typeof Permission.Event.Replied>
-                if (data.requestID !== id) return Effect.void
-                void data.reply
-                return Effect.void
-              }),
-            )
-            const toolPatterns = approvalTools.map((t: { name: string; args: string }) => {
-              try {
-                const parsed = JSON.parse(t.args) as Record<string, unknown>
-                const title = (parsed?.title ?? parsed?.name ?? "") as string
-                return title ? `${t.name}: ${title}` : t.name
-              } catch {
-                return t.name
-              }
-            })
-            const uniquePatterns = [...new Set(toolPatterns)] as string[]
-            await bridge.promise(
-              perm.ask({
-                id,
-                sessionID: SessionID.make(input.sessionID),
-                permission: "workflow_tool_approval",
-                patterns: uniquePatterns,
-                metadata: { tools: approvalTools },
-                always: uniquePatterns,
-                ruleset: [],
-              }),
-            )
-            for (const name of uniqueNames) approvedToolsForSession.add(name)
-            workflowModel.sessionPreapprovedTools = [...(workflowModel.sessionPreapprovedTools ?? []), ...uniqueNames]
-            return { approved: true }
-          } catch {
-            return { approved: false }
-          } finally {
-            if (unsub) await bridge.promise(unsub)
-          }
-        })
+      // kilocode_change - gitlab workflow support removed with the online plugins; block is dead code, kept for fork sync
+      if (false) {
+        const workflowModel = language as any
+        void workflowModel.sessionID
+        void workflowModel.systemPrompt
+        void workflowModel.toolExecutor
+        void workflowModel.sessionPreapprovedTools
+        void workflowModel.approvalHandler
       }
 
       // Runtime seam: native is an opt-in adapter over @opencode-ai/llm. It

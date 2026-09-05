@@ -317,13 +317,13 @@ it.instance("falls back to generic username when system user info is unavailable
   }),
 )
 
-it.effect("creates global jsonc config with schema when no global configs exist", () =>
+it.effect("creates global jsonc config when no global configs exist", () =>
   withGlobalConfig({}, ({ dir }) =>
     Effect.gen(function* () {
       yield* Config.use.get().pipe(provideInstanceEffect(dir))
 
       const content = yield* FSUtil.use.readFileString(path.join(dir, "kilo.jsonc")) // kilocode_change
-      expect(content).toContain('"$schema": "https://app.kilo.ai/config.json"') // kilocode_change
+      expect(content).toBe("{}") // kilocode_change - offline build seeds an empty config (no $schema)
     }).pipe(Effect.provide(testInstanceStoreLayer), Effect.provide(LayerNode.compile(CrossSpawnSpawner.node))),
   ),
 )
@@ -568,61 +568,50 @@ it.instance("rejects environment variable substitution in project config", () =>
   ),
 )
 
-it.instance("injects $schema into config without existing schema", () =>
+it.instance("does not inject $schema into config without existing schema", () =>
   Effect.gen(function* () {
     const test = yield* TestInstance
-    // Config without $schema - should trigger auto-add
+    // Config without $schema - offline build leaves the file untouched (no remote schema)
     yield* FSUtil.use.writeWithDirs(path.join(test.directory, "kilo.json"), JSON.stringify({ username: "test-user" }))
     const config = yield* Config.use.get()
     expect(config.username).toBe("test-user")
-    expect(config.$schema).toBe("https://app.kilo.ai/config.json")
 
-    // Read the file to verify $schema was injected
     const content = yield* FSUtil.use.readFileString(path.join(test.directory, "kilo.json"))
-    expect(content).toContain('"$schema": "https://app.kilo.ai/config.json"')
-    const schemaIndex = content.indexOf('"$schema"')
-    const usernameIndex = content.indexOf('"username"')
-    expect(schemaIndex).toBeLessThan(usernameIndex)
+    expect(content).not.toContain('"$schema"')
   }),
 )
 
-it.instance("injects $schema into comment-first JSONC config", () =>
+it.instance("does not inject $schema into comment-first JSONC config", () =>
   Effect.gen(function* () {
     const test = yield* TestInstance
-    // Config with leading comment - regex-based injection would fail
+    // Config with leading comment - offline build leaves the file untouched (no remote schema)
     yield* FSUtil.use.writeWithDirs(
       path.join(test.directory, "kilo.jsonc"),
       '// project config\n{\n  "model": "test/model"\n}\n',
     )
     const config = yield* Config.use.get()
     expect(config.model).toBe("test/model")
-    expect(config.$schema).toBe("https://app.kilo.ai/config.json")
 
-    // Read the file to verify $schema was injected correctly
     const content = yield* FSUtil.use.readFileString(path.join(test.directory, "kilo.jsonc"))
-    expect(content).toContain('"$schema": "https://app.kilo.ai/config.json"')
+    expect(content).not.toContain('"$schema"')
     expect(content).toContain("// project config")
-    const schemaIndex = content.indexOf('"$schema"')
-    const modelIndex = content.indexOf('"model"')
-    expect(schemaIndex).toBeLessThan(modelIndex)
   }),
 )
 
 it.instance("does not write config when $schema already present", () =>
   Effect.gen(function* () {
     const test = yield* TestInstance
-    const filepath = path.join(test.directory, "kilo.json")
-    // Config already has $schema - should not rewrite file
+    // Config with an existing $schema - file must not be rewritten
     yield* FSUtil.use.writeWithDirs(
-      filepath,
+      path.join(test.directory, "kilo.json"),
       JSON.stringify({ $schema: "https://app.kilo.ai/config.json", username: "test-user" }),
     )
-    const before = yield* Effect.promise(() => fs.stat(filepath))
+    const before = yield* Effect.promise(() => fs.stat(path.join(test.directory, "kilo.json")))
 
     const config = yield* Config.use.get()
     expect(config.username).toBe("test-user")
 
-    const after = yield* Effect.promise(() => fs.stat(filepath))
+    const after = yield* Effect.promise(() => fs.stat(path.join(test.directory, "kilo.json")))
     expect(after.mtimeMs).toBe(before.mtimeMs)
   }),
 )

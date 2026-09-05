@@ -10,7 +10,7 @@ export function continuation(input: {
   loading: boolean
   reverted: boolean
 }) {
-  if (!input.id || input.id.startsWith("cloud:") || input.status !== "idle") return
+  if (!input.id || input.status !== "idle") return
   if (input.submitting || input.blocked || input.loading || input.reverted) return
   const user = input.messages.findLast((message) => message.role === "user")
   const assistant = input.messages.at(-1)

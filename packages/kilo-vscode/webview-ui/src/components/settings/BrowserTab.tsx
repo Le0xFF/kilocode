@@ -1,9 +1,9 @@
-import { Component, Show, createSignal, onCleanup, onMount } from "solid-js"
+import { Component, createSignal, onCleanup, onMount } from "solid-js"
 import { Switch } from "@kilocode/kilo-ui/switch"
 import { Card } from "@kilocode/kilo-ui/card"
 import { useVSCode } from "../../context/vscode"
 import { useLanguage } from "../../context/language"
-import { useConfig } from "../../context/config"
+
 import type { BrowserSettings } from "../../types/messages"
 import SettingsRow from "./SettingsRow"
 
@@ -26,7 +26,7 @@ const Header: Component<{ title: string }> = (props) => (
 const BrowserTab: Component = () => {
   const { postMessage, onMessage } = useVSCode()
   const { t } = useLanguage()
-  const { globalConfig, projectConfig, updateGlobalConfig } = useConfig()
+  
 
   const [settings, setSettings] = createSignal<BrowserSettings>({
     enabled: false,
@@ -51,11 +51,7 @@ const BrowserTab: Component = () => {
     postMessage({ type: "updateSetting", key: `browserAutomation.${key}`, value })
   }
 
-  const updateWebsearch = (checked: boolean) => {
-    updateGlobalConfig({ web_search: checked })
-  }
-
-  const overridden = () => projectConfig().web_search !== undefined
+  
 
   return (
     <div style={{ display: "flex", "flex-direction": "column", gap: "16px" }}>
@@ -80,32 +76,7 @@ const BrowserTab: Component = () => {
         </p>
       </div>
 
-      <div>
-        <Header title={t("settings.webTools.webSearch.title")} />
-        <Card>
-          <SettingsRow
-            title={t("settings.webTools.webSearch.enable")}
-            description={t("settings.webTools.webSearch.description")}
-            tag={() => t("settings.config.scope.global")}
-            last={!overridden()}
-          >
-            <Switch checked={globalConfig().web_search ?? false} onChange={updateWebsearch} hideLabel>
-              {t("settings.webTools.webSearch.title")}
-            </Switch>
-          </SettingsRow>
-          <Show when={overridden()}>
-            <SettingsRow
-              title={t("settings.webTools.webSearch.enable")}
-              tag={() => t("settings.config.scope.local")}
-              last
-            >
-              <Switch checked={projectConfig().web_search ?? false} disabled hideLabel>
-                {`${t("settings.webTools.webSearch.title")} (${t("settings.config.scope.local")})`}
-              </Switch>
-            </SettingsRow>
-          </Show>
-        </Card>
-      </div>
+      
 
       <div>
         <Header title={t("settings.webTools.browserAutomation")} />

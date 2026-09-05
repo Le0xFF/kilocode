@@ -11,13 +11,10 @@ import { useKeyboard } from "@opentui/solid"
 import { TextAttributes } from "@opentui/core"
 import { useTheme } from "@tui/context/theme"
 import { useDialog } from "@tui/ui/dialog"
-import { Link } from "@tui/ui/link"
 
-export function DialogClawSetup(props: { orgId?: string | null }) {
+export function DialogClawSetup() {
   const { theme } = useTheme()
   const dialog = useDialog()
-
-  const url = props.orgId ? `https://app.kilo.ai/organizations/${props.orgId}/claw` : "https://app.kilo.ai/claw"
 
   useKeyboard((evt: any) => {
     if (evt.name === "return") {
@@ -47,21 +44,6 @@ export function DialogClawSetup(props: { orgId?: string | null }) {
         <text fg={theme.textMuted} wrapMode="word">
           No app to install. No new interface to learn. Just message it like a friend.
         </text>
-
-        <box flexDirection="row" marginTop={1}>
-          <Link href="https://kilo.ai/kiloclaw" fg={theme.text}>
-            Learn more
-          </Link>
-        </box>
-      </box>
-
-      <box flexDirection="row" justifyContent="flex-end" paddingBottom={1}>
-        <box paddingLeft={3} paddingRight={3} backgroundColor={theme.primary} flexDirection="row">
-          <text fg={theme.text}>{"🦀 "}</text>
-          <Link href={url} fg={theme.selectedListItemText}>
-            Try KiloClaw
-          </Link>
-        </box>
       </box>
     </box>
   )

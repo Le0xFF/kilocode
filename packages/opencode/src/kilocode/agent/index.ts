@@ -169,8 +169,7 @@ function askGuard(mcp: Record<string, "allow" | "ask" | "deny"> = {}) {
     skill: "allow",
     question: "allow",
     webfetch: "allow",
-    websearch: "allow",
-    semantic_search: "allow",
+
     external_directory: {
       [Truncate.GLOB]: "allow",
     },
@@ -343,12 +342,7 @@ function planGuard(worktree: string, mcp: Record<string, "allow" | "ask" | "deny
     glob: "allow",
     list: "allow",
     webfetch: "allow",
-    websearch: "allow",
-    semantic_search: "allow",
-    external_directory: {
-      [Truncate.GLOB]: "allow",
-      [path.join(Global.Path.data, "plans", "*")]: "allow",
-    },
+    
     edit: planEditRules(worktree),
     ...mcp,
     ...guardedDenies,
@@ -542,8 +536,7 @@ export function patchAgents(
           list: "allow",
           skill: "allow",
           webfetch: "allow",
-          websearch: "allow",
-          semantic_search: "allow",
+
           read: "allow",
           external_directory: {
             // Mirror upstream explore's shape: the outer "*": "deny" above wins
@@ -605,10 +598,7 @@ export function patchAgents(
         todoread: "allow",
         todowrite: "allow",
         webfetch: "allow",
-        websearch: "allow",
-        external_directory: {
-          [Truncate.GLOB]: "allow",
-        },
+        
       }),
       user,
       // Enforce bash deny after user so user config cannot re-enable shell

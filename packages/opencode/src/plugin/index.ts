@@ -9,18 +9,8 @@ import type {
 import { Config } from "@/config/config"
 import { createKiloClient } from "@kilocode/sdk"
 import { ServerAuth } from "@/server/auth"
-import { CodexAuthPlugin } from "./openai/codex"
 import { Session } from "@/session/session"
 import { NamedError } from "@opencode-ai/core/util/error"
-import { CopilotAuthPlugin } from "./github-copilot/copilot"
-import { ModalPlugin } from "./modal/modal"
-import { gitlabAuthPlugin as GitlabAuthPlugin } from "opencode-gitlab-auth"
-import { PoeAuthPlugin } from "opencode-poe-auth"
-import { CloudflareAIGatewayAuthPlugin, CloudflareWorkersAuthPlugin } from "./cloudflare"
-import { AzureAuthPlugin } from "./azure"
-import { DigitalOceanAuthPlugin } from "./digitalocean"
-import { XaiAuthPlugin } from "./xai"
-import { SnowflakeCortexAuthPlugin } from "./snowflake-cortex"
 import { Effect, Layer, Context } from "effect"
 import { EffectBridge } from "@/effect/bridge"
 import { InstanceState } from "@/effect/instance-state"
@@ -33,7 +23,6 @@ import { registerAdapter } from "@/control-plane/adapters"
 import type { WorkspaceAdapter } from "@/control-plane/types"
 import { RuntimeFlags } from "@/effect/runtime-flags"
 import { EventV2Bridge } from "@/event-v2-bridge"
-import { InstallationChannel } from "@opencode-ai/core/installation/version"
 
 type State = {
   hooks: Hooks[]
@@ -60,33 +49,12 @@ export interface Interface {
 
 export class Service extends Context.Service<Service, Interface>()("@opencode/Plugin") {}
 
-export function experimentalWebSocketsEnabled(input: { enabled: boolean; channel?: string }) {
-  return input.enabled || ["local", "dev", "beta"].includes(input.channel ?? InstallationChannel)
-}
-
 // Built-in plugins that are directly imported (not installed from npm)
+// kilocode_change - offline surface: only local/neutral plugins remain; all online auth plugins were removed
 function internalPlugins(flags: RuntimeFlags.Info): PluginInstance[] {
   return [
     AtomicChatPlugin, // kilocode_change
     AnacondaDesktopPlugin, // kilocode_change
-    // Temporary rollout: pre-release builds use WebSockets by default; releases require explicit opt-in.
-    (input) =>
-      CodexAuthPlugin(input, {
-        experimentalWebSockets: experimentalWebSocketsEnabled({ enabled: flags.experimentalWebSockets }),
-      }),
-    CopilotAuthPlugin,
-    ModalPlugin,
-    // kilocode_change start
-    // kilocode_change - external auth plugins ship against @opencode-ai/plugin; bridge to our @kilocode/plugin types
-    GitlabAuthPlugin as unknown as PluginInstance,
-    PoeAuthPlugin as unknown as PluginInstance,
-    // kilocode_change end
-    CloudflareWorkersAuthPlugin,
-    CloudflareAIGatewayAuthPlugin,
-    AzureAuthPlugin,
-    DigitalOceanAuthPlugin,
-    SnowflakeCortexAuthPlugin,
-    XaiAuthPlugin,
   ]
 }
 

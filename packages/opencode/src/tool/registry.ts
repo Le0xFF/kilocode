@@ -29,15 +29,15 @@ import z from "zod"
 import { Plugin } from "../plugin"
 import { Provider } from "@/provider/provider"
 
-import { WebSearchTool } from "./websearch"
+
 import { KiloToolRegistry } from "../kilocode/tool/registry" // kilocode_change
 import { Notebook } from "@/kilocode/notebook/service" // kilocode_change
 import { AgentManager } from "@/kilocode/agent-manager/service" // kilocode_change
 import { RepoOverviewTool } from "@/kilocode/tool/repo-overview" // kilocode_change
 import { RepoCloneTool } from "./repo_clone" // kilocode_change
-import { Flag } from "@opencode-ai/core/flag/flag" // kilocode_change
+
 import { Auth } from "@/auth" // kilocode_change
-import { Env } from "@/env" // kilocode_change - websearch resolves its config via Env.Service
+
 import { LspTool } from "./lsp"
 import * as Truncate from "./truncate"
 import { ApplyPatchTool } from "./apply_patch"
@@ -77,12 +77,7 @@ import { PermissionV1 } from "@opencode-ai/core/v1/permission"
 import { McpCatalog } from "@/mcp/catalog"
 import { InstanceRef } from "@/effect/instance-ref" // kilocode_change
 
-export function webSearchEnabled(
-  _providerID: ProviderV2.ID,
-  flags = { exa: Flag.KILO_ENABLE_EXA, parallel: Flag.KILO_ENABLE_PARALLEL },
-) {
-  return flags.exa || flags.parallel // kilocode_change
-}
+
 
 type TaskDef = Tool.InferDef<typeof TaskTool>
 type ReadDef = Tool.InferDef<typeof ReadTool>
@@ -131,7 +126,7 @@ const layer = Layer.effect(
     const lsptool = yield* LspTool
     const plan = yield* PlanExitTool
     const webfetch = yield* WebFetchTool
-    const websearch = yield* WebSearchTool
+    
     const clone = yield* RepoCloneTool // kilocode_change
     const overview = yield* RepoOverviewTool // kilocode_change
     const shell = yield* ShellTool
@@ -263,7 +258,7 @@ const layer = Layer.effect(
           task: Tool.init(task),
           fetch: Tool.init(webfetch),
           todo: Tool.init(todo),
-          search: Tool.init(websearch),
+          
           clone: Tool.init(clone), // kilocode_change
           overview: Tool.init(overview), // kilocode_change
           skill: Tool.init(skilltool),
@@ -299,7 +294,7 @@ const layer = Layer.effect(
               tool.task,
               tool.fetch,
               tool.todo,
-              tool.search,
+              
               ...(flags.experimentalScout ? [tool.clone, tool.overview] : []), // kilocode_change
               tool.skill,
               tool.patch,
@@ -359,10 +354,7 @@ const layer = Layer.effect(
       const cfg = yield* config.get() // kilocode_change
       const filtered = (yield* all()).filter((tool) => {
         if (!KiloToolRegistry.available(tool, input.agent)) return false // kilocode_change
-        if (tool.id === WebSearchTool.id) {
-          if (cfg.web_search === true) return true // kilocode_change
-          return webSearchEnabled(input.providerID, { exa: flags.enableExa, parallel: flags.enableParallel })
-        }
+        
 
         const usePatch = KiloToolRegistry.usePatch(input) // kilocode_change
         if (tool.id === ApplyPatchTool.id) return usePatch
@@ -532,7 +524,7 @@ export const node = LayerNode.suspend(() =>
       Git.node,
       Bus.node,
       Auth.node,
-      Env.node, // kilocode_change - websearch resolves its config via Env.Service
+      
       SessionStatus.node,
       AgentManager.node,
       Notebook.node,

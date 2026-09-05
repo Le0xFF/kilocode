@@ -1,4 +1,3 @@
-import { cloudProviderDict } from "./cloud-provider"
 
 export const anacondaDesktopDict = {
   "provider.anaconda.title.connect": "Підключити Anaconda Desktop",
@@ -53,9 +52,6 @@ export const anacondaDesktopDict = {
 
 export const dict = {
   ...anacondaDesktopDict,
-  ...cloudProviderDict,
-
-
   "session.activity.waiting": "Очікується відповідь або підтвердження.",
   "session.activity.error": "Помилка або втрата з'єднання.",
   "session.activity.retry": "Автоматична повторна спроба.",
@@ -82,15 +78,12 @@ export const dict = {
   "command.session.compact": "Стиснути сесію",
   "command.session.export": "Експортувати запис сеансу",
 
-  "dialog.provider.tag.recommended": "Рекомендовано",
-
   "dialog.model.select.title": "Вибір моделі",
   "dialog.model.search.placeholder": "Пошук моделі",
   "dialog.model.empty": "Моделей не знайдено",
   "dialog.model.select": "Вибрати",
   "dialog.model.expand": "Розгорнути",
   "dialog.model.collapse": "Згорнути",
-
 
   "provider.connect.title": "Підключити {{provider}}",
   "provider.connect.selectMethod": "Оберіть метод входу для {{provider}}.",
@@ -220,14 +213,6 @@ export const dict = {
 
   "error.startup.title": "Підключення до сервера не вдалося",
 
-  "error.paidModel.title": "Для використання цієї моделі потрібно увійти",
-  "error.paidModel.description":
-    "Увійдіть або створіть акаунт для доступу до 500+ моделей, використання кредитів за вартістю або підключення власного ключа.",
-  "error.paidModel.action": "Увійти",
-  "error.promotionLimit.title": "Для продовження потрібна реєстрація",
-  "error.promotionLimit.description":
-    "Зареєструйтеся безкоштовно для продовження та доступу до 500+ моделей. Займе 2 хвилини, кредитна картка не потрібна. Або поверніться пізніше.",
-  "error.promotionLimit.action": "Зареєструватися",
   "error.providerAuth.title": "Сеанс {{provider}} завершено",
   "error.providerAuth.description": "Підключіться до {{provider}} знову, а потім надішліть повідомлення ще раз.",
   "error.providerAuth.chatgpt.title": "Сеанс OpenAI завершено",
@@ -252,7 +237,6 @@ export const dict = {
   "ui.permission.toolLabel.patch": "Патч",
   "ui.permission.toolLabel.globSearch": "Пошук Glob",
   "ui.permission.toolLabel.grepSearch": "Пошук Grep",
-  "ui.permission.toolLabel.webSearch": "Веб-пошук",
   "ui.permission.toolLabel.list": "Список",
   "ui.permission.toolLabel.externalDirectory": "Надати доступ до зовнішньої папки",
   "ui.permission.toolLabel.webFetch": "Веб-запит",
@@ -289,9 +273,6 @@ export const dict = {
   "sidebar.topBar.newTask": "Нове завдання",
   "sidebar.topBar.history": "Історія",
   "sidebar.topBar.agentManager": "Agent Manager",
-  "sidebar.topBar.kiloClaw": "KiloClaw",
-  "sidebar.topBar.marketplace": "Маркетплейс",
-  "sidebar.topBar.profile": "Профіль",
   "sidebar.topBar.settings": "Налаштування",
   "sidebar.session.newSession": "Нова сесія",
   "sidebar.session.newSession.tooltip": "Почати нову розмову, зберігши поточну сесію незмінною.",
@@ -495,8 +476,6 @@ export const dict = {
   "settings.permissions.tool.todowrite.description": "Оновлювати список завдань",
   "settings.permissions.tool.webfetch.title": "Веб-запит",
   "settings.permissions.tool.webfetch.description": "Отримати вміст з URL",
-  "settings.permissions.tool.websearch.title": "Веб-пошук",
-  "settings.permissions.tool.websearch.description": "Шукати в інтернеті",
   "settings.permissions.tool.codesearch.title": "Пошук коду",
   "settings.permissions.tool.codesearch.description": "Шукати код в інтернеті",
   "settings.permissions.tool.external_directory.title": "Зовнішня директорія",
@@ -523,8 +502,6 @@ export const dict = {
   "session.tab.local": "Локальний",
   "session.tab.cloud": "Хмарний",
   "session.tab.worktree": "Робоче дерево",
-  "session.cloud.repoOnly": "Лише цей репозиторій",
-  "session.cloud.import": "Імпортувати з хмари",
   "feedback.button": "Зворотний зв'язок і підтримка",
   "feedback.dialog.message": "Ми раді отримати ваш відгук або допомогти з будь-якими проблемами, які у вас виникли.",
   "feedback.dialog.github": "Повідомити про проблему на GitHub",
@@ -550,96 +527,17 @@ export const dict = {
   "workStyle.choice.autonomous.permissions": "Редагує файли та виконує команди в робочому просторі без дозволу.",
   "workStyle.choice.autonomous.bash": "Може виконувати команди термінала в робочому просторі без схвалення.",
   "workStyle.choice.autonomous.visibility": "Деталі залишаються згорнутими, доки ви їх не розгорнете.",
-  "session.cloud.import.title": "Імпортувати з хмари",
-  "session.cloud.import.placeholder": "Ідентифікатор сесії, URL або команда kilo import",
-  "session.cloud.import.button": "Імпортувати",
-  "session.cloud.import.invalid": "Недійсний формат ідентифікатора сесії",
-  "session.cloud.import.legacy": "Схоже, це застаріла сесія, яка більше не підтримується.",
-  "session.cloud.import.failed": "Не вдалося імпортувати хмарну сесію",
-
-  "deviceAuth.toast.urlCopied": "URL скопійовано до буфера обміну",
-  "deviceAuth.toast.codeCopied": "Код скопійовано до буфера обміну",
-  "deviceAuth.toast.errorCopied": "Помилку скопійовано до буфера обміну",
-  "deviceAuth.status.initiating": "Ініціалізація входу...",
-  "deviceAuth.title": "Увійти до Kilo Code",
-  "deviceAuth.step1": "Крок 1: Відкрийте цей URL",
-  "deviceAuth.action.copyUrl": "Копіювати URL",
-  "deviceAuth.action.openBrowser": "Відкрити браузер",
-  "deviceAuth.qrCode.alt": "QR-код",
-  "deviceAuth.step2": "Крок 2: Введіть цей код",
-  "deviceAuth.action.clickToCopy": "Клацніть для копіювання",
-  "deviceAuth.status.waiting": "Очікування авторизації...",
-  "deviceAuth.status.success": "Вхід виконано успішно!",
-  "deviceAuth.status.failed": "Вхід не вдався",
-  "deviceAuth.status.cancelled": "Вхід скасовано",
-  "deviceAuth.action.copyError": "Копіювати помилку",
-  "deviceAuth.action.showDetails": "Показати деталі",
-  "deviceAuth.action.tryAgain": "Спробувати ще раз",
-  "deviceAuth.error.detailsTitle": "Деталі помилки входу",
 
   "common.retry": "Спробувати ще раз",
   "common.refresh": "Оновити",
   "common.reload": "Перезавантажити",
   "common.reloadDescription": "Перезавантажити конфігурацію, навички, агентів та команди з диска",
 
-  "profile.title": "Профіль",
-  "profile.notLoggedIn": "Не увійшов",
-  "profile.action.login": "Увійти через Kilo Code",
-  "profile.balance.title": "Баланс",
-  "profile.balance.refresh": "Оновити баланс",
-  "profile.usage.title": "Плани та використання",
-  "profile.usage.description": "Квота й баланси поточного плану",
-  "profile.usage.refresh": "Оновити дані про використання провайдерів",
-  "profile.usage.empty": "Джерел даних про використання провайдерів не виявлено.",
-  "profile.usage.source.direct": "Напряму",
-  "profile.usage.state.stale": "Показано останні оновлені дані про використання.",
-  "profile.usage.state.unavailable": "Дані про використання недоступні.",
-  "profile.usage.plan.pastDue": "План: Платіж прострочено",
-  "profile.usage.plan.canceling": "План: Скасування наприкінці періоду",
-  "profile.usage.plan.unknown": "План: Статус невідомий",
-  "profile.usage.action.manage": "Керувати",
-  "profile.usage.action.managePlan": "Керування {{plan}}",
-  "profile.usage.routingState.disabled": "вимкнена",
-  "profile.usage.routingState.missing": "відсутня",
-  "profile.usage.routingState.replaced": "замінена",
-  "profile.usage.routingState.unknown": "невідома",
-  "profile.usage.window.used": "Використано {{value}}",
-  "profile.usage.window.remaining": "Залишилося {{value}}",
-  "profile.usage.window.remainingOf": "Залишилося {{value}} з {{limit}}",
-  "profile.usage.window.usedOf": "Використано {{value}} з {{limit}}",
-  "profile.usage.window.quota": "Квота",
-  "profile.usage.window.daily": "Денна квота",
-  "profile.usage.window.weekly": "Тижнева квота",
-  "profile.usage.window.monthly": "Місячна квота",
-  "profile.usage.window.hours": "{{count}}-годинна квота",
-  "profile.usage.window.days": "{{count}}-денна квота",
-  "profile.usage.window.weeks": "{{count}}-тижнева квота",
-  "profile.usage.window.months": "{{count}}-місячна квота",
-  "profile.usage.window.shared": "Спільна",
-  "profile.usage.window.scoped": "{{resource}} · {{period}}",
-  "profile.usage.reset": "Скидається {{date}}",
-  "profile.usage.status.unknown": "Невідомо",
-  "profile.usage.status.unlimited": "Без обмежень",
-  "profile.usage.status.notInPlan": "Не входить до плану",
-  "profile.usage.status.exhausted": "Вичерпано",
-  "profile.action.dashboard": "Панель керування",
-  "profile.action.topUp": "Поповнити",
-  "profile.pass.subscribe": "Отримайте Kilo Pass, щоб додати кредити та заробляти бонуси",
-  "profile.pass.bonus": "Бонус",
-  "profile.pass.usage": "Використання за цей місяць",
-  "profile.pass.paid": "Оплачено",
-  "profile.pass.meter": "Щомісячне використання Kilo Pass",
-  "profile.pass.renews": "Поновлюється",
-  "profile.action.logout": "Вийти",
-
   "settings.agentBehaviour.title": "Поведінка агента",
   "settings.autoApprove.title": "Автоматичне схвалення",
   "settings.webTools.title": "Вебінструменти",
   "settings.webTools.description": "Налаштуйте вебпошук і автоматизацію браузера.",
-  "settings.webTools.webSearch.enable": "Увімкнути для всіх постачальників",
   "settings.webTools.browserAutomation": "Автоматизація браузера",
-  "settings.webTools.webSearch.title": "Вебпошук",
-  "settings.webTools.webSearch.description": "Зробіть вебпошук доступним для моделей усіх постачальників.",
   "settings.checkpoints.title": "Контрольні точки",
   "settings.display.title": "Відображення",
   "settings.notifications.title": "Сповіщення",
@@ -748,8 +646,6 @@ export const dict = {
   "settings.aboutKiloCode.version.label": "Версія:",
   "settings.aboutKiloCode.community": "Спільнота і підтримка",
   "settings.aboutKiloCode.feedback.prefix": "Якщо у вас є питання або відгуки, будь ласка, відкрийте тікет на:",
-  "settings.aboutKiloCode.feedback.or": "або",
-  "settings.aboutKiloCode.support.prefix": "З питань виставлення рахунків або акаунту зверніться до служби підтримки:",
   "settings.aboutKiloCode.resetSettings.title": "Скидання налаштувань",
   "settings.aboutKiloCode.resetSettings.description":
     "Це скине лише налаштування, специфічні для розширення VS Code, до стандартних значень. Налаштування, що зберігаються в конфігурації CLI (такі як режими та правила автоматичного схвалення), не будуть скинуті.",
@@ -767,11 +663,6 @@ export const dict = {
     "Цей файл було експортовано з новішої версії Kilo. Деякі налаштування можуть бути проігноровані.",
   "settings.aboutKiloCode.importSettings.success":
     "Налаштування імпортовано. Перегляньте зміни вище, потім натисніть Зберегти.",
-
-  "settings.aboutKiloCode.telemetry.title": "Телеметрія",
-  "settings.aboutKiloCode.telemetry.description":
-    'Телеметрія керується вбудованим налаштуванням телеметрії VS Code. Щоб вимкнути її, перейдіть до Налаштування > Телеметрія > Рівень телеметрії та встановіть значення "off". Перезапустіть VS Code, щоб застосувати зміну.',
-  "settings.aboutKiloCode.telemetry.openSettings": "Відкрити налаштування телеметрії",
 
   "settings.agentBehaviour.subtab.agents": "Агенти",
   "settings.agentBehaviour.subtab.mcpServers": "MCP-сервери",
@@ -844,14 +735,6 @@ export const dict = {
     "Увімкніть керування сеансами та робочими деревами в кількох репозиторіях в Agent Manager. Поточний репозиторій робочого простору завжди є проєктом за замовчуванням.",
   "settings.experimental.mcpTimeout.title": "Тайм-аут MCP (мс)",
   "settings.experimental.mcpTimeout.description": "Тайм-аут у мілісекундах для запитів до MCP-сервера",
-  "settings.experimental.remote.title": "Керування Remote",
-  "settings.experimental.remote.description":
-    "Увімкніть керування Remote сеансами через Kilo Cloud. Це також вплине на CLI на цьому комп'ютері.",
-  "settings.experimental.remote.current": "Поточний стан:",
-  "settings.experimental.remote.startup": "Автоматичне ввімкнення під час запуску:",
-  "settings.experimental.remote.active": "Активний",
-  "settings.experimental.remote.inactive": "Неактивний",
-  "settings.experimental.remote.hint": "Використовуйте /remote у чаті для перемикання",
   "settings.experimental.toolToggles": "Перемикачі інструментів",
   "settings.sandboxing.enabled.title": "Пісочниця",
   "settings.sandboxing.enabled.description":
@@ -974,7 +857,6 @@ export const dict = {
   "settings.autoApprove.tool.todoreadwrite":
     "Керувати списком завдань. Дозволяє читання та оновлення внутрішнього списку завдань.",
   "settings.autoApprove.tool.webfetch": "Отримати URL. Дозволяє отримання вмісту з вказаного URL.",
-  "settings.autoApprove.tool.websearch": "Шукати в інтернеті. Дозволяє зовнішній веб-пошук.",
   "settings.autoApprove.tool.doom_loop":
     "Запобігати повторюваним діям. Спрацьовує, коли той самий виклик інструменту повторюється з однаковими вхідними даними.",
 
@@ -1086,8 +968,6 @@ export const dict = {
   "settings.providers.select.placeholder": "Вибрати провайдера...",
 
   "dialog.model.notSet": "Не встановлено",
-
-  "profile.personalAccount": "Особистий акаунт",
 
   // Agent Manager strings live in webview-ui/agent-manager/i18n/uk.ts
 
@@ -1217,7 +1097,6 @@ export const dict = {
   "notifications.action.tryModel": "Спробувати {{model}}",
   "notifications.action.tryModelGeneric": "Спробувати модель",
   // Missing translations - English fallbacks until translated
-  "profile.switchingAccount": "Перемикання акаунту…",
   "settings.agentBehaviour.createMode": "Створити новий режим",
   "settings.agentBehaviour.createMode.button": "Створити",
   "settings.agentBehaviour.createMode.cancel": "Скасувати",

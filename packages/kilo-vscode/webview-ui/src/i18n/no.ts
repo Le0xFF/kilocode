@@ -1,8 +1,6 @@
 import { dict as en } from "./en"
 type Keys = keyof typeof en
 
-import { cloudProviderDict } from "./cloud-provider"
-
 export const anacondaDesktopDict = {
   "provider.anaconda.title.connect": "Koble til Anaconda Desktop",
   "provider.anaconda.title.manage": "Administrer Anaconda Desktop",
@@ -56,9 +54,6 @@ export const anacondaDesktopDict = {
 
 export const dict = {
   ...anacondaDesktopDict,
-  ...cloudProviderDict,
-
-
   "session.activity.waiting": "Venter på et svar eller en godkjenning.",
   "session.activity.error": "Feil eller tilkobling brutt.",
   "session.activity.retry": "Prøver automatisk på nytt.",
@@ -85,15 +80,12 @@ export const dict = {
   "command.session.compact": "Komprimer sesjon",
   "command.session.export": "Eksporter sesjonsutskrift",
 
-  "dialog.provider.tag.recommended": "Anbefalt",
-
   "dialog.model.select.title": "Velg modell",
   "dialog.model.search.placeholder": "Søk etter modeller",
   "dialog.model.empty": "Ingen modellresultater",
   "dialog.model.select": "Velg",
   "dialog.model.expand": "Utvid",
   "dialog.model.collapse": "Skjul",
-
 
   "provider.connect.title": "Koble til {{provider}}",
   "provider.connect.selectMethod": "Velg innloggingsmetode for {{provider}}.",
@@ -225,14 +217,6 @@ export const dict = {
 
   "error.startup.title": "Servertilkobling mislyktes",
 
-  "error.paidModel.title": "Du må logge inn for å bruke denne modellen",
-  "error.paidModel.description":
-    "Logg inn eller opprett en konto for å få tilgang til over 500 modeller, bruk kreditter til kostpris, eller ta med din egen nøkkel.",
-  "error.paidModel.action": "Logg inn",
-  "error.promotionLimit.title": "Du må registrere deg for å fortsette",
-  "error.promotionLimit.description":
-    "Registrer deg gratis for å fortsette og utforske over 500 modeller. Tar 2 minutter, ingen kredittkort nødvendig. Eller kom tilbake senere.",
-  "error.promotionLimit.action": "Registrer deg",
   "error.providerAuth.title": "{{provider}} logget deg ut",
   "error.providerAuth.description": "Koble til {{provider}} på nytt, og send meldingen din igjen.",
   "error.providerAuth.chatgpt.title": "OpenAI logget deg ut",
@@ -256,7 +240,6 @@ export const dict = {
   "ui.permission.toolLabel.patch": "Patch",
   "ui.permission.toolLabel.globSearch": "Glob-søk",
   "ui.permission.toolLabel.grepSearch": "Grep-søk",
-  "ui.permission.toolLabel.webSearch": "Websøk",
   "ui.permission.toolLabel.list": "Liste",
   "ui.permission.toolLabel.externalDirectory": "Gi tilgang til ekstern mappe",
   "ui.permission.toolLabel.webFetch": "Webhenting",
@@ -292,9 +275,6 @@ export const dict = {
   "sidebar.topBar.newTask": "Ny Oppgave",
   "sidebar.topBar.history": "Historikk",
   "sidebar.topBar.agentManager": "Agent Manager",
-  "sidebar.topBar.kiloClaw": "KiloClaw",
-  "sidebar.topBar.marketplace": "Markedsplass",
-  "sidebar.topBar.profile": "Profil",
   "sidebar.topBar.settings": "Innstillinger",
   "sidebar.session.newSession": "Ny Økt",
   "sidebar.session.newSession.tooltip": "Start en ny samtale mens den nåværende økten holdes intakt.",
@@ -505,8 +485,6 @@ export const dict = {
   "settings.permissions.tool.todowrite.description": "Oppdater gjøremålslisten",
   "settings.permissions.tool.webfetch.title": "Webhenting",
   "settings.permissions.tool.webfetch.description": "Hent innhold fra en URL",
-  "settings.permissions.tool.websearch.title": "Websøk",
-  "settings.permissions.tool.websearch.description": "Søk på nettet",
   "settings.permissions.tool.codesearch.title": "Kodesøk",
   "settings.permissions.tool.codesearch.description": "Søk etter kode på nettet",
   "settings.permissions.tool.external_directory.title": "Ekstern mappe",
@@ -532,8 +510,6 @@ export const dict = {
   "session.tab.local": "Lokal",
   "session.tab.cloud": "Sky",
   "session.tab.worktree": "Arbeidstre",
-  "session.cloud.repoOnly": "Kun dette repositoriet",
-  "session.cloud.import": "Importer fra skyen",
   "feedback.button": "Tilbakemelding & støtte",
   "feedback.dialog.message": "Vi vil gjerne høre tilbakemeldingene dine eller hjelpe med problemer du opplever.",
   "feedback.dialog.github": "Rapporter et problem på GitHub",
@@ -559,96 +535,17 @@ export const dict = {
   "workStyle.choice.autonomous.permissions": "Redigerer filer og kjører kommandoer i arbeidsområdet uten å spørre.",
   "workStyle.choice.autonomous.bash": "Kan kjøre terminalkommandoer i arbeidsområdet uten godkjenning.",
   "workStyle.choice.autonomous.visibility": "Detaljene forblir skjult til du utvider dem.",
-  "session.cloud.import.title": "Importer fra skyen",
-  "session.cloud.import.placeholder": "Økt-ID, URL eller kilo import-kommando",
-  "session.cloud.import.button": "Importer",
-  "session.cloud.import.invalid": "Ugyldig økt-ID-format",
-  "session.cloud.import.legacy": "Dette ser ut til å være en eldre økt som ikke lenger støttes.",
-  "session.cloud.import.failed": "Kunne ikke importere skyøkt",
-
-  "deviceAuth.toast.urlCopied": "URL kopiert til utklippstavlen",
-  "deviceAuth.toast.codeCopied": "Kode kopiert til utklippstavlen",
-  "deviceAuth.toast.errorCopied": "Feil kopiert til utklippstavlen",
-  "deviceAuth.status.initiating": "Starter pålogging...",
-  "deviceAuth.title": "Logg inn på Kilo Code",
-  "deviceAuth.step1": "Trinn 1: Åpne denne URLen",
-  "deviceAuth.action.copyUrl": "Kopier URL",
-  "deviceAuth.action.openBrowser": "Åpne nettleser",
-  "deviceAuth.qrCode.alt": "QR-kode",
-  "deviceAuth.step2": "Trinn 2: Skriv inn denne koden",
-  "deviceAuth.action.clickToCopy": "Klikk for å kopiere",
-  "deviceAuth.status.waiting": "Venter på autorisasjon...",
-  "deviceAuth.status.success": "Pålogging vellykket!",
-  "deviceAuth.status.failed": "Pålogging mislyktes",
-  "deviceAuth.error.detailsTitle": "Detaljer om påloggingsfeil",
-  "deviceAuth.status.cancelled": "Pålogging avbrutt",
-  "deviceAuth.action.tryAgain": "Prøv igjen",
-  "deviceAuth.action.copyError": "Kopier feil",
-  "deviceAuth.action.showDetails": "Vis detaljer",
 
   "common.retry": "Prøv igjen",
   "common.refresh": "Oppdater",
   "common.reload": "Last inn på nytt",
   "common.reloadDescription": "Last inn konfigurasjon, ferdigheter, agenter og kommandoer fra disk på nytt",
 
-  "profile.title": "Profil",
-  "profile.notLoggedIn": "Ikke pålogget",
-  "profile.action.login": "Logg inn med Kilo Code",
-  "profile.balance.title": "Saldo",
-  "profile.balance.refresh": "Oppdater saldo",
-  "profile.usage.title": "Abonnementer og forbruk",
-  "profile.usage.description": "Kvote og saldoer for gjeldende abonnement",
-  "profile.usage.refresh": "Oppdater leverandørforbruk",
-  "profile.usage.empty": "Ingen kilder til leverandørforbruk oppdaget.",
-  "profile.usage.source.direct": "Direkte",
-  "profile.usage.state.stale": "Viser sist oppdaterte forbruksdata.",
-  "profile.usage.state.unavailable": "Forbruksdata er utilgjengelige.",
-  "profile.usage.plan.pastDue": "Abonnement: Betaling forfalt",
-  "profile.usage.plan.canceling": "Abonnement: Avsluttes ved periodens slutt",
-  "profile.usage.plan.unknown": "Abonnement: Status ukjent",
-  "profile.usage.action.manage": "Administrer",
-  "profile.usage.action.managePlan": "Administrer {{plan}}",
-  "profile.usage.routingState.disabled": "deaktivert",
-  "profile.usage.routingState.missing": "fraværende",
-  "profile.usage.routingState.replaced": "erstattet",
-  "profile.usage.routingState.unknown": "ukjent",
-  "profile.usage.window.used": "{{value}} brukt",
-  "profile.usage.window.remaining": "{{value}} gjenstår",
-  "profile.usage.window.remainingOf": "{{value}} av {{limit}} gjenstår",
-  "profile.usage.window.usedOf": "{{value}} av {{limit}} brukt",
-  "profile.usage.window.quota": "Kvote",
-  "profile.usage.window.daily": "Daglig kvote",
-  "profile.usage.window.weekly": "Ukentlig kvote",
-  "profile.usage.window.monthly": "Månedlig kvote",
-  "profile.usage.window.hours": "{{count}}-timers kvote",
-  "profile.usage.window.days": "{{count}}-dagers kvote",
-  "profile.usage.window.weeks": "{{count}}-ukers kvote",
-  "profile.usage.window.months": "{{count}}-måneders kvote",
-  "profile.usage.window.shared": "Delt",
-  "profile.usage.window.scoped": "{{resource}} · {{period}}",
-  "profile.usage.reset": "Tilbakestilles {{date}}",
-  "profile.usage.status.unknown": "Ukjent",
-  "profile.usage.status.unlimited": "Ubegrenset",
-  "profile.usage.status.notInPlan": "Ikke i abonnement",
-  "profile.usage.status.exhausted": "Oppbrukt",
-  "profile.action.dashboard": "Kontrollpanel",
-  "profile.action.topUp": "Fyll på",
-  "profile.pass.subscribe": "Få Kilo Pass for å legge til kreditt og tjene bonuser",
-  "profile.pass.bonus": "Bonus",
-  "profile.pass.usage": "Denne månedens forbruk",
-  "profile.pass.paid": "Betalt",
-  "profile.pass.meter": "Månedlig Kilo Pass-forbruk",
-  "profile.pass.renews": "Fornyes",
-  "profile.action.logout": "Logg ut",
-
   "settings.agentBehaviour.title": "Agentoppførsel",
   "settings.autoApprove.title": "Automatisk godkjenning",
   "settings.webTools.title": "Nettverktøy",
   "settings.webTools.description": "Konfigurer nettsøk og nettleserautomatisering.",
-  "settings.webTools.webSearch.enable": "Aktiver for alle leverandører",
   "settings.webTools.browserAutomation": "Nettleserautomatisering",
-  "settings.webTools.webSearch.title": "Nettsøk",
-  "settings.webTools.webSearch.description": "Gjør nettsøk tilgjengelig for modeller fra alle leverandører.",
   "settings.checkpoints.title": "Kontrollpunkter",
   "settings.display.title": "Visning",
   "settings.notifications.title": "Varsler",
@@ -721,8 +618,6 @@ export const dict = {
   "settings.aboutKiloCode.version.label": "Versjon:",
   "settings.aboutKiloCode.community": "Fellesskap og støtte",
   "settings.aboutKiloCode.feedback.prefix": "Hvis du har spørsmål eller tilbakemeldinger, åpne gjerne en issue på",
-  "settings.aboutKiloCode.feedback.or": "eller",
-  "settings.aboutKiloCode.support.prefix": "For fakturerings- eller kontospørsmål, kontakt kundestøtte på",
   "settings.aboutKiloCode.resetSettings.title": "Tilbakestill innstillinger",
   "settings.aboutKiloCode.resetSettings.description":
     "Dette tilbakestiller kun VS Code-utvidelsesspecifikke innstillinger til standardverdiene. Innstillinger som deles med CLI, som modi og regler for automatisk godkjenning, lagres i CLI-konfigurasjonen og vil ikke tilbakestilles.",
@@ -739,11 +634,6 @@ export const dict = {
     "Denne filen ble eksportert fra en nyere versjon av Kilo. Noen innstillinger kan bli ignorert.",
   "settings.aboutKiloCode.importSettings.success":
     "Innstillinger importert. Gjennomgå endringene ovenfor, og klikk deretter på Lagre.",
-
-  "settings.aboutKiloCode.telemetry.title": "Telemetri",
-  "settings.aboutKiloCode.telemetry.description":
-    'Telemetri styres av den innebygde telemetri-innstillingen i VS Code. For å deaktivere den, gå til Innstillinger > Telemetry > Telemetry Level og sett den til "off". Start VS Code på nytt for å ta i bruk endringen.',
-  "settings.aboutKiloCode.telemetry.openSettings": "Åpne innstillinger for telemetri",
 
   "settings.agentBehaviour.subtab.agents": "Agenter",
   "settings.agentBehaviour.subtab.mcpServers": "MCP-servere",
@@ -814,14 +704,6 @@ export const dict = {
     "Aktiver administrering av økter og worktrees på tvers av flere repositories i Agent Manager. Det nåværende workspace-repositoryet er alltid standardprosjektet.",
   "settings.experimental.mcpTimeout.title": "MCP-tidsavbrudd (ms)",
   "settings.experimental.mcpTimeout.description": "Tidsavbrudd for MCP-serverforespørsler i millisekunder",
-  "settings.experimental.remote.title": "Remote-kontroll",
-  "settings.experimental.remote.description":
-    "Aktiver Remote-kontroll av økter via Kilo Cloud. Dette vil også påvirke CLI-er på denne maskinen.",
-  "settings.experimental.remote.current": "Nåværende status:",
-  "settings.experimental.remote.startup": "Aktiver automatisk ved oppstart:",
-  "settings.experimental.remote.active": "Aktiv",
-  "settings.experimental.remote.inactive": "Inaktiv",
-  "settings.experimental.remote.hint": "Bruk /remote i chatten for å veksle",
   "settings.experimental.toolToggles": "Verktøybrytere",
   "settings.indexing.title": "Indeksering",
   "settings.indexing.enable.title": "Aktiver indeksering",
@@ -1011,7 +893,6 @@ export const dict = {
   "settings.autoApprove.tool.todoreadwrite":
     "Administrer oppgaveliste. Tillater lesing og oppdatering av den interne oppgavelisten.",
   "settings.autoApprove.tool.webfetch": "Hent en URL. Tillater henting av innhold fra en spesifikk URL.",
-  "settings.autoApprove.tool.websearch": "Søk på nettet. Tillater å utføre eksterne nettsøk.",
   "settings.autoApprove.tool.external_directory":
     "Få tilgang til filer utenfor arbeidsområdet. Utløses ved tilgang til filer utenfor gjeldende prosjektkatalog.",
   "settings.autoApprove.tool.doom_loop":
@@ -1111,9 +992,6 @@ export const dict = {
   "settings.providers.disabled.enable": "Aktiver",
   "settings.providers.notSet": "Ikke angitt (bruk serverstandard)",
   "dialog.model.notSet": "Ikke angitt",
-  "profile.personalAccount": "Personlig konto",
-  "profile.switchingAccount": "Bytter konto…",
-  // Agent Manager strings live in webview-ui/agent-manager/i18n/no.ts
 
   "question.summary": "{{n}} av {{total}} spørsmål",
   "common.review": "Gjennomgå",

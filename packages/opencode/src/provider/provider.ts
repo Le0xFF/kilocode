@@ -108,7 +108,9 @@ type BundledSDK = {
 }
 
 const BUNDLED_PROVIDERS: Record<string, () => Promise<(opts: any) => BundledSDK>> = {
-  // kilocode_change start - offline surface: only the three CustomProviderDialog packages remain
+  // kilocode_change start - offline surface: exactly the three packages offered by CustomProviderDialog
+  // (PACKAGE_OPTIONS in webview-ui/src/components/settings/CustomProviderDialog.tsx); each is also a
+  // typical model.api.npm for user-configured custom providers loaded via resolveSDK
   "@ai-sdk/anthropic": () => import("@ai-sdk/anthropic").then((m) => m.createAnthropic),
   "@ai-sdk/openai": () => import("@ai-sdk/openai").then((m) => m.createOpenAI),
   "@ai-sdk/openai-compatible": () => import("@ai-sdk/openai-compatible").then((m) => m.createOpenAICompatible),
@@ -135,30 +137,7 @@ type CustomDep = {
 
 function custom(dep: CustomDep): Record<string, CustomLoader> {
   return {
-    // kilocode_change start - offline surface: only the opencode free-tier gate remains; all built-in online loaders were removed with the catalog cut
-    opencode: Effect.fnUntraced(function* (input: Info) {
-      const env = yield* dep.env()
-      const hasKey = iife(() => {
-        if (input.env.some((item) => env[item])) return true
-        return false
-      })
-      const ok =
-        hasKey ||
-        Boolean(yield* dep.auth(input.id)) ||
-        Boolean((yield* dep.config()).provider?.["opencode"]?.options?.apiKey)
-
-      if (!ok) {
-        for (const [key, value] of Object.entries(input.models)) {
-          if (value.cost.input === 0) continue
-          delete input.models[key]
-        }
-      }
-
-      return {
-        autoload: Object.keys(input.models).length > 0,
-        options: ok ? {} : { apiKey: "public" },
-      }
-    }),
+    // kilocode_change start - offline surface: no built-in online loaders remain; the opencode (Zen) auto-connect was removed with the catalog cut
     // kilocode_change end
   }
 }
@@ -854,20 +833,6 @@ const layer = Layer.effect(
           mergeProvider(providerID, partial)
         }
 
-        const gitlab = ProviderV2.ID.make("gitlab")
-        if (discoveryLoaders[gitlab] && providers[gitlab] && isProviderAllowed(gitlab)) {
-          // kilocode_change start - keep discovery failures visible instead of swallowing them
-          const discovered = yield* Effect.tryPromise(() => discoveryLoaders[gitlab]()).pipe(
-            Effect.catch((err) =>
-              Effect.logWarning("gitlab model discovery failed", { err }).pipe(Effect.as({} as Record<string, Model>)),
-            ),
-          )
-          for (const [modelID, model] of Object.entries(discovered)) {
-            if (!providers[gitlab].models[modelID]) providers[gitlab].models[modelID] = model
-          }
-          // kilocode_change end
-        }
-
         for (const [id, provider] of Object.entries(providers)) {
           const providerID = ProviderV2.ID.make(id)
           if (!isProviderAllowed(providerID)) {
@@ -879,16 +844,16 @@ const layer = Layer.effect(
 
           for (const [modelID, model] of Object.entries(provider.models)) {
             model.api.id = model.api.id ?? model.id ?? modelID
+            // kilocode_change start - offline surface: drop the gpt-5-chat-latest aliases that only exist for the
+            // removed built-in online providers (openai/github-copilot/openrouter); custom openai-compatible
+            // providers may still serve such model IDs and keep them.
             if (
-              // These chat aliases are invalid for the special handling in the
-              // built-in providers below, but custom providers may support them.
               (modelID === "gpt-5-chat-latest" &&
-                (providerID === ProviderV2.ID.openai ||
-                  providerID === ProviderV2.ID.githubCopilot ||
-                  providerID === ProviderV2.ID.openrouter)) ||
-              (providerID === ProviderV2.ID.openrouter && modelID === "openai/gpt-5-chat")
+                (providerID === ProviderV2.ID.openai || providerID === ProviderV2.ID.githubCopilot)) ||
+              (providerID === ProviderV2.ID.make("opencode") && modelID === "openai/gpt-5-chat")
             )
               delete provider.models[modelID]
+            // kilocode_change end
             if (model.status === "alpha" && !runtimeFlags.enableExperimentalModels) delete provider.models[modelID]
             if (model.status === "deprecated") delete provider.models[modelID]
             if (
@@ -1168,16 +1133,13 @@ const layer = Layer.effect(
         }
       }
 
-      // TODO: Remove these provider-specific assumptions once model syncing reliably reports available deployments.
-      if (providerID === ProviderV2.ID.azure || providerID === ProviderV2.ID.make("azure-cognitive-services")) {
-        return undefined
-      }
+      // kilocode_change start - offline surface: azure is unconfigurable now; the early return also covers "azure-cognitive-services" (both unreachable)
+        if (providerID === ProviderV2.ID.azure) {
+          return undefined
+        }
+        // kilocode_change end
 
-      const priority = providerID.startsWith("opencode")
-        ? ["gpt-nano"]
-        : providerID.startsWith("github-copilot")
-          ? ["gpt-mini", ...smallModelFamilyPriority]
-          : smallModelFamilyPriority
+        const priority = smallModelFamilyPriority // kilocode_change - offline surface: drop opencode/github-copilot prefixes (unreachable providers)
       const models = sortBy(
         Object.values(provider.models),
         [(model) => model.release_date, "desc"],
@@ -1249,8 +1211,8 @@ const layer = Layer.effect(
   }),
 )
 
-const priority = ["gpt-5", "claude-sonnet-4", "big-pickle", "gemini-3-pro"]
-const smallModelFamilyPriority = ["gemini-flash", "gpt-nano", "claude-haiku"]
+const priority = ["gpt-5", "claude-sonnet-4"] // kilocode_change - offline surface: drop big-pickle (opencode) and gemini-3-pro (google), unreachable now
+const smallModelFamilyPriority = ["gpt-nano", "claude-haiku"] // kilocode_change - drop gemini-flash (no google in the offline catalog)
 export function sort<T extends { id: string }>(models: T[]) {
   return sortBy(
     models,

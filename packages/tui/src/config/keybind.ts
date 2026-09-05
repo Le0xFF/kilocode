@@ -125,7 +125,6 @@ export const Definitions = {
   model_cycle_favorite_reverse: keybind("none", "Previous favorite model"),
   mcp_list: keybind("none", "List MCP servers"),
   provider_connect: keybind("none", "Connect provider"),
-  console_org_switch: keybind("none", "Switch console organization"),
   agent_list: keybind("<leader>a", "List agents"),
   agent_cycle: keybind("tab", "Next agent"),
   agent_cycle_reverse: keybind("shift+tab", "Previous agent"),
@@ -224,7 +223,6 @@ export const Definitions = {
   terminal_suspend: keybind("ctrl+z", "Suspend terminal"),
   terminal_title_toggle: keybind("none", "Toggle terminal title"),
   tips_toggle: keybind("<leader>h", "Toggle tips on home screen"),
-  news_toggle: keybind("none", "Toggle news on home screen"), // kilocode_change
   plugin_manager: keybind("none", "Open plugin manager dialog"),
   plugin_install: keybind("none", "Install plugin"),
 
@@ -333,7 +331,6 @@ export const CommandMap = {
   model_cycle_favorite_reverse: "model.cycle_favorite_reverse",
   mcp_list: "mcp.list",
   provider_connect: "provider.connect",
-  console_org_switch: "console.org.switch",
   agent_list: "agent.list",
   agent_cycle: "agent.cycle",
   agent_cycle_reverse: "agent.cycle.reverse",
@@ -406,7 +403,6 @@ export const CommandMap = {
   terminal_suspend: "terminal.suspend",
   terminal_title_toggle: "terminal.title.toggle",
   tips_toggle: "tips.toggle",
-  news_toggle: "news.toggle", // kilocode_change
   plugin_manager: "plugins.list",
   plugin_install: "plugins.install",
   which_key_toggle: "which-key.toggle",

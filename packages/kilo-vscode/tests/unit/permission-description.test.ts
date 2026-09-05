@@ -94,10 +94,7 @@ describe("describePatterns", () => {
     expect(result).toEqual({ kind: "single", text: "custom_tool some/path" })
   })
 
-  test("websearch uses Web Search label", () => {
-    const result = describePatterns("websearch", ["query"], t)
-    expect(result).toEqual({ kind: "single", text: "Web Search query" })
-  })
+  
 
   test("doom loop describes the repeated tool with its human-readable label", () => {
     const result = describePatterns("doom_loop", ["read"], t)
@@ -120,7 +117,7 @@ describe("describePatterns", () => {
       bash: "ui.permission.toolLabel.bash",
       external_directory: "ui.permission.toolLabel.externalDirectory",
       webfetch: "ui.permission.toolLabel.webFetch",
-      websearch: "ui.permission.toolLabel.webSearch",
+      
       codesearch: "ui.permission.toolLabel.codeSearch",
       todoread: "ui.permission.toolLabel.todoRead",
       todowrite: "ui.permission.toolLabel.todoWrite",
@@ -216,7 +213,7 @@ describe("resolveLabel", () => {
       bash: "Bash",
       external_directory: "Access External Directory",
       webfetch: "Web Fetch",
-      websearch: "Web Search",
+      
       codesearch: "Code Search",
       todoread: "Todo Read",
       todowrite: "Todo Write",

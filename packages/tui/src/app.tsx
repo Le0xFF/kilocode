@@ -51,7 +51,6 @@ import { DialogHelp } from "./ui/dialog-help"
 import { DialogAgent } from "./component/dialog-agent"
 import { DialogSessionList } from "./component/dialog-session-list"
 import { DialogWorkspaceList } from "./component/dialog-workspace-list"
-import { DialogConsoleOrg } from "./component/dialog-console-org"
 import { ThemeProvider, useTheme } from "./context/theme"
 import { Home } from "./routes/home"
 import { Session } from "./routes/session"
@@ -61,12 +60,10 @@ import { PromptStashProvider } from "./component/prompt/stash"
 import { NudgeProvider } from "@/kilocode/cli/cmd/tui/context/nudge" // kilocode_change
 import { DialogAlert } from "./ui/dialog-alert"
 import { DialogConfirm } from "./ui/dialog-confirm"
-import { DialogHeadlessLink } from "@/kilocode/cli/cmd/tui/component/dialog-headless-link" // kilocode_change
 import { ToastProvider, useToast } from "./ui/toast"
 import { KVProvider, useKV } from "./context/kv"
 import * as Model from "./util/model"
 import { ArgsProvider, useArgs, type Args } from "./context/args"
-import open from "open"
 import { PromptRefProvider, usePromptRef } from "./context/prompt"
 import type { TuiConfig } from "./config"
 import { createTuiApiAdapters } from "./plugin/adapters"
@@ -91,7 +88,6 @@ import { destroyRenderer } from "./util/renderer"
 import { cliErrorMessage, errorFormat } from "./util/error"
 import * as KiloApp from "@/kilocode/cli/cmd/tui/app" // kilocode_change
 import { kitty, resetTerminalState } from "@/kilocode/cli/cmd/tui/util/terminal" // kilocode_change
-import { hasDisplay } from "@/kilocode/cli/cmd/tui/util/display" // kilocode_change
 
 registerOpencodeSpinner()
 
@@ -123,7 +119,6 @@ const appBindingCommands = [
   "variant.cycle",
   "variant.list",
   "provider.connect",
-  "console.org.switch",
   "opencode.status",
   "opencode.debug",
   "theme.switch",
@@ -765,21 +760,6 @@ function App(props: { onSnapshot?: () => Promise<string[]>; pluginHost: TuiPlugi
         },
         category: "Provider",
       },
-      ...(sync.data.console_state.switchableOrgCount > 1
-        ? [
-            {
-              name: "console.org.switch",
-              title: "Switch org",
-              suggested: Boolean(sync.data.console_state.activeOrgName),
-              slashName: "org",
-              slashAliases: ["orgs", "switch-org"],
-              run: () => {
-                dialog.replace(() => <DialogConsoleOrg />)
-              },
-              category: "Provider",
-            },
-          ]
-        : []),
       {
         name: "opencode.status",
         title: "View status",
@@ -839,13 +819,6 @@ function App(props: { onSnapshot?: () => Promise<string[]>; pluginHost: TuiPlugi
         name: "docs.open",
         title: "Open docs",
         run: () => {
-          // kilocode_change start
-          if (!hasDisplay()) {
-            DialogHeadlessLink.show(dialog, KiloApp.DOCS_URL)
-            return
-          }
-          open(KiloApp.DOCS_URL).catch((err) => console.error("Failed to open docs", err))
-          // kilocode_change end
           dialog.clear()
         },
         category: "System",

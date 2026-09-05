@@ -51,7 +51,7 @@ export const TOOL_LABEL_KEYS: Record<string, string> = {
   bash: "ui.permission.toolLabel.bash",
   external_directory: "ui.permission.toolLabel.externalDirectory",
   webfetch: "ui.permission.toolLabel.webFetch",
-  websearch: "ui.permission.toolLabel.webSearch",
+  
   codesearch: "ui.permission.toolLabel.codeSearch",
   todoread: "ui.permission.toolLabel.todoRead",
   todowrite: "ui.permission.toolLabel.todoWrite",

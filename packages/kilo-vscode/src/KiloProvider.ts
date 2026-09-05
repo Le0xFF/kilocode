@@ -44,7 +44,6 @@ import {
 import { GitOps } from "./agent-manager/GitOps"
 import { GitStatsPoller, type LocalStats } from "./agent-manager/GitStatsPoller"
 import { removeMcp } from "./kilo-provider/remove-config-item"
-import type { RemoteStatusService } from "./services/RemoteStatusService"
 import { resolveProjectDirectory } from "./project-directory"
 import { seedSessionStatuses } from "./session-status"
 import { normalizeEnhancePromptErrorMessage } from "./enhance-prompt-error"
@@ -427,8 +426,6 @@ export class KiloProvider implements vscode.WebviewViewProvider {
   private diffVirtualProvider: import("./DiffVirtualProvider").DiffVirtualProvider | undefined
   private diffViewerProvider: import("./diff/DiffViewerProvider").DiffViewerProvider | undefined
   private documentViewerProvider: import("./DocumentViewerProvider").DocumentViewerProvider | undefined
-  private remoteService: RemoteStatusService | null = null
-  private unsubscribeRemote: (() => void) | null = null
 
   constructor(
     private readonly extensionUri: vscode.Uri,
@@ -441,11 +438,6 @@ export class KiloProvider implements vscode.WebviewViewProvider {
     this.unsubscribeSandboxPreference = this.connectionService.sandboxPreference?.onChange(() => {
       if (this.connectionState === "connected") void this.fetchAndSendSandboxDefault()
     })
-  }
-
-  setRemoteService(service: RemoteStatusService): void {
-    this.remoteService = service
-    this.unsubscribeRemote = service.onChange(() => this.sendRemoteStatus())
   }
 
   setAutoApproveController(ctrl: Parameters<typeof createAutoApproveBridge>[0]): void {
@@ -491,10 +483,6 @@ export class KiloProvider implements vscode.WebviewViewProvider {
     void stopSessionProcesses(this.client, sid, this.getSessionDirectory(sid, session))
   }
 
-  private sendRemoteStatus(): void {
-    const s = this.remoteService?.getState()
-    if (s) this.postMessage({ type: "remoteStatus", enabled: s.enabled, connected: s.connected })
-  }
   private focusSession(id?: string): void {
     this.streams.focus(id)
     this.registerPresence()
@@ -646,7 +634,6 @@ export class KiloProvider implements vscode.WebviewViewProvider {
 
       void this.seedSessionStatusMap()
 
-      this.sendRemoteStatus()
     }
 
     // legacy-migration start
@@ -1281,16 +1268,6 @@ export class KiloProvider implements vscode.WebviewViewProvider {
         case "requestFilePicker":
         case "requestTerminalContext":
           await this.handleContextRequest(message)
-          break
-        case "toggleRemote":
-        case "setRemoteEnabled":
-        case "requestRemoteStatus":
-          this.remoteService
-            ?.handleMessage(message.type, message.enabled)
-            .then((s) => {
-              if (s) this.sendRemoteStatus()
-            })
-            .catch((err) => console.error("[Kilo New] remote message failed:", err))
           break
         case "deleteSession":
           await this.handleDeleteSession(message.sessionID)
@@ -5039,7 +5016,6 @@ export class KiloProvider implements vscode.WebviewViewProvider {
       void vscode.commands.executeCommand("setContext", this.opts.focusContext, false)
     }
     this.setFocusTarget("other")
-    this.unsubscribeRemote?.()
     this.streams.focus(undefined)
     this.connectionService.unregisterVisible(this.instanceId)
     this.connectionService.unregisterAttached(this.instanceId)

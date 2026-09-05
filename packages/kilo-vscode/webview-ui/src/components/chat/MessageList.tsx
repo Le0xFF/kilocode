@@ -71,9 +71,6 @@ import { onTimelineHighlight, type TimelineHighlight } from "../../utils/timelin
 import { useTranscriptSearch, type SearchMatch } from "../../context/transcript-search"
 import { applyTranscriptHighlights, clearTranscriptHighlights } from "./transcript-search-highlight"
 import {
-  isUnauthorizedPaidModelError,
-  isUnauthorizedPromotionLimitError,
-  parseAssistantError,
   parseProviderAuthError,
   unwrapError,
 } from "../../utils/errorUtils"
@@ -308,19 +305,11 @@ export const MessageList: Component<MessageListProps> = (props) => {
 
   // Mirrors ErrorDisplay.tsx's exact Switch/Match classification so search
   // text matches what's actually on screen for every error variant, not
-  // just the default card: the paid-model and promotion-limit prompts
-  // render fixed localized copy (no user data at all), and the provider
-  // auth prompt only renders when canAuth() would be true there too —
-  // otherwise ErrorDisplay itself falls through to the default card.
+  // just the default card: the provider auth prompt only renders when
+  // canAuth() would be true there too — otherwise ErrorDisplay itself
+  // falls through to the default card.
   function errorText(error: TranscriptErrorRow["error"]): string {
     const value = error as ErrorDisplayProps["error"]
-    const parsed = parseAssistantError(value)
-    if (isUnauthorizedPaidModelError(parsed)) {
-      return [language.t("error.paidModel.title"), language.t("error.paidModel.description")].join("\n")
-    }
-    if (isUnauthorizedPromotionLimitError(parsed)) {
-      return [language.t("error.promotionLimit.title"), language.t("error.promotionLimit.description")].join("\n")
-    }
     const auth = parseProviderAuthError(value)
     const authProvider = auth ? provider.providers()[auth.providerID] : undefined
     const authMethods = auth ? (provider.authMethods()[auth.providerID] ?? []) : []

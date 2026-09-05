@@ -2,8 +2,6 @@ import { dict as en } from "./en"
 
 type Keys = keyof typeof en
 
-import { cloudProviderDict } from "./cloud-provider"
-
 export const anacondaDesktopDict = {
   "provider.anaconda.title.connect": "Anaconda Desktop verbinden",
   "provider.anaconda.title.manage": "Anaconda Desktop verwalten",
@@ -59,9 +57,6 @@ export const anacondaDesktopDict = {
 
 export const dict = {
   ...anacondaDesktopDict,
-  ...cloudProviderDict,
-
-
   "session.activity.waiting": "Warten auf eine Antwort oder Genehmigung.",
   "session.activity.error": "Fehler oder Verbindung verloren.",
   "session.activity.retry": "Automatischer erneuter Versuch.",
@@ -88,15 +83,12 @@ export const dict = {
   "command.session.compact": "Sitzung komprimieren",
   "command.session.export": "Sitzungsprotokoll exportieren",
 
-  "dialog.provider.tag.recommended": "Empfohlen",
-
   "dialog.model.select.title": "Modell auswählen",
   "dialog.model.search.placeholder": "Modelle durchsuchen",
   "dialog.model.empty": "Keine Modellergebnisse",
   "dialog.model.select": "Auswählen",
   "dialog.model.expand": "Erweitern",
   "dialog.model.collapse": "Einklappen",
-
 
   "provider.connect.title": "{{provider}} verbinden",
   "provider.connect.selectMethod": "Anmeldemethode für {{provider}} auswählen.",
@@ -226,14 +218,6 @@ export const dict = {
 
   "error.startup.title": "Serververbindung fehlgeschlagen",
 
-  "error.paidModel.title": "Du musst dich anmelden, um dieses Modell zu nutzen",
-  "error.paidModel.description":
-    "Melde dich an oder erstelle ein Konto, um auf über 500 Modelle zuzugreifen, Credits zum Selbstkostenpreis zu nutzen oder deinen eigenen Schlüssel mitzubringen.",
-  "error.paidModel.action": "Anmelden",
-  "error.promotionLimit.title": "Du musst dich registrieren, um weiterzumachen",
-  "error.promotionLimit.description":
-    "Registriere dich kostenlos, um weiterzumachen und über 500 Modelle zu entdecken. Dauert 2 Minuten, keine Kreditkarte nötig. Oder komm später wieder.",
-  "error.promotionLimit.action": "Registrieren",
   "error.providerAuth.title": "{{provider}} hat Sie abgemeldet",
   "error.providerAuth.description": "Verbinden Sie {{provider}} erneut und senden Sie Ihre Nachricht noch einmal.",
   "error.providerAuth.chatgpt.title": "OpenAI hat Sie abgemeldet",
@@ -257,7 +241,6 @@ export const dict = {
   "ui.permission.toolLabel.patch": "Patchen",
   "ui.permission.toolLabel.globSearch": "Glob-Suche",
   "ui.permission.toolLabel.grepSearch": "Grep-Suche",
-  "ui.permission.toolLabel.webSearch": "Websuche",
   "ui.permission.toolLabel.list": "Auflisten",
   "ui.permission.toolLabel.externalDirectory": "Zugriff auf externen Ordner erlauben",
   "ui.permission.toolLabel.webFetch": "Web-Abruf",
@@ -293,9 +276,6 @@ export const dict = {
   "sidebar.topBar.newTask": "Neue Aufgabe",
   "sidebar.topBar.history": "Verlauf",
   "sidebar.topBar.agentManager": "Agent Manager",
-  "sidebar.topBar.kiloClaw": "KiloClaw",
-  "sidebar.topBar.marketplace": "Marktplatz",
-  "sidebar.topBar.profile": "Profil",
   "sidebar.topBar.settings": "Einstellungen",
   "sidebar.session.newSession": "Neue Sitzung",
   "sidebar.session.newSession.tooltip": "Starte eine neue Unterhaltung, während die aktuelle Sitzung intakt bleibt.",
@@ -549,8 +529,6 @@ export const dict = {
   "settings.permissions.tool.todowrite.description": "Die Todo-Liste aktualisieren",
   "settings.permissions.tool.webfetch.title": "Web-Abruf",
   "settings.permissions.tool.webfetch.description": "Inhalt von einer URL abrufen",
-  "settings.permissions.tool.websearch.title": "Web-Suche",
-  "settings.permissions.tool.websearch.description": "Das Web durchsuchen",
   "settings.permissions.tool.codesearch.title": "Code-Suche",
   "settings.permissions.tool.codesearch.description": "Code im Web durchsuchen",
   "settings.permissions.tool.external_directory.title": "Externes Verzeichnis",
@@ -576,8 +554,6 @@ export const dict = {
   "session.tab.local": "Lokal",
   "session.tab.cloud": "Cloud",
   "session.tab.worktree": "Arbeitsbaum",
-  "session.cloud.repoOnly": "Nur dieses Repository",
-  "session.cloud.import": "Aus der Cloud importieren",
   "feedback.button": "Feedback & Support",
   "feedback.dialog.message": "Wir würden uns freuen, Ihr Feedback zu hören oder Ihnen bei Problemen zu helfen.",
   "feedback.dialog.github": "Ein Problem auf GitHub melden",
@@ -605,96 +581,17 @@ export const dict = {
     "Bearbeitet Dateien und führt Befehle im Arbeitsbereich ohne Nachfrage aus.",
   "workStyle.choice.autonomous.bash": "Kann Terminalbefehle im Arbeitsbereich ohne Genehmigung ausführen.",
   "workStyle.choice.autonomous.visibility": "Details bleiben eingeklappt, bis du sie aufklappst.",
-  "session.cloud.import.title": "Aus der Cloud importieren",
-  "session.cloud.import.placeholder": "Sitzungs-ID, URL oder kilo import-Befehl",
-  "session.cloud.import.button": "Importieren",
-  "session.cloud.import.invalid": "Ungültiges Sitzungs-ID-Format",
-  "session.cloud.import.legacy": "Dies scheint eine veraltete Sitzung zu sein, die nicht mehr unterstützt wird.",
-  "session.cloud.import.failed": "Fehler beim Importieren der Cloud-Sitzung",
-
-  "deviceAuth.toast.urlCopied": "URL in die Zwischenablage kopiert",
-  "deviceAuth.toast.codeCopied": "Code in die Zwischenablage kopiert",
-  "deviceAuth.toast.errorCopied": "Fehler in die Zwischenablage kopiert",
-  "deviceAuth.status.initiating": "Anmeldung wird gestartet...",
-  "deviceAuth.title": "Bei Kilo Code anmelden",
-  "deviceAuth.step1": "Schritt 1: Diese URL öffnen",
-  "deviceAuth.action.copyUrl": "URL kopieren",
-  "deviceAuth.action.openBrowser": "Browser öffnen",
-  "deviceAuth.qrCode.alt": "QR-Code",
-  "deviceAuth.step2": "Schritt 2: Diesen Code eingeben",
-  "deviceAuth.action.clickToCopy": "Klicken zum Kopieren",
-  "deviceAuth.status.waiting": "Warten auf Autorisierung...",
-  "deviceAuth.status.success": "Anmeldung erfolgreich!",
-  "deviceAuth.status.failed": "Anmeldung fehlgeschlagen",
-  "deviceAuth.error.detailsTitle": "Anmeldefehler-Details",
-  "deviceAuth.status.cancelled": "Anmeldung abgebrochen",
-  "deviceAuth.action.tryAgain": "Erneut versuchen",
-  "deviceAuth.action.copyError": "Fehler kopieren",
-  "deviceAuth.action.showDetails": "Details anzeigen",
 
   "common.retry": "Erneut versuchen",
   "common.refresh": "Aktualisieren",
   "common.reload": "Neu laden",
   "common.reloadDescription": "Konfiguration, Skills, Agents und Befehle vom Datenträger neu laden",
 
-  "profile.title": "Profil",
-  "profile.notLoggedIn": "Nicht angemeldet",
-  "profile.action.login": "Mit Kilo Code anmelden",
-  "profile.balance.title": "Guthaben",
-  "profile.balance.refresh": "Guthaben aktualisieren",
-  "profile.usage.title": "Tarife & Nutzung",
-  "profile.usage.description": "Kontingent und Guthaben des aktuellen Tarifs",
-  "profile.usage.refresh": "Anbieternutzung aktualisieren",
-  "profile.usage.empty": "Keine Quellen für Anbieternutzung erkannt.",
-  "profile.usage.source.direct": "Direkt",
-  "profile.usage.state.stale": "Zuletzt aktualisierte Nutzungsdaten werden angezeigt.",
-  "profile.usage.state.unavailable": "Nutzungsdaten nicht verfügbar.",
-  "profile.usage.plan.pastDue": "Tarif: Zahlung überfällig",
-  "profile.usage.plan.canceling": "Tarif: Kündigung zum Ende des Abrechnungszeitraums",
-  "profile.usage.plan.unknown": "Tarif: Status unbekannt",
-  "profile.usage.action.manage": "Verwalten",
-  "profile.usage.action.managePlan": "{{plan}} verwalten",
-  "profile.usage.routingState.disabled": "deaktiviert",
-  "profile.usage.routingState.missing": "nicht vorhanden",
-  "profile.usage.routingState.replaced": "ersetzt",
-  "profile.usage.routingState.unknown": "unbekannt",
-  "profile.usage.window.used": "{{value}} verwendet",
-  "profile.usage.window.remaining": "{{value}} verbleibend",
-  "profile.usage.window.remainingOf": "{{value}} von {{limit}} verbleibend",
-  "profile.usage.window.usedOf": "{{value}} von {{limit}} verwendet",
-  "profile.usage.window.quota": "Kontingent",
-  "profile.usage.window.daily": "Tägliches Kontingent",
-  "profile.usage.window.weekly": "Wöchentliches Kontingent",
-  "profile.usage.window.monthly": "Monatliches Kontingent",
-  "profile.usage.window.hours": "{{count}}-Stunden-Kontingent",
-  "profile.usage.window.days": "{{count}}-Tage-Kontingent",
-  "profile.usage.window.weeks": "{{count}}-Wochen-Kontingent",
-  "profile.usage.window.months": "{{count}}-Monats-Kontingent",
-  "profile.usage.window.shared": "Geteilt",
-  "profile.usage.window.scoped": "{{resource}} · {{period}}",
-  "profile.usage.reset": "Wird am {{date}} zurückgesetzt",
-  "profile.usage.status.unknown": "Unbekannt",
-  "profile.usage.status.unlimited": "Unbegrenzt",
-  "profile.usage.status.notInPlan": "Nicht im Tarif",
-  "profile.usage.status.exhausted": "Aufgebraucht",
-  "profile.action.dashboard": "Dashboard",
-  "profile.action.topUp": "Aufladen",
-  "profile.pass.subscribe": "Hol dir Kilo Pass, um Guthaben hinzuzufügen und Boni zu verdienen",
-  "profile.pass.bonus": "Bonus",
-  "profile.pass.usage": "Verbrauch in diesem Monat",
-  "profile.pass.paid": "Bezahlt",
-  "profile.pass.meter": "Monatlicher Verbrauch des Kilo Pass",
-  "profile.pass.renews": "Verlängert sich",
-  "profile.action.logout": "Abmelden",
-
   "settings.agentBehaviour.title": "Agentenverhalten",
   "settings.autoApprove.title": "Automatisch genehmigen",
   "settings.webTools.title": "Web-Tools",
   "settings.webTools.description": "Konfigurieren Sie Websuche und Browserautomatisierung.",
-  "settings.webTools.webSearch.enable": "Für alle Anbieter aktivieren",
   "settings.webTools.browserAutomation": "Browserautomatisierung",
-  "settings.webTools.webSearch.title": "Websuche",
-  "settings.webTools.webSearch.description": "Machen Sie die Websuche für Modelle aller Anbieter verfügbar.",
   "settings.checkpoints.title": "Prüfpunkte",
   "settings.display.title": "Anzeige",
   "settings.notifications.title": "Benachrichtigungen",
@@ -768,9 +665,6 @@ export const dict = {
   "settings.aboutKiloCode.version.label": "Version:",
   "settings.aboutKiloCode.community": "Community & Support",
   "settings.aboutKiloCode.feedback.prefix": "Bei Fragen oder Feedback können Sie ein Issue eröffnen auf",
-  "settings.aboutKiloCode.feedback.or": "oder",
-  "settings.aboutKiloCode.support.prefix":
-    "Bei Abrechnungs- oder Kontofragen wenden Sie sich an den Kundensupport unter",
   "settings.aboutKiloCode.resetSettings.title": "Einstellungen zurücksetzen",
   "settings.aboutKiloCode.resetSettings.description":
     "Dies setzt nur VS Code-erweiterungsspezifische Einstellungen auf ihre Standardwerte zurück. Einstellungen, die mit der CLI geteilt werden, wie Modi und Regeln für die automatische Genehmigung, werden in der CLI-Konfiguration gespeichert und nicht zurückgesetzt.",
@@ -789,11 +683,6 @@ export const dict = {
     "Diese Datei wurde mit einer neueren Version von Kilo exportiert. Einige Einstellungen werden möglicherweise ignoriert.",
   "settings.aboutKiloCode.importSettings.success":
     "Einstellungen importiert. Überprüfen Sie die obigen Änderungen und klicken Sie dann auf Speichern.",
-
-  "settings.aboutKiloCode.telemetry.title": "Telemetrie",
-  "settings.aboutKiloCode.telemetry.description":
-    'Die Telemetrie wird durch die integrierte Telemetrie-Einstellung von VS Code gesteuert. Um sie zu deaktivieren, gehen Sie zu Einstellungen > Telemetrie > Telemetrie-Stufe und setzen Sie diese auf "off". Starten Sie VS Code neu, um die Änderung zu übernehmen.',
-  "settings.aboutKiloCode.telemetry.openSettings": "Telemetrie-Einstellungen öffnen",
 
   "settings.agentBehaviour.subtab.agents": "Agenten",
   "settings.agentBehaviour.subtab.mcpServers": "MCP-Server",
@@ -866,14 +755,6 @@ export const dict = {
     "Aktivieren Sie die Verwaltung von Sitzungen und Worktrees über mehrere Repositories im Agent Manager. Das aktuelle Workspace-Repository ist immer das Standardprojekt.",
   "settings.experimental.mcpTimeout.title": "MCP-Zeitlimit (ms)",
   "settings.experimental.mcpTimeout.description": "Zeitlimit für MCP-Server-Anfragen in Millisekunden",
-  "settings.experimental.remote.title": "Remote-Steuerung",
-  "settings.experimental.remote.description":
-    "Aktivieren Sie die Remote-Steuerung von Sitzungen über Kilo Cloud. Dies betrifft auch CLIs auf diesem Computer.",
-  "settings.experimental.remote.current": "Aktueller Status:",
-  "settings.experimental.remote.startup": "Automatisch beim Start aktivieren:",
-  "settings.experimental.remote.active": "Aktiv",
-  "settings.experimental.remote.inactive": "Inaktiv",
-  "settings.experimental.remote.hint": "Verwende /remote im Chat zum Umschalten",
   "settings.experimental.toolToggles": "Werkzeug-Schalter",
   "settings.agentBehaviour.defaultAgent.title": "Standard-Agent",
   "settings.agentBehaviour.defaultAgent.description": "Agent, der verwendet wird, wenn keiner angegeben ist",
@@ -1033,7 +914,6 @@ export const dict = {
   "settings.autoApprove.tool.todoreadwrite":
     "Aufgabenliste verwalten. Ermöglicht das Lesen und Aktualisieren der internen Aufgabenliste.",
   "settings.autoApprove.tool.webfetch": "URL abrufen. Erlaubt das Abrufen von Inhalten einer bestimmten URL.",
-  "settings.autoApprove.tool.websearch": "Das Web durchsuchen. Ermöglicht die Durchführung externer Web-Suchen.",
   "settings.autoApprove.tool.external_directory":
     "Zugriff auf Dateien außerhalb des Arbeitsbereichs. Wird ausgelöst, wenn auf Dateien außerhalb des aktuellen Projektverzeichnisses zugegriffen wird.",
   "settings.autoApprove.tool.doom_loop":
@@ -1135,8 +1015,6 @@ export const dict = {
   "settings.providers.disabled.enable": "Aktivieren",
   "settings.providers.notSet": "Nicht festgelegt (Server-Standard verwenden)",
   "dialog.model.notSet": "Nicht festgelegt",
-  "profile.personalAccount": "Persönliches Konto",
-  "profile.switchingAccount": "Konto wird gewechselt…",
 
   // Agent Manager strings live in webview-ui/agent-manager/i18n/de.ts
 

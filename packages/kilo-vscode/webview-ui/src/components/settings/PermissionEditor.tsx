@@ -114,7 +114,7 @@ const GROUPED_TOOLS: GroupedToolDef[] = [
 ]
 
 const TRAILING_TOOLS: ToolDef[] = [
-  { id: "websearch", descriptionKey: "settings.autoApprove.tool.websearch" },
+  
   { id: "webfetch", descriptionKey: "settings.autoApprove.tool.webfetch" },
   { id: "doom_loop", descriptionKey: "settings.autoApprove.tool.doom_loop" },
 ]

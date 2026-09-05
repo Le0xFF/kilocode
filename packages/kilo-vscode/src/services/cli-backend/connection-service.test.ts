@@ -188,10 +188,6 @@ describe("KiloConnectionService viewed sessions", () => {
         },
       },
     }
-    service.setRemoteService({
-      getState: () => ({ enabled: false, connected: false }),
-      onChange: () => () => {},
-    } as any)
 
     service.registerVisible("sidebar", ["ses-1"])
     service.registerAttached("agent-manager", ["ses-2"])

@@ -462,12 +462,7 @@ describe("session tool indexes", () => {
     expect(tools.map((part) => part.messageID)).toEqual(["a1", "a2"])
   })
 
-  it("uses a lookup so stashed loaded parts can feed the index", () => {
-    const messages = [indexMsg("a1", "assistant")]
-    const parts: Record<string, Part[]> = { a1: [toolPart("websearch") as ToolPart, textPart("t1")] }
-    const tools = buildSessionToolParts(messages, (item) => parts[item.id])
-    expect(tools.map((part) => part.tool)).toEqual(["websearch"])
-  })
+  
 
   it("upserts tool parts without duplicating and ignores text deltas", () => {
     const first = { ...toolPart("bash"), id: "p1", state: { status: "running", input: {}, title: "old" } }

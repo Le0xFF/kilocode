@@ -1,10 +1,6 @@
 // Kilo-specific translations and overrides
 // Keys here will override any matching keys from upstream translations
 export const dict = {
-  // Kilo Gateway provider translations
-  "provider.connect.kiloGateway.byok.prefix": "Per ulteriori statistiche sull'utilizzo, utilizza ",
-  "provider.connect.kiloGateway.byok.link": "BYOK tramite Kilo's Gateway",
-  "provider.connect.kiloGateway.byok.suffix": ".",
 
   // Provider settings translations
   "settings.providers.note.kilo": "Accesso a oltre 500 modelli AI",

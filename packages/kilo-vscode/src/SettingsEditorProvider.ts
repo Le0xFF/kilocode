@@ -2,7 +2,6 @@ import * as vscode from "vscode"
 import { KiloProvider } from "./KiloProvider"
 import { resolvePanelProjectDirectory } from "./project-directory"
 import type { KiloConnectionService } from "./services/cli-backend"
-import type { RemoteStatusService } from "./services/RemoteStatusService"
 import type { AgentManagerSettingsHandler } from "./kilo-provider/options"
 
 type PanelView = "settings" | "indexing"
@@ -28,7 +27,6 @@ export class SettingsEditorProvider implements vscode.Disposable {
   private providers = new Map<PanelView, KiloProvider>()
   private tabs = new Map<PanelView, string>()
   private projects = new Map<PanelView, string>()
-  private remoteService: RemoteStatusService | null = null
 
   constructor(
     private readonly extensionUri: vscode.Uri,
@@ -112,9 +110,6 @@ export class SettingsEditorProvider implements vscode.Disposable {
       hideTopBar: true,
       agentManagerSettings: view === "settings" ? this.agentManagerSettings : undefined,
     })
-    if (this.remoteService) {
-      provider.setRemoteService(this.remoteService)
-    }
     provider.resolveWebviewPanel(panel)
 
     // Listen for closePanel from the webview (back button in panel mode)
@@ -162,14 +157,6 @@ export class SettingsEditorProvider implements vscode.Disposable {
       this.tabs.delete(view)
       this.projects.delete(view)
     })
-  }
-
-  setRemoteService(service: RemoteStatusService): void {
-    this.remoteService = service
-    // Apply to any existing providers
-    for (const [, provider] of this.providers) {
-      provider.setRemoteService(service)
-    }
   }
 
   dispose(): void {

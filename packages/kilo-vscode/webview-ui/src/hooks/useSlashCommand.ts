@@ -182,14 +182,6 @@ export function useSlashCommand(
       },
     },
     {
-      name: "remote",
-      description: "Toggle remote control",
-      hints: [],
-      action: () => {
-        vscode.postMessage({ type: "toggleRemote" })
-      },
-    },
-    {
       name: "sandbox",
       description: "Toggle sandbox",
       hints: [],

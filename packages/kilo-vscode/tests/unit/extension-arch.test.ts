@@ -308,23 +308,6 @@ describe("Extension — editor panel placement", () => {
 // it silently no-op'd, leaving the UI stuck.
 // ---------------------------------------------------------------------------
 
-describe("Extension — Agent Manager remote wiring", () => {
-  const ext = fs.readFileSync(EXTENSION_FILE, "utf-8")
-  const host = fs.readFileSync(VSCODE_HOST_FILE, "utf-8")
-
-  it("passes the shared remote service to Agent Manager", () => {
-    expect(ext).toContain("new VscodeHost(context.extensionUri, connectionService, context, remoteService)")
-  })
-
-  it("wires the remote service before attaching the Agent Manager webview", () => {
-    const remote = host.indexOf("provider.setRemoteService(this.remoteService)")
-    const attach = host.indexOf("provider.attachToWebview")
-    expect(remote).toBeGreaterThan(-1)
-    expect(attach).toBeGreaterThan(-1)
-    expect(remote).toBeLessThan(attach)
-  })
-})
-
 describe("KiloProvider — remote focus lifecycle", () => {
   const provider = fs.readFileSync(KILO_PROVIDER_FILE, "utf-8")
 

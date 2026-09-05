@@ -16,7 +16,6 @@ import { registerCommitMessageService } from "./services/commit-message"
 import { registerCodeActions, registerTerminalActions, KiloCodeActionProvider } from "./services/code-actions"
 import { registerToggleAutoApprove } from "./commands/toggle-auto-approve"
 import { registerHeapSnapshot } from "./commands/heap-snapshot"
-import { RemoteStatusService } from "./services/RemoteStatusService"
 import { markWorkspace } from "./util/spotlight"
 import { createNotebookBridge } from "./services/notebook"
 import { createGitExecutable } from "./util/git-executable"
@@ -62,25 +61,10 @@ export async function activate(context: vscode.ExtensionContext) {
   const browserAutomationService = new BrowserAutomationService(connectionService)
   browserAutomationService.syncWithSettings()
 
-  // Create remote status service (one status bar item for all webviews)
-  const remoteService = new RemoteStatusService()
-  context.subscriptions.push(remoteService)
-  connectionService.setRemoteService(remoteService)
-
   // Re-register browser automation MCP server on CLI backend reconnect.
   const unsubscribeStateChange = connectionService.onStateChange((state) => {
     if (state === "connected") {
       browserAutomationService.reregisterIfEnabled()
-      try {
-        remoteService.setClient(connectionService.getClient())
-        console.log("[Kilo New] CLI connected, calling remoteService.refresh()")
-        remoteService.refresh().catch((err) => console.warn("[Kilo New] initial remote refresh failed:", err))
-      } catch {
-        remoteService.setClient(null)
-      }
-    } else {
-      remoteService.clearState()
-      remoteService.setClient(null)
     }
   })
 
@@ -104,7 +88,6 @@ export async function activate(context: vscode.ExtensionContext) {
   const provider = new KiloProvider(context.extensionUri, connectionService, context, {
     focusContext: "kilo-code.new.sidebarFocused",
   })
-  provider.setRemoteService(remoteService)
 
   // Register the webview view provider for the sidebar.
   // retainContextWhenHidden keeps the webview alive when switching to other sidebar panels.
@@ -128,7 +111,7 @@ export async function activate(context: vscode.ExtensionContext) {
   ensureCommandsSkipShell(skip)
 
   // Create Agent Manager provider for editor panel
-  const agentManagerHost = new VscodeHost(context.extensionUri, connectionService, context, remoteService)
+  const agentManagerHost = new VscodeHost(context.extensionUri, connectionService, context)
   const git = createGitExecutable({
     preferred: async () => {
       const extension = vscode.extensions.getExtension("vscode.git")
@@ -207,7 +190,6 @@ export async function activate(context: vscode.ExtensionContext) {
           tabTitle: panelTitleHandler(panel),
           topBarSurface: "tab",
         })
-        tabProvider.setRemoteService(remoteService)
         tabProvider.setAutoApproveController(autoApprove)
         tabProvider.setContinueInWorktreeHandler((sessionId, progress) =>
           agentManagerProvider.continueFromSidebar(sessionId, progress),
@@ -260,7 +242,6 @@ export async function activate(context: vscode.ExtensionContext) {
   const settingsEditorProvider = new SettingsEditorProvider(context.extensionUri, connectionService, context, {
     ...agentManagerProvider.settings,
   })
-  settingsEditorProvider.setRemoteService(remoteService)
   context.subscriptions.push(settingsEditorProvider)
 
   // Create sub-agent viewer provider (read-only editor panel for sub-agent sessions)
@@ -393,9 +374,6 @@ export async function activate(context: vscode.ExtensionContext) {
       await provider.waitForReady()
       provider.postMessage({ type: "triggerTask", text: `Generate a terminal command: ${input}` })
     }),
-    vscode.commands.registerCommand("kilo-code.new.toggleRemote", () => {
-      remoteService.toggle().catch((err) => console.error("[Kilo New] toggleRemote command failed:", err))
-    }),
     vscode.commands.registerCommand("kilo-code.new.openInTab", () => {
       return openKiloInNewTab(
         context,
@@ -403,7 +381,6 @@ export async function activate(context: vscode.ExtensionContext) {
         agentManagerProvider,
         tabPanels,
         diffVirtualProvider,
-        remoteService,
         autoApprove,
       )
     }),
@@ -557,7 +534,6 @@ function openKiloInNewTab(
   agentManagerProvider: AgentManagerProvider,
   tabPanels: Map<vscode.WebviewPanel, KiloProvider>,
   diffVirtualProvider: DiffVirtualProvider,
-  remoteService: RemoteStatusService,
   autoApprove: ReturnType<typeof registerToggleAutoApprove>,
 ) {
   const panel = vscode.window.createWebviewPanel(
@@ -580,7 +556,6 @@ function openKiloInNewTab(
     tabTitle: panelTitleHandler(panel),
     topBarSurface: "tab",
   })
-  tabProvider.setRemoteService(remoteService)
   tabProvider.setAutoApproveController(autoApprove)
   tabProvider.setContinueInWorktreeHandler((sessionId, progress) =>
     agentManagerProvider.continueFromSidebar(sessionId, progress),
