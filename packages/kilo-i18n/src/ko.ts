@@ -1,8 +1,4 @@
 export const dict = {
-  // Kilo Gateway provider translations
-  "provider.connect.kiloGateway.byok.prefix": "더 많은 사용 통계를 보려면 ",
-  "provider.connect.kiloGateway.byok.link": "Kilo's Gateway를 통해 BYOK",
-  "provider.connect.kiloGateway.byok.suffix": "를 사용하세요.",
 
   // Provider settings translations
   "settings.providers.note.kilo": "500개 이상의 AI 모델 이용 가능",

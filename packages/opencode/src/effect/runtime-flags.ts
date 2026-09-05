@@ -31,15 +31,7 @@ export class Service extends ConfigService.Service<Service>()("@opencode/Runtime
     broad: bool("KILO_DISABLE_CLAUDE_CODE"),
     direct: bool("KILO_DISABLE_CLAUDE_CODE_SKILLS"),
   }).pipe(Config.map((flags) => flags.broad || flags.direct)),
-  enableExa: Config.all({
-    experimental,
-    enabled: bool("KILO_ENABLE_EXA"),
-    legacy: bool("KILO_EXPERIMENTAL_EXA"),
-  }).pipe(Config.map((flags) => flags.experimental || flags.enabled || flags.legacy)),
-  enableParallel: Config.all({
-    enabled: bool("KILO_ENABLE_PARALLEL"),
-    legacy: bool("KILO_EXPERIMENTAL_PARALLEL"),
-  }).pipe(Config.map((flags) => flags.enabled || flags.legacy)),
+  
   enableExperimentalModels: bool("KILO_ENABLE_EXPERIMENTAL_MODELS"),
   enableQuestionTool: bool("KILO_ENABLE_QUESTION_TOOL"),
   experimentalScout: enabledByExperimental("KILO_EXPERIMENTAL_SCOUT"), // kilocode_change

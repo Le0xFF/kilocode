@@ -1,47 +1,14 @@
-import { Bonjour } from "bonjour-service"
-
-let bonjour: Bonjour | undefined
+// kilocode_change - bonjour-service dep removed; mDNS is inert (always no-op). The `--mdns` flag still parses but
+// does nothing; restore a real implementation (or drop the flag) when network features are re-evaluated.
 let currentPort: number | undefined
 
-export function publish(port: number, domain?: string) {
+export function publish(port: number, _domain?: string) {
   if (currentPort === port) return
-  if (bonjour) unpublish()
-
-  try {
-    const host = domain ?? "kilo.local" // kilocode_change
-    const name = `kilo-${port}` // kilocode_change
-    bonjour = new Bonjour()
-    const service = bonjour.publish({
-      name,
-      type: "http",
-      host,
-      port,
-      txt: { path: "/" },
-    })
-
-    service.on("error", () => {})
-
-    currentPort = port
-  } catch {
-    if (bonjour) {
-      try {
-        bonjour.destroy()
-      } catch {}
-    }
-    bonjour = undefined
-    currentPort = undefined
-  }
+  currentPort = port
 }
 
 export function unpublish() {
-  if (bonjour) {
-    try {
-      bonjour.unpublishAll()
-      bonjour.destroy()
-    } catch {}
-    bonjour = undefined
-    currentPort = undefined
-  }
+  currentPort = undefined
 }
 
 export * as MDNS from "./mdns"

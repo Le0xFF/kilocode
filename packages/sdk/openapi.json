@@ -31846,9 +31846,6 @@
               "webfetch": {
                 "$ref": "#/components/schemas/PermissionActionConfig"
               },
-              "websearch": {
-                "$ref": "#/components/schemas/PermissionActionConfig"
-              },
               "lsp": {
                 "$ref": "#/components/schemas/PermissionRuleConfig"
               },
@@ -32837,9 +32834,6 @@
             "additionalProperties": {
               "type": "boolean"
             }
-          },
-          "web_search": {
-            "type": "boolean"
           },
           "attachment": {
             "$ref": "#/components/schemas/AttachmentConfig"

@@ -412,13 +412,7 @@ describe("project MCP trust boundaries", () => {
   })
 })
 
-describe("kilocode web search config", () => {
-  test("accepts enabling web search for all providers", () => {
-    const config = Schema.decodeUnknownSync(Config.Info)({ web_search: true })
 
-    expect(config.web_search).toBe(true)
-  })
-})
 
 describe("kilocode indexing config", () => {
   test("ignores retired experimental flags in existing configs", async () => {

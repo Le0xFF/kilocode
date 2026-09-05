@@ -963,7 +963,7 @@
         "kilo-code.new.browserAutomation.enabled": {
           "type": "boolean",
           "default": false,
-          "description": "Enable browser automation powered by Playwright. When enabled, the AI agent can interact with web pages in a visible Chrome window."
+          "description": "Enable browser automation powered by Playwright. When enabled, the AI agent can interact with web pages in a visible Chrome window. Requires access to the npm registry: on first use the MCP server is installed via npx @playwright/mcp@latest."
         },
         "kilo-code.new.browserAutomation.useSystemChrome": {
           "type": "boolean",
@@ -1130,7 +1130,6 @@
     "@types/diff": "^6.0.0",
     "@types/mocha": "^10.0.10",
     "@types/node": "22.x",
-    "@types/qrcode": "^1.5.6",
     "@types/vscode": "^1.105.1",
     "@vscode/test-cli": "^0.0.12",
     "@vscode/test-electron": "^2.5.2",
@@ -1143,7 +1142,6 @@
     "happy-dom": "20.8.9",
     "knip": "5.85.0",
     "prettier": "3.6.2",
-    "qrcode": "^1.5.4",
     "storybook": "10.2.10",
     "storybook-solidjs-vite": "10.0.9",
     "ts-morph": "27.0.2",

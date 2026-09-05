@@ -32,7 +32,7 @@ import type { SkillTool } from "@/tool/skill"
 import type { TaskTool } from "@/tool/task"
 import type { TodoWriteTool } from "@/tool/todo"
 import type { WebFetchTool } from "@/tool/webfetch"
-import { webSearchProviderLabel, type WebSearchTool } from "@/tool/websearch"
+
 import type { WriteTool } from "@/tool/write"
 import { LANGUAGE_EXTENSIONS } from "@/lsp/language"
 import * as Locale from "@/util/locale"
@@ -109,7 +109,7 @@ type ToolDefs = {
   list: Tool.Info
   lsp: typeof LspTool
   webfetch: typeof WebFetchTool
-  websearch: typeof WebSearchTool
+  
   skill: typeof SkillTool
   plan_exit: typeof PlanExitTool
 }
@@ -357,13 +357,7 @@ function runEdit(p: ToolProps<typeof EditTool>): ToolInline {
   }
 }
 
-function runWebSearch(p: ToolProps<typeof WebSearchTool>): ToolInline {
-  const title = webSearchProviderLabel(p.metadata.provider)
-  return {
-    icon: "◈",
-    title: p.input.query ? `${title} "${p.input.query}"` : title,
-  }
-}
+
 
 function runTask(p: ToolProps<typeof TaskTool>): ToolInline {
   const kind = Locale.titlecase(p.input.subagent_type || "unknown")
@@ -936,15 +930,7 @@ function scrollWebfetchStart(p: ToolProps<typeof WebFetchTool>): string {
   return `% WebFetch ${url}`
 }
 
-function scrollWebSearchStart(p: ToolProps<typeof WebSearchTool>): string {
-  const title = webSearchProviderLabel(p.metadata.provider)
-  const query = p.input.query ?? ""
-  if (!query) {
-    return `◈ ${title}`
-  }
 
-  return `◈ ${title} "${query}"`
-}
 
 function permEdit(p: ToolPermissionProps<typeof EditTool>): ToolPermissionInfo {
   const input = p.input as { filePath?: string; filepath?: string; diff?: string }
@@ -1022,15 +1008,7 @@ function permWebfetch(p: ToolPermissionProps<typeof WebFetchTool>): ToolPermissi
   }
 }
 
-function permWebSearch(p: ToolPermissionProps<typeof WebSearchTool>): ToolPermissionInfo {
-  const query = p.input.query || ""
-  const title = webSearchProviderLabel(p.metadata.provider)
-  return {
-    icon: "◈",
-    title: query ? `${title} "${query}"` : title,
-    lines: query ? [`Query: ${query}`] : [],
-  }
-}
+
 
 function permLsp(p: ToolPermissionProps<typeof LspTool>): ToolPermissionInfo {
   const file = p.input.filePath || ""
@@ -1240,17 +1218,7 @@ const TOOL_RULES = {
     },
     permission: permWebfetch,
   },
-  websearch: {
-    view: {
-      output: false,
-      final: false,
-    },
-    run: runWebSearch,
-    scroll: {
-      start: scrollWebSearchStart,
-    },
-    permission: permWebSearch,
-  },
+  
   skill: {
     view: {
       output: false,

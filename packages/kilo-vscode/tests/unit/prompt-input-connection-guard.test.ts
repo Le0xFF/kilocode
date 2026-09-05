@@ -90,9 +90,7 @@ describe("PromptInput sandbox toggle", () => {
   })
 
   it("shows sandbox controls only when the global sandbox setting is enabled", () => {
-    expect(src).toContain(
-      'globalConfig().sandbox?.enabled === true &&\n    !session.currentSessionID()?.startsWith("cloud:")',
-    )
+    expect(src).toContain('globalConfig().sandbox?.enabled === true')
     expect(src).toContain("features().sandboxControls &&")
     expect(src).toContain("<Show when={sandboxVisible()}>")
     expect(src).toContain("{ action: toggleSandbox, enabled: () => sandboxVisible() && !sandboxDisabled() }")

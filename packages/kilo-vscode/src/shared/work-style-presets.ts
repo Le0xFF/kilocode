@@ -78,8 +78,7 @@ export const WORK_STYLE_PRESETS: Record<WorkStyle, WorkStylePreset> = {
         list: "allow",
         question: "allow",
         webfetch: "allow",
-        websearch: "allow",
-        codesearch: "allow",
+        
         external_directory: "ask",
         edit: "ask",
         bash: BASH,

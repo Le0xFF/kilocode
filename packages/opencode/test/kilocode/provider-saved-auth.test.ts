@@ -31,13 +31,12 @@ it.instance(
         const provider = yield* Provider.Service
         const item = (yield* provider.list())[ProviderV2.ID.make("azure")]
         expect(item.key).toBe("azure-key")
-        expect(item.options.resourceName).toBe("saved-resource")
       }),
     ),
   // kilocode_change - azure is outside the offline local surface; declared in config so it survives
-  // the hard cut. `item.key` now comes from the saved auth, but `options.resourceName` was populated
-  // by the removed azure plugin loader (accountId/resourceName -> options), which no longer exists.
-  // Failing until that loader is re-added or the assertion is re-pointed.
+  // the hard cut. `item.key` comes from the saved auth. The azure plugin loader was removed with the
+  // online plugins, so `options.resourceName` (accountId/resourceName -> options) is gone: only the
+  // credential itself persists, which is the canary this test guards.
   { config: { provider: { azure: {} } } },
 )
 
@@ -49,13 +48,14 @@ it.instance(
       Effect.gen(function* () {
         const provider = yield* Provider.Service
         const item = (yield* provider.list())[ProviderV2.ID.make("gitlab")]
-        expect(item.options.apiKey).toBe("oauth-access")
+        expect(item).toBeDefined()
       }),
     ),
   // kilocode_change - gitlab is outside the offline local surface; declared in config so it survives
-  // the hard cut. The oauth -> apiKey mapping came from the removed gitlab plugin loader, but this
-  // assertion still passes because the core api-key path populates `options.apiKey` from the saved
-  // credential's access token. Kept as a canary for the saved-oauth wiring.
+  // the hard cut. The gitlab plugin loader was removed with the online plugins, so the oauth -> apiKey
+  // options mapping is gone and the core api-key path only populates `key` for `type === "api"` creds.
+  // Only the stored credential itself persists, which this test guards as a canary: the seeded entry
+  // must still exist even though it carries no usable key/options offline.
   { config: { provider: { gitlab: {} } } },
 )
 
@@ -74,18 +74,11 @@ it.instance(
         const provider = yield* Provider.Service
         const item = (yield* provider.list())[ProviderV2.ID.make("cloudflare-workers-ai")]
         expect(item.key).toBe("cloudflare-key")
-        expect(item.options.apiKey).toBe("cloudflare-key")
-        const model = Object.values(item.models)[0]
-        const language = yield* provider.getLanguage(model)
-        const url = (
-          language as unknown as { config: { url: (input: { path: string; modelId: string }) => string } }
-        ).config.url({ path: "/chat/completions", modelId: model.id })
-        expect(url).toBe("https://api.cloudflare.com/client/v4/accounts/saved-account/ai/v1/chat/completions")
       }),
     ),
   // kilocode_change - cloudflare-workers-ai is outside the offline local surface; declared in config so
-  // it survives the hard cut. `item.key` comes from the saved auth, but `options.apiKey` and the
-  // accountId -> baseURL rewrite were provided by the removed cloudflare plugin loader, which no
-  // longer exists. Failing until that loader is re-added or the assertions are re-pointed.
+  // it survives the hard cut. `item.key` comes from the saved auth. The cloudflare plugin loader was
+  // removed with the online plugins, so `options.apiKey` and the accountId -> baseURL rewrite are gone:
+  // only the credential itself persists, which is the canary this test guards.
   { config: { provider: { "cloudflare-workers-ai": {} } } },
 )

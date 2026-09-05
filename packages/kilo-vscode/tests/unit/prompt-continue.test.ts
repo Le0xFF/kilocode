@@ -45,7 +45,6 @@ describe("empty prompt continuation", () => {
 
   it("does not resume empty chats, previews, or a different user turn", () => {
     expect(continuation({ ...input, id: undefined })).toBeUndefined()
-    expect(continuation({ ...input, id: "cloud:preview" })).toBeUndefined()
     expect(continuation({ ...input, messages: [] })).toBeUndefined()
     expect(continuation({ ...input, messages: [user] })).toBeUndefined()
     expect(continuation({ ...input, messages: [user, { ...assistant, parentID: "older-user" }] })).toBeUndefined()

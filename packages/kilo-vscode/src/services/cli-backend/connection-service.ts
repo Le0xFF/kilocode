@@ -93,7 +93,6 @@ export class KiloConnectionService {
   private error: Error | null = null
   private connectPromise: Promise<void> | null = null
   private healthPollTimer: ReturnType<typeof setInterval> | null = null
-  private remoteService: import("../RemoteStatusService").RemoteStatusService | null = null
 
   private readonly eventListeners: Set<SSEEventListener> = new Set()
   private readonly filteredListeners = new Set<{ filter: SSEEventFilter; listener: SSEEventListener }>()
@@ -129,7 +128,6 @@ export class KiloConnectionService {
   private debounceTimer: ReturnType<typeof setTimeout> | null = null
   private viewedSending = false
   private viewedDirty = false
-  private unsubRemote: (() => void) | null = null
 
   constructor(context: vscode.ExtensionContext) {
     const state =
@@ -226,27 +224,6 @@ export class KiloConnectionService {
    */
   getServerConfig(): ServerConfig | null {
     return this.config
-  }
-
-  /**
-   * Set the remote status service. When remote is disabled, flushViewed()
-   * is a no-op. When remote becomes enabled (startup refresh, user toggle,
-   * or SSE event), the accumulated focused/opened state is automatically
-   * flushed so the server is never left unaware of already-open sessions.
-   */
-  setRemoteService(service: import("../RemoteStatusService").RemoteStatusService | null): void {
-    this.unsubRemote?.()
-    this.unsubRemote = null
-    this.remoteService = service
-    if (service) {
-      this.unsubRemote = service.onChange((state) => {
-        if (state.enabled) this.flushViewed()
-      })
-    }
-  }
-
-  private isRemoteEnabled(): boolean {
-    return this.remoteService?.getState().enabled ?? false
   }
 
   /**
@@ -717,8 +694,6 @@ export class KiloConnectionService {
     this.windowStateDisposable?.dispose()
     this.windowStateDisposable = null
     this.viewedDirty = false
-    this.unsubRemote?.()
-    this.unsubRemote = null
     this.client = null
     this.sseClient = null
     this.config = null

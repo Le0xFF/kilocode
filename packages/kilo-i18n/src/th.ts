@@ -1,8 +1,4 @@
 export const dict = {
-  // Kilo Gateway provider translations
-  "provider.connect.kiloGateway.byok.prefix": "สำหรับสถิติการใช้งานเพิ่มเติม โปรดใช้ ",
-  "provider.connect.kiloGateway.byok.link": "BYOK ผ่าน Kilo's Gateway",
-  "provider.connect.kiloGateway.byok.suffix": "",
 
   // Provider settings translations
   "settings.providers.note.kilo": "เข้าถึงโมเดล AI มากกว่า 500 รายการ",

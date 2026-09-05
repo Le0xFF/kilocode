@@ -1,7 +1,7 @@
 import path from "path"
 import { Filesystem } from "@/util/filesystem"
 import * as prompts from "@clack/prompts"
-import { map, pipe, sortBy, values } from "remeda"
+import { map, pickBy, pipe, sortBy, values } from "remeda"
 import { Octokit } from "@octokit/rest"
 import { graphql } from "@octokit/graphql"
 import * as core from "@actions/core"
@@ -33,6 +33,7 @@ import { Process } from "@/util/process"
 import { parseGitHubRemote } from "@/util/repository"
 import { Effect } from "effect"
 import { GitHubSecurity } from "@/kilocode/security/github" // kilocode_change
+import { inLocalSurface } from "@/kilocode/local-providers" // kilocode_change - cut catalog to local surface for install
 import { extractResponseText, formatPromptTooLargeError } from "./github.shared"
 
 type GitHubAuthor = {
@@ -172,6 +173,7 @@ export const githubInstall = Effect.fn("Cli.github.install")(function* () {
         delete p["github-copilot"]
         return p
       })
+    const filteredProviders = pickBy(providers, (_item, id) => inLocalSurface(id, new Set()))
 
       const provider = await promptProvider()
       const model = await promptModel()
@@ -189,7 +191,7 @@ export const githubInstall = Effect.fn("Cli.github.install")(function* () {
           step2 = [
             `    2. Add the following secrets in org or repo (${app.owner}/${app.repo}) settings`,
             "",
-            ...providers[provider].env.map((e) => `       - ${e}`),
+            ...filteredProviders[provider].env.map((e) => `       - ${e}`),
           ].join("\n")
         }
 
@@ -237,7 +239,7 @@ export const githubInstall = Effect.fn("Cli.github.install")(function* () {
           message: "Select provider",
           maxItems: 8,
           options: pipe(
-            providers,
+            filteredProviders,
             values(),
             sortBy(
               (x) => priority[x.id] ?? 99,
@@ -257,7 +259,7 @@ export const githubInstall = Effect.fn("Cli.github.install")(function* () {
       }
 
       async function promptModel() {
-        const providerData = providers[provider]!
+        const providerData = filteredProviders[provider]!
 
         const model = await prompts.select({
           message: "Select model",
@@ -288,7 +290,7 @@ export const githubInstall = Effect.fn("Cli.github.install")(function* () {
         const providerEnvStr =
           provider === "amazon-bedrock"
             ? ""
-            : providers[provider].env.map((e) => `\n          ${e}: \${{ secrets.${e} }}`).join("")
+            : filteredProviders[provider].env.map((e) => `\n          ${e}: \${{ secrets.${e} }}`).join("")
 
         const kiloGatewayEnv =
           provider === "kilo"
@@ -804,7 +806,7 @@ export const githubRun = Effect.fn("Cli.github.run")(function* (args: { event?: 
         list: ["List", UI.Style.TEXT_INFO_BOLD],
         read: ["Read", UI.Style.TEXT_HIGHLIGHT_BOLD],
         write: ["Write", UI.Style.TEXT_SUCCESS_BOLD],
-        websearch: ["Search", UI.Style.TEXT_DIM_BOLD],
+        
       }
 
       function printEvent(color: string, type: string, title: string) {

@@ -8,7 +8,7 @@ const BUILTIN_NON_MCP_TOOLS = new Set([
   "glob",
   "grep",
   "webfetch",
-  "websearch",
+  
   "chart",
   "codesearch",
   "semantic_search",

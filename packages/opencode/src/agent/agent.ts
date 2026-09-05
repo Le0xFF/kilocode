@@ -236,8 +236,7 @@ const layer = Layer.effect(
                 list: "allow",
                 bash: "allow",
                 webfetch: "allow",
-                websearch: "allow",
-                read: "allow",
+                
                 external_directory: readonlyExternalDirectory,
               }),
               user,
@@ -260,8 +259,7 @@ const layer = Layer.effect(
                       grep: "allow",
                       glob: "allow",
                       webfetch: "allow",
-                      websearch: "allow",
-                      read: "allow",
+                      
                       repo_clone: "allow",
                       repo_overview: "allow",
                       external_directory: {

@@ -1,4 +1,3 @@
-import { cloudProviderDict } from "./cloud-provider"
 
 export const anacondaDesktopDict = {
   "provider.anaconda.title.connect": "اتصال به Anaconda Desktop",
@@ -53,9 +52,6 @@ export const anacondaDesktopDict = {
 
 export const dict = {
   ...anacondaDesktopDict,
-  ...cloudProviderDict,
-
-
   "session.activity.waiting": "در انتظار پاسخ یا تأیید.",
   "session.activity.error": "خطا یا قطع اتصال.",
   "session.activity.retry": "تلاش مجدد خودکار.",
@@ -82,15 +78,12 @@ export const dict = {
   "command.session.compact": "فشرده‌سازی جلسه",
   "command.session.export": "صدور رونوشت جلسه",
 
-  "dialog.provider.tag.recommended": "پیشنهادی",
-
   "dialog.model.select.title": "انتخاب مدل",
   "dialog.model.search.placeholder": "جستجوی مدل‌ها",
   "dialog.model.empty": "نتیجه‌ای یافت نشد",
   "dialog.model.select": "انتخاب",
   "dialog.model.expand": "گسترش",
   "dialog.model.collapse": "جمع‌کردن",
-
 
   "provider.connect.title": "اتصال به {{provider}}",
   "provider.connect.selectMethod": "روش ورود را برای {{provider}} انتخاب کنید.",
@@ -217,14 +210,6 @@ export const dict = {
 
   "error.startup.title": "اتصال به سرور ناموفق بود",
 
-  "error.paidModel.title": "برای استفاده از این مدل باید وارد شوید",
-  "error.paidModel.description":
-    "برای دسترسی به بیش از ۵۰۰ مدل، استفاده از اعتبار با هزینه واقعی یا استفاده از کلید خودتان، وارد شوید یا حساب کاربری بسازید.",
-  "error.paidModel.action": "ورود",
-  "error.promotionLimit.title": "برای ادامه باید ثبت‌نام کنید",
-  "error.promotionLimit.description":
-    "برای ادامه و دسترسی به ۵۰۰ مدل دیگر، رایگان ثبت‌نام کنید. تنها ۲ دقیقه طول می‌کشد و نیازی به کارت اعتباری نیست. یا بعداً برگردید.",
-  "error.promotionLimit.action": "ثبت‌نام",
   "error.providerAuth.title": "{{provider}} شما را خارج کرد",
   "error.providerAuth.description": "{{provider}} را دوباره متصل کنید، سپس پیام خود را مجدداً ارسال کنید.",
   "error.providerAuth.chatgpt.title": "OpenAI شما را خارج کرد",
@@ -248,7 +233,6 @@ export const dict = {
   "ui.permission.toolLabel.patch": "وصله",
   "ui.permission.toolLabel.globSearch": "جستجوی Glob",
   "ui.permission.toolLabel.grepSearch": "جستجوی Grep",
-  "ui.permission.toolLabel.webSearch": "جستجوی وب",
   "ui.permission.toolLabel.list": "فهرست",
   "ui.permission.toolLabel.externalDirectory": "دسترسی به پوشه خارجی",
   "ui.permission.toolLabel.webFetch": "دریافت از وب",
@@ -458,8 +442,6 @@ export const dict = {
   "settings.permissions.tool.todowrite.description": "به‌روزرسانی فهرست وظایف",
   "settings.permissions.tool.webfetch.title": "دریافت وب",
   "settings.permissions.tool.webfetch.description": "دریافت محتوا از یک URL",
-  "settings.permissions.tool.websearch.title": "جستجوی وب",
-  "settings.permissions.tool.websearch.description": "جستجو در وب",
   "settings.permissions.tool.codesearch.title": "جستجوی کد",
   "settings.permissions.tool.codesearch.description": "جستجوی کد در وب",
   "settings.permissions.tool.external_directory.title": "پوشه خارجی",
@@ -485,8 +467,6 @@ export const dict = {
   "session.tab.local": "محلی",
   "session.tab.cloud": "Cloud",
   "session.tab.worktree": "Worktree",
-  "session.cloud.repoOnly": "فقط این مخزن",
-  "session.cloud.import": "وارد کردن جلسه",
   "feedback.button": "بازخورد و پشتیبانی",
   "feedback.dialog.message": "خوشحال می‌شویم نظرات شما را بشنویم یا در رفع مشکلاتتان کمک کنیم.",
   "feedback.dialog.github": "گزارش مشکل در GitHub",
@@ -513,96 +493,17 @@ export const dict = {
     "بدون درخواست اجازه، فایل‌ها را ویرایش می‌کند و دستورات را در فضای کاری اجرا می‌کند.",
   "workStyle.choice.autonomous.bash": "می‌تواند بدون تأیید، دستورات ترمینال را در فضای کاری اجرا کند.",
   "workStyle.choice.autonomous.visibility": "جزئیات تا زمانی که آن‌ها را باز کنید، جمع‌شده باقی می‌مانند.",
-  "session.cloud.import.title": "وارد کردن جلسه",
-  "session.cloud.import.placeholder": "شناسه جلسه، URL، یا دستور kilo import",
-  "session.cloud.import.button": "وارد کردن",
-  "session.cloud.import.invalid": "فرمت شناسه جلسه نامعتبر است",
-  "session.cloud.import.legacy": "به نظر می‌رسد این یک جلسه قدیمی است که دیگر پشتیبانی نمی‌شود.",
-  "session.cloud.import.failed": "وارد کردن جلسه ابری ناموفق بود",
-
-  "deviceAuth.toast.urlCopied": "URL در کلیپ‌بورد کپی شد",
-  "deviceAuth.toast.codeCopied": "کد در کلیپ‌بورد کپی شد",
-  "deviceAuth.toast.errorCopied": "خطا در کلیپ‌بورد کپی شد",
-  "deviceAuth.status.initiating": "در حال شروع ورود...",
-  "deviceAuth.title": "ورود به Kilo Code",
-  "deviceAuth.step1": "مرحله ۱: این URL را باز کنید",
-  "deviceAuth.action.copyUrl": "کپی URL",
-  "deviceAuth.action.openBrowser": "باز کردن مرورگر",
-  "deviceAuth.qrCode.alt": "کد QR",
-  "deviceAuth.step2": "مرحله ۲: این کد را وارد کنید",
-  "deviceAuth.action.clickToCopy": "برای کپی کلیک کنید",
-  "deviceAuth.status.waiting": "در انتظار تأیید...",
-  "deviceAuth.status.success": "ورود موفقیت‌آمیز بود!",
-  "deviceAuth.status.failed": "ورود ناموفق بود",
-  "deviceAuth.status.cancelled": "ورود لغو شد",
-  "deviceAuth.action.copyError": "خطا در کپی",
-  "deviceAuth.action.showDetails": "مشاهده جزئیات",
-  "deviceAuth.action.tryAgain": "تلاش مجدد",
-  "deviceAuth.error.detailsTitle": "جزئیات خطای ورود",
 
   "common.retry": "تلاش مجدد",
   "common.refresh": "بازخوانی",
   "common.reload": "بارگذاری مجدد",
   "common.reloadDescription": "بارگذاری مجدد تنظیمات، مهارت‌ها، عوامل و دستورات از دیسک",
 
-  "profile.title": "پروفایل",
-  "profile.notLoggedIn": "وارد نشده‌اید",
-  "profile.action.login": "ورود با Kilo Code",
-  "profile.balance.title": "موجودی",
-  "profile.balance.refresh": "بازخوانی موجودی",
-  "profile.usage.title": "طرح‌ها و میزان استفاده",
-  "profile.usage.description": "سهمیه و موجودی طرح فعلی",
-  "profile.usage.refresh": "بازخوانی میزان استفاده ارائه‌دهنده",
-  "profile.usage.empty": "هیچ منبع استفاده‌ای از ارائه‌دهنده شناسایی نشد.",
-  "profile.usage.source.direct": "مستقیم",
-  "profile.usage.state.stale": "آخرین میزان استفاده به‌روزشده نمایش داده می‌شود.",
-  "profile.usage.state.unavailable": "میزان استفاده در دسترس نیست.",
-  "profile.usage.plan.pastDue": "طرح: سررسید گذشته",
-  "profile.usage.plan.canceling": "طرح: در پایان دوره لغو می‌شود",
-  "profile.usage.plan.unknown": "طرح: وضعیت نامشخص",
-  "profile.usage.action.manage": "مدیریت",
-  "profile.usage.action.managePlan": "مدیریت {{plan}}",
-  "profile.usage.routingState.disabled": "غیرفعال",
-  "profile.usage.routingState.missing": "ناموجود",
-  "profile.usage.routingState.replaced": "جایگزین‌شده",
-  "profile.usage.routingState.unknown": "نامشخص",
-  "profile.usage.window.used": "{{value}} استفاده‌شده",
-  "profile.usage.window.remaining": "{{value}} باقی‌مانده",
-  "profile.usage.window.remainingOf": "{{value}} از {{limit}} باقی‌مانده",
-  "profile.usage.window.usedOf": "{{value}} از {{limit}} استفاده‌شده",
-  "profile.usage.window.quota": "سهمیه",
-  "profile.usage.window.daily": "سهمیه روزانه",
-  "profile.usage.window.weekly": "سهمیه هفتگی",
-  "profile.usage.window.monthly": "سهمیه ماهانه",
-  "profile.usage.window.hours": "سهمیه {{count}} ساعته",
-  "profile.usage.window.days": "سهمیه {{count}} روزه",
-  "profile.usage.window.weeks": "سهمیه {{count}} هفته‌ای",
-  "profile.usage.window.months": "سهمیه {{count}} ماهه",
-  "profile.usage.window.shared": "مشترک",
-  "profile.usage.window.scoped": "{{resource}} · {{period}}",
-  "profile.usage.reset": "بازنشانی در {{date}}",
-  "profile.usage.status.unknown": "نامشخص",
-  "profile.usage.status.unlimited": "نامحدود",
-  "profile.usage.status.notInPlan": "در طرح نیست",
-  "profile.usage.status.exhausted": "تمام‌شده",
-  "profile.action.dashboard": "داشبورد",
-  "profile.action.topUp": "شارژ کردن",
-  "profile.pass.subscribe": "Kilo Pass را دریافت کنید تا اعتبار اضافه کنید و پاداش کسب کنید",
-  "profile.pass.bonus": "پاداش",
-  "profile.pass.usage": "مصرف این ماه",
-  "profile.pass.paid": "پرداخت‌شده",
-  "profile.pass.meter": "مصرف ماهانه Kilo Pass",
-  "profile.pass.renews": "تمدید می‌شود",
-  "profile.action.logout": "خروج",
-
   "settings.agentBehaviour.title": "رفتار عامل",
   "settings.autoApprove.title": "تأیید خودکار",
   "settings.webTools.title": "ابزارهای وب",
   "settings.webTools.description": "جستجوی وب و اتوماسیون مرورگر را پیکربندی کنید.",
-  "settings.webTools.webSearch.enable": "فعال‌سازی برای همه ارائه‌دهندگان",
   "settings.webTools.browserAutomation": "اتوماسیون مرورگر",
-  "settings.webTools.webSearch.title": "جستجوی وب",
-  "settings.webTools.webSearch.description": "جستجوی وب را برای مدل‌های همه ارائه‌دهندگان در دسترس قرار دهید.",
   "settings.checkpoints.title": "نقاط بازیابی",
   "settings.display.title": "نمایش",
   "settings.notifications.title": "اعلان‌ها",
@@ -680,9 +581,6 @@ export const dict = {
   "sidebar.topBar.newTask": "وظیفه جدید",
   "sidebar.topBar.history": "تاریخچه",
   "sidebar.topBar.agentManager": "مدیر عامل‌ها",
-  "sidebar.topBar.kiloClaw": "KiloClaw",
-  "sidebar.topBar.marketplace": "بازارچه",
-  "sidebar.topBar.profile": "پروفایل",
   "sidebar.topBar.settings": "تنظیمات",
   "sidebar.session.newSession": "جلسه جدید",
   "sidebar.session.newSession.tooltip": "یک مکالمه تازه شروع کنید و جلسه فعلی را دست‌نخورده نگه دارید.",
@@ -739,8 +637,6 @@ export const dict = {
   "settings.aboutKiloCode.version.label": "نسخه:",
   "settings.aboutKiloCode.community": "جامعه و پشتیبانی",
   "settings.aboutKiloCode.feedback.prefix": "اگر سؤال یا بازخوردی دارید، می‌توانید یک issue در",
-  "settings.aboutKiloCode.feedback.or": "یا",
-  "settings.aboutKiloCode.support.prefix": "برای سؤالات مربوط به صورت‌حساب یا حساب کاربری، با پشتیبانی مشتریان در",
   "settings.aboutKiloCode.resetSettings.title": "بازنشانی تنظیمات",
   "settings.aboutKiloCode.resetSettings.description":
     "این گزینه فقط تنظیمات مخصوص افزونه VS Code را به مقادیر پیش‌فرض بازنشانی می‌کند. تنظیمات مشترک با CLI، مانند حالت‌ها و قوانین تأیید خودکار، در پیکربندی CLI ذخیره می‌شوند و بازنشانی نخواهند شد.",
@@ -759,11 +655,6 @@ export const dict = {
     "این فایل از نسخه جدیدتری از Kilo صادر شده است. برخی تنظیمات ممکن است نادیده گرفته شوند.",
   "settings.aboutKiloCode.importSettings.success":
     "تنظیمات وارد شد. تغییرات بالا را بررسی کنید، سپس روی ذخیره کلیک کنید.",
-
-  "settings.aboutKiloCode.telemetry.title": "تله‌متری",
-  "settings.aboutKiloCode.telemetry.description":
-    "تله‌متری توسط تنظیمات داخلی تله‌متری VS Code کنترل می‌شود. برای غیرفعال کردن آن، به Settings > Telemetry > Telemetry Level بروید و آن را روی «off» تنظیم کنید. VS Code را مجدداً راه‌اندازی کنید تا تغییر اعمال شود.",
-  "settings.aboutKiloCode.telemetry.openSettings": "باز کردن تنظیمات تله‌متری",
 
   "settings.agentBehaviour.subtab.agents": "عوامل",
   "settings.agentBehaviour.subtab.mcpServers": "MCP Servers",
@@ -837,14 +728,6 @@ export const dict = {
     "مدیریت sessionها و worktreeها را در چند مخزن در Agent Manager فعال می‌کند. مخزن فضای کاری فعلی همیشه پروژه پیش‌فرض است.",
   "settings.experimental.mcpTimeout.title": "زمان‌وقفه MCP (میلی‌ثانیه)",
   "settings.experimental.mcpTimeout.description": "زمان‌وقفه برای درخواست‌های سرور MCP بر حسب میلی‌ثانیه",
-  "settings.experimental.remote.title": "کنترل از راه دور",
-  "settings.experimental.remote.description":
-    "فعال‌سازی کنترل از راه دور جلسات از طریق Kilo Cloud. این تنظیم بر CLIهای این دستگاه نیز تأثیر می‌گذارد.",
-  "settings.experimental.remote.current": "وضعیت فعلی:",
-  "settings.experimental.remote.startup": "فعال‌سازی خودکار هنگام راه‌اندازی:",
-  "settings.experimental.remote.active": "فعال",
-  "settings.experimental.remote.inactive": "غیرفعال",
-  "settings.experimental.remote.hint": "برای تغییر وضعیت از /remote در چت استفاده کنید",
   "settings.experimental.toolToggles": "تنظیمات ابزارها",
 
   "settings.agentBehaviour.defaultAgent.title": "عامل پیش‌فرض",
@@ -1000,7 +883,6 @@ export const dict = {
   "settings.autoApprove.tool.todoreadwrite":
     "مدیریت فهرست وظایف. اجازه خواندن و به‌روزرسانی فهرست وظایف داخلی را می‌دهد.",
   "settings.autoApprove.tool.webfetch": "دریافت یک URL. امکان بازیابی محتوا از یک URL مشخص را فراهم می‌کند.",
-  "settings.autoApprove.tool.websearch": "جستجو در وب. امکان انجام جستجوهای خارجی در وب را فراهم می‌کند.",
   "settings.autoApprove.tool.doom_loop":
     "جلوگیری از اقدامات تکراری یکسان. زمانی فعال می‌شود که همان فراخوانی ابزار با ورودی یکسان تکرار شود.",
 
@@ -1109,9 +991,6 @@ export const dict = {
   "settings.providers.select.placeholder": "انتخاب ارائه‌دهنده...",
 
   "dialog.model.notSet": "تنظیم نشده",
-
-  "profile.personalAccount": "حساب شخصی",
-  "profile.switchingAccount": "در حال تغییر حساب…",
 
   // Agent Manager strings live in webview-ui/agent-manager/i18n/en.ts
 

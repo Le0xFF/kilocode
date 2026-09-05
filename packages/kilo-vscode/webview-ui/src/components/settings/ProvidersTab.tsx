@@ -13,7 +13,6 @@ import { useProvider } from "../../context/provider"
 import { useVSCode } from "../../context/vscode"
 import type { Provider } from "../../types/messages"
 import CustomProviderDialog from "./CustomProviderDialog"
-import ProviderConnectDialog from "./ProviderConnectDialog"
 import { providerIcon } from "./provider-catalog"
 import { disabledProviderOptions } from "./provider-visibility"
 import { isCustomProviderPackage } from "../../../../src/shared/provider-model"
@@ -131,16 +130,6 @@ const ProvidersTab: Component = () => {
     return item?.name ?? id
   }
 
-  function connectChatGPT(item: Provider) {
-    dialog.show(() => <ProviderConnectDialog providerID={item.id} oauthOnly />)
-  }
-
-  function chatgpt(item: Provider) {
-    if (item.id !== "openai") return false
-    if (source(item) === "custom") return false
-    return (provider.authMethods()[item.id] ?? []).some((method) => method.type === "oauth")
-  }
-
   return (
     <div>
       {/* Connected providers */}
@@ -203,11 +192,6 @@ const ProvidersTab: Component = () => {
                     >
                       {language.t("settings.providers.connected.environmentDescription")}
                     </span>
-                  </Show>
-                  <Show when={chatgpt(item)}>
-                    <Button size="large" variant="ghost" onClick={() => connectChatGPT(item)}>
-                      {language.t("settings.providers.action.signInChatGPT")}
-                    </Button>
                   </Show>
                   <Show when={canDisconnect(item)}>
                     <Show when={isCustom(item)}>

@@ -15,9 +15,6 @@
 import * as fuzzysort from "fuzzysort"
 import { entries, filter, flatMap, groupBy, map, pipe, sortBy } from "remeda"
 
-export const KILO_PROVIDER_ID = "kilo"
-export const RECOMMENDED_CATEGORY = "Recommended"
-
 export interface ModelPickerRef {
   providerID: string
   modelID: string
@@ -141,10 +138,7 @@ export function buildModelPickerOptions<M extends ModelPickerModel>(
 
   const providerOptions = pipe(
     input.providers,
-    sortBy(
-      (provider) => provider.id !== "opencode",
-      (provider) => provider.name,
-    ),
+    sortBy((provider) => provider.name),
     flatMap((provider) =>
       pipe(
         provider.models,
@@ -156,11 +150,9 @@ export function buildModelPickerOptions<M extends ModelPickerModel>(
             description: favorites.some((item) => sameRef(item, { providerID: provider.id, modelID }))
               ? "(Favorite)"
               : undefined,
-            category: connected
-              ? provider.id === KILO_PROVIDER_ID && model.recommendedIndex !== undefined
-                ? RECOMMENDED_CATEGORY
-                : provider.name
-              : undefined,
+            // kilocode_change - group each provider under its own name; the special
+            // "Recommended" / "Kilo Gateway" grouping was removed with the online surface
+            category: connected ? provider.name : undefined,
           }),
         ),
         // Favorites are pinned by hand and get their own section, so they are

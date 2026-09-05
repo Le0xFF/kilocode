@@ -1,4 +1,3 @@
-import { cloudProviderDict } from "./cloud-provider"
 
 export const anacondaDesktopDict = {
   "provider.anaconda.title.connect": "Connect Anaconda Desktop",
@@ -52,9 +51,6 @@ export const anacondaDesktopDict = {
 
 export const dict = {
   ...anacondaDesktopDict,
-  ...cloudProviderDict,
-
-
   "session.activity.waiting": "Waiting for an answer or approval.",
   "session.activity.error": "Error or connection lost.",
   "session.activity.retry": "Retrying automatically.",
@@ -81,15 +77,12 @@ export const dict = {
   "command.session.compact": "Compact session",
   "command.session.export": "Export session transcript",
 
-  "dialog.provider.tag.recommended": "Recommended",
-
   "dialog.model.select.title": "Select model",
   "dialog.model.search.placeholder": "Search models",
   "dialog.model.empty": "No model results",
   "dialog.model.select": "Select",
   "dialog.model.expand": "Expand",
   "dialog.model.collapse": "Collapse",
-
 
   "provider.connect.title": "Connect {{provider}}",
   "provider.connect.selectMethod": "Select login method for {{provider}}.",
@@ -217,14 +210,6 @@ export const dict = {
 
   "error.startup.title": "Server connection failed",
 
-  "error.paidModel.title": "You need to sign in to use this model",
-  "error.paidModel.description":
-    "Sign in or create an account to access over 500 models, use credits at cost, or bring your own key.",
-  "error.paidModel.action": "Sign In",
-  "error.promotionLimit.title": "You need to sign up to keep going",
-  "error.promotionLimit.description":
-    "Sign up for free to continue and explore 500 other models. Takes 2 minutes, no credit card required. Or come back later.",
-  "error.promotionLimit.action": "Sign Up",
   "error.providerAuth.title": "{{provider}} signed you out",
   "error.providerAuth.description": "Reconnect {{provider}}, then send your message again.",
   "error.providerAuth.chatgpt.title": "OpenAI signed you out",
@@ -248,7 +233,6 @@ export const dict = {
   "ui.permission.toolLabel.patch": "Patch",
   "ui.permission.toolLabel.globSearch": "Glob Search",
   "ui.permission.toolLabel.grepSearch": "Grep Search",
-  "ui.permission.toolLabel.webSearch": "Web Search",
   "ui.permission.toolLabel.list": "List",
   "ui.permission.toolLabel.externalDirectory": "Access External Directory",
   "ui.permission.toolLabel.webFetch": "Web Fetch",
@@ -456,8 +440,6 @@ export const dict = {
   "settings.permissions.tool.todowrite.description": "Update the todo list",
   "settings.permissions.tool.webfetch.title": "Web Fetch",
   "settings.permissions.tool.webfetch.description": "Fetch content from a URL",
-  "settings.permissions.tool.websearch.title": "Web Search",
-  "settings.permissions.tool.websearch.description": "Search the web",
   "settings.permissions.tool.codesearch.title": "Code Search",
   "settings.permissions.tool.codesearch.description": "Search code on the web",
   "settings.permissions.tool.external_directory.title": "External Directory",
@@ -483,8 +465,6 @@ export const dict = {
   "session.tab.local": "Local",
   "session.tab.cloud": "Cloud",
   "session.tab.worktree": "Worktree",
-  "session.cloud.repoOnly": "Only this repository",
-  "session.cloud.import": "Import session",
   "feedback.button": "Feedback & Support",
   "feedback.dialog.message": "We'd love to hear your feedback or help with any issues you're experiencing.",
   "feedback.dialog.github": "Report an issue on GitHub",
@@ -510,96 +490,17 @@ export const dict = {
   "workStyle.choice.autonomous.permissions": "Edits files and runs commands in the workspace without asking.",
   "workStyle.choice.autonomous.bash": "Can run terminal commands in the workspace without approval.",
   "workStyle.choice.autonomous.visibility": "Details stay collapsed until you expand them.",
-  "session.cloud.import.title": "Import session",
-  "session.cloud.import.placeholder": "Session ID, URL, or kilo import command",
-  "session.cloud.import.button": "Import",
-  "session.cloud.import.invalid": "Invalid session ID format",
-  "session.cloud.import.legacy": "This appears to be a legacy session that is no longer supported.",
-  "session.cloud.import.failed": "Failed to import cloud session",
-
-  "deviceAuth.toast.urlCopied": "URL copied to clipboard",
-  "deviceAuth.toast.codeCopied": "Code copied to clipboard",
-  "deviceAuth.toast.errorCopied": "Error copied to clipboard",
-  "deviceAuth.status.initiating": "Starting login...",
-  "deviceAuth.title": "Sign in to Kilo Code",
-  "deviceAuth.step1": "Step 1: Open this URL",
-  "deviceAuth.action.copyUrl": "Copy URL",
-  "deviceAuth.action.openBrowser": "Open Browser",
-  "deviceAuth.qrCode.alt": "QR Code",
-  "deviceAuth.step2": "Step 2: Enter this code",
-  "deviceAuth.action.clickToCopy": "Click to copy",
-  "deviceAuth.status.waiting": "Waiting for authorization...",
-  "deviceAuth.status.success": "Login successful!",
-  "deviceAuth.status.failed": "Login failed",
-  "deviceAuth.status.cancelled": "Login cancelled",
-  "deviceAuth.action.copyError": "Copy error",
-  "deviceAuth.action.showDetails": "View details",
-  "deviceAuth.action.tryAgain": "Try Again",
-  "deviceAuth.error.detailsTitle": "Login error details",
 
   "common.retry": "Retry",
   "common.refresh": "Refresh",
   "common.reload": "Reload",
   "common.reloadDescription": "Reload config, skills, agents, and commands from disk",
 
-  "profile.title": "Profile",
-  "profile.notLoggedIn": "Not logged in",
-  "profile.action.login": "Login with Kilo Code",
-  "profile.balance.title": "Balance",
-  "profile.balance.refresh": "Refresh balance",
-  "profile.usage.title": "Plans & usage",
-  "profile.usage.description": "Current plan quota and balances",
-  "profile.usage.refresh": "Refresh provider usage",
-  "profile.usage.empty": "No provider usage sources detected.",
-  "profile.usage.source.direct": "Direct",
-  "profile.usage.state.stale": "Showing last updated usage.",
-  "profile.usage.state.unavailable": "Usage unavailable.",
-  "profile.usage.plan.pastDue": "Plan: Past due",
-  "profile.usage.plan.canceling": "Plan: Cancels at period end",
-  "profile.usage.plan.unknown": "Plan: Status unknown",
-  "profile.usage.action.manage": "Manage",
-  "profile.usage.action.managePlan": "Manage {{plan}}",
-  "profile.usage.routingState.disabled": "disabled",
-  "profile.usage.routingState.missing": "missing",
-  "profile.usage.routingState.replaced": "replaced",
-  "profile.usage.routingState.unknown": "unknown",
-  "profile.usage.window.used": "{{value}} used",
-  "profile.usage.window.remaining": "{{value}} remaining",
-  "profile.usage.window.remainingOf": "{{value}} of {{limit}} remaining",
-  "profile.usage.window.usedOf": "{{value}} of {{limit}} used",
-  "profile.usage.window.quota": "Quota",
-  "profile.usage.window.daily": "Daily quota",
-  "profile.usage.window.weekly": "Weekly quota",
-  "profile.usage.window.monthly": "Monthly quota",
-  "profile.usage.window.hours": "{{count}}-hour quota",
-  "profile.usage.window.days": "{{count}}-day quota",
-  "profile.usage.window.weeks": "{{count}}-week quota",
-  "profile.usage.window.months": "{{count}}-month quota",
-  "profile.usage.window.shared": "Shared",
-  "profile.usage.window.scoped": "{{resource}} · {{period}}",
-  "profile.usage.reset": "Resets {{date}}",
-  "profile.usage.status.unknown": "Unknown",
-  "profile.usage.status.unlimited": "Unlimited",
-  "profile.usage.status.notInPlan": "Not in plan",
-  "profile.usage.status.exhausted": "Exhausted",
-  "profile.action.dashboard": "Dashboard",
-  "profile.action.topUp": "Top up",
-  "profile.pass.subscribe": "Get Kilo Pass to add credits and earn bonuses",
-  "profile.pass.bonus": "Bonus",
-  "profile.pass.usage": "This month's usage",
-  "profile.pass.paid": "Paid",
-  "profile.pass.meter": "Kilo Pass monthly usage",
-  "profile.pass.renews": "Renews",
-  "profile.action.logout": "Log Out",
-
   "settings.agentBehaviour.title": "Agent Behaviour",
   "settings.autoApprove.title": "Auto-Approve",
   "settings.webTools.title": "Web Tools",
   "settings.webTools.description": "Configure web search and browser automation.",
-  "settings.webTools.webSearch.enable": "Enable for All Providers",
   "settings.webTools.browserAutomation": "Browser Automation",
-  "settings.webTools.webSearch.title": "Web Search",
-  "settings.webTools.webSearch.description": "Make web search available to models from all providers.",
   "settings.checkpoints.title": "Checkpoints",
   "settings.display.title": "Display",
   "settings.notifications.title": "Notifications",
@@ -676,9 +577,6 @@ export const dict = {
   "sidebar.topBar.newTask": "New Task",
   "sidebar.topBar.history": "History",
   "sidebar.topBar.agentManager": "Agent Manager",
-  "sidebar.topBar.kiloClaw": "KiloClaw",
-  "sidebar.topBar.marketplace": "Marketplace",
-  "sidebar.topBar.profile": "Profile",
   "sidebar.topBar.settings": "Settings",
   "sidebar.session.newSession": "New Session",
   "sidebar.session.newSession.tooltip": "Start a fresh conversation while keeping the current session intact.",
@@ -735,8 +633,6 @@ export const dict = {
   "settings.aboutKiloCode.version.label": "Version:",
   "settings.aboutKiloCode.community": "Community & Support",
   "settings.aboutKiloCode.feedback.prefix": "If you have any questions or feedback, feel free to open an issue on",
-  "settings.aboutKiloCode.feedback.or": "or",
-  "settings.aboutKiloCode.support.prefix": "For billing or account questions, contact Customer Support at",
   "settings.aboutKiloCode.resetSettings.title": "Reset Settings",
   "settings.aboutKiloCode.resetSettings.description":
     "This resets only VS Code extension-specific settings to their default values. Settings shared with the CLI, such as modes and auto-approve rules, are stored in the CLI configuration and will not be reset.",
@@ -752,11 +648,6 @@ export const dict = {
   "settings.aboutKiloCode.importSettings.newerVersion":
     "This file was exported from a newer version of Kilo. Some settings may be ignored.",
   "settings.aboutKiloCode.importSettings.success": "Settings imported. Review the changes above, then click Save.",
-
-  "settings.aboutKiloCode.telemetry.title": "Telemetry",
-  "settings.aboutKiloCode.telemetry.description":
-    'Telemetry is controlled by VS Code\'s built-in telemetry setting. To disable it, go to Settings > Telemetry > Telemetry Level and set it to "off". Restart VS Code to apply the change.',
-  "settings.aboutKiloCode.telemetry.openSettings": "Open Telemetry Settings",
 
   "settings.agentBehaviour.subtab.agents": "Agents",
   "settings.agentBehaviour.subtab.mcpServers": "MCP Servers",
@@ -831,14 +722,6 @@ export const dict = {
     "Enable managing sessions and worktrees across multiple repositories in Agent Manager. The current workspace repository is always the default project.",
   "settings.experimental.mcpTimeout.title": "MCP Timeout (ms)",
   "settings.experimental.mcpTimeout.description": "Timeout for MCP server requests in milliseconds",
-  "settings.experimental.remote.title": "Remote Control",
-  "settings.experimental.remote.description":
-    "Enable remote control of sessions via Kilo Cloud. This will also affect CLIs on this machine.",
-  "settings.experimental.remote.current": "Current state:",
-  "settings.experimental.remote.startup": "Auto-enable on startup:",
-  "settings.experimental.remote.active": "Active",
-  "settings.experimental.remote.inactive": "Inactive",
-  "settings.experimental.remote.hint": "Use /remote in chat to toggle",
   "settings.experimental.toolToggles": "Tool Toggles",
 
   "settings.agentBehaviour.defaultAgent.title": "Default Agent",
@@ -991,7 +874,6 @@ export const dict = {
     "Query language server. Allows running language server queries for code intelligence.",
   "settings.autoApprove.tool.todoreadwrite": "Manage task list. Allows reading and updating the internal task list.",
   "settings.autoApprove.tool.webfetch": "Fetch a URL. Allows retrieving content from a specific URL.",
-  "settings.autoApprove.tool.websearch": "Search the web. Allows performing external web searches.",
   "settings.autoApprove.tool.doom_loop":
     "Prevent repeated identical actions. Triggered when the same tool call repeats with identical input.",
 
@@ -1096,9 +978,6 @@ export const dict = {
   "settings.providers.select.placeholder": "Select provider...",
 
   "dialog.model.notSet": "Not set",
-
-  "profile.personalAccount": "Personal Account",
-  "profile.switchingAccount": "Switching account…",
 
   // Agent Manager strings live in webview-ui/agent-manager/i18n/en.ts
 

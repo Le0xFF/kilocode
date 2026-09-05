@@ -249,26 +249,6 @@ const genericError: NonNullable<SDKAssistantMessage["error"]> = {
   data: { message: "Provider request failed before the assistant could finish." },
 }
 
-const paidError: NonNullable<SDKAssistantMessage["error"]> = {
-  name: "APIError",
-  data: {
-    message: "Unauthorized",
-    statusCode: 401,
-    isRetryable: false,
-    responseBody: '{"error":{"code":"PAID_MODEL_AUTH_REQUIRED"}}',
-  },
-}
-
-const limitError: NonNullable<SDKAssistantMessage["error"]> = {
-  name: "APIError",
-  data: {
-    message: "Promotion limit reached",
-    statusCode: 429,
-    isRetryable: false,
-    responseBody: '{"error":{"code":"PROMOTION_MODEL_LIMIT_REACHED"}}',
-  },
-}
-
 const server = {
   connectionState: () => "connected" as const,
   serverInfo: () => undefined,
@@ -392,14 +372,7 @@ const blocks: SDKPart[] = [
     "Fetch Storybook docs",
     "# Storybook documentation\n\nBuild and test UI components in isolation.",
   ),
-  done(
-    "websearch",
-    "websearch",
-    { query: "Storybook visual regression testing", numResults: 3, livecrawl: "fallback", type: "auto" },
-    "Search the web",
-    "https://storybook.js.org/docs/writing-tests/visual-testing\nhttps://playwright.dev/docs/test-snapshots",
-    { provider: "exa" },
-  ),
+  
   done(
     "skill",
     "skill",
@@ -1221,14 +1194,6 @@ export const SearchPreviews: Story = {
                 <div class="tool-call-lab-example">
                   <span class="tool-call-lab-example-label">Generic error</span>
                   <ErrorDisplay error={genericError} />
-                </div>
-                <div class="tool-call-lab-example">
-                  <span class="tool-call-lab-example-label">Paid model authentication</span>
-                  <ErrorDisplay error={paidError} onLogin={() => undefined} />
-                </div>
-                <div class="tool-call-lab-example">
-                  <span class="tool-call-lab-example-label">Promotion limit</span>
-                  <ErrorDisplay error={limitError} onLogin={() => undefined} />
                 </div>
               </div>
             </section>

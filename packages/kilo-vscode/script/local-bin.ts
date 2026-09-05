@@ -38,6 +38,7 @@ const sandboxDir = join(packagesDir, "kilo-sandbox")
 const rootFile = join(repoDir, "package.json")
 
 const targetBinDir = join(kiloVscodeDir, "bin")
+const localModelsJson = join(opencodeDir, "models-dev.local.json")
 const binName = process.platform === "win32" ? "kilo.exe" : "kilo"
 const targetBinPath = join(targetBinDir, binName)
 const versionFile = join(kiloVscodeDir, "node_modules", ".kilo-cli-version")
@@ -125,7 +126,7 @@ async function cliSourceHash() {
         "KILO_RELEASE",
         "KILO_SKIP_BUNDLED_BWRAP",
         "KILO_VERSION",
-        "MODELS_DEV_API_JSON",
+        ...(process.env.MODELS_DEV_API_JSON ? ["MODELS_DEV_API_JSON"] : []),
         "ZIG",
       ].map((key) => [key, process.env[key] ?? ""]),
     )
@@ -141,7 +142,7 @@ async function cliSourceHash() {
       hash.update(new Uint8Array(await Bun.file(join(repoDir, file)).arrayBuffer()))
     }
 
-    const models = process.env.MODELS_DEV_API_JSON
+    const models = process.env.MODELS_DEV_API_JSON ?? (existsSync(localModelsJson) ? localModelsJson : undefined)
     if (models) hash.update(new Uint8Array(await Bun.file(models).arrayBuffer()))
     return hash.digest("hex")
   } catch (err) {
@@ -252,15 +253,16 @@ async function ensureBuiltBinary(): Promise<string> {
     )
   }
 
-  const pkg = await Bun.file(join(repoDir, "package.json")).json()
-  const bun = String(pkg.packageManager)
-  log("Building CLI binary...")
-  try {
-    await $`bunx ${bun} run build --single --skip-install`.cwd(opencodeDir)
-  } catch (err) {
-    log(`Pinned bunx build failed (${err}), running via active bun runtime...`)
-    await $`bun run script/build.ts --single --skip-install`.cwd(opencodeDir)
-  }
+const pkg = await Bun.file(join(repoDir, "package.json")).json()
+    const bun = String(pkg.packageManager)
+    const env: Record<string, string> = process.env.MODELS_DEV_API_JSON ? {} : { MODELS_DEV_API_JSON: localModelsJson }
+    log("Building CLI binary...")
+    try {
+      await $`bunx ${bun} run build --single --skip-install`.cwd(opencodeDir).env(env)
+    } catch (err) {
+      log(`Pinned bunx build failed (${err}), running via active bun runtime...`)
+      await $`bun run script/build.ts --single --skip-install`.cwd(opencodeDir).env(env)
+    }
 
   const built = await findKiloBinaryInOpencodeDist()
   if (!built) {

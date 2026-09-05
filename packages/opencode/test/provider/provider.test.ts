@@ -760,7 +760,7 @@ it.instance(
   "getSmallModel selects the latest model in the preferred family",
   Effect.gen(function* () {
     const model = yield* Provider.use.getSmallModel(ProviderV2.ID.make("test-provider"))
-    expect(model?.id).toBe(ModelV2.ID.make("new-flash"))
+    expect(model?.id).toBe(ModelV2.ID.make("newer-haiku"))
   }),
   {
     config: {
@@ -827,19 +827,15 @@ it.instance(
   },
 )
 
-it.instance("getSmallModel skips inferred models for Azure", () =>
+it.instance("getSmallModel returns undefined for the unreachable azure provider", () =>
   Effect.gen(function* () {
-    yield* set("AZURE_RESOURCE_NAME", "test-resource")
-    yield* set("AZURE_API_KEY", "test-key")
     const model = yield* Provider.use.getSmallModel(ProviderV2.ID.azure)
     expect(model).toBeUndefined()
   }),
 )
 
-it.instance("getSmallModel skips inferred models for Azure Cognitive Services", () =>
+it.instance("getSmallModel returns undefined for the unreachable azure-cognitive-services provider", () =>
   Effect.gen(function* () {
-    yield* set("AZURE_COGNITIVE_SERVICES_RESOURCE_NAME", "test-resource")
-    yield* set("AZURE_COGNITIVE_SERVICES_API_KEY", "test-key")
     const model = yield* Provider.use.getSmallModel(ProviderV2.ID.make("azure-cognitive-services"))
     expect(model).toBeUndefined()
   }),

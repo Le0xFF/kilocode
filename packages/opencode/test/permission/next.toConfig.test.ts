@@ -61,10 +61,7 @@ test("toConfig - roundtrip with fromConfig (object)", () => {
   expect(result).toEqual(config)
 })
 
-test("toConfig - scalar-only permission uses scalar format", () => {
-  const result = Permission.toConfig([{ permission: "websearch", pattern: "*", action: "allow" }])
-  expect(result).toEqual({ websearch: "allow" })
-})
+
 
 test("toConfig - scalar-only permission with non-wildcard pattern is skipped", () => {
   // doom_loop uses always: [toolName], so pattern can be "bash" etc.
@@ -76,12 +73,10 @@ test("toConfig - scalar-only permission with non-wildcard pattern is skipped", (
 
 test("toConfig - mixed scalar-only and rule-capable permissions", () => {
   const result = Permission.toConfig([
-    { permission: "websearch", pattern: "*", action: "allow" },
     { permission: "todowrite", pattern: "*", action: "allow" },
     { permission: "bash", pattern: "npm *", action: "allow" },
   ])
   expect(result).toEqual({
-    websearch: "allow",
     todowrite: "allow",
     bash: { "npm *": "allow" },
   })

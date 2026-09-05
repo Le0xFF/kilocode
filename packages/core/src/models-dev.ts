@@ -13,6 +13,7 @@ import { EventV2 } from "./event"
 import { makeGlobalNode } from "./effect/app-node"
 import { httpClient } from "./effect/app-node-platform"
 import { Observability } from "./observability" // kilocode_change
+import { AI_SDK_PROVIDERS } from "./v1/config/constants" // kilocode_change
 
 export const CatalogModelStatus = Schema.Literals(["alpha", "beta", "deprecated"])
 export type CatalogModelStatus = typeof CatalogModelStatus.Type
@@ -102,7 +103,7 @@ export const Model = Schema.Struct({
   prompt: Schema.optional(Schema.String),
   isFree: Schema.optional(Schema.Boolean),
   mayTrainOnYourPrompts: Schema.optional(Schema.Boolean),
-  ai_sdk_provider: Schema.optional(Schema.String),
+  ai_sdk_provider: Schema.optional(Schema.Literals(AI_SDK_PROVIDERS)), // kilocode_change - align catalog literal with the config schema (drops "openrouter")
   // kilocode_change end
   experimental: Schema.optional(
     Schema.Struct({

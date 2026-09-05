@@ -7,7 +7,6 @@
 // calls at well-defined injection points (each marked with kilocode_change).
 
 import { AI_SDK_PROVIDERS, PROMPTS } from "@opencode-ai/core/v1/config/constants"
-import { DEFAULT_HEADERS } from "@/kilocode/const"
 import { ProviderV2 } from "@opencode-ai/core/provider"
 import { ModelV2 } from "@opencode-ai/core/model"
 import { optionalOmitUndefined } from "@opencode-ai/core/schema"
@@ -142,64 +141,8 @@ type CustomLoaderResult = {
 type CustomLoader = (provider: any) => Effect.Effect<CustomLoaderResult>
 
 export function kiloCustomLoaders(dep: CustomDep): Record<string, CustomLoader> {
-  return {
-    // kilocode_change start - offline surface: github-copilot-enterprise was orphaned by the catalog cut
-    // (not in the models.dev snapshot, never config-served); opencode stays per A5 (config-served gate).
-    // Override opencode to prevent auto-connecting without credentials
-    opencode: () =>
-      Effect.succeed({
-        autoload: false,
-        options: { headers: DEFAULT_HEADERS },
-      }),
-    // kilocode_change end
-  }
-}
-
-// ---------------------------------------------------------------------------
-// Post-processing for custom loader results
-// Patches options/headers for providers whose upstream loaders we don't fully
-// replace but where specific values differ (headers, branding, env vars).
-// ---------------------------------------------------------------------------
-
-export function patchCustomLoaderResult(
-  providerID: string,
-  result: { options?: Record<string, any> },
-  env: Record<string, string | undefined>,
-) {
-  if (!result.options) return
-
-  switch (providerID) {
-    case "openrouter":
-    case "vercel":
-    case "zenmux":
-      result.options.headers = { ...result.options.headers, ...DEFAULT_HEADERS }
-      break
-    case "cerebras":
-      result.options.headers = {
-        ...result.options.headers,
-        "X-Cerebras-3rd-Party-Integration": "kilo",
-      }
-      break
-    case "azure": {
-      // Extend env var lookup for Azure baseURL / resource name
-      const url = result.options.baseURL ?? env["AZURE_OPENAI_ENDPOINT"]
-      const resource = (() => {
-        const name = result.options.resourceName
-        if (typeof name === "string" && name.trim() !== "") return name
-        return env["AZURE_RESOURCE_NAME"] ?? env["AZURE_OPENAI_RESOURCE_NAME"]
-      })()
-      if (url) {
-        result.options.baseURL = url
-        delete result.options.resourceName
-      } else if (resource) {
-        result.options.resourceName = resource
-        delete result.options.baseURL
-      }
-      break
-    }
-    // gitlab User-Agent and cloudflare error message are patched inline
-    // in provider.ts with single-line kilocode_change markers
-  }
+  void dep // kilocode_change - signature kept stable for the provider.ts injection point
+  return {} // kilocode_change - offline surface: no built-in online loaders remain (opencode Zen loader removed with the catalog cut)
 }
 
 // ---------------------------------------------------------------------------

@@ -999,39 +999,7 @@ export const PermissionDockApplyPatch: Story = {
   },
 }
 
-// ---------------------------------------------------------------------------
-// 13. Permission dock — websearch tool
-// ---------------------------------------------------------------------------
 
-const websearchPermission: PermissionRequest = {
-  id: "perm-websearch-001",
-  sessionID: SESSION_ID,
-  toolName: "websearch",
-  patterns: ["*"],
-  always: ["*"],
-  args: {},
-  tool: { messageID: ASST_MSG_ID, callID: "call-websearch-001" },
-}
-
-export const PermissionDockWebsearch: Story = {
-  name: "Permission Dock — websearch",
-  render: () => {
-    const perms = [websearchPermission]
-    const session = {
-      ...mockSessionValue({ id: SESSION_ID, status: "busy", permissions: perms }),
-      messages: () => [{ id: "msg-001" }] as any[],
-    }
-    return (
-      <StoryProviders permissions={perms} sessionID={SESSION_ID} status="busy" noPadding>
-        <SessionContext.Provider value={session as any}>
-          <div style={{ width: "100%", height: "300px", display: "flex", "flex-direction": "column" }}>
-            <ChatView />
-          </div>
-        </SessionContext.Provider>
-      </StoryProviders>
-    )
-  },
-}
 
 // ---------------------------------------------------------------------------
 // 14. Permission dock — external_directory tool

@@ -2295,7 +2295,6 @@ export type PermissionConfig =
       todowrite?: PermissionActionConfig
       question?: PermissionActionConfig
       webfetch?: PermissionActionConfig
-      websearch?: PermissionActionConfig
       lsp?: PermissionRuleConfig
       doom_loop?: PermissionActionConfig
       skill?: PermissionRuleConfig
@@ -2365,7 +2364,7 @@ export type ProviderConfig = {
       family?: string
       prompt?: "codex" | "gemini" | "beast" | "anthropic" | "trinity" | "anthropic_without_todo" | "ling" | "gpt55"
       isFree?: boolean
-      ai_sdk_provider?: "anthropic" | "openai" | "openai-compatible" | "openrouter"
+      ai_sdk_provider?: "anthropic" | "openai" | "openai-compatible"
       mayTrainOnYourPrompts?: boolean
       release_date?: string
       attachment?: boolean
@@ -2649,7 +2648,6 @@ export type Config = {
   tools?: {
     [key: string]: boolean
   }
-  web_search?: boolean
   attachment?: AttachmentConfig
   enterprise?: {
     url?: string
@@ -2786,7 +2784,7 @@ export type Model = {
   autoRouting?: {
     models: Array<string>
   }
-  ai_sdk_provider?: "anthropic" | "openai" | "openai-compatible" | "openrouter"
+  ai_sdk_provider?: "anthropic" | "openai" | "openai-compatible"
 }
 
 export type Provider = {

@@ -1,4 +1,3 @@
-import { cloudProviderDict } from "./cloud-provider"
 
 export const anacondaDesktopDict = {
   "provider.anaconda.title.connect": "Forbind Anaconda Desktop",
@@ -53,9 +52,6 @@ export const anacondaDesktopDict = {
 
 export const dict = {
   ...anacondaDesktopDict,
-  ...cloudProviderDict,
-
-
   "session.activity.waiting": "Venter på et svar eller en godkendelse.",
   "session.activity.error": "Fejl eller mistet forbindelse.",
   "session.activity.retry": "Prøver automatisk igen.",
@@ -82,15 +78,12 @@ export const dict = {
   "command.session.compact": "Komprimér session",
   "command.session.export": "Eksporter sessionsudskrift",
 
-  "dialog.provider.tag.recommended": "Anbefalet",
-
   "dialog.model.select.title": "Vælg model",
   "dialog.model.search.placeholder": "Søg modeller",
   "dialog.model.empty": "Ingen modeller fundet",
   "dialog.model.select": "Vælg",
   "dialog.model.expand": "Udvid",
   "dialog.model.collapse": "Skjul",
-
 
   "provider.connect.title": "Forbind {{provider}}",
   "provider.connect.selectMethod": "Vælg loginmetode for {{provider}}.",
@@ -218,14 +211,6 @@ export const dict = {
 
   "error.startup.title": "Serverforbindelse mislykkedes",
 
-  "error.paidModel.title": "Du skal logge ind for at bruge denne model",
-  "error.paidModel.description":
-    "Log ind eller opret en konto for at få adgang til over 500 modeller, brug kreditter til kostpris, eller medbring din egen nøgle.",
-  "error.paidModel.action": "Log ind",
-  "error.promotionLimit.title": "Du skal tilmelde dig for at fortsætte",
-  "error.promotionLimit.description":
-    "Tilmeld dig gratis for at fortsætte og udforske over 500 modeller. Tager 2 minutter, intet kreditkort nødvendigt. Eller kom tilbage senere.",
-  "error.promotionLimit.action": "Tilmeld dig",
   "error.providerAuth.title": "{{provider}} har logget dig af",
   "error.providerAuth.description": "Forbind til {{provider}} igen, og send din besked på ny.",
   "error.providerAuth.chatgpt.title": "OpenAI har logget dig af",
@@ -249,7 +234,6 @@ export const dict = {
   "ui.permission.toolLabel.patch": "Patch",
   "ui.permission.toolLabel.globSearch": "Glob-søgning",
   "ui.permission.toolLabel.grepSearch": "Grep-søgning",
-  "ui.permission.toolLabel.webSearch": "Websøgning",
   "ui.permission.toolLabel.list": "Liste",
   "ui.permission.toolLabel.externalDirectory": "Giv adgang til ekstern mappe",
   "ui.permission.toolLabel.webFetch": "Webhentning",
@@ -285,9 +269,6 @@ export const dict = {
   "sidebar.topBar.newTask": "Ny Opgave",
   "sidebar.topBar.history": "Historik",
   "sidebar.topBar.agentManager": "Agent Manager",
-  "sidebar.topBar.kiloClaw": "KiloClaw",
-  "sidebar.topBar.marketplace": "Markedsplads",
-  "sidebar.topBar.profile": "Profil",
   "sidebar.topBar.settings": "Indstillinger",
   "sidebar.session.newSession": "Ny Session",
   "sidebar.session.newSession.tooltip": "Start en frisk samtale, mens den nuværende session holdes intakt.",
@@ -538,8 +519,6 @@ export const dict = {
   "settings.permissions.tool.todowrite.description": "Opdater to-do listen",
   "settings.permissions.tool.webfetch.title": "Webhentning",
   "settings.permissions.tool.webfetch.description": "Hent indhold fra en URL",
-  "settings.permissions.tool.websearch.title": "Websøgning",
-  "settings.permissions.tool.websearch.description": "Søg på nettet",
   "settings.permissions.tool.codesearch.title": "Kodesøgning",
   "settings.permissions.tool.codesearch.description": "Søg kode på nettet",
   "settings.permissions.tool.external_directory.title": "Ekstern mappe",
@@ -565,8 +544,6 @@ export const dict = {
   "session.tab.local": "Lokal",
   "session.tab.cloud": "Sky",
   "session.tab.worktree": "Arbejdstræ",
-  "session.cloud.repoOnly": "Kun dette repository",
-  "session.cloud.import": "Importér fra skyen",
   "feedback.button": "Feedback & support",
   "feedback.dialog.message": "Vi vil gerne høre din feedback eller hjælpe med eventuelle problemer, du oplever.",
   "feedback.dialog.github": "Rapportér et problem på GitHub",
@@ -593,96 +570,17 @@ export const dict = {
   "workStyle.choice.autonomous.permissions": "Redigerer filer og kører kommandoer i arbejdsområdet uden at spørge.",
   "workStyle.choice.autonomous.bash": "Kan køre terminalkommandoer i arbejdsområdet uden godkendelse.",
   "workStyle.choice.autonomous.visibility": "Detaljerne forbliver foldet sammen, indtil du folder dem ud.",
-  "session.cloud.import.title": "Importér fra skyen",
-  "session.cloud.import.placeholder": "Sessions-ID, URL eller kilo import-kommando",
-  "session.cloud.import.button": "Importér",
-  "session.cloud.import.invalid": "Ugyldigt sessions-ID-format",
-  "session.cloud.import.legacy": "Dette ser ud til at være en ældre session, som ikke længere understøttes.",
-  "session.cloud.import.failed": "Kunne ikke importere cloud-session",
-
-  "deviceAuth.toast.urlCopied": "URL kopieret til udklipsholder",
-  "deviceAuth.toast.codeCopied": "Kode kopieret til udklipsholder",
-  "deviceAuth.toast.errorCopied": "Fejl kopieret til udklipsholder",
-  "deviceAuth.status.initiating": "Starter login...",
-  "deviceAuth.title": "Log ind på Kilo Code",
-  "deviceAuth.step1": "Trin 1: Åbn denne URL",
-  "deviceAuth.action.copyUrl": "Kopiér URL",
-  "deviceAuth.action.openBrowser": "Åbn browser",
-  "deviceAuth.qrCode.alt": "QR-kode",
-  "deviceAuth.step2": "Trin 2: Indtast denne kode",
-  "deviceAuth.action.clickToCopy": "Klik for at kopiere",
-  "deviceAuth.status.waiting": "Venter på godkendelse...",
-  "deviceAuth.status.success": "Login vellykket!",
-  "deviceAuth.status.failed": "Login mislykkedes",
-  "deviceAuth.error.detailsTitle": "Login-fejldetaljer",
-  "deviceAuth.status.cancelled": "Login annulleret",
-  "deviceAuth.action.tryAgain": "Prøv igen",
-  "deviceAuth.action.copyError": "Kopiér fejl",
-  "deviceAuth.action.showDetails": "Vis detaljer",
 
   "common.retry": "Prøv igen",
   "common.refresh": "Opdatér",
   "common.reload": "Genindlæs",
   "common.reloadDescription": "Genindlæs konfiguration, færdigheder, agenter og kommandoer fra disken",
 
-  "profile.title": "Profil",
-  "profile.notLoggedIn": "Ikke logget ind",
-  "profile.action.login": "Log ind med Kilo Code",
-  "profile.balance.title": "Saldo",
-  "profile.balance.refresh": "Opdatér saldo",
-  "profile.usage.title": "Abonnementer og forbrug",
-  "profile.usage.description": "Kvote og saldi for det aktuelle abonnement",
-  "profile.usage.refresh": "Opdatér udbyderforbrug",
-  "profile.usage.empty": "Ingen kilder til udbyderforbrug fundet.",
-  "profile.usage.source.direct": "Direkte",
-  "profile.usage.state.stale": "Viser de senest opdaterede forbrugsdata.",
-  "profile.usage.state.unavailable": "Forbrugsdata er ikke tilgængelige.",
-  "profile.usage.plan.pastDue": "Abonnement: Betaling forfalden",
-  "profile.usage.plan.canceling": "Abonnement: Opsiges ved periodens udgang",
-  "profile.usage.plan.unknown": "Abonnement: Status ukendt",
-  "profile.usage.action.manage": "Administrer",
-  "profile.usage.action.managePlan": "Administrer {{plan}}",
-  "profile.usage.routingState.disabled": "deaktiveret",
-  "profile.usage.routingState.missing": "fraværende",
-  "profile.usage.routingState.replaced": "erstattet",
-  "profile.usage.routingState.unknown": "ukendt",
-  "profile.usage.window.used": "{{value}} brugt",
-  "profile.usage.window.remaining": "{{value}} tilbage",
-  "profile.usage.window.remainingOf": "{{value}} af {{limit}} tilbage",
-  "profile.usage.window.usedOf": "{{value}} af {{limit}} brugt",
-  "profile.usage.window.quota": "Kvote",
-  "profile.usage.window.daily": "Daglig kvote",
-  "profile.usage.window.weekly": "Ugentlig kvote",
-  "profile.usage.window.monthly": "Månedlig kvote",
-  "profile.usage.window.hours": "{{count}}-timers kvote",
-  "profile.usage.window.days": "{{count}}-dages kvote",
-  "profile.usage.window.weeks": "{{count}}-ugers kvote",
-  "profile.usage.window.months": "{{count}}-måneders kvote",
-  "profile.usage.window.shared": "Delt",
-  "profile.usage.window.scoped": "{{resource}} · {{period}}",
-  "profile.usage.reset": "Nulstilles den {{date}}",
-  "profile.usage.status.unknown": "Ukendt",
-  "profile.usage.status.unlimited": "Ubegrænset",
-  "profile.usage.status.notInPlan": "Ikke i abonnement",
-  "profile.usage.status.exhausted": "Opbrugt",
-  "profile.action.dashboard": "Dashboard",
-  "profile.action.topUp": "Fyld op",
-  "profile.pass.subscribe": "Få Kilo Pass for at tilføje kredit og optjene bonusser",
-  "profile.pass.bonus": "Bonus",
-  "profile.pass.usage": "Denne måneds forbrug",
-  "profile.pass.paid": "Betalt",
-  "profile.pass.meter": "Månedligt Kilo Pass-forbrug",
-  "profile.pass.renews": "Fornyes",
-  "profile.action.logout": "Log ud",
-
   "settings.agentBehaviour.title": "Agentadfærd",
   "settings.autoApprove.title": "Automatisk godkendelse",
   "settings.webTools.title": "Webværktøjer",
   "settings.webTools.description": "Konfigurer websøgning og browserautomatisering.",
-  "settings.webTools.webSearch.enable": "Aktivér for alle udbydere",
   "settings.webTools.browserAutomation": "Browserautomatisering",
-  "settings.webTools.webSearch.title": "Websøgning",
-  "settings.webTools.webSearch.description": "Gør websøgning tilgængelig for modeller fra alle udbydere.",
   "settings.checkpoints.title": "Kontrolpunkter",
   "settings.display.title": "Visning",
   "settings.notifications.title": "Notifikationer",
@@ -756,8 +654,6 @@ export const dict = {
   "settings.aboutKiloCode.community": "Fællesskab og support",
   "settings.aboutKiloCode.feedback.prefix":
     "Hvis du har spørgsmål eller feedback, er du velkommen til at åbne en issue på",
-  "settings.aboutKiloCode.feedback.or": "eller",
-  "settings.aboutKiloCode.support.prefix": "For fakturerings- eller kontospørgsmål, kontakt kundesupport på",
   "settings.aboutKiloCode.resetSettings.title": "Nulstil indstillinger",
   "settings.aboutKiloCode.resetSettings.description":
     "Dette nulstiller kun VS Code-udvidelsesspecifikke indstillinger til deres standardværdier. Indstillinger der deles med CLI, såsom tilstande og regler for automatisk godkendelse, er gemt i CLI-konfigurationen og vil ikke blive nulstillet.",
@@ -774,11 +670,6 @@ export const dict = {
     "Denne fil blev eksporteret fra en nyere version af Kilo. Nogle indstillinger kan blive ignoreret.",
   "settings.aboutKiloCode.importSettings.success":
     "Indstillinger importeret. Gennemgå ændringerne ovenfor, og klik derefter på Gem.",
-
-  "settings.aboutKiloCode.telemetry.title": "Telemetri",
-  "settings.aboutKiloCode.telemetry.description":
-    'Telemetri styres af VS Codes indbyggede telemetriindstilling. For at deaktivere den, gå til Indstillinger > Telemetry > Telemetry Level og sæt den til "off". Genstart VS Code for at anvende ændringen.',
-  "settings.aboutKiloCode.telemetry.openSettings": "Åbn telemetriindstillinger",
 
   "settings.agentBehaviour.subtab.agents": "Agenter",
   "settings.agentBehaviour.subtab.mcpServers": "MCP-servere",
@@ -849,14 +740,6 @@ export const dict = {
     "Aktivér styring af sessioner og worktrees på tværs af flere repositories i Agent Manager. Det nuværende workspace-repository er altid standardprojektet.",
   "settings.experimental.mcpTimeout.title": "MCP-timeout (ms)",
   "settings.experimental.mcpTimeout.description": "Timeout for MCP-serveranmodninger i millisekunder",
-  "settings.experimental.remote.title": "Remote-styring",
-  "settings.experimental.remote.description":
-    "Aktivér Remote-styring af sessioner via Kilo Cloud. Dette vil også påvirke CLI'er på denne maskine.",
-  "settings.experimental.remote.current": "Nuværende status:",
-  "settings.experimental.remote.startup": "Aktivér automatisk ved opstart:",
-  "settings.experimental.remote.active": "Aktiv",
-  "settings.experimental.remote.inactive": "Inaktiv",
-  "settings.experimental.remote.hint": "Brug /remote i chatten for at skifte",
   "settings.experimental.toolToggles": "Værktøjsskift",
   "settings.agentBehaviour.defaultAgent.title": "Standardagent",
   "settings.agentBehaviour.defaultAgent.description": "Agent til brug, når ingen er angivet",
@@ -1012,7 +895,6 @@ export const dict = {
   "settings.autoApprove.tool.todoreadwrite":
     "Administrer opgaveliste. Tillader læsning og opdatering af den interne opgaveliste.",
   "settings.autoApprove.tool.webfetch": "Hent en URL. Tillader hentning af indhold fra en specifik URL.",
-  "settings.autoApprove.tool.websearch": "Søg på nettet. Tillader udførelse af eksterne websøgninger.",
   "settings.autoApprove.tool.external_directory":
     "Få adgang til filer uden for arbejdsområdet. Udløses ved adgang til filer uden for den aktuelle projektmappe.",
   "settings.autoApprove.tool.doom_loop":
@@ -1111,8 +993,6 @@ export const dict = {
   "settings.providers.disabled.enable": "Aktiver",
   "settings.providers.notSet": "Ikke angivet (brug serverstandard)",
   "dialog.model.notSet": "Ikke angivet",
-  "profile.personalAccount": "Personlig konto",
-  "profile.switchingAccount": "Skifter konto…",
 
   // Agent Manager strings live in webview-ui/agent-manager/i18n/da.ts
 

@@ -42,9 +42,6 @@ export { KiloTuiConfig } from "@/kilocode/cli/cmd/tui/context/tui-config"
 /** Default terminal window title. */
 export const APP_TITLE = "Kilo CLI"
 
-/** Public docs URL shown in the command palette. */
-export const DOCS_URL = "https://kilo.ai/docs"
-
 /** Human-readable product name used in user-facing messages. */
 export const APP_NAME = "Kilo"
 

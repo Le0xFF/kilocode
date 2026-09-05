@@ -66,7 +66,8 @@ export class BrowserAutomationService implements vscode.Disposable {
     const useSystemChrome = config.get<boolean>("useSystemChrome", true)
     const headless = config.get<boolean>("headless", false)
 
-    // Build the command for the Playwright MCP server
+    // Build the command for the Playwright MCP server. npx installs @playwright/mcp@latest on
+    // first use, so enabling this feature requires access to the npm registry.
     const command = ["npx", "@playwright/mcp@latest"]
     if (headless) {
       command.push("--headless")

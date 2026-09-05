@@ -16,7 +16,6 @@ import { DiffVirtualProvider } from "../DiffVirtualProvider"
 import { buildWebviewHtml } from "../utils"
 import { openFileInEditor, getWorkspaceRoot } from "../review-utils"
 import type { AutoApproveController } from "../commands/toggle-auto-approve"
-import type { RemoteStatusService } from "../services/RemoteStatusService"
 
 export class VscodeHost implements Host {
   private diffVirtual: DiffVirtualProvider | undefined
@@ -32,7 +31,6 @@ export class VscodeHost implements Host {
     private readonly extensionUri: vscode.Uri,
     private readonly connectionService: KiloConnectionService,
     private readonly context: vscode.ExtensionContext,
-    private readonly remoteService: RemoteStatusService,
   ) {}
 
   setDiffVirtualProvider(provider: DiffVirtualProvider): void {
@@ -128,7 +126,6 @@ export class VscodeHost implements Host {
     if (this.diffVirtual) {
       provider.setDiffVirtualProvider(this.diffVirtual)
     }
-    provider.setRemoteService(this.remoteService)
     provider.attachToWebview(panel.webview, {
       onBeforeMessage: opts.onBeforeMessage,
     })

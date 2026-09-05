@@ -6,13 +6,14 @@ import { UI } from "../ui"
 import * as Prompt from "../effect/prompt"
 import { ModelsDev } from "@opencode-ai/core/models-dev"
 
-import { map, pipe, sortBy, values } from "remeda"
+import { map, pipe, pickBy, sortBy, values } from "remeda"
 import path from "path"
 import os from "os"
 import { Config } from "@/config/config"
 import { Global } from "@opencode-ai/core/global"
 import { Plugin } from "../../plugin"
 import type { Hooks } from "@kilocode/plugin"
+import { inLocalSurface } from "@/kilocode/local-providers" // kilocode_change - cut catalog to local surface for CLI auth commands
 import { Process } from "@/util/process"
 import { errorMessage } from "@/util/error"
 import { text } from "node:stream/consumers"
@@ -257,14 +258,21 @@ export const ProvidersListCommand = effectCmd({
   handler: Effect.fn("Cli.providers.list")(function* (_args) {
     const authSvc = yield* Auth.Service
     const modelsDev = yield* ModelsDev.Service
+    // kilocode_change - config.provider ids join creds in the local-surface whitelist
+    const cfgSvc = yield* Config.Service
+    const config = yield* cfgSvc.get()
 
     UI.empty()
     const authPath = path.join(Global.Path.data, "auth.json")
     const homedir = os.homedir()
     const displayPath = authPath.startsWith(homedir) ? authPath.replace(homedir, "~") : authPath
     yield* Prompt.intro(`Credentials ${UI.Style.TEXT_DIM}${displayPath}`)
-    const results = Object.entries(yield* Effect.orDie(authSvc.all()))
-    const database = yield* modelsDev.get()
+    // kilocode_change start - present only the local-surface catalog (config.provider ∪ creds), not the raw models.dev listing
+    const credentials = yield* authSvc.all().pipe(Effect.orDie)
+    const surface = new Set([...Object.keys(config.provider ?? {}), ...Object.keys(credentials)])
+    const database = pickBy(yield* modelsDev.get(), (_item, id) => inLocalSurface(id, surface))
+    const results = Object.entries(credentials) as Array<[string, Auth.Info]>
+    // kilocode_change end
 
     for (const [providerID, result] of results) {
       const name = database[providerID]?.name || providerID
@@ -364,7 +372,12 @@ export const ProvidersLoginCommand = effectCmd({
     const disabled = new Set(config.disabled_providers ?? [])
     const enabled = config.enabled_providers ? new Set(config.enabled_providers) : undefined
 
-    const allProviders = yield* modelsDev.get()
+    // kilocode_change start - cut the raw models.dev catalog to the local surface (config.provider ∪ creds);
+    // refresh(true) above is kept as an explicit user action, but only the local listing is presented
+    const credentials = yield* authSvc.all().pipe(Effect.orDie)
+    const surface = new Set([...Object.keys(config.provider ?? {}), ...Object.keys(credentials)])
+    const allProviders = pickBy(yield* modelsDev.get(), (_item, id) => inLocalSurface(id, surface))
+    // kilocode_change end
     const providers: Record<string, (typeof allProviders)[string]> = {}
     for (const [key, value] of Object.entries(allProviders)) {
       if ((enabled ? enabled.has(key) : true) && !disabled.has(key)) providers[key] = value
@@ -519,7 +532,12 @@ export const ProvidersLogoutCommand = effectCmd({
       yield* Prompt.log.error("No credentials found")
       return
     }
-    const database = yield* modelsDev.get()
+    // kilocode_change start - name lookup only over the local-surface catalog (config.provider ∪ creds)
+    const cfgSvc = yield* Config.Service
+    const config = yield* cfgSvc.get()
+    const surface = new Set([...Object.keys(config.provider ?? {}), ...credentials.map(([id]) => id)])
+    const database = pickBy(yield* modelsDev.get(), (_item, id) => inLocalSurface(id, surface))
+    // kilocode_change end
     const options = credentials.map(([key, value]) => ({
       label: (database[key]?.name || key) + UI.Style.TEXT_DIM + " (" + value.type + ")",
       value: key,

@@ -259,14 +259,9 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
   const [sandboxRequests, setSandboxRequests] = createSignal<Record<string, string>>({})
   let sandboxRetry: ReturnType<typeof setTimeout> | undefined
   let sandboxAttempts = 0
-  const sandboxID = () => {
-    const id = session.currentSessionID()
-    return id?.startsWith("cloud:") ? undefined : id
-  }
+  const sandboxID = () => session.currentSessionID() ?? undefined
   const sandboxVisible = () =>
-    features().sandboxControls &&
-    globalConfig().sandbox?.enabled === true &&
-    !session.currentSessionID()?.startsWith("cloud:")
+    features().sandboxControls && globalConfig().sandbox?.enabled === true
   const sandbox = () => {
     const id = sandboxID()
     return id ? sandboxes()[id] : undefined

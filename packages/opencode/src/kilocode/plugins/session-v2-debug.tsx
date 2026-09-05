@@ -11,7 +11,7 @@ import { RGBA, TextAttributes, type BoxRenderable, type SyntaxStyle } from "@ope
 import { useBindings } from "@tui/keymap"
 import { Locale } from "@tui/util/locale"
 import { LANGUAGE_EXTENSIONS } from "@/lsp/language"
-import { webSearchProviderLabel } from "@/tool/websearch"
+
 import path from "path"
 import stripAnsi from "strip-ansi"
 import type {
@@ -500,9 +500,7 @@ function AssistantTool(props: { part: SessionMessageAssistantTool; sessionID: st
       <Match when={props.part.name === "webfetch"}>
         <WebFetch {...toolprops} />
       </Match>
-      <Match when={props.part.name === "websearch"}>
-        <WebSearch {...toolprops} />
-      </Match>
+      
       <Match when={props.part.name === "write"}>
         <Write {...toolprops} />
       </Match>
@@ -835,15 +833,7 @@ function WebFetch(props: ToolProps) {
   )
 }
 
-function WebSearch(props: ToolProps) {
-  const label = createMemo(() => webSearchProviderLabel(props.metadata.provider))
-  return (
-    <InlineTool icon="◈" pending="Searching web..." complete={toolComplete(props.part)} part={props.part}>
-      {label()} "{stringValue(props.input.query) ?? pendingInput(props.part)}"{" "}
-      <Show when={numberValue(props.metadata.numResults)}>{(results) => <>({results()} results)</>}</Show>
-    </InlineTool>
-  )
-}
+
 
 function Write(props: ToolProps) {
   const { theme, syntax } = useTheme()
