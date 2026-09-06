@@ -5,7 +5,7 @@ import { mkdir, rm, utimes, writeFile } from "fs/promises"
 import path from "path"
 import { Flag } from "@opencode-ai/core/flag/flag"
 import { Global } from "@opencode-ai/core/global"
-import { Hash } from "@opencode-ai/core/util/hash"
+import { Hash } from "@opencode-ai/core/util/hash" // kilocode_change - needed for the per-source cache filename
 import { ModelsDev } from "../../src/provider/models"
 import { Provider } from "../../src/provider/provider"
 import { ProviderV2 } from "@opencode-ai/core/provider"
@@ -61,24 +61,30 @@ it.instance(
       (server) => Effect.sync(() => server.stop(true)),
     )
     const source = `http://127.0.0.1:${server.port}`
-    const file = path.join(Global.Path.cache, `models-${Hash.fast(source)}.json`)
+    const file = path.join(Global.Path.cache, `models-${Hash.fast(source)}.json`) // kilocode_change - per-source cache filename
     const flags = {
-      source: Flag.KILO_MODELS_URL,
+      url: Flag.KILO_MODELS_URL,
       path: Flag.KILO_MODELS_PATH,
       disabled: Flag.KILO_DISABLE_MODELS_FETCH,
       key: process.env.ACME_API_KEY,
     }
 
+    // kilocode_change start - use Layer.fresh to bypass the process-wide memoMap so the test gets a
+    // fresh ModelsDev+Provider pair that reads the cache file written in the acquire phase rather than
+    // a stale memoized value (the preload seeds a shared catalog for other tests).
+    const layer = Layer.fresh(Layer.merge(AppNodeBuilder.build(ModelsDev.node), AppNodeBuilder.build(Provider.node)))
+    // kilocode_change end
+
     yield* Effect.acquireUseRelease(
       Effect.promise(async () => {
-        Flag.KILO_MODELS_URL = source
-        Flag.KILO_MODELS_PATH = undefined
+        Flag.KILO_MODELS_URL = source // kilocode_change - redirect the models.dev fetch to the local mock server
+        Flag.KILO_MODELS_PATH = undefined // kilocode_change - loadFromDisk falls back to the per-source cache file
         Flag.KILO_DISABLE_MODELS_FETCH = true
         process.env.ACME_API_KEY = "test-key"
         await mkdir(Global.Path.cache, { recursive: true })
         await writeFile(file, JSON.stringify(initial))
         const stale = new Date(Date.now() - 10 * 60 * 1000)
-        await utimes(file, stale, stale)
+        await utimes(file, stale, stale) // kilocode_change - age the cache past the TTL so refresh() refetches
       }),
       () =>
         Effect.gen(function* () {
@@ -92,15 +98,15 @@ it.instance(
 
           const after = yield* provider.list()
           expect(after[ProviderV2.ID.make("acme")]?.models["acme-2"]).toBeDefined()
-        }).pipe(Effect.provide(Layer.merge(AppNodeBuilder.build(ModelsDev.node), AppNodeBuilder.build(Provider.node)))),
+        }).pipe(Effect.provide(layer)),
       () =>
         Effect.promise(async () => {
-          Flag.KILO_MODELS_URL = flags.source
-          Flag.KILO_MODELS_PATH = flags.path
+          Flag.KILO_MODELS_URL = flags.url // kilocode_change - restore the models fetch URL
+          Flag.KILO_MODELS_PATH = flags.path // kilocode_change - restore the preload fixture path for other tests
           Flag.KILO_DISABLE_MODELS_FETCH = flags.disabled
           if (flags.key === undefined) delete process.env.ACME_API_KEY
           else process.env.ACME_API_KEY = flags.key
-          await rm(file, { force: true })
+          await rm(file, { force: true }) // kilocode_change - clean up the per-source cache file
         }),
     )
   }),

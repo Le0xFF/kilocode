@@ -63,7 +63,7 @@ export function NetworkPrompt(props: { request: SessionNetworkWait }) {
             <>
               <text fg={theme.warning}>Network disconnected</text>
               <text fg={theme.text}>{props.request.message}</text>
-              <text fg={theme.textMuted}>Waiting for network...</text>
+              <text fg={theme.textMuted}>Connection lost — retrying automatically.</text>
               <text fg={theme.textMuted}>Press Esc to stop this turn.</text>
             </>
           }

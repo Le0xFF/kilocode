@@ -2206,11 +2206,6 @@ export type IndexingConfig = {
   model?: string | null
   dimension?: number | null
   vectorStore?: "lancedb" | "qdrant"
-  kilo?: {
-    apiKey?: string
-    baseUrl?: string
-    organizationId?: string
-  }
   openai?: {
     apiKey?: string
   }

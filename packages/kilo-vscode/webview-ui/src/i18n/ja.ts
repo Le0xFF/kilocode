@@ -691,11 +691,6 @@ export const dict = {
   "settings.notifications.sound.system": "システム",
   "settings.notifications.sound.description":
     "デフォルトでは、完了、入力、エラーにそれぞれ異なるサウンドが使用されます。その他の選択肢では、すべてのイベントに同じサウンドが使用されます。",
-  "settings.experimental.share.title": "共有モード",
-  "settings.experimental.share.description": "セッション共有の動作",
-  "settings.experimental.share.manual": "手動",
-  "settings.experimental.share.auto": "自動",
-  "settings.experimental.share.disabled": "無効",
   "settings.experimental.formatter.title": "フォーマッター",
   "settings.experimental.formatter.description": "自動コードフォーマッターを有効にする",
   "settings.experimental.batch.title": "バッチツール",

@@ -712,11 +712,6 @@ export const dict = {
   "settings.notifications.sound.system": "System",
   "settings.notifications.sound.description":
     "Die Standardeinstellung verwendet unterschiedliche Töne für Abschluss, Eingabe und Fehler. Bei anderen Optionen wird für alle Ereignisse derselbe Ton verwendet.",
-  "settings.experimental.share.title": "Freigabemodus",
-  "settings.experimental.share.description": "Verhalten der Sitzungsfreigabe",
-  "settings.experimental.share.manual": "Manuell",
-  "settings.experimental.share.auto": "Automatisch",
-  "settings.experimental.share.disabled": "Deaktiviert",
   "settings.experimental.formatter.title": "Formatierer",
   "settings.experimental.formatter.description": "Automatischen Code-Formatierer aktivieren",
   "settings.experimental.batch.title": "Batch-Werkzeug",

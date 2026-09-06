@@ -699,11 +699,6 @@ export const dict = {
   "settings.notifications.sound.system": "Sistem",
   "settings.notifications.sound.description":
     "Zadana opcija koristi različite zvukove za završetak, unos i greške. Ostale opcije koriste jedan zvuk za sve događaje.",
-  "settings.experimental.share.title": "Način dijeljenja",
-  "settings.experimental.share.description": "Ponašanje dijeljenja sesije",
-  "settings.experimental.share.manual": "Ručno",
-  "settings.experimental.share.auto": "Automatski",
-  "settings.experimental.share.disabled": "Onemogućeno",
   "settings.experimental.formatter.title": "Formater",
   "settings.experimental.formatter.description": "Omogući automatsko formatiranje koda",
   "settings.experimental.batch.title": "Batch alat",

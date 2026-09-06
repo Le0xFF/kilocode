@@ -5,8 +5,6 @@ import { NonNegativeInt } from "@opencode-ai/core/schema"
 import { Global } from "@opencode-ai/core/global"
 import { FSUtil } from "@opencode-ai/core/fs-util"
 
-export const OAUTH_DUMMY_KEY = "kilo-oauth-dummy-key" // kilocode_change
-
 const file = path.join(Global.Path.data, "auth.json")
 
 const fail = (message: string) => (cause: unknown) => new AuthError({ message, cause })

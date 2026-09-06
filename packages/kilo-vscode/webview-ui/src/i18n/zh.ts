@@ -668,11 +668,6 @@ export const dict = {
   "settings.notifications.sound.system": "系统",
   "settings.notifications.sound.description":
     "默认选项为完成、输入和错误使用不同的声音。其他选项为所有事件使用同一种声音。",
-  "settings.experimental.share.title": "分享模式",
-  "settings.experimental.share.description": "会话分享行为",
-  "settings.experimental.share.manual": "手动",
-  "settings.experimental.share.auto": "自动",
-  "settings.experimental.share.disabled": "禁用",
   "settings.experimental.formatter.title": "格式化工具",
   "settings.experimental.formatter.description": "启用自动代码格式化",
   "settings.experimental.batch.title": "批量工具",

@@ -74,6 +74,12 @@
 
 - Closed out the offline dead-code surface across the fork: removed the remaining cloud modules (KiloClaw client, account/device-flow auth, the cloud-session no-op layer, and console asset serving); trimmed provider-layer dead code (6 unreachable provider files, native-request branches, cloud-auth exports, sdkKey/metadata/model-cache trimming, and providerCost gateway reads); pruned 7 orphaned extension dependencies and re-activated knip on `dependencies`; cleaned webview i18n orphan keys across all 21 locales plus CSS remote-settings rules, the `remote_control` contract key, and a stale `webTools` description; completed spawn-env sanitization (BUN_*/NODE_OPTIONS strip, ALL_PROXY/all_proxy clearing when proxy is off, loopback NO_PROXY guarantee); made the TUI fully offline (tree-sitter wasm local-first with opt-in download, fixed stale tips, PluginManager npm label); and finished repo hygiene (9 orphan package directories, stale build output, stale doc references).
 
+- Fixed an offline network-wait stall: with the external probe host list emptied, provider connection errors now degrade to the normal retry schedule instead of parking the session permanently in the offline state. The offline UI copy was updated ("Connection lost — retrying automatically") and the working indicator gained a Cancel button for the offline state so the turn can still be stopped.
+
+- Removed the last dead-code residuals from the offline closure: balance-refresh, codex-refresh + the CodexAuthExpiredError case, the OAUTH_DUMMY_KEY export, the models-dev environmental fork/fetch machinery, the cloud base() URL, the bedrock-converse literal, the embedder kilo option, loadThemeFromUrl, the CSS speech/provider-usage blocks, the Share mode control + its i18n keys, and the TUI pricing special-case.
+
+- Calibrated test parallelism on available RAM so the unit suites stay within memory limits on small machines.
+
 ## 7.5.5
 
 ### Patch Changes

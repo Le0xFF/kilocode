@@ -37,7 +37,6 @@ import type { SystemError } from "bun"
 import type { Provider } from "@/provider/provider"
 import { Snapshot } from "@/snapshot" // kilocode_change
 import { SessionNetwork } from "./network" // kilocode_change
-import { CodexAuthExpiredError } from "@/kilocode/provider/codex-refresh" // kilocode_change
 import { KiloSessionMessageOrder } from "@/kilocode/session/message-order" // kilocode_change
 import * as TextStream from "@/kilocode/text-stream" // kilocode_change
 import { Effect, Schema } from "effect"
@@ -753,14 +752,6 @@ export function fromError(
         },
         { cause: e },
       ).toObject()
-    case e instanceof CodexAuthExpiredError: // kilocode_change start
-      return new AuthError(
-        {
-          providerID: "openai",
-          message: e.message,
-        },
-        { cause: e },
-      ).toObject() // kilocode_change end
     case SessionNetwork.disconnected(e): // kilocode_change start
       return new APIError(
         {

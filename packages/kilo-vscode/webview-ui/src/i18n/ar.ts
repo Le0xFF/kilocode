@@ -677,11 +677,6 @@ export const dict = {
   "settings.notifications.sound.system": "النظام",
   "settings.notifications.sound.description":
     "يستخدم الخيار الافتراضي أصواتًا مختلفة عند الاكتمال أو الحاجة إلى ردّك أو حدوث خطأ. تستخدم الخيارات الأخرى صوتًا واحدًا لجميع الأحداث.",
-  "settings.experimental.share.title": "وضع المشاركة",
-  "settings.experimental.share.description": "سلوك مشاركة الجلسة",
-  "settings.experimental.share.manual": "يدوي",
-  "settings.experimental.share.auto": "تلقائي",
-  "settings.experimental.share.disabled": "معطل",
   "settings.experimental.formatter.title": "المنسق",
   "settings.experimental.formatter.description": "تمكين منسق الكود التلقائي",
   "settings.experimental.batch.title": "أداة دفعية",

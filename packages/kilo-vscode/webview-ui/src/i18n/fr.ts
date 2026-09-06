@@ -714,11 +714,6 @@ export const dict = {
   "settings.notifications.sound.system": "Système",
   "settings.notifications.sound.description":
     "L’option par défaut utilise des sons différents pour la fin des sessions, les demandes d’intervention et les erreurs. Les autres options utilisent un même son pour tous les événements.",
-  "settings.experimental.share.title": "Mode de partage",
-  "settings.experimental.share.description": "Comportement du partage de session",
-  "settings.experimental.share.manual": "Manuel",
-  "settings.experimental.share.auto": "Automatique",
-  "settings.experimental.share.disabled": "Désactivé",
   "settings.experimental.formatter.title": "Formateur",
   "settings.experimental.formatter.description": "Activer le formateur de code automatique",
   "settings.experimental.batch.title": "Outil par lot",

@@ -144,7 +144,7 @@ describe("session processor network offline", () => {
           const processors = yield* SessionProcessor.Service
           const session = yield* Session.Service
 
-          const err = new Error("Unable to connect. Is the computer able to access the url?")
+          const err = Object.assign(new Error("fetch failed"), { code: "ECONNREFUSED" }) // kilocode_change - offline surface: no probe hosts means immediate retry fallback
 
           // First call: network error via Stream.fail; second call: success
           yield* test.push(Stream.fail(err))
@@ -156,10 +156,6 @@ describe("session processor network offline", () => {
             ),
           )
 
-          // Auto-reply to network reconnect request
-          const offAsk = Bus.subscribe(SessionNetwork.Event.Asked, (event) => {
-            void SessionNetwork.reply({ requestID: event.properties.id })
-          })
           const ask = spyOn(SessionNetwork, "ask")
 
           const chat = yield* session.create({})
@@ -207,15 +203,9 @@ describe("session processor network offline", () => {
           try {
             const result = yield* handle.process(input)
             expect(result).toBe("continue")
-            expect(ask).toHaveBeenCalledTimes(1)
-            // Verify the offline handler was invoked with the correct message
-            const call = ask.mock.calls[0]
-            expect(call[0]).toMatchObject({
-              sessionID: chat.id,
-              message: err.message,
-            })
+            // kilocode_change - offline surface: no probe hosts means immediate retry fallback
+            expect(ask).not.toHaveBeenCalled()
           } finally {
-            offAsk()
             ask.mockRestore()
           }
         }),

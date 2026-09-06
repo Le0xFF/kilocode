@@ -11,24 +11,16 @@ import { it } from "./lib/effect"
 import { readFile, rm, writeFile, utimes, mkdir } from "fs/promises"
 import path from "path"
 
-// test/preload.ts pins KILO_MODELS_PATH to a fixture so other tests can
-// resolve providers without network. These tests need to drive the on-disk
-// cache themselves and silence the eager refresh fork. Save/restore around
-// the suite — never leak the mutation to subsequent test files in the same
-// bun process.
-const ORIGINAL_MODELS_PATH = Flag.KILO_MODELS_PATH
 const ORIGINAL_DISABLE_FETCH = Flag.KILO_DISABLE_MODELS_FETCH
 // kilocode_change start - isolate the mutable cache fixture from parallel package test processes
 const original = Global.Path.cache
 const root = path.join(Global.Path.tmp, `models-test-${process.pid}-${Math.random().toString(36).slice(2)}`)
 // kilocode_change end
 beforeAll(() => {
-  Flag.KILO_MODELS_PATH = undefined
   Flag.KILO_DISABLE_MODELS_FETCH = true
   Global.Path.cache = root // kilocode_change
 })
 afterAll(() => {
-  Flag.KILO_MODELS_PATH = ORIGINAL_MODELS_PATH
   Flag.KILO_DISABLE_MODELS_FETCH = ORIGINAL_DISABLE_FETCH
   Global.Path.cache = original // kilocode_change
 })
@@ -243,30 +235,16 @@ describe("ModelsDev Service", () => {
     }),
   )
 
-  it.live("refresh(false) skips fetch when on-disk file is fresh", () =>
+  it.live("refresh() fetches and updates the cache", () =>
     Effect.gen(function* () {
-      // Fresh: mtime within the 5-minute TTL.
-      yield* writeCache(fixture, Date.now() - 1000)
-      const state = yield* Ref.make({ ...initialState, body: JSON.stringify(fixture2) })
-      yield* provided(
-        state,
-        ModelsDev.Service.use((s) => s.refresh(false)),
-      )
-      const final = yield* Ref.get(state)
-      expect(final.calls).toEqual([])
-    }),
-  )
-
-  it.live("refresh(false) fetches when on-disk file is stale", () =>
-    Effect.gen(function* () {
-      // Stale: mtime 10 minutes ago, beyond the 5-minute TTL.
-      yield* writeCache(fixture, Date.now() - 10 * 60 * 1000)
+      // The TTL-based fresh check was removed with the periodic fork; refresh always fetches.
+      yield* writeCache(fixture)
       const state = yield* Ref.make({ ...initialState, body: JSON.stringify(fixture2) })
       const after = yield* provided(
         state,
         Effect.gen(function* () {
           const svc = yield* ModelsDev.Service
-          yield* svc.refresh(false)
+          yield* svc.refresh()
           return yield* svc.get()
         }),
       )

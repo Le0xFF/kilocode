@@ -662,11 +662,6 @@ export const dict = {
   "settings.notifications.sound.system": "System",
   "settings.notifications.sound.description":
     "Standardvalget bruker forskjellige lyder for fullføring, innspill og feil. Andre valg bruker én lyd for alle hendelser.",
-  "settings.experimental.share.title": "Delingsmodus",
-  "settings.experimental.share.description": "Oppførsel for sesjonsdeling",
-  "settings.experimental.share.manual": "Manuell",
-  "settings.experimental.share.auto": "Automatisk",
-  "settings.experimental.share.disabled": "Deaktivert",
   "settings.experimental.formatter.title": "Formater",
   "settings.experimental.formatter.description": "Aktiver automatisk kodeformatering",
   "settings.experimental.batch.title": "Batchverktøy",

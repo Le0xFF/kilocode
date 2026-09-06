@@ -689,11 +689,6 @@ export const dict = {
   "settings.notifications.sound.system": "시스템",
   "settings.notifications.sound.description":
     "기본값은 완료, 입력, 오류에 서로 다른 소리를 사용합니다. 다른 옵션에서는 모든 이벤트에 동일한 소리를 사용합니다.",
-  "settings.experimental.share.title": "공유 모드",
-  "settings.experimental.share.description": "세션 공유 동작 방식",
-  "settings.experimental.share.manual": "수동",
-  "settings.experimental.share.auto": "자동",
-  "settings.experimental.share.disabled": "비활성화",
   "settings.experimental.formatter.title": "포매터",
   "settings.experimental.formatter.description": "자동 코드 포매터 활성화",
   "settings.experimental.batch.title": "배치 도구",

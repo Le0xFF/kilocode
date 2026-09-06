@@ -2,8 +2,7 @@
  * Indexing-local embedding model metadata registry.
  *
  * RATIONALE: This registry only contains provider-local defaults and static
- * metadata. Kilo-hosted embedding catalog metadata is fetched from Cloud so the
- * model list is defined in one place.
+ * metadata for the supported embedder providers.
  */
 
 import type { EmbedderProvider } from "./interfaces/manager"
@@ -57,7 +56,6 @@ const profiles: Record<string, Record<string, ModelProfile>> = {
 }
 
 const defaults: Record<string, string> = {
-  kilo: "",
   openai: "text-embedding-3-small",
   ollama: "nomic-embed-text",
   gemini: "gemini-embedding-001",

@@ -144,7 +144,6 @@ export interface Config {
   code_edit_display?: CodeEditDisplay
   mcp_tool_display?: McpToolDisplay
   hide_prompt_training_models?: boolean
-  share?: "manual" | "auto" | "disabled"
   username?: string
   watcher?: WatcherConfig
   formatter?: false | Record<string, unknown>

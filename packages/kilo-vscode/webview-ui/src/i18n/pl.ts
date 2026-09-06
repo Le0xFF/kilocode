@@ -659,11 +659,6 @@ export const dict = {
   "settings.notifications.sound.system": "System",
   "settings.notifications.sound.description":
     "Opcja domyślna używa różnych dźwięków dla zakończenia, oczekiwania na reakcję i błędów. Pozostałe opcje używają jednego dźwięku dla wszystkich zdarzeń.",
-  "settings.experimental.share.title": "Tryb udostępniania",
-  "settings.experimental.share.description": "Zachowanie udostępniania sesji",
-  "settings.experimental.share.manual": "Ręczny",
-  "settings.experimental.share.auto": "Automatyczny",
-  "settings.experimental.share.disabled": "Wyłączony",
   "settings.experimental.formatter.title": "Formater",
   "settings.experimental.formatter.description": "Włącz automatyczny formater kodu",
   "settings.experimental.batch.title": "Narzędzie wsadowe",

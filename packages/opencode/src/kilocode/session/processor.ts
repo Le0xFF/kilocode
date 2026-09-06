@@ -142,6 +142,11 @@ export namespace KiloSessionProcessor {
     abort: AbortSignal
     set: (sessionID: SessionID, status: SessionStatus.Info) => Effect.Effect<void>
   }): Effect.Effect<"retry" | "blocked" | "aborted"> {
+    if (!SessionNetwork.hasProbes()) {
+      // kilocode_change - offline surface: no probe hosts means immediate retry fallback
+      log.info("offline handler skipped: no probe hosts", { sessionID: input.sessionID })
+      return Effect.succeed("retry")
+    }
     return Effect.gen(function* () {
       const msg = SessionNetwork.message(input.error)
 

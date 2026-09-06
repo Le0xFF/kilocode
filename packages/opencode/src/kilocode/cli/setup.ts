@@ -18,8 +18,8 @@ import {
 
 const log = Log.create({ service: "kilocode.cli" })
 
-// Local copies of gateway env-var names so the CLI bootstrap stays independent
-// of @kilocode/kilo-gateway (which is only reachable via a heavy dynamic import).
+// Local copies of the env-var names the old gateway package used to export, kept here so the CLI
+// bootstrap stays independent of @kilocode/kilo-gateway (package removed; only commented-out stubs remain).
 const ENV_FEATURE = "KILOCODE_FEATURE"
 const ENV_VERSION = "KILOCODE_VERSION"
 

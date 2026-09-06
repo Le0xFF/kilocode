@@ -5,7 +5,7 @@ import { ModelsDev } from "@opencode-ai/schema/models-dev"
 import { Global } from "./global"
 import { Flag } from "./flag/flag"
 import { Flock } from "./util/flock"
-import { Hash } from "./util/hash"
+import { Hash } from "./util/hash" // kilocode_change - needed for the per-source cache filename
 import { FSUtil } from "./fs-util"
 import { InstallationChannel, InstallationVersion } from "./installation/version"
 import * as ModelsRefresh from "./kilocode/models-refresh" // kilocode_change
@@ -169,20 +169,22 @@ const layer = Layer.effect(
       ),
     )
 
-    const source = Flag.KILO_MODELS_URL || "https://models.dev" // kilocode_change
+    const source = Flag.KILO_MODELS_URL || "https://models.dev" // kilocode_change - KILO_MODELS_URL kept so tests/generate can redirect the fetch to a local URL
     const filepath = path.join(
       Global.Path.cache,
-      source === "https://models.dev" ? "models.json" : `models-${Hash.fast(source)}.json`, // kilocode_change
+      source === "https://models.dev" ? "models.json" : `models-${Hash.fast(source)}.json`, // kilocode_change - per-source cache filename; KILO_MODELS_PATH flag removed
     )
     const ttl = Duration.minutes(5)
     const lockKey = `models-dev:${filepath}`
-
+    // kilocode_change start - keep the TTL freshness gate so a default refresh() (no force) skips
+    // re-fetching when the cache is still fresh; only explicit refresh(true) forces a refetch.
     const fresh = Effect.fnUntraced(function* () {
       const stat = yield* fs.stat(filepath).pipe(Effect.catch(() => Effect.succeed(undefined)))
       if (!stat) return false
       const mtime = Option.getOrElse(stat.mtime, () => new Date(0)).getTime()
       return Date.now() - mtime < Duration.toMillis(ttl)
     })
+    // kilocode_change end
 
     const fetchApi = Effect.fn("ModelsDev.fetchApi")(function* () {
       return yield* HttpClientRequest.get(`${source}/api.json`).pipe(
@@ -247,13 +249,10 @@ const layer = Layer.effect(
     const get = (): Effect.Effect<Record<string, Provider>> => cachedGet
 
     const refresh = Effect.fn("ModelsDev.refresh")(function* (force = false) {
-      if (!force && (yield* fresh())) return
       yield* Effect.scoped(
         Effect.gen(function* () {
           yield* Flock.effect(lockKey)
-          // Re-check under the lock: another process may have refreshed between
-          // our outer check and lock acquisition.
-          if (!force && (yield* fresh())) return
+          if (!force && (yield* fresh())) return // kilocode_change - re-check under the lock
           yield* fetchAndWrite()
           yield* invalidate
           yield* ModelsRefresh.notify() // kilocode_change
@@ -266,16 +265,11 @@ const layer = Layer.effect(
       )
     })
 
-    if (!Flag.KILO_DISABLE_MODELS_FETCH && !process.argv.includes("--get-yargs-completions")) {
-      // Schedule.spaced runs the effect once, then waits between completions.
-      yield* Effect.forkScoped(refresh().pipe(Effect.repeat(Schedule.spaced("60 minutes")), Effect.ignore))
-    }
-
     return Service.of({ get, refresh })
   }),
 )
 
-// kilocode_change start - capture file/OTLP loggers before the refresh fork
+// kilocode_change start - capture file/OTLP loggers before the service layer initializes
 export const node = makeGlobalNode({
   service: Service,
   layer: layer,

@@ -4,7 +4,6 @@ import { existsSync } from "fs"
 import { Effect } from "effect"
 import { Flag } from "@opencode-ai/core/flag/flag"
 import { Global } from "@opencode-ai/core/global"
-import { Hash } from "@opencode-ai/core/util/hash"
 import * as Log from "@opencode-ai/core/util/log"
 import { Server } from "../src/server/server"
 import { AppRuntime } from "../src/effect/app-runtime"
@@ -47,7 +46,7 @@ it.live("debug catalog visibility", Effect.gen(function* () {
     (server) => Effect.sync(() => server.stop(true)),
   )
   const source = `http://127.0.0.1:${server.port}`
-  const flags = { url: Flag.KILO_MODELS_URL, disabled: Flag.KILO_DISABLE_MODELS_FETCH, path: Flag.KILO_MODELS_PATH }
+  const flags = { disabled: Flag.KILO_DISABLE_MODELS_FETCH }
   // Warm up the lazy service graph before switching flags, like earlier tests do.
   const warmup = () =>
     Effect.promise(async () => {
@@ -62,19 +61,13 @@ it.live("debug catalog visibility", Effect.gen(function* () {
   yield* Effect.sleep("300 millis")
   yield* Effect.acquireUseRelease(
     Effect.gen(function* () {
-      Flag.KILO_MODELS_URL = source
-      Flag.KILO_MODELS_PATH = undefined
       Flag.KILO_DISABLE_MODELS_FETCH = true
-      process.env["KILO_MODELS_PATH"] = undefined
-      const file = path.join(Global.Path.cache, `models-${Hash.fast(source)}.json`)
+      const file = path.join(Global.Path.cache, "models.json")
       yield* Effect.promise(() => Bun.write(file, JSON.stringify(response)))
     }),
     () => Effect.void,
     () => Effect.sync(() => {
-      Flag.KILO_MODELS_URL = flags.url
-      Flag.KILO_MODELS_PATH = flags.path
       Flag.KILO_DISABLE_MODELS_FETCH = flags.disabled
-      process.env["KILO_MODELS_PATH"] = path.join(import.meta.dir, "tool", "fixtures", "models-api.json")
     }),
   )
   const probe = (label: string) =>

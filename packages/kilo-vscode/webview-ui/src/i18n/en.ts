@@ -678,11 +678,6 @@ export const dict = {
   "settings.notifications.sound.description":
     "Default uses different sounds for completion, input, and errors. Other choices use one sound for every event.",
 
-  "settings.experimental.share.title": "Share Mode",
-  "settings.experimental.share.description": "How session sharing behaves",
-  "settings.experimental.share.manual": "Manual",
-  "settings.experimental.share.auto": "Auto",
-  "settings.experimental.share.disabled": "Disabled",
   "settings.experimental.formatter.title": "Formatter",
   "settings.experimental.formatter.description": "Enable the automatic code formatter",
   "settings.experimental.batch.title": "Batch Tool",
