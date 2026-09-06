@@ -50,9 +50,49 @@ describe("buildProxyEnv", () => {
     expect(buildProxyEnv()).toEqual({
       HTTP_PROXY: "http://proxy.corp.example:8080",
       HTTPS_PROXY: "http://proxy.corp.example:8080",
+      ALL_PROXY: "http://proxy.corp.example:8080",
+      NO_PROXY: "127.0.0.1,localhost",
       http_proxy: "http://proxy.corp.example:8080",
       https_proxy: "http://proxy.corp.example:8080",
+      all_proxy: "http://proxy.corp.example:8080",
+      no_proxy: "127.0.0.1,localhost",
     })
+  })
+
+  it("adds loopback to NO_PROXY when proxy is configured without explicit noProxy", () => {
+    stubHttpConfig({ proxy: "http://proxy.corp.example:8080" })
+
+    const env = buildProxyEnv()
+    expect(env.NO_PROXY).toContain("127.0.0.1")
+    expect(env.NO_PROXY).toContain("localhost")
+    expect(env.no_proxy).toContain("127.0.0.1")
+    expect(env.no_proxy).toContain("localhost")
+  })
+
+  it("merges user-specified noProxy with loopback entries", () => {
+    stubHttpConfig({
+      proxy: "http://proxy.corp.example:8080",
+      noProxy: ["*.internal"],
+    })
+
+    const env = buildProxyEnv()
+    expect(env.NO_PROXY).toContain("127.0.0.1")
+    expect(env.NO_PROXY).toContain("localhost")
+    expect(env.NO_PROXY).toContain("*.internal")
+    expect(env.no_proxy).toContain("127.0.0.1")
+    expect(env.no_proxy).toContain("localhost")
+    expect(env.no_proxy).toContain("*.internal")
+  })
+
+  it("does not duplicate loopback entries already in user's noProxy", () => {
+    stubHttpConfig({
+      proxy: "http://proxy.corp.example:8080",
+      noProxy: ["localhost", "127.0.0.1", "*.internal"],
+    })
+
+    const env = buildProxyEnv()
+    expect(env.NO_PROXY).toBe("localhost,127.0.0.1,*.internal")
+    expect(env.no_proxy).toBe("localhost,127.0.0.1,*.internal")
   })
 
   it("joins http.noProxy into a comma-separated NO_PROXY value", () => {
@@ -70,14 +110,19 @@ describe("buildProxyEnv", () => {
       noProxy: ["localhost", "*.internal"],
     })
 
-    expect(buildProxyEnv()).toEqual({
-      HTTP_PROXY: "http://proxy.corp.example:8080",
-      HTTPS_PROXY: "http://proxy.corp.example:8080",
-      NO_PROXY: "localhost,*.internal",
-      http_proxy: "http://proxy.corp.example:8080",
-      https_proxy: "http://proxy.corp.example:8080",
-      no_proxy: "localhost,*.internal",
-    })
+    const env = buildProxyEnv()
+    expect(env.HTTP_PROXY).toBe("http://proxy.corp.example:8080")
+    expect(env.HTTPS_PROXY).toBe("http://proxy.corp.example:8080")
+    expect(env.ALL_PROXY).toBe("http://proxy.corp.example:8080")
+    expect(env.http_proxy).toBe("http://proxy.corp.example:8080")
+    expect(env.https_proxy).toBe("http://proxy.corp.example:8080")
+    expect(env.all_proxy).toBe("http://proxy.corp.example:8080")
+    expect(env.NO_PROXY).toContain("localhost")
+    expect(env.NO_PROXY).toContain("127.0.0.1")
+    expect(env.NO_PROXY).toContain("*.internal")
+    expect(env.no_proxy).toContain("localhost")
+    expect(env.no_proxy).toContain("127.0.0.1")
+    expect(env.no_proxy).toContain("*.internal")
   })
 
   it("clears env vars when http.proxy is only whitespace", () => {
@@ -86,17 +131,10 @@ describe("buildProxyEnv", () => {
     expect(buildProxyEnv()).toEqual({
       HTTP_PROXY: "",
       HTTPS_PROXY: "",
+      ALL_PROXY: "",
       http_proxy: "",
       https_proxy: "",
-    })
-  })
-
-  it("clears env var when http.noProxy is an empty array", () => {
-    stubHttpConfig({ noProxy: [] })
-
-    expect(buildProxyEnv()).toEqual({
-      NO_PROXY: "",
-      no_proxy: "",
+      all_proxy: "",
     })
   })
 
@@ -112,9 +150,11 @@ describe("buildProxyEnv", () => {
     expect(buildProxyEnv()).toEqual({
       HTTP_PROXY: "",
       HTTPS_PROXY: "",
+      ALL_PROXY: "",
       NO_PROXY: "",
       http_proxy: "",
       https_proxy: "",
+      all_proxy: "",
       no_proxy: "",
     })
   })
@@ -129,9 +169,11 @@ describe("buildProxyEnv", () => {
     expect(buildProxyEnv()).toEqual({
       HTTP_PROXY: "",
       HTTPS_PROXY: "",
+      ALL_PROXY: "",
       NO_PROXY: "",
       http_proxy: "",
       https_proxy: "",
+      all_proxy: "",
       no_proxy: "",
     })
   })

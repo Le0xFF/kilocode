@@ -27,6 +27,8 @@ import { PermissionProvenance } from "@/kilocode/permission/provenance" // kiloc
 import { KiloSessionOverflow } from "@/kilocode/session/overflow"
 import { KiloResponseMetadata } from "@/kilocode/session/response-metadata"
 import { Suggestion } from "@/kilocode/suggestion"
+// kilocode_change - provider-cost escape hatch needs the stored auth payload on the processor input
+import * as Auth from "@/auth"
 // kilocode_change end
 import { errorMessage } from "@/util/error"
 import { isRecord } from "@/util/record"
@@ -69,6 +71,7 @@ type Input = {
   // kilocode_change start
   telemetry?: ReviewTelemetry
   snapshotInitialization?: "wait"
+  auth?: Auth.Info // kilocode_change - provider-cost escape hatch needs the stored auth payload
   // kilocode_change end
 }
 
@@ -121,6 +124,7 @@ const layer = Layer.effect(
     const events = yield* EventV2Bridge.Service
     const database = yield* Database.Service
     const flags = yield* RuntimeFlags.Service // kilocode_change
+    const auth = yield* Auth.Service // kilocode_change - provider-cost escape hatch needs the stored auth payload
 
     const create = Effect.fn("SessionProcessor.create")(function* (input: Input) {
       // Pre-capture snapshot before the LLM stream starts. The AI SDK
@@ -611,6 +615,7 @@ const layer = Layer.effect(
               model: ctx.model,
               usage: value.usage ?? new Usage({}),
               metadata: value.providerMetadata,
+              auth: auth as unknown as Auth.Info | undefined, // kilocode_change - provider-cost escape hatch reads the stored auth payload
             })
             // kilocode_change start
             const generationID = KiloSessionProcessor.generationID(value.providerMetadata)
@@ -1063,6 +1068,7 @@ export const node = LayerNode.make({
     EventV2Bridge.node,
     Database.node,
     RuntimeFlags.node, // kilocode_change
+    Auth.node, // kilocode_change - provider-cost escape hatch needs the stored auth payload
   ],
 })
 

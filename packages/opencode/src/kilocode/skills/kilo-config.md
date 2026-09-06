@@ -222,10 +222,11 @@ For example, this configuration will hide all models from the built-in Kilo Gate
 
 ```jsonc
 {
-  "$schema": "https://app.kilo.ai/config.json",
   "disabled_providers": ["kilo", "openai"],
 }
 ```
+
+(No `$schema` is injected or required by the offline build; the remote `app.kilo.ai/config.json` schema was removed.)
 
 The provider ID is the lowercase name used in the `provider/model` format (e.g., `kilo`, `openai`, `anthropic`, `google`, `groq`).
 

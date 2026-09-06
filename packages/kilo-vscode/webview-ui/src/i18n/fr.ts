@@ -546,7 +546,6 @@ export const dict = {
   "session.tabs.switcher.pending": "Nouveau",
   "session.tabs.switcher.busy": "En cours",
   "session.tab.local": "Local",
-  "session.tab.cloud": "Cloud",
   "session.tab.worktree": "Arbre de travail",
   "feedback.button": "Commentaires & support",
   "feedback.dialog.message":
@@ -589,7 +588,7 @@ export const dict = {
   "settings.agentBehaviour.title": "Comportement de l'agent",
   "settings.autoApprove.title": "Approbation automatique",
   "settings.webTools.title": "Outils web",
-  "settings.webTools.description": "Configurez la recherche web et l’automatisation du navigateur.",
+  "settings.webTools.description": "Configurez l'automatisation du navigateur.",
   "settings.webTools.browserAutomation": "Automatisation du navigateur",
   "settings.checkpoints.title": "Points de contrôle",
   "settings.display.title": "Affichage",
@@ -1138,10 +1137,6 @@ export const dict = {
   "settings.saveBar.saving": "Enregistrement…",
   "settings.saveBar.saveFailed": "Impossible d'enregistrer les paramètres",
   "settings.saveBar.cancel": "Annuler",
-  "notifications.action.next": "Suivant",
-  "notifications.action.close": "Fermer",
-  "notifications.action.tryModel": "Essayer {{model}}",
-  "notifications.action.tryModelGeneric": "Essayer le modèle",
   "diffViewer.source.workspace.label": "Branche",
   "diffViewer.source.workspace.tooltip":
     "Toutes les modifications de cette branche par rapport à la branche de base. Inclut les fichiers non commités (staged, unstaged, non suivis) et les commits locaux qui ne sont pas encore dans la branche de base.",

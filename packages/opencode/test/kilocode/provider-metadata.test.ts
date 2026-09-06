@@ -10,10 +10,12 @@ describe("providerMetadata", () => {
     })
   })
 
-  test("maps github copilot aliases to stable metadata", () => {
+  // kilocode_change - github-copilot left the surface with the online cloud cut; its id keeps the icon but loses note/priority
+  test("maps copilot ids to icon-only metadata", () => {
     expect(providerMetadata("github-copilot-custom")).toEqual({
-      noteKey: "settings.providers.note.copilot",
       icon: "github-copilot",
+      noteKey: undefined,
+      priority: undefined,
     })
   })
 

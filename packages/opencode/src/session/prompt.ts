@@ -34,6 +34,9 @@ import { Session } from "./session"
 import { Agent } from "../agent/agent"
 import { Provider } from "@/provider/provider"
 
+// kilocode_change - provider-cost escape hatch needs the stored auth payload on the processor input
+import * as Auth from "@/auth"
+
 import { type Tool as AITool, tool, jsonSchema } from "ai"
 import type { JSONSchema7 } from "@ai-sdk/provider"
 import { SessionCompaction } from "./compaction"
@@ -183,6 +186,7 @@ export const layer = Layer.effect(
     const events = yield* EventV2Bridge.Service
     const flags = yield* RuntimeFlags.Service
     const database = yield* Database.Service
+    const auth = yield* Auth.Service // kilocode_change - provider-cost escape hatch needs the stored auth payload
     const cache = Option.getOrUndefined(yield* Effect.serviceOption(RepositoryCache.Service)) // kilocode_change
     const { db } = database
     const ops = Effect.fn("SessionPrompt.ops")(function* () {
@@ -1565,6 +1569,9 @@ export const layer = Layer.effect(
           }).pipe(Effect.ignore, Effect.forkIn(scope))
 
         const model = yield* getModel(lastUser.model.providerID, lastUser.model.modelID, sessionID)
+        // kilocode_change - provider-cost escape hatch needs the stored auth payload on the processor input;
+        // a missing entry is not an error (mirrors Provider.getProvider's non-failing lookup)
+        const turnAuth: Auth.Info | undefined = yield* auth.get(model.providerID).pipe(Effect.catch(() => Effect.succeed(undefined)))
         const task = tasks.pop()
 
         if (task?.type === "subtask") {
@@ -1663,6 +1670,7 @@ export const layer = Layer.effect(
             model,
             telemetry, // kilocode_change
             snapshotInitialization: input.snapshotInitialization, // kilocode_change
+            auth: turnAuth, // kilocode_change - provider-cost escape hatch reads the stored auth payload
           })
           .pipe(Effect.onInterrupt(() => finalize))
 
@@ -2636,8 +2644,8 @@ export const node = LayerNode.make({
     Config.node,
     Permission.node,
     FSUtil.node,
-    MCP.node,
-    // kilocode_change - LSP removed; no documentSymbol enrichment on file parts
+MCP.node,
+    // kilocode_change - LSP removed; no documentSymbol enrichment for file parts
     ToolRegistry.node,
     Truncate.node,
     Image.node,
@@ -2652,6 +2660,7 @@ export const node = LayerNode.make({
     RuntimeFlags.node,
     Database.node,
     Question.node, // kilocode_change
+    Auth.node, // kilocode_change - provider-cost escape hatch needs the stored auth payload
     repositoryCacheNode, // kilocode_change
   ],
 })

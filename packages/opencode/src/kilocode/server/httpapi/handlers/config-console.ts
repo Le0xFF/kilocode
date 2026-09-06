@@ -1,4 +1,3 @@
-import { Account } from "@/account/account"
 import { Auth } from "@/auth"
 import { GlobalBus } from "@/bus/global"
 import { Config } from "@/config/config"
@@ -15,7 +14,7 @@ import { Event } from "@/server/event"
 import { InstanceHttpApi } from "@/server/routes/instance/httpapi/api"
 import { markInstanceForDisposal } from "@/server/routes/instance/httpapi/lifecycle"
 import { InvalidRequestError } from "@/server/routes/instance/httpapi/errors"
-import { Effect, Option } from "effect"
+import { Effect } from "effect"
 import { EffectFlock } from "@opencode-ai/core/util/effect-flock"
 import { HttpApiBuilder } from "effect/unstable/httpapi"
 import {
@@ -32,7 +31,6 @@ export const configConsoleHandlers = HttpApiBuilder.group(InstanceHttpApi, "conf
   Effect.gen(function* () {
     const config = yield* Config.Service
     const auth = yield* Auth.Service
-    const account = yield* Account.Service
     const flock = yield* EffectFlock.Service
 
     const overlay = Effect.fn("ConfigConsoleHttpApi.overlay")(function* (ctx: {
@@ -40,10 +38,6 @@ export const configConsoleHandlers = HttpApiBuilder.group(InstanceHttpApi, "conf
     }) {
       const instance = yield* InstanceState.context
       const all = yield* auth.all().pipe(Effect.orElseSucceed(() => ({})))
-      const active = yield* account.active().pipe(
-        Effect.map(Option.getOrUndefined),
-        Effect.orElseSucceed(() => undefined),
-      )
       const [base, global, sources] = yield* Effect.all(
         [
           config.get(),
@@ -53,7 +47,6 @@ export const configConsoleHandlers = HttpApiBuilder.group(InstanceHttpApi, "conf
               directory: instance.directory,
               worktree: instance.worktree,
               auth: all,
-              account: active,
             }),
           ),
         ],
@@ -135,10 +128,6 @@ export const configConsoleHandlers = HttpApiBuilder.group(InstanceHttpApi, "conf
         yield* markInstanceForDisposal(instance)
       }
       const all = yield* auth.all().pipe(Effect.orElseSucceed(() => ({})))
-      const active = yield* account.active().pipe(
-        Effect.map(Option.getOrUndefined),
-        Effect.orElseSucceed(() => undefined),
-      )
       const [base, global, sources] = yield* Effect.all(
         [
           config.get(),
@@ -148,7 +137,6 @@ export const configConsoleHandlers = HttpApiBuilder.group(InstanceHttpApi, "conf
               directory: instance.directory,
               worktree: instance.worktree,
               auth: all,
-              account: active,
             }),
           ),
         ],
@@ -175,16 +163,11 @@ export const configConsoleHandlers = HttpApiBuilder.group(InstanceHttpApi, "conf
     const sources = Effect.fn("ConfigConsoleHttpApi.sources")(function* () {
       const instance = yield* InstanceState.context
       const all = yield* auth.all().pipe(Effect.orElseSucceed(() => ({})))
-      const active = yield* account.active().pipe(
-        Effect.map(Option.getOrUndefined),
-        Effect.orElseSucceed(() => undefined),
-      )
       return yield* Effect.promise(() =>
         KilocodeConfigSources.list({
           directory: instance.directory,
           worktree: instance.worktree,
           auth: all,
-          account: active,
         }),
       )
     })

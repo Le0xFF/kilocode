@@ -17,6 +17,8 @@ import { SessionV2 } from "@opencode-ai/core/session"
 import { SessionExecution } from "@opencode-ai/core/session/execution"
 
 import { NotFoundError } from "@/storage/storage"
+// kilocode_change - getUsage accepts the stored auth payload for the provider-cost escape hatch
+import type * as Auth from "@/auth"
 import { eq, and, gte, isNull, desc, like, sql, inArray, lt, or } from "drizzle-orm"
 import type { SQL } from "drizzle-orm"
 import { PartTable, SessionTable } from "@opencode-ai/core/session/sql"
@@ -414,7 +416,7 @@ export const getUsage = (input: {
   model: Provider.Model
   usage: Usage
   metadata?: ProviderMetadata
-  provider?: Provider.Info // kilocode_change
+  auth?: Auth.Info | undefined // kilocode_change - provider-cost escape hatch needs the stored auth payload
 }) => {
   const safe = (value: number) => {
     if (!Number.isFinite(value)) return 0
@@ -458,11 +460,10 @@ export const getUsage = (input: {
     },
   }
 
-  // kilocode_change start - Use provider-reported cost when available for OpenRouter/Kilo
+  // kilocode_change start - Use provider-reported cost when available (raw AI SDK usage escape hatch)
   const reported = KiloSession.providerCost({
-    metadata: input.metadata,
     usage: input.usage,
-    provider: input.provider,
+    auth: input.auth,
     providerID: input.model.providerID,
   })
   if (reported !== undefined) return { cost: safe(reported), tokens }

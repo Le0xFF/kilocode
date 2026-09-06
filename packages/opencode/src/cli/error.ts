@@ -50,12 +50,7 @@ export function FormatError(input: unknown): string | undefined {
     return `MCP server "${data}" failed.` // kilocode_change
   }
 
-  // AccountServiceError, AccountTransportError: TaggedErrorClass
-  if (isTaggedError(input, "AccountServiceError") || isTaggedError(input, "AccountTransportError")) {
-    return stringField(input, "message") ?? ""
-  }
-
-  // ProviderModelNotFoundError: { providerID: string, modelID: string, suggestions?: string[], modelsEmpty?: boolean } // kilocode_change
+// ProviderModelNotFoundError: { providerID, modelID, suggestions?: string[], modelsEmpty?: boolean } // kilocode_change
   const providerModelNotFound = configData(input, "ProviderModelNotFoundError")
   if (providerModelNotFound) {
     const suggestions = Array.isArray(providerModelNotFound.suggestions)

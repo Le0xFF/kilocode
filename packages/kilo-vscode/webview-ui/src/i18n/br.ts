@@ -504,7 +504,6 @@ export const dict = {
   "session.tabs.switcher.pending": "Nova",
   "session.tabs.switcher.busy": "Trabalhando",
   "session.tab.local": "Local",
-  "session.tab.cloud": "Nuvem",
   "session.tab.worktree": "Árvore de trabalho",
   "feedback.button": "Feedback e suporte",
   "feedback.dialog.message":
@@ -542,7 +541,7 @@ export const dict = {
   "settings.agentBehaviour.title": "Comportamento do Agente",
   "settings.autoApprove.title": "Aprovação Automática",
   "settings.webTools.title": "Ferramentas da Web",
-  "settings.webTools.description": "Configure a pesquisa na web e a automação do navegador.",
+  "settings.webTools.description": "Configure a automação do navegador.",
   "settings.webTools.browserAutomation": "Automação do navegador",
   "settings.checkpoints.title": "Pontos de Verificação",
   "settings.display.title": "Exibição",
@@ -1119,10 +1118,6 @@ export const dict = {
   "settings.saveBar.cancel": "Cancelar",
   "settings.saveBar.saving": "Salvando…",
   "settings.saveBar.saveFailed": "Não foi possível salvar as configurações",
-  "notifications.action.next": "Próximo",
-  "notifications.action.close": "Fechar",
-  "notifications.action.tryModel": "Experimentar {{model}}",
-  "notifications.action.tryModelGeneric": "Experimentar modelo",
   "diffViewer.source.workspace.label": "Branch",
   "diffViewer.source.workspace.tooltip":
     "Todas as alterações desta branch em relação à branch base. Inclui arquivos não commitados (staged, unstaged e não rastreados) e commits locais que ainda não estão na base.",

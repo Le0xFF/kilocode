@@ -12,8 +12,9 @@ import { ProjectV2 } from "@opencode-ai/core/project"
 import { Filesystem } from "@/util/filesystem"
 import { SessionTable } from "@opencode-ai/core/session/sql"
 import * as Log from "@opencode-ai/core/util/log"
-import type { ProviderMetadata, Usage } from "@opencode-ai/llm"
-import type { Provider } from "@/provider/provider"
+import type { Usage } from "@opencode-ai/llm"
+// kilocode_change - provider-cost escape hatch needs the stored auth payload
+import type * as Auth from "@/auth"
 const ENV_FEATURE = "KILOCODE_FEATURE"
 import { existsSync } from "fs"
 import path from "path"
@@ -180,27 +181,20 @@ export namespace KiloSession {
   /**
    * Extract provider-reported cost from response metadata when available.
    *
-   * Supports the following internal transports:
-   *   1. OpenRouter chat completions  -> `metadata.openrouter.usage.cost`
-   *                                      (`costDetails.upstreamInferenceCost` for Kilo)
-   *   2. Anthropic Messages or OpenAI Responses via OpenRouter
-   *                                   -> `usage.providerMetadata.aiSdk.cost_details`
-   *   3. Anthropic Messages or OpenAI Responses via Vercel AI Gateway
-   *                                   -> `metadata.gateway.marketCost`
+   * The only surviving source is the raw AI SDK usage escape hatch:
+   *   - Anthropic Messages or OpenAI Responses via Kilo/Gateway
+   *     -> `usage.providerMetadata.aiSdk.cost_details.upstream_inference_cost`
    *
-   * Kilo does not charge end users a per-request fee, so for the Kilo provider the
-   * top-level `cost` field (the gateway/marketplace fee) would understate the user's
-   * actual upstream spend. Always prefer the upstream/market cost when present.
+   * The OpenRouter usage payload and the Vercel gateway marketCost escape hatch were removed with the
+   * online cloud surface; the raw AI SDK usage payload survives on both the AI SDK and native runtimes,
+   * so the upstream-inference-cost read stays as the only provider-reported source.
    *
    * Returns `undefined` when no provider cost is available, so the caller
    * should fall back to the standard token-based calculation.
-   *
-   * Reference: https://openrouter.ai/docs/cookbook/administration/usage-accounting
    */
   export function providerCost(input: {
-    metadata?: ProviderMetadata
     usage?: Usage
-    provider?: Provider.Info
+    auth?: Auth.Info | undefined // kilocode_change - retained for the stored-auth escape hatch (structured credentials are not keys)
     providerID: string
   }): number | undefined {
     const num = (value: unknown): number | undefined => {
@@ -209,32 +203,10 @@ export namespace KiloSession {
       return Number.isFinite(n) ? n : undefined
     }
 
-    // 1. OpenRouter chat completions
-    const orUsage = input.metadata?.["openrouter"]?.["usage"] as
-      | { cost?: number; costDetails?: { upstreamInferenceCost?: number } }
-      | undefined
-    if (orUsage) {
-      const regular = num(orUsage.cost)
-      // The Kilo Gateway wrapper no longer exists, so the reported OpenRouter `cost`
-      // field is what is used for any provider that reports it.
-      if (regular !== undefined) return regular
-    }
-
-    // 2. Anthropic Messages or OpenAI Responses via OpenRouter. The Kilo Gateway wrapper
-    //    restores the verbatim usage payload under the AI SDK's raw usage escape hatch.
-    //    Kilo doesn't charge end users a per-request fee, so only upstream cost is relevant.
     const usage = input.usage?.providerMetadata
     const aiSdk = usage?.["aiSdk"]?.["cost_details"] as { upstream_inference_cost?: number } | undefined
     const upstream = num(aiSdk?.upstream_inference_cost)
     if (upstream !== undefined) return upstream
-
-    // 3. Anthropic Messages or OpenAI Responses via Vercel AI Gateway. `cost` is the
-    //    gateway fee that Kilo would pass through, but Kilo doesn't charge end users a
-    //    per-request fee, so always use `marketCost` (the upstream provider's price).
-    //    Values are emitted as strings on the wire.
-    const gateway = input.metadata?.["gateway"] as { marketCost?: string | number } | undefined
-    const marketCost = num(gateway?.marketCost)
-    if (marketCost !== undefined) return marketCost
 
     return undefined
   }

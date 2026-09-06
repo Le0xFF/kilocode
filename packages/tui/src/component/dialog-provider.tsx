@@ -11,7 +11,7 @@ import { TextAttributes } from "@opentui/core"
 import type { ProviderAuthAuthorization, ProviderAuthMethod } from "@kilocode/sdk/v2"
 import { DialogModel } from "./dialog-model"
 import { useToast } from "../ui/toast"
-import { isConsoleManagedProvider } from "../util/provider-origin"
+
 import * as KiloProvider from "@/kilocode/cli/cmd/tui/component/dialog-provider" // kilocode_change
 import { useConnected } from "./use-connected"
 import { useBindings } from "../keymap"
@@ -122,7 +122,6 @@ export function createDialogProviderOptions() {
         }
 
         const providerID = provider.providerID
-        const consoleManaged = isConsoleManagedProvider(sync.data.console_state.consoleManagedProviders, providerID)
         const connected = sync.data.provider_next.connected.includes(providerID)
         // kilocode_change start
         const failed = sync.data.provider_next.failed ?? []
@@ -135,11 +134,9 @@ export function createDialogProviderOptions() {
           title: KiloProvider.PROVIDER_TITLES[providerID] ?? provider.title, // kilocode_change
           value: provider.value,
           description: failedDesc ?? baseDesc ?? provider.description, // kilocode_change
-          footer: consoleManaged ? sync.data.console_state.activeOrgName : undefined,
           category: provider.category,
           gutter: failedGutter ?? (connected && onboarded() ? () => <text fg={theme.success}>✓</text> : undefined), // kilocode_change
           async onSelect() {
-            if (consoleManaged) return
             if (KiloProvider.selectProvider({ providerID, replace: dialog.replace, model: DialogModel })) return // kilocode_change
 
             const methods = sync.data.provider_auth[providerID] ?? [

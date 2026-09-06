@@ -45,20 +45,23 @@ function Install(props: { api: TuiPluginApi }) {
   }))
 
   return (
-    <props.api.ui.DialogPrompt
+<props.api.ui.DialogPrompt
       title="Install plugin"
       placeholder="npm package name"
       busy={busy()}
       busyText="Installing plugin..."
       description={() => (
-        <box flexDirection="row" gap={1}>
-          <text fg={props.api.theme.current.textMuted}>scope:</text>
-          <text fg={busy() ? props.api.theme.current.textMuted : props.api.theme.current.text}>
-            {global() ? "global" : "local"}
-          </text>
-          <Show when={!busy()}>
-            <text fg={props.api.theme.current.textMuted}>(tab toggle)</text>
-          </Show>
+        <box flexDirection="column" gap={1}>
+          <text fg={props.api.theme.current.textMuted}>requires npm registry access (network)</text> // kilocode_change - offline: label that install needs the npm registry
+          <box flexDirection="row" gap={1}>
+            <text fg={props.api.theme.current.textMuted}>scope:</text>
+            <text fg={busy() ? props.api.theme.current.textMuted : props.api.theme.current.text}>
+              {global() ? "global" : "local"}
+            </text>
+            <Show when={!busy()}>
+              <text fg={props.api.theme.current.textMuted}>(tab toggle)</text>
+            </Show>
+          </box>
         </box>
       )}
       onConfirm={(raw) => {

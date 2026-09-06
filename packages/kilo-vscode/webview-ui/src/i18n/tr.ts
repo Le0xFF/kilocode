@@ -493,7 +493,6 @@ export const dict = {
   "session.tabs.switcher.pending": "Yeni",
   "session.tabs.switcher.busy": "Çalışıyor",
   "session.tab.local": "Local",
-  "session.tab.cloud": "Cloud",
   "session.tab.worktree": "Çalışma ağacı",
   "feedback.button": "Geri Bildirim ve Destek",
   "feedback.dialog.message":
@@ -532,7 +531,7 @@ export const dict = {
   "settings.agentBehaviour.title": "Ajan Davranışı",
   "settings.autoApprove.title": "Otomatik Onay",
   "settings.webTools.title": "Web Araçları",
-  "settings.webTools.description": "Web aramasını ve tarayıcı otomasyonunu yapılandırın.",
+  "settings.webTools.description": "Tarayıcı otomasyonunu yapılandırın.",
   "settings.webTools.browserAutomation": "Tarayıcı Otomasyonu",
   "settings.checkpoints.title": "Kontrol Noktaları",
   "settings.display.title": "Görünüm",
@@ -1084,10 +1083,6 @@ export const dict = {
   "settings.saveBar.cancel": "İptal",
   "settings.saveBar.saving": "Kaydediliyor…",
   "settings.saveBar.saveFailed": "Ayarlar kaydedilemedi",
-  "notifications.action.next": "Sonraki",
-  "notifications.action.close": "Kapat",
-  "notifications.action.tryModel": "Dene {{model}}",
-  "notifications.action.tryModelGeneric": "Modeli Dene",
   // Missing translations - English fallbacks until translated
   "settings.agentBehaviour.createMode": "Yeni Mod Oluştur",
   "settings.agentBehaviour.createMode.button": "Oluştur",

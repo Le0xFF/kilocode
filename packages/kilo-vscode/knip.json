@@ -16,5 +16,15 @@
   ],
   "project": ["src/**/*.ts", "webview-ui/**/*.{ts,tsx}"],
   "ignoreExportsUsedInFile": true,
-  "exclude": ["dependencies", "devDependencies", "optionalPeerDependencies", "unlisted", "unresolved", "binaries"]
+  "exclude": ["devDependencies", "unlisted", "unresolved", "binaries"],
+  "ignoreDependencies": [
+    "@kilocode/kilo-i18n",
+    "@kilocode/kilo-indexing",
+    "@kilocode/kilo-memory",
+    "@kilocode/kilo-ui",
+    "@kilocode/plugin",
+    "@kilocode/sdk",
+    "@opencode-ai/core",
+    "@opencode-ai/ui"
+  ]
 }

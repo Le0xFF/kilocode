@@ -35,6 +35,8 @@ export function resolveManagedServerEnv(env: NodeJS.ProcessEnv): NodeJS.ProcessE
   const out: Record<string, string | undefined> = {}
   for (const [key, value] of Object.entries(env)) {
     if (key.startsWith("OTEL_")) continue
+    if (key.startsWith("BUN_")) continue
+    if (key === "NODE_OPTIONS") continue
     if ((PROXY_KEYS as readonly string[]).includes(key)) continue
     out[key] = value
   }
@@ -330,7 +332,16 @@ export function buildProxyEnv(): Record<string, string> {
   const proxySupport = httpConfig.get<string>("proxySupport")
 
   if (proxySupport === "off") {
-    return { HTTP_PROXY: "", HTTPS_PROXY: "", NO_PROXY: "", http_proxy: "", https_proxy: "", no_proxy: "" }
+    return {
+      HTTP_PROXY: "",
+      HTTPS_PROXY: "",
+      ALL_PROXY: "",
+      NO_PROXY: "",
+      http_proxy: "",
+      https_proxy: "",
+      all_proxy: "",
+      no_proxy: "",
+    }
   }
 
   const proxy = httpConfig.get<string>("proxy")
@@ -359,22 +370,30 @@ export function buildProxyEnv(): Record<string, string> {
   if (proxy && proxy.trim() !== "") {
     env.HTTP_PROXY = proxy
     env.HTTPS_PROXY = proxy
+    env.ALL_PROXY = proxy
     env.http_proxy = proxy
     env.https_proxy = proxy
+    env.all_proxy = proxy
   }
   if (proxySet && proxy !== undefined && proxy.trim() === "") {
     env.HTTP_PROXY = ""
     env.HTTPS_PROXY = ""
+    env.ALL_PROXY = ""
     env.http_proxy = ""
     env.https_proxy = ""
+    env.all_proxy = ""
   }
-  if (Array.isArray(noProxy) && noProxy.length > 0) {
+  const proxyActive = (proxy !== undefined && proxy.trim() !== "") || (proxySet && proxy === undefined)
+  if (proxyActive) {
+    const noProxyList = Array.isArray(noProxy) ? [...noProxy] : []
+    for (const entry of ["127.0.0.1", "localhost"]) {
+      if (!noProxyList.includes(entry)) noProxyList.push(entry)
+    }
+    env.NO_PROXY = noProxyList.join(",")
+    env.no_proxy = noProxyList.join(",")
+  } else if (Array.isArray(noProxy) && noProxy.length > 0) {
     env.NO_PROXY = noProxy.join(",")
     env.no_proxy = noProxy.join(",")
-  }
-  if (noProxySet && Array.isArray(noProxy) && noProxy.length === 0) {
-    env.NO_PROXY = ""
-    env.no_proxy = ""
   }
   return env
 }

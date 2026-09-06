@@ -5,7 +5,6 @@ import * as Socket from "effect/unstable/socket/Socket"
 import { FSUtil } from "@opencode-ai/core/fs-util"
 import { EffectFlock } from "@opencode-ai/core/util/effect-flock" // kilocode_change
 import * as Observability from "@opencode-ai/core/observability"
-import { Account } from "@/account/account"
 import { Agent } from "@/agent/agent"
 import { Auth } from "@/auth"
 import { BackgroundJob } from "@/background/job"
@@ -236,7 +235,6 @@ const app = LayerNode.group([
   Database.node,
   Credential.node, // kilocode_change
   Auth.node,
-  Account.node,
   Config.node,
   Env.node,
   Git.node,

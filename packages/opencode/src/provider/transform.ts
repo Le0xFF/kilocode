@@ -41,61 +41,21 @@ function isKimiFamily(model: Provider.Model) {
 }
 
 // Maps npm package to the key the AI SDK expects for providerOptions
+// kilocode_change start - surface reduced to openai/anthropic/openai-compatible; unknown npm keys fall back
+// to the providerID (dot-split for dot-host compatible providers) in providerOptions().
 function sdkKey(npm: string): string | undefined {
   switch (npm) {
-    case "@ai-sdk/github-copilot":
-      return "copilot"
-    case "@ai-sdk/azure":
-      return "azure"
     case "@ai-sdk/openai":
       return "openai"
-    case "@ai-sdk/amazon-bedrock/mantle":
-      return "openai"
-    case "@ai-sdk/amazon-bedrock":
-      return "bedrock"
     case "@ai-sdk/anthropic":
-    case "@ai-sdk/google-vertex/anthropic":
       return "anthropic"
-    case "@ai-sdk/google-vertex":
-      return "vertex"
-    case "@ai-sdk/google":
-      return "google"
-    case "@ai-sdk/alibaba":
-      return "alibaba"
-    case "@ai-sdk/cerebras":
-      return "cerebras"
-    case "@ai-sdk/cohere":
-      return "cohere"
-    case "@ai-sdk/deepinfra":
-      return "deepinfra"
-    case "@ai-sdk/groq":
-      return "groq"
-    case "@ai-sdk/mistral":
-      return "mistral"
-    case "@ai-sdk/perplexity":
-      return "perplexity"
-    case "@ai-sdk/togetherai":
-      return "togetherai"
-    case "@ai-sdk/vercel":
-      return "vercel"
-    case "@ai-sdk/xai":
-      return "xai"
-    case "venice-ai-sdk-provider":
-      return "venice"
-    case "@ai-sdk/gateway":
-      return "gateway"
-    case "@openrouter/ai-sdk-provider":
-      return "openrouter"
-    case "ai-gateway-provider":
-      // ai-gateway-provider/unified wraps createOpenAICompatible({ name: "Unified" }),
-      // and @ai-sdk/openai-compatible parses compatibleOptions from one of
-      // "openai-compatible" / "openaiCompatible" / "Unified" / "unified". The
-      // "openai-compatible" key emits a deprecation warning at runtime, so we
-      // pick the camelCase form the SDK now treats as canonical.
-      return "openaiCompatible"
+    // OpenAI-compatible transports read their options under a provider-specific key, so no remap is needed.
+    case "@ai-sdk/openai-compatible":
+      return undefined
   }
   return undefined
 }
+// kilocode_change end
 
 // TODO: fix this stupid inefficient dogshit function
 function normalizeMessages(
@@ -555,13 +515,8 @@ export function message(msgs: ModelMessage[], model: Provider.Model, options: Re
   }
 
   // Strip Responses item IDs before serialization, following Codex and keeping signed request bodies immutable.
-  if (
-    options.store !== true &&
-    key &&
-    ["@ai-sdk/openai", "@ai-sdk/azure", "@ai-sdk/amazon-bedrock/mantle", "@ai-sdk/github-copilot"].includes(
-      model.api.npm,
-    )
-  ) {
+  // kilocode_change start - surface reduced to openai/openai-compatible; azure/mantle/copilot no longer strip itemId
+  if (options.store !== true && key === "openai" && model.api.npm === "@ai-sdk/openai") {
     msgs = mapProviderOptions(msgs, (options) => {
       if (!options?.[key] || !("itemId" in options[key])) return options
       const metadata = { ...options[key] }
@@ -569,6 +524,7 @@ export function message(msgs: ModelMessage[], model: Provider.Model, options: Re
       return { ...options, [key]: metadata }
     })
   }
+  // kilocode_change end
 
   return msgs
 }

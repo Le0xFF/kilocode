@@ -858,8 +858,9 @@ describe("ProviderTransform.providerOptions", () => {
       },
     })
 
+    // kilocode_change - bedrock left the surface; unknown npm keys fall back to the providerID
     expect(ProviderTransform.providerOptions(model, { cachePoint: { type: "default" } })).toEqual({
-      bedrock: { cachePoint: { type: "default" } },
+      "my-bedrock": { cachePoint: { type: "default" } },
     })
   })
 
@@ -890,8 +891,9 @@ describe("ProviderTransform.providerOptions", () => {
       api: { id: "grok-4", url: "https://api.x.ai", npm: "@ai-sdk/xai" },
     })
 
+    // kilocode_change - xai left the surface; unknown npm keys fall back to the providerID
     expect(ProviderTransform.providerOptions(model, { promptCacheKey: "session" })).toEqual({
-      xai: { promptCacheKey: "session" },
+      "my-xai": { promptCacheKey: "session" },
     })
   })
 
@@ -939,8 +941,9 @@ describe("ProviderTransform.providerOptions", () => {
       },
     })
 
+    // kilocode_change - bedrock mantle left the surface; the key falls back to the providerID
     expect(ProviderTransform.providerOptions(model, { reasoningEffort: "xhigh" })).toEqual({
-      openai: { forceReasoning: true, reasoningEffort: "xhigh" },
+      "amazon-bedrock": { forceReasoning: true, reasoningEffort: "xhigh" },
     })
   })
 
@@ -1045,8 +1048,9 @@ describe("ProviderTransform.providerOptions", () => {
       },
     })
 
+    // kilocode_change - bedrock mantle left the surface; the key falls back to the providerID
     expect(ProviderTransform.providerOptions(model, { reasoningEffort: "medium" })).toEqual({
-      openai: { forceReasoning: true, reasoningEffort: "medium" },
+      "amazon-bedrock": { forceReasoning: true, reasoningEffort: "medium" },
     })
   })
 
@@ -2664,7 +2668,8 @@ describe("ProviderTransform.message - strip openai metadata when store=false", (
 
     const result = ProviderTransform.message(msgs, azureModel, { store: false }) as any[]
 
-    expect(result[0].content[0].providerOptions?.azure?.itemId).toBeUndefined()
+    // kilocode_change - azure left the surface; itemId is no longer stripped from the azure namespace
+    expect(result[0].content[0].providerOptions?.azure?.itemId).toBe("msg_123")
     expect(result[0].content[0].providerOptions?.azure?.otherOption).toBe("value")
     expect(result[0].content[0].providerOptions?.openai?.itemId).toBe("msg_openai")
   })
@@ -2697,9 +2702,10 @@ describe("ProviderTransform.message - strip openai metadata when store=false", (
 
     const result = ProviderTransform.message(msgs, mantleModel, { store: false }) as any[]
 
-    expect(result[0].providerOptions?.openai?.itemId).toBeUndefined()
+    // kilocode_change - bedrock mantle left the surface; itemId is no longer stripped from the openai namespace
+    expect(result[0].providerOptions?.openai?.itemId).toBe("msg_root")
     expect(result[0].providerOptions?.openai?.otherOption).toBe("root-value")
-    expect(result[0].content[0].providerOptions?.openai?.itemId).toBeUndefined()
+    expect(result[0].content[0].providerOptions?.openai?.itemId).toBe("rs_123")
     expect(result[0].content[0].providerOptions?.openai?.reasoningEncryptedContent).toBe("encrypted")
   })
 
@@ -2742,9 +2748,10 @@ describe("ProviderTransform.message - strip openai metadata when store=false", (
 
     const result = ProviderTransform.message(msgs, copilotModel, { store: false }) as any[]
 
-    expect(result[0].content[0].providerOptions?.copilot?.itemId).toBeUndefined()
+    // kilocode_change - github-copilot left the surface; itemId is no longer stripped from the copilot namespace
+    expect(result[0].content[0].providerOptions?.copilot?.itemId).toBe("rs_123")
     expect(result[0].content[0].providerOptions?.copilot?.reasoningEncryptedContent).toBe("encrypted")
-    expect(result[0].content[1].providerOptions?.copilot?.itemId).toBeUndefined()
+    expect(result[0].content[1].providerOptions?.copilot?.itemId).toBe("fc_456")
     expect(result[0].content[1].providerOptions?.copilot?.reasoningEffort).toBe("medium")
   })
 
@@ -2866,6 +2873,7 @@ describe("ProviderTransform.message - strip openai metadata when store=false", (
 
     const result = ProviderTransform.message(msgs, opencodeModel, { store: false }) as any[]
 
+    // kilocode_change - the openai-compatible sdk key is no longer a special case; providerID stays untouched
     expect(result[0].content[0].providerOptions?.opencode?.itemId).toBe("msg_123")
     expect(result[0].content[0].providerOptions?.opencode?.otherOption).toBe("value")
   })
@@ -2904,6 +2912,7 @@ describe("ProviderTransform.message - strip openai metadata when store=false", (
 
     const result = ProviderTransform.message(msgs, opencodeModel, { store: false }) as any[]
 
+    // kilocode_change - the openai-compatible sdk key is no longer a special case; providerID stays untouched
     expect(result[0].providerOptions?.openai?.itemId).toBe("msg_root")
     expect(result[0].providerOptions?.opencode?.itemId).toBe("msg_opencode")
     expect(result[0].providerOptions?.extra?.itemId).toBe("msg_extra")
@@ -3013,10 +3022,11 @@ describe("ProviderTransform.message - providerOptions key remapping", () => {
     const result = ProviderTransform.message(msgs, model, {}) as any[]
     const part = result[0].content[0] as any
 
-    expect(result[0].providerOptions?.azure).toEqual({ someOption: "value" })
-    expect(result[0].providerOptions?.["azure-cognitive-services"]).toBeUndefined()
-    expect(part.providerOptions?.azure).toEqual({ part: true })
-    expect(part.providerOptions?.["azure-cognitive-services"]).toBeUndefined()
+    // kilocode_change - azure left the surface; no sdk key remap, providerID is kept as-is
+    expect(result[0].providerOptions?.["azure-cognitive-services"]).toEqual({ someOption: "value" })
+    expect(result[0].providerOptions?.azure).toBeUndefined()
+    expect(part.providerOptions?.["azure-cognitive-services"]).toEqual({ part: true })
+    expect(part.providerOptions?.azure).toBeUndefined()
   })
 
   test("copilot remaps providerID to 'copilot' key", () => {
@@ -3051,8 +3061,9 @@ describe("ProviderTransform.message - providerOptions key remapping", () => {
 
     const result = ProviderTransform.message(msgs, model, {})
 
-    expect(result[0].providerOptions?.bedrock).toEqual({ someOption: "value" })
-    expect(result[0].providerOptions?.["my-bedrock"]).toBeUndefined()
+    // kilocode_change - bedrock left the surface; no sdk key remap, providerID is kept as-is
+    expect(result[0].providerOptions?.["my-bedrock"]).toEqual({ someOption: "value" })
+    expect(result[0].providerOptions?.bedrock).toBeUndefined()
   })
 })
 
@@ -5791,7 +5802,8 @@ describe("ProviderTransform.providerOptions - ai-gateway-provider", () => {
     // Regression: previously fell back to providerID="cloudflare-ai-gateway",
     // which @ai-sdk/openai-compatible never reads, silently dropping reasoningEffort.
     const result = ProviderTransform.providerOptions(createModel(), { reasoningEffort: "high" })
-    expect(result).toEqual({ openaiCompatible: { reasoningEffort: "high" } })
+    // kilocode_change - ai-gateway-provider left the surface; unknown npm keys fall back to the providerID
+    expect(result).toEqual({ "cloudflare-ai-gateway": { reasoningEffort: "high" } })
   })
 })
 

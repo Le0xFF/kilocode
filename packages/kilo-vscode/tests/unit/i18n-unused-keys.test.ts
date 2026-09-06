@@ -60,7 +60,7 @@ const WEBVIEW_ROOTS = [
 ]
 
 const pools = [
-  { name: "app", dict: appEn, roots: WEBVIEW_ROOTS, runtime: ["settings.providers.note.", "session.tab.cloud", "notifications.action.", "common.loadMore"] },
+  { name: "app", dict: appEn, roots: WEBVIEW_ROOTS, runtime: ["settings.providers.note.", "common.loadMore"] },
   // kilo-i18n also overrides upstream ui.* keys consumed by components in
   // packages/ui/src (and the TUI), so those count as usage too.
   {

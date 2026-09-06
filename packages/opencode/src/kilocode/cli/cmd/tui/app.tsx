@@ -6,18 +6,13 @@
  */
 
 import { createEffect, createMemo, on } from "solid-js"
-import { useKeyboard, useRenderer } from "@opentui/solid"
-import { TextAttributes } from "@opentui/core"
+import { useRenderer } from "@opentui/solid"
 import * as Clipboard from "@tui/clipboard"
 import { useBindings } from "@tui/keymap"
 import { useSDK } from "@tui/context/sdk"
 import { useSync } from "@tui/context/sync"
 import { useDialog } from "@tui/ui/dialog"
 import { useToast } from "@tui/ui/toast"
-import { useTheme } from "@tui/context/theme"
-import { DialogAlert } from "@tui/ui/dialog-alert"
-import { DialogSelect } from "@tui/ui/dialog-select"
-import { Link } from "@tui/ui/link"
 import { isKiloError, showKiloErrorToast } from "@/kilocode/kilo-errors"
 import { registerKiloCommands } from "@/kilocode/kilo-commands"
 import { DialogProcessList } from "@/kilocode/cli/cmd/tui/component/dialog-process-list"
@@ -27,7 +22,6 @@ import type { KiloTitleIcon } from "./title-icon"
 import { Session as SessionApi } from "@/session/session"
 
 // Re-export so upstream can render the route without importing directly
-export { KiloClawView } from "@/kilocode/claw/view"
 export { KiloTerminalTitle } from "./terminal-title"
 
 // Hot reload TUI-local settings (keybinds/theme/ui) when changed from the Kilo Console.
@@ -147,14 +141,6 @@ export function getTerminalTitle(input: {
         indicator: "none",
         icon: input.icon,
       }),
-      active: false,
-      indicator: "none",
-    }
-  }
-
-  if (input.route.data.type === "kiloclaw") {
-    return {
-      title: KiloTerminalTitle.format({ base: input.base, title: "KiloClaw", indicator: "none", icon: input.icon }),
       active: false,
       indicator: "none",
     }

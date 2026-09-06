@@ -27,15 +27,12 @@ import { Session } from "../../src/session/session"
 import { SessionPrompt } from "../../src/session/prompt"
 import { disposeAllInstances, TestInstance } from "../fixture/fixture"
 import { testEffect } from "../lib/effect"
-import { AccountTest } from "../fake/account"
 import { AuthTest } from "../fake/auth"
 import { NpmTest } from "../fake/npm"
-import { Account } from "../../src/account/account"
 import { Npm } from "@opencode-ai/core/npm"
 
 const configLayer = AppNodeBuilder.build(Config.node, [
   [Auth.node, AuthTest.empty],
-  [Account.node, AccountTest.empty],
   [Npm.node, NpmTest.noop],
 ])
 const pluginLayer = AppNodeBuilder.build(Plugin.node, [

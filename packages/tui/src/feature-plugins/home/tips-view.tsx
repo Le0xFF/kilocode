@@ -214,13 +214,13 @@ const TIPS: Tip[] = [
     if (!items.length) return undefined
     return `Use ${items.map(shortcutText).join(" / ")} for parent/child sessions`
   },
-  "Create {highlight}opencode.json{/highlight} for server settings, and {highlight}tui.json{/highlight} for TUI",
-  "Place TUI settings in {highlight}~/.config/opencode/tui.json{/highlight} for global config",
+  "Create {highlight}kilo.json{/highlight} for server settings and {highlight}tui.json{/highlight} for TUI settings", // kilocode_change - opencode.json -> kilo.json
+  "Place TUI settings in {highlight}~/.config/kilo/tui.json{/highlight} for global config", // kilocode_change
   "Add {highlight}$schema{/highlight} to your config for autocomplete in your editor",
   "Configure {highlight}model{/highlight} in config to set your default model",
   "Override any keybind in {highlight}tui.json{/highlight} via the {highlight}keybinds{/highlight} section",
   "Set any keybind to {highlight}none{/highlight} to disable it completely",
-  "Configure local or remote MCP servers in the {highlight}mcp{/highlight} config section",
+  "Configure local or remote MCP servers in the {highlight}mcp{/highlight} config section", // kilocode_change - MCP tip for offline use
   "Add {highlight}.md{/highlight} files to {highlight}.kilo/commands/{/highlight} to define reusable custom prompts", // kilocode_change
   "Use {highlight}$ARGUMENTS{/highlight}, {highlight}$1{/highlight}, {highlight}$2{/highlight} in custom commands for dynamic input",
   "Use backticks to inject shell output (e.g., {highlight}`git status`{/highlight})",
@@ -244,11 +244,11 @@ const TIPS: Tip[] = [
   "Use {highlight}--format json{/highlight} for machine-readable output in scripts",
   "Run {highlight}opencode serve{/highlight} for headless API access to OpenCode",
   "Use {highlight}opencode run --attach{/highlight} to connect to a running server",
-  "Run {highlight}opencode auth list{/highlight} to see all configured providers",
-  "Run {highlight}opencode agent create{/highlight} for guided agent creation",
-  "Use {highlight}/opencode{/highlight} in GitHub issues/PRs to trigger AI actions",
-  "Run {highlight}opencode github install{/highlight} to set up the GitHub workflow",
-  "Comment {highlight}/opencode fix this{/highlight} on issues to auto-create PRs",
+  "Use {highlight}kilo auth list{/highlight} to see all configured providers", // kilocode_change - opencode -> kilo, local (offline) command
+  "Run {highlight}kilo agent create{/highlight} for guided agent creation",
+  "Use {highlight}@agent-name{/highlight} in prompts to invoke specialized agents defined in {highlight}.kilo/agents/{/highlight}", // kilocode_change - replaced GitHub /opencode issue trigger tip
+  "Configure MCP servers in the {highlight}mcp{/highlight} config section to connect local tools and context sources", // kilocode_change - replaced OpenCode Zen tip; MCP works offline
+  "Comment {highlight}/kilo fix this{/highlight} on issues to auto-create PRs when using Kilo in your IDE",
   "Comment {highlight}/oc{/highlight} on PR code lines for targeted code reviews",
   'Use {highlight}"theme": "system"{/highlight} to match your terminal\'s colors',
   "Create JSON theme files in {highlight}.kilo/themes/{/highlight} directory", // kilocode_change
@@ -275,7 +275,7 @@ const TIPS: Tip[] = [
     shortcuts.commandList()
       ? `Toggle username display in chat via the command palette (${shortcutText(shortcuts.commandList())})`
       : "Toggle username display in chat via the command palette",
-  "Run {highlight}docker run -it --rm ghcr.io/anomalyco/opencode{/highlight} in a container",
+  "Run {highlight}docker run -it --rm ghcr.io/kilo-org/kilocode{/highlight} in a container", // kilocode_change - anomalyco/opencode -> kilo-org/kilocode image
   "Use {highlight}/connect{/highlight} with OpenCode Zen for curated, tested models",
   "Commit your project's {highlight}AGENTS.md{/highlight} file to Git for team sharing",
   "Use {highlight}/review{/highlight} to review uncommitted changes, branches, or PRs",

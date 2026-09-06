@@ -14,7 +14,6 @@ import { Git } from "../../src/git" // kilocode_change
 import { RuntimeFlags } from "../../src/effect/runtime-flags"
 import { MCP } from "../../src/mcp" // kilocode_change
 import { Plugin } from "../../src/plugin"
-import { AccountTest } from "../fake/account"
 import { AuthTest } from "../fake/auth"
 import { NpmTest } from "../fake/npm"
 import { ProviderTest } from "../fake/provider"
@@ -22,7 +21,6 @@ import { SkillTest } from "../fake/skill"
 import { testEffect } from "../lib/effect"
 import { PLUGIN_AGENT } from "../fixture/agent-plugin.constants"
 import { Auth } from "../../src/auth"
-import { Account } from "../../src/account/account"
 import { Npm } from "@opencode-ai/core/npm"
 import { Skill } from "../../src/skill"
 import { Provider } from "../../src/provider/provider"
@@ -35,7 +33,6 @@ const pluginUrl = pathToFileURL(path.join(import.meta.dir, "..", "fixture", "age
 const provider = ProviderTest.fake()
 const configLayer = AppNodeBuilder.build(Config.node, [
   [Auth.node, AuthTest.empty],
-  [Account.node, AccountTest.empty],
   [Npm.node, NpmTest.noop],
   [RuntimeFlags.node, RuntimeFlags.layer({ disableDefaultPlugins: true })],
 ])

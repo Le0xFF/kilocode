@@ -10,7 +10,7 @@ import { Filesystem } from "@/util/filesystem"
 import { KilocodeConfig } from "./config"
 
 export namespace KilocodeConfigSources {
-  export const Scope = z.enum(["global", "project", "env", "managed", "cloud"])
+  export const Scope = z.enum(["global", "project", "env", "managed"])
   export type Scope = z.infer<typeof Scope>
 
   export const Kind = z.enum([
@@ -21,7 +21,6 @@ export namespace KilocodeConfigSources {
     "config-dir",
     "config-dir-file",
     "env-content",
-    "cloud-org",
     "managed-dir",
     "managed-file",
     "managed-preferences",
@@ -51,7 +50,6 @@ export namespace KilocodeConfigSources {
     directory: string
     worktree?: string
     auth?: Record<string, Auth.Info>
-    account?: { url: string; active_org_id?: string | null }
   }
 
   type Pending = Omit<Source, "order">
@@ -69,7 +67,6 @@ export namespace KilocodeConfigSources {
       ...project,
       ...dirs,
       ...envContentSources(),
-      ...cloudSources(input.account),
       ...(await managedSources()),
       ...runtimeSources(),
     ]
@@ -86,7 +83,7 @@ export namespace KilocodeConfigSources {
         const url = key.replace(/\/+$/, "")
         return {
           kind: "remote-wellknown",
-          scope: "cloud",
+          scope: "global",
           label: "Remote well-known config",
           source: `${url}/.well-known/opencode`,
           exists: true,
@@ -150,7 +147,7 @@ export namespace KilocodeConfigSources {
         source: dir,
         path: dir,
         exists: await Bun.file(dir).exists(),
-        editable: scope !== "managed" && scope !== "cloud",
+        editable: scope !== "managed",
       })
 
       for (const name of KilocodeConfig.ALL_CONFIG_FILES) {
@@ -205,21 +202,6 @@ export namespace KilocodeConfigSources {
       })
     }
     return sources
-  }
-
-  function cloudSources(account: Input["account"]): Pending[] {
-    if (!account?.active_org_id) return []
-    return [
-      {
-        kind: "cloud-org",
-        scope: "cloud",
-        label: "Kilo Cloud organization config",
-        source: `${account.url}/api/config`,
-        exists: true,
-        editable: false,
-        reason: "Active organization config is managed by Kilo Cloud; values are not exposed here.",
-      },
-    ]
   }
 
   async function managedSources(): Promise<Pending[]> {

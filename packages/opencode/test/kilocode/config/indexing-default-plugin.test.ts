@@ -5,7 +5,6 @@ import { NodeFileSystem, NodePath } from "@effect/platform-node"
 import path from "path"
 import { Flag } from "@opencode-ai/core/flag/flag"
 import { hasIndexingPlugin } from "@kilocode/kilo-indexing/detect"
-import { Account } from "../../../src/account/account"
 import { Auth } from "../../../src/auth"
 import { Config } from "../../../src/config/config"
 import type { ConfigPlugin } from "../../../src/config/plugin"
@@ -27,10 +26,6 @@ import { LayerNodePlatform } from "@opencode-ai/core/effect/app-node-platform"
 const infra = AppNodeBuilder.build(CrossSpawnSpawner.node).pipe(
   Layer.provideMerge(Layer.mergeAll(NodeFileSystem.layer, NodePath.layer)),
 )
-const emptyAccount = Layer.mock(Account.Service)({
-  active: () => Effect.succeed(Option.none()),
-  activeOrg: () => Effect.succeed(Option.none()),
-})
 const emptyAuth = Layer.mock(Auth.Service)({
   all: () => Effect.succeed({}),
 })
@@ -44,7 +39,6 @@ const unexpectedHttp = HttpClient.make((request) =>
 )
 const layer = AppNodeBuilder.build(Config.node, [
   [Auth.node, emptyAuth],
-  [Account.node, emptyAccount],
   [Npm.node, noopNpm],
   [LayerNodePlatform.httpClient, Layer.succeed(HttpClient.HttpClient, unexpectedHttp)],
 ]).pipe(Layer.provideMerge(infra))

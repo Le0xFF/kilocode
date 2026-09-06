@@ -72,6 +72,8 @@
   - @kilocode/kilo-indexing@7.5.6
   - @kilocode/plugin@7.5.6
 
+- Closed out the offline dead-code surface across the fork: removed the remaining cloud modules (KiloClaw client, account/device-flow auth, the cloud-session no-op layer, and console asset serving); trimmed provider-layer dead code (6 unreachable provider files, native-request branches, cloud-auth exports, sdkKey/metadata/model-cache trimming, and providerCost gateway reads); pruned 7 orphaned extension dependencies and re-activated knip on `dependencies`; cleaned webview i18n orphan keys across all 21 locales plus CSS remote-settings rules, the `remote_control` contract key, and a stale `webTools` description; completed spawn-env sanitization (BUN_*/NODE_OPTIONS strip, ALL_PROXY/all_proxy clearing when proxy is off, loopback NO_PROXY guarantee); made the TUI fully offline (tree-sitter wasm local-first with opt-in download, fixed stale tips, PluginManager npm label); and finished repo hygiene (9 orphan package directories, stale build output, stale doc references).
+
 ## 7.5.5
 
 ### Patch Changes

@@ -3,10 +3,6 @@ import { UI } from "@/cli/ui"
 import { errorMessage } from "@opencode-ai/tui/util/error"
 import { validateSession } from "../tui/validate-session"
 import { ServerAuth } from "@/server/auth"
-// kilocode_change start - Kilo implementations (sdk client, cloud-session) are
-// dynamically imported inside the handler so other CLI commands don't pay their
-// module cost at startup.
-// kilocode_change end
 
 export const AttachCommand = cmd({
   command: "attach <url>",
@@ -36,10 +32,6 @@ export const AttachCommand = cmd({
       .option("fork", {
         type: "boolean",
         describe: "fork the session when continuing (use with --continue or --session)",
-      })
-      .option("cloud-fork", {
-        type: "boolean",
-        describe: "fetch session from cloud and continue locally (use with --session)",
       })
       .option("password", {
         alias: ["p"],
@@ -75,16 +67,6 @@ export const AttachCommand = cmd({
       return
     }
     const noReplay = args.replay === false || args.noReplay === true
-
-    // kilocode_change start
-    const { importCloudSession, validateCloudFork, reportCloudImportError } = await import("@/kilocode/cloud-session")
-    const cloudForkError = validateCloudFork(args)
-    if (cloudForkError) {
-      UI.error(cloudForkError)
-      process.exitCode = 1
-      return
-    }
-    // kilocode_change end
 
     const directory = (() => {
       if (!args.dir) return undefined
@@ -131,26 +113,6 @@ export const AttachCommand = cmd({
     }
 
     const headers = ServerAuth.headers({ password: args.password, username: args.username })
-    // kilocode_change start - import cloud session before TUI renders
-    if (args.cloudFork && args.session) {
-      UI.println("Importing session from cloud...")
-      const { createKiloClient } = await import("@kilocode/sdk/v2")
-      const sdk = createKiloClient({
-        baseUrl: args.url,
-        directory,
-        headers,
-      })
-      try {
-        const id = await importCloudSession(sdk, args.session)
-        args.session = id
-        args.cloudFork = false
-      } catch (err) {
-        reportCloudImportError(err)
-        process.exitCode = 1
-        return
-      }
-    }
-    // kilocode_change end
     const config = await TuiConfig.get()
 
     try {

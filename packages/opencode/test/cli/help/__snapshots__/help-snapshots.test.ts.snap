@@ -61,7 +61,6 @@ Opzioni:
   -c, --continue      continue the last session                                           [booleano]
   -s, --session       session id to continue                                               [stringa]
       --fork          fork the session when continuing (use with --continue or --session) [booleano]
-      --cloud-fork    fetch session from cloud and continue locally (use with --session)  [booleano]
   -p, --password      basic auth password (defaults to KILO_SERVER_PASSWORD)               [stringa]
   -u, --username      basic auth username (defaults to KILO_SERVER_USERNAME or 'kilo')     [stringa]
       --mini          start the minimal interactive interface        [booleano] [predefinito: false]
@@ -88,7 +87,6 @@ Opzioni:
   -c, --continue     continue the last session                                            [booleano]
   -s, --session      session id to continue                                                [stringa]
       --fork         fork the session before continuing (requires --continue or --session)[booleano]
-      --cloud-fork   fetch session from cloud and continue locally (use with --session)   [booleano]
   -m, --model        model to use in the format of provider/model                          [stringa]
       --agent        agent to use                                                          [stringa]
       --format       format: default (formatted) or json (raw JSON events)
