@@ -23,7 +23,7 @@ const LOCAL_SOURCES: ReadonlySet<string> = new Set(["env", "config", "custom"])
 // Safety net mirroring the host whitelist (packages/opencode/src/kilocode/local-providers.ts).
 // The backend already cuts `connected` to this surface (Step 3); this guards against any
 // online built-in leaking into the data. Keep in sync with the host list.
-const LOCAL_PROVIDER_IDS: ReadonlySet<string> = new Set(["lmstudio", "atomic-chat", "privatemode-ai"])
+const LOCAL_PROVIDER_IDS: ReadonlySet<string> = new Set(["lmstudio", "atomic-chat", "privatemode-ai", "anaconda-desktop"])
 type ProviderOption = { value: string; label: string }
 
 const ProvidersTab: Component = () => {

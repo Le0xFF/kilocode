@@ -44,7 +44,7 @@ const SessionSchema = Schema.Struct({
   directory: Schema.String,
   title: Schema.String,
   version: Schema.String,
-  shareURL: Schema.optional(Schema.String),
+  // kilocode_change - session sharing feature removed; no shareURL field (column kept inert for data compat)
   summary: Schema.optional(
     Schema.Struct({
       additions: Schema.Finite,

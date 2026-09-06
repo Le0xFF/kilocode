@@ -10,7 +10,6 @@ import { useRenderer, useTerminalDimensions, type JSX } from "@opentui/solid"
 import { RGBA, TextAttributes, type BoxRenderable, type SyntaxStyle } from "@opentui/core"
 import { useBindings } from "@tui/keymap"
 import { Locale } from "@tui/util/locale"
-import { LANGUAGE_EXTENSIONS } from "@/lsp/language"
 
 import path from "path"
 import stripAnsi from "strip-ansi"
@@ -1152,10 +1151,8 @@ function normalizePath(input?: string) {
 }
 
 function filetype(input?: string) {
-  if (!input) return "none"
-  const language = LANGUAGE_EXTENSIONS[path.extname(input)]
-  if (["typescriptreact", "javascriptreact", "javascript"].includes(language)) return "typescript"
-  return language
+  // LSP removed; file type detection is now a no-op for the debug view
+  return "none"
 }
 
 function todoIcon(status?: string) {

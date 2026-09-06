@@ -77,7 +77,7 @@ afterEach(async () => {
 
 describe("HttpApi memory", () => {
   test("manages project memory through HTTP routes", async () => {
-    await using tmp = await tmpdir({ config: { formatter: false, lsp: false } })
+    await using tmp = await tmpdir({ config: { formatter: false } })
     const api = app()
     const send = (method: string, route: string, body?: unknown) =>
       api.request(route, {
@@ -179,7 +179,7 @@ describe("HttpApi memory", () => {
   })
 
   test("enable and disable refresh memory tool availability for the next prompt", async () => {
-    await using tmp = await tmpdir({ config: { formatter: false, lsp: false } })
+    await using tmp = await tmpdir({ config: { formatter: false } })
     const api = app()
     const ctx = { directory: tmp.path, worktree: tmp.path }
     const send = (method: string, route: string) =>
@@ -200,8 +200,8 @@ describe("HttpApi memory", () => {
   })
 
   test("purge uses the routed workspace context, not an arbitrary root parameter", async () => {
-    await using left = await tmpdir({ config: { formatter: false, lsp: false } })
-    await using right = await tmpdir({ config: { formatter: false, lsp: false } })
+    await using left = await tmpdir({ config: { formatter: false } })
+    await using right = await tmpdir({ config: { formatter: false } })
     const api = app()
     const send = (dir: string, method: string, route: string, body?: unknown) =>
       api.request(route, {
@@ -242,7 +242,7 @@ describe("HttpApi memory", () => {
   })
 
   test("returns typed error codes for disabled and invalid-input failures", async () => {
-    await using tmp = await tmpdir({ config: { formatter: false, lsp: false } })
+    await using tmp = await tmpdir({ config: { formatter: false } })
     const api = app()
     const send = (method: string, route: string, body?: unknown) =>
       api.request(route, {
@@ -271,7 +271,7 @@ describe("HttpApi memory", () => {
   })
 
   test("rejects malformed HTTP payloads without corrupting memory files", async () => {
-    await using tmp = await tmpdir({ config: { formatter: false, lsp: false } })
+    await using tmp = await tmpdir({ config: { formatter: false } })
     const api = app()
     const send = (method: string, route: string, body?: unknown) =>
       api.request(route, {

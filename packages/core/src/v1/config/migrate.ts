@@ -14,7 +14,7 @@ const keys = new Set([
   "reference",
   "snapshot",
   "plugin",
-  "autoshare",
+  // kilocode_change - session sharing feature removed; no autoshare key
   "disabled_providers",
   "enabled_providers",
   "small_model",
@@ -38,8 +38,7 @@ export function migrate(info: typeof ConfigV1.Info.Type) {
     shell: info.shell,
     model: info.model ?? undefined, // kilocode_change - v1 null delete sentinel is not valid in v2
     default_agent: info.default_agent ?? undefined, // kilocode_change
-    autoupdate: info.autoupdate,
-    share: info.share ?? (info.autoshare ? "auto" : undefined),
+    // kilocode_change - auto-update removed; no autoupdate migration passthrough
     enterprise: info.enterprise,
     username: info.username,
     permissions: permissions(info.permission, info.tools),
@@ -47,7 +46,7 @@ export function migrate(info: typeof ConfigV1.Info.Type) {
     snapshots: info.snapshot,
     watcher: info.watcher,
     formatter: info.formatter,
-    lsp: info.lsp,
+    // kilocode_change - LSP removed; no lsp migration passthrough
     attachments: info.attachment,
     tool_output: info.tool_output,
     mcp: mcp(info),

@@ -1,11 +1,11 @@
-import { Effect, Schema, Scope } from "effect" // kilocode_change - stable object reads do not use Option
+import { Effect, Schema } from "effect" // kilocode_change - stable object reads do not use Option; LSP removed (no Scope)
 import { NonNegativeInt } from "@opencode-ai/core/schema"
 import * as path from "path"
 import { Readable } from "stream" // kilocode_change
 import { createInterface } from "readline"
 import * as Tool from "./tool"
 import { FSUtil } from "@opencode-ai/core/fs-util"
-import { LSP } from "@/lsp/lsp"
+// kilocode_change - LSP removed; no warm-up on file reads
 import DESCRIPTION from "./read.txt"
 import { InstanceState } from "@/effect/instance-state"
 import { Config } from "@/config/config" // kilocode_change - optional configured reference authorization
@@ -75,14 +75,12 @@ type Metadata = {
 export const ReadTool = Tool.define<
   typeof Parameters,
   Metadata,
-  FSUtil.Service | Instruction.Service | LSP.Service | Scope.Scope
+  FSUtil.Service | Instruction.Service
 >(
   "read",
   Effect.gen(function* () {
     const fs = yield* FSUtil.Service
     const instruction = yield* Instruction.Service
-    const lsp = yield* LSP.Service
-    const scope = yield* Scope.Scope
 
     // kilocode_change start - authorize missing paths without enumerating sibling names
     const miss = Effect.fn("ReadTool.miss")(function* (filepath: string, worktree: string, ctx: Tool.Context) {
@@ -99,11 +97,6 @@ export const ReadTool = Tool.define<
       return yield* Effect.fail(new Error(`File not found: ${filepath}`))
     })
     // kilocode_change end
-
-    const warm = Effect.fn("ReadTool.warm")(function* (filepath: string) {
-      // LSP warm-up is optional; do not let a background defect fail an otherwise successful read.
-      yield* lsp.touchFile(filepath).pipe(Effect.ignoreCause, Effect.forkIn(scope))
-    })
 
     const list = Effect.fn("ReadTool.list")(function* (filepath: string) {
       const items = yield* fs.readDirectoryEntries(filepath)
@@ -364,7 +357,7 @@ export const ReadTool = Tool.define<
             output += `\n\n(End of file - total ${file.count} lines)`
           }
           output += "\n</content>"
-          yield* warm(bound.target)
+          // kilocode_change - LSP removed; no warm-up on read
           if (loaded.length > 0) {
             output += `\n\n<system-reminder>\n${loaded.map((item) => item.content).join("\n\n")}\n</system-reminder>`
           }

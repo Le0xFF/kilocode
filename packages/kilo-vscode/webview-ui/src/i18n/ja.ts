@@ -239,7 +239,6 @@ export const dict = {
   "ui.permission.toolLabel.webFetch": "Web取得",
   "ui.permission.toolLabel.task": "タスク",
   "ui.permission.toolLabel.skill": "スキル",
-  "ui.permission.toolLabel.lsp": "LSP",
   "ui.permission.toolLabel.bash": "Bash",
   "ui.permission.toolLabel.todoRead": "Todo読み込み",
   "ui.permission.toolLabel.todoWrite": "Todo書き込み",
@@ -506,8 +505,6 @@ export const dict = {
   "settings.permissions.tool.task.description": "サブエージェントの起動",
   "settings.permissions.tool.skill.title": "スキル",
   "settings.permissions.tool.skill.description": "名前によるスキルの読み込み",
-  "settings.permissions.tool.lsp.title": "LSP",
-  "settings.permissions.tool.lsp.description": "言語サーバークエリの実行",
   "settings.permissions.tool.todoread.title": "Todo読み込み",
   "settings.permissions.tool.todoread.description": "Todoリストの読み込み",
   "settings.permissions.tool.todowrite.title": "Todo書き込み",
@@ -702,8 +699,6 @@ export const dict = {
   "settings.experimental.share.disabled": "無効",
   "settings.experimental.formatter.title": "フォーマッター",
   "settings.experimental.formatter.description": "自動コードフォーマッターを有効にする",
-  "settings.experimental.lsp.title": "LSP",
-  "settings.experimental.lsp.description": "言語サーバープロトコル統合を有効にする",
   "settings.experimental.batch.title": "バッチツール",
   "settings.experimental.batch.description": "複数のツール呼び出しのバッチ処理を有効にする",
   "settings.experimental.imageGeneration.title": "画像生成",
@@ -883,10 +878,7 @@ export const dict = {
   "settings.autoApprove.tool.bash": "ターミナルコマンドを実行。シェルコマンド（例：git status）の実行を許可します。",
   "settings.autoApprove.tool.task":
     "サブエージェントを起動。特定のタスク用に特化したサブエージェントを開始することを許可します。",
-  "settings.autoApprove.tool.skill": "スキルを読み込む。事前定義されたスキルを名前で読み込むことを許可します。",
-  "settings.autoApprove.tool.lsp":
-    "言語サーバーにクエリ。コードインテリジェンスのために言語サーバークエリの実行を許可します。",
-  "settings.autoApprove.tool.todoreadwrite": "タスクリストの管理。内部タスクリストの読み取りと更新を許可します。",
+  "settings.autoApprove.tool.skill": "スキルを読み込む。事前定義されたスキルを名前で読み込むことを許可します。",  "settings.autoApprove.tool.todoreadwrite": "タスクリストの管理。内部タスクリストの読み取りと更新を許可します。",
   "settings.autoApprove.tool.webfetch": "URLをフェッチ。特定のURLからコンテンツを取得することを許可します。",
   "settings.autoApprove.tool.external_directory":
     "ワークスペース外のファイルにアクセス。現在のプロジェクトディレクトリ外のファイルにアクセスしたときにトリガーされます。",

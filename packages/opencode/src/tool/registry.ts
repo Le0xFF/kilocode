@@ -38,7 +38,7 @@ import { RepoCloneTool } from "./repo_clone" // kilocode_change
 
 import { Auth } from "@/auth" // kilocode_change
 
-import { LspTool } from "./lsp"
+// kilocode_change - LSP removed; no lsp tool in the registry
 import * as Truncate from "./truncate"
 import { ApplyPatchTool } from "./apply_patch"
 import { Glob } from "@opencode-ai/core/util/glob"
@@ -53,7 +53,7 @@ import { InstanceState } from "@/effect/instance-state"
 import { EffectBridge } from "@/effect/bridge"
 import { Question } from "../question"
 import { Todo } from "../session/todo"
-import { LSP } from "@/lsp/lsp"
+// kilocode_change - LSP removed; no lsp tool in the registry
 import { Instruction } from "../session/instruction"
 import { FSUtil } from "@opencode-ai/core/fs-util"
 import { EventV2Bridge } from "@/event-v2-bridge"
@@ -123,7 +123,7 @@ const layer = Layer.effect(
     const read = yield* ReadTool
     const question = yield* QuestionTool
     const todo = yield* TodoWriteTool
-    const lsptool = yield* LspTool
+    // kilocode_change - LSP removed; no lsp tool in the registry
     const plan = yield* PlanExitTool
     const webfetch = yield* WebFetchTool
     
@@ -264,7 +264,7 @@ const layer = Layer.effect(
           skill: Tool.init(skilltool),
           patch: Tool.init(patchtool),
           question: Tool.init(question),
-          lsp: Tool.init(lsptool),
+          // kilocode_change - LSP removed; no lsp tool in the registry
           plan: Tool.init(plan),
           suggest: Tool.init(suggesttool),
           ...(codeModeTool ? { execute: Tool.init(codeModeTool) } : {}), // kilocode_change
@@ -302,7 +302,6 @@ const layer = Layer.effect(
               ...(["cli", "vscode"].includes(flags.client) ? [tool.suggest] : []),
               ...KiloToolRegistry.extra(kilo, cfg),
               ...(tool.execute ? [tool.execute] : []),
-              ...(flags.experimentalLspTool ? [tool.lsp] : []),
             ],
             kilo,
           ),
@@ -508,7 +507,7 @@ export const node = LayerNode.suspend(() =>
       Session.node,
       BackgroundJob.node,
       Provider.node,
-      LSP.node,
+      // kilocode_change - LSP removed; no lsp tool in the registry
       Instruction.node,
       FSUtil.node,
       EventV2Bridge.node,

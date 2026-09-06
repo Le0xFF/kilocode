@@ -123,7 +123,6 @@ describe("describePatterns", () => {
       todowrite: "ui.permission.toolLabel.todoWrite",
       task: "ui.permission.toolLabel.task",
       skill: "ui.permission.toolLabel.skill",
-      lsp: "ui.permission.toolLabel.lsp",
     }
     expect(TOOL_LABEL_KEYS).toEqual(expected)
   })
@@ -165,10 +164,8 @@ describe("describePatterns", () => {
     expect(result).toEqual({ kind: "single", text: "Task run-tests" })
   })
 
-  test("lsp tool uses LSP label", () => {
-    const result = describePatterns("lsp", ["diagnostics"], t)
-    expect(result).toEqual({ kind: "single", text: "LSP diagnostics" })
-  })
+  // LSP removed; no lsp label test
+
 })
 
 describe("describeRule", () => {
@@ -219,7 +216,6 @@ describe("resolveLabel", () => {
       todowrite: "Todo Write",
       task: "Task",
       skill: "Skill",
-      lsp: "LSP",
     }
     for (const [tool, label] of Object.entries(expected)) {
       expect(resolveLabel(tool, t)).toBe(label)

@@ -446,10 +446,9 @@ describe("kilocode indexing config", () => {
     await provideTestInstance({
       directory: tmp.path,
       fn: async () => {
-        await saveProject({ autoupdate: false })
+        await saveProject({ username: "keep" })
         const config = await load()
         expect(config.username).toBe("keep")
-        expect(config.autoupdate).toBe(false)
         expect(config.experimental?.batch_tool).toBe(true)
         expect(config.experimental).not.toHaveProperty("codebase_search")
       },
@@ -483,9 +482,8 @@ describe("kilocode indexing config", () => {
       await provideTestInstance({
         directory: tmp.path,
         fn: async () => {
-          await saveGlobal({ autoupdate: false })
+          await saveGlobal({ username: "test" })
           const config = await load()
-          expect(config.autoupdate).toBe(false)
           expect(config.experimental?.batch_tool).toBe(true)
           expect(config.experimental).not.toHaveProperty("codebase_search")
         },
@@ -494,7 +492,6 @@ describe("kilocode indexing config", () => {
       const written = await Bun.file(file).text()
       expect(written).toContain("Keep the retired flag harmless")
       expect(written).toContain('"codebase_search": true')
-      expect(written).toContain('"autoupdate": false')
     } finally {
       ;(Global.Path as { config: string }).config = prev
       await clear()
@@ -1322,20 +1319,19 @@ describe("linked worktree config", () => {
       await Bun.write(path.join(directory, "placeholder"), "")
       await Bun.write(
         path.join(primary.path, "packages", ".opencode", "kilo.jsonc"),
-        JSON.stringify({ snapshot: true, autoupdate: false, share: "auto", default_agent: "opencode-only" }),
+        JSON.stringify({ snapshot: true, default_agent: "opencode-only" }),
       )
+      // kilocode_change - session sharing feature removed; no share field in the overlay test
       await Bun.write(
         path.join(primary.path, "packages", ".kilocode", "kilo.jsonc"),
-        JSON.stringify({ snapshot: true, autoupdate: "notify", share: "disabled" }),
+        JSON.stringify({ snapshot: true }),
       )
       await Bun.write(path.join(primary.path, "packages", ".kilo", "kilo.jsonc"), JSON.stringify({ snapshot: false }))
-      await Bun.write(path.join(directory, ".kilo", "kilo.jsonc"), JSON.stringify({ share: "manual" }))
+      await Bun.write(path.join(directory, ".kilo", "kilo.jsonc"), JSON.stringify({}))
 
       const config = await provideTestInstance({ directory, fn: load })
 
       expect(config.snapshot).toBe(false)
-      expect(config.autoupdate).toBe("notify")
-      expect(config.share).toBe("manual")
       expect(config.default_agent).toBeUndefined()
     } finally {
       await $`git worktree remove --force ${worktree}`.cwd(primary.path).quiet().nothrow()

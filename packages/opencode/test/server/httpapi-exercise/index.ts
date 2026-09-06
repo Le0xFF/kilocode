@@ -147,7 +147,6 @@ const scenarios: Scenario[] = [
   http.protected.get("/command", "command.list").json(200, array, "status"),
   http.protected.get("/agent", "app.agents").json(200, array, "status"),
   http.protected.get("/skill", "app.skills").json(200, array, "status"),
-  http.protected.get("/lsp", "lsp.status").json(200, array),
   http.protected.get("/formatter", "formatter.status").json(200, array),
   http.protected.get("/config", "config.get").json(200, undefined, "status"),
   http.protected
@@ -1721,22 +1720,12 @@ const scenarios: Scenario[] = [
       body: { response: "once" },
     }))
     .json(404, object, "status"),
-  http.protected
-    .post("/session/{sessionID}/share", "session.share")
-    .mutating()
-    .seeded((ctx) => ctx.session({ title: "Share session" }))
-    .at((ctx) => ({ path: route("/session/{sessionID}/share", { sessionID: ctx.state.id }), headers: ctx.headers() }))
-    .status(500, undefined, "status"), // kilocode_change
-  http.protected
-    .delete("/session/{sessionID}/share", "session.unshare")
-    .mutating()
-    .seeded((ctx) => ctx.session({ title: "Unshare session" }))
-    .at((ctx) => ({ path: route("/session/{sessionID}/share", { sessionID: ctx.state.id }), headers: ctx.headers() }))
-    .status(500, undefined, "status"), // kilocode_change
+  // kilocode_change start - session sharing routes removed (POST/DELETE /session/{id}/share)
   http.protected
     .post("/tui/append-prompt", "tui.appendPrompt")
     .at((ctx) => ({ path: "/tui/append-prompt", headers: ctx.headers(), body: { text: "hello" } }))
     .json(200, boolean, "status"),
+  // kilocode_change end - session sharing routes removed
   http.protected
     .post("/tui/select-session", "tui.selectSession.invalid")
     .at((ctx) => ({ path: "/tui/select-session", headers: ctx.headers(), body: { sessionID: "invalid" } }))
@@ -1791,12 +1780,6 @@ const scenarios: Scenario[] = [
       },
       "status",
     ),
-  http.protected
-    .post("/global/upgrade", "global.upgrade")
-    .global()
-    .probe({ path: "/global/upgrade", body: { target: 1 } })
-    .at(() => ({ path: "/global/upgrade", body: { target: 1 } }))
-    .status(400),
   ...kiloScenarios, // kilocode_change
 ]
 

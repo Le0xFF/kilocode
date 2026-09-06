@@ -10,7 +10,7 @@
 //   - KILO_TEST_HOME           : pins os.homedir() → tmpdir
 //   - KILO_DISABLE_PROJECT_CONFIG : skip walking up for opencode.json
 //   - KILO_PURE                : skip external plugin discovery + install
-//   - KILO_DISABLE_AUTOUPDATE / AUTOCOMPACT / MODELS_FETCH : no background work
+//   - KILO_AUTOCOMPACT / MODELS_FETCH : no background work
 // Plus HOME / XDG_* pointing at the tmpdir for belt-and-suspenders isolation.
 //
 // Today only `opencode.run` is fully wired. The shape supports adding more
@@ -76,7 +76,6 @@ function isolatedEnv(home: string, configJson: string): Record<string, string> {
     KILO_CONFIG_CONTENT: configJson,
     KILO_DISABLE_PROJECT_CONFIG: "1",
     KILO_PURE: "1",
-    KILO_DISABLE_AUTOUPDATE: "1",
     KILO_DISABLE_AUTOCOMPACT: "1",
     KILO_DISABLE_MODELS_FETCH: "1",
     KILO_AUTH_CONTENT: "{}",

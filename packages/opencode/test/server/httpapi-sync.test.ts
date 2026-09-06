@@ -69,7 +69,7 @@ describe("sync HttpApi", () => {
         expect(replayed.status).toBe(200)
         expect(yield* replayed.json).toEqual({ sessionID: session.id })
       }),
-    { git: true, config: { formatter: false, lsp: false } },
+    { git: true, config: { formatter: false } },
   )
 
   it.instance(
@@ -119,7 +119,7 @@ describe("sync HttpApi", () => {
           expect(response.status).toBe(400)
         }
       }),
-    { git: true, config: { formatter: false, lsp: false } },
+    { git: true, config: { formatter: false } },
   )
 
   it.instance.skip(
@@ -144,6 +144,6 @@ describe("sync HttpApi", () => {
         expect(body.success).toBe(false)
         expect(Array.isArray(body.error) || Array.isArray(body.errors)).toBe(true)
       }),
-    { git: true, config: { formatter: false, lsp: false } },
+    { git: true, config: { formatter: false } },
   )
 })

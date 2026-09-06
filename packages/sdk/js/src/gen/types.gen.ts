@@ -21,21 +21,6 @@ export type EventInstallationUpdateAvailable = {
   }
 }
 
-export type EventLspClientDiagnostics = {
-  type: "lsp.client.diagnostics"
-  properties: {
-    serverID: string
-    path: string
-  }
-}
-
-export type EventLspUpdated = {
-  type: "lsp.updated"
-  properties: {
-    [key: string]: unknown
-  }
-}
-
 export type FileDiff = {
   file: string
   before: string
@@ -541,9 +526,7 @@ export type Session = {
     files: number
     diffs?: Array<FileDiff>
   }
-  share?: {
-    url: string
-  }
+  // kilocode_change - session sharing feature removed; no share field on Session
   title: string
   version: string
   time: {
@@ -625,7 +608,7 @@ export type EventTuiCommandExecute = {
       | (
           | "session.list"
           | "session.new"
-          | "session.share"
+          // kilocode_change - session sharing feature removed; no session.share command
           | "session.interrupt"
           | "session.compact"
           | "session.page.up"
@@ -705,8 +688,6 @@ export type Event =
   | EventServerInstanceDisposed
   | EventInstallationUpdated
   | EventInstallationUpdateAvailable
-  | EventLspClientDiagnostics
-  | EventLspUpdated
   | EventMessageUpdated
   | EventMessageRemoved
   | EventMessagePartUpdated
@@ -818,14 +799,7 @@ export type KeybindsConfig = {
    * Show session timeline
    */
   session_timeline?: string
-  /**
-   * Share current session
-   */
-  session_share?: string
-  /**
-   * Unshare current session
-   */
-  session_unshare?: string
+  // kilocode_change - session sharing feature removed; no session_share/session_unshare keybinds
   /**
    * Interrupt current session
    */
@@ -1225,18 +1199,8 @@ export type Config = {
   }
   plugin?: Array<string>
   snapshot?: boolean
-  /**
-   * Control sharing behavior:'manual' allows manual sharing via commands, 'auto' enables automatic sharing, 'disabled' disables all sharing
-   */
-  share?: "manual" | "auto" | "disabled"
-  /**
-   * @deprecated Use 'share' field instead. Share newly created sessions automatically
-   */
-  autoshare?: boolean
-  /**
-   * Automatically update to the latest version. Set to true to auto-update, false to disable, or 'notify' to show update notifications
-   */
-  autoupdate?: boolean | "notify"
+  // kilocode_change - session sharing feature removed; no share/autoshare config keys
+  // kilocode_change - auto-update removed; no autoupdate config key
   /**
    * Disable providers that are loaded automatically
    */
@@ -1298,25 +1262,6 @@ export type Config = {
           }
           extensions?: Array<string>
         }
-      }
-  lsp?:
-    | false
-    | {
-        [key: string]:
-          | {
-              disabled: true
-            }
-          | {
-              command: Array<string>
-              extensions?: Array<string>
-              disabled?: boolean
-              env?: {
-                [key: string]: string
-              }
-              initialization?: {
-                [key: string]: unknown
-              }
-            }
       }
   /**
    * Additional instruction files or patterns to include
@@ -1658,13 +1603,6 @@ export type McpStatus =
   | McpStatusFailed
   | McpStatusNeedsAuth
   | McpStatusNeedsClientRegistration
-
-export type LspStatus = {
-  id: string
-  name: string
-  root: string
-  status: "connected" | "error"
-}
 
 export type FormatterStatus = {
   name: string
@@ -2420,72 +2358,7 @@ export type SessionAbortResponses = {
 
 export type SessionAbortResponse = SessionAbortResponses[keyof SessionAbortResponses]
 
-export type SessionUnshareData = {
-  body?: never
-  path: {
-    id: string
-  }
-  query?: {
-    directory?: string
-  }
-  url: "/session/{id}/share"
-}
-
-export type SessionUnshareErrors = {
-  /**
-   * Bad request
-   */
-  400: BadRequestError
-  /**
-   * Not found
-   */
-  404: NotFoundError
-}
-
-export type SessionUnshareError = SessionUnshareErrors[keyof SessionUnshareErrors]
-
-export type SessionUnshareResponses = {
-  /**
-   * Successfully unshared session
-   */
-  200: Session
-}
-
-export type SessionUnshareResponse = SessionUnshareResponses[keyof SessionUnshareResponses]
-
-export type SessionShareData = {
-  body?: never
-  path: {
-    id: string
-  }
-  query?: {
-    directory?: string
-  }
-  url: "/session/{id}/share"
-}
-
-export type SessionShareErrors = {
-  /**
-   * Bad request
-   */
-  400: BadRequestError
-  /**
-   * Not found
-   */
-  404: NotFoundError
-}
-
-export type SessionShareError = SessionShareErrors[keyof SessionShareErrors]
-
-export type SessionShareResponses = {
-  /**
-   * Successfully shared session
-   */
-  200: Session
-}
-
-export type SessionShareResponse = SessionShareResponses[keyof SessionShareResponses]
-
+// kilocode_change start - session sharing feature removed; no SessionUnshare/SessionShare types
 export type SessionDiffData = {
   body?: never
   path: {
@@ -2500,6 +2373,8 @@ export type SessionDiffData = {
   }
   url: "/session/{id}/diff"
 }
+
+// kilocode_change end - session sharing feature removed; no SessionUnshare/SessionShare types
 
 export type SessionDiffErrors = {
   /**
@@ -3578,24 +3453,6 @@ export type McpDisconnectResponses = {
 }
 
 export type McpDisconnectResponse = McpDisconnectResponses[keyof McpDisconnectResponses]
-
-export type LspStatusData = {
-  body?: never
-  path?: never
-  query?: {
-    directory?: string
-  }
-  url: "/lsp"
-}
-
-export type LspStatusResponses = {
-  /**
-   * LSP server status
-   */
-  200: Array<LspStatus>
-}
-
-export type LspStatusResponse = LspStatusResponses[keyof LspStatusResponses]
 
 export type FormatterStatusData = {
   body?: never

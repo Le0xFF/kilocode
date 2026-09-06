@@ -3,7 +3,7 @@ import { Command } from "@/command"
 import * as InstanceState from "@/effect/instance-state"
 import { Format } from "@/format"
 import { Global } from "@opencode-ai/core/global"
-import { LSP } from "@/lsp/lsp"
+// kilocode_change - LSP removed; no lsp status handler
 import { Vcs } from "@/project/vcs"
 import { Skill } from "@/skill"
 import { Effect } from "effect"
@@ -17,7 +17,7 @@ export const instanceHandlers = HttpApiBuilder.group(InstanceHttpApi, "instance"
     const agent = yield* Agent.Service
     const command = yield* Command.Service
     const format = yield* Format.Service
-    const lsp = yield* LSP.Service
+    // kilocode_change - LSP removed; no lsp status handler
     const skill = yield* Skill.Service
     const vcs = yield* Vcs.Service
 
@@ -85,10 +85,7 @@ export const instanceHandlers = HttpApiBuilder.group(InstanceHttpApi, "instance"
       return yield* skill.all()
     })
 
-    const getLsp = Effect.fn("InstanceHttpApi.lsp")(function* () {
-      return yield* lsp.status()
-    })
-
+    // kilocode_change - LSP removed; no lsp status handler
     const getFormatter = Effect.fn("InstanceHttpApi.formatter")(function* () {
       return yield* format.status()
     })
@@ -104,7 +101,6 @@ export const instanceHandlers = HttpApiBuilder.group(InstanceHttpApi, "instance"
       .handle("command", getCommand)
       .handle("agent", getAgent)
       .handle("skill", getSkill)
-      .handle("lsp", getLsp)
       .handle("formatter", getFormatter)
   }),
 )

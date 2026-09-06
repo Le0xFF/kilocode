@@ -30,7 +30,6 @@ export const KNOWN_KEYS: ReadonlyArray<string> = [
   "username",
   "watcher",
   "formatter",
-  "lsp",
   "compaction",
   "commit_message",
   "tools",

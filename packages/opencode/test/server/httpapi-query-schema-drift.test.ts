@@ -244,7 +244,7 @@ describe("httpapi query schema drift", () => {
 
   it.live(
     "session list accepts directory and workspace",
-    withTmp({ config: { formatter: false, lsp: false } }, (tmp) =>
+    withTmp({ config: { formatter: false } }, (tmp) =>
       Effect.gen(function* () {
         const url = `/session?${routingParams(tmp.path)}`
         const response = yield* request(url)
@@ -255,7 +255,7 @@ describe("httpapi query schema drift", () => {
 
   it.live(
     "session messages accepts directory and workspace",
-    withTmp({ config: { formatter: false, lsp: false } }, (tmp) =>
+    withTmp({ config: { formatter: false } }, (tmp) =>
       Effect.gen(function* () {
         const url = `/session/${SessionID.descending()}/message?limit=80&${routingParams(tmp.path)}`
         const response = yield* request(url)
@@ -266,7 +266,7 @@ describe("httpapi query schema drift", () => {
 
   it.live(
     "file find/file accepts directory and workspace",
-    withTmp({ config: { formatter: false, lsp: false } }, (tmp) =>
+    withTmp({ config: { formatter: false } }, (tmp) =>
       Effect.gen(function* () {
         const url = `/find/file?query=foo&${routingParams(tmp.path)}`
         const response = yield* request(url)
@@ -277,7 +277,7 @@ describe("httpapi query schema drift", () => {
 
   it.live(
     "file find/text accepts directory and workspace",
-    withTmp({ config: { formatter: false, lsp: false } }, (tmp) =>
+    withTmp({ config: { formatter: false } }, (tmp) =>
       Effect.gen(function* () {
         const url = `/find?pattern=foo&${routingParams(tmp.path)}`
         const response = yield* request(url)
@@ -288,7 +288,7 @@ describe("httpapi query schema drift", () => {
 
   it.live(
     "file read accepts directory and workspace",
-    withTmp({ config: { formatter: false, lsp: false } }, (tmp) =>
+    withTmp({ config: { formatter: false } }, (tmp) =>
       Effect.gen(function* () {
         const url = `/file?path=foo&${routingParams(tmp.path)}`
         const response = yield* request(url)
@@ -299,7 +299,7 @@ describe("httpapi query schema drift", () => {
 
   it.live(
     "experimental session list accepts directory and workspace",
-    withTmp({ config: { formatter: false, lsp: false } }, (tmp) =>
+    withTmp({ config: { formatter: false } }, (tmp) =>
       Effect.gen(function* () {
         const url = `/experimental/session?${routingParams(tmp.path)}`
         const response = yield* request(url)
@@ -310,7 +310,7 @@ describe("httpapi query schema drift", () => {
 
   it.live(
     "experimental tool list accepts directory and workspace",
-    withTmp({ config: { formatter: false, lsp: false } }, (tmp) =>
+    withTmp({ config: { formatter: false } }, (tmp) =>
       Effect.gen(function* () {
         const url = `/experimental/tool?provider=anthropic&model=claude&${routingParams(tmp.path)}`
         const response = yield* request(url)
@@ -321,7 +321,7 @@ describe("httpapi query schema drift", () => {
 
   it.live(
     "vcs diff accepts directory and workspace",
-    withTmp({ config: { formatter: false, lsp: false } }, (tmp) =>
+    withTmp({ config: { formatter: false } }, (tmp) =>
       Effect.gen(function* () {
         const url = `/vcs/diff?mode=working&${routingParams(tmp.path)}`
         const response = yield* request(url)

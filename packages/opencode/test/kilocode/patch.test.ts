@@ -17,7 +17,6 @@ import { Agent } from "../../src/agent/agent"
 import { Bus } from "../../src/bus"
 import { EventV2Bridge } from "../../src/event-v2-bridge"
 import { Format } from "../../src/format"
-import { LSP } from "../../src/lsp/lsp"
 import { MessageID, SessionID } from "../../src/session/schema"
 import { ApplyPatchTool } from "../../src/tool/apply_patch"
 import { Tool } from "../../src/tool/tool"
@@ -30,7 +29,6 @@ const layer = Layer.mergeAll(
   AppNodeBuilder.build(FSUtil.node),
   Bus.layer,
   AppNodeBuilder.build(Format.node),
-  AppNodeBuilder.build(LSP.node),
   AppNodeBuilder.build(Truncate.node),
   testInstanceStoreLayer,
   AppNodeBuilder.build(EventV2Bridge.node),

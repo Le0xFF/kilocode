@@ -10,7 +10,7 @@ afterEach(async () => {
 })
 
 test("blocking TUI bootstrap requests complete", async () => {
-  await using tmp = await tmpdir({ git: true, config: { formatter: false, lsp: false } })
+  await using tmp = await tmpdir({ git: true, config: { formatter: false } })
   const client = createKiloClient({
     baseUrl: "http://kilo.internal",
     directory: tmp.path,

@@ -238,7 +238,6 @@ export const dict = {
   "ui.permission.toolLabel.webFetch": "Веб-загрузка",
   "ui.permission.toolLabel.task": "Задача",
   "ui.permission.toolLabel.skill": "Навык",
-  "ui.permission.toolLabel.lsp": "LSP",
   "ui.permission.toolLabel.bash": "Bash",
   "ui.permission.toolLabel.todoRead": "Чтение списка задач",
   "ui.permission.toolLabel.todoWrite": "Запись списка задач",
@@ -509,8 +508,6 @@ export const dict = {
   "settings.permissions.tool.task.description": "Запуск под-агентов",
   "settings.permissions.tool.skill.title": "Skill",
   "settings.permissions.tool.skill.description": "Загрузить навык по имени",
-  "settings.permissions.tool.lsp.title": "LSP",
-  "settings.permissions.tool.lsp.description": "Выполнение запросов к языковому серверу",
   "settings.permissions.tool.todoread.title": "Чтение списка задач",
   "settings.permissions.tool.todoread.description": "Чтение списка задач",
   "settings.permissions.tool.todowrite.title": "Запись списка задач",
@@ -707,8 +704,6 @@ export const dict = {
   "settings.experimental.share.disabled": "Отключено",
   "settings.experimental.formatter.title": "Форматтер",
   "settings.experimental.formatter.description": "Включить автоматическое форматирование кода",
-  "settings.experimental.lsp.title": "LSP",
-  "settings.experimental.lsp.description": "Включить интеграцию протокола языкового сервера",
   "settings.experimental.batch.title": "Пакетный инструмент",
   "settings.experimental.batch.description": "Включить пакетную обработку вызовов инструментов",
   "settings.experimental.imageGeneration.title": "Генерация изображений",
@@ -889,10 +884,7 @@ export const dict = {
     "Выполнение команд терминала. Разрешает выполнение команд оболочки (например, git status).",
   "settings.autoApprove.tool.task":
     "Запуск субагентов. Разрешает запуск специализированных субагентов для конкретных задач.",
-  "settings.autoApprove.tool.skill": "Загрузка навыков. Разрешает загрузку предопределенных навыков по имени.",
-  "settings.autoApprove.tool.lsp":
-    "Запрос к языковому серверу. Разрешает выполнение запросов к языковому серверу для анализа кода.",
-  "settings.autoApprove.tool.todoreadwrite":
+  "settings.autoApprove.tool.skill": "Загрузка навыков. Разрешает загрузку предопределенных навыков по имени.",  "settings.autoApprove.tool.todoreadwrite":
     "Управление списком задач. Разрешает чтение и обновление внутреннего списка задач.",
   "settings.autoApprove.tool.webfetch": "Получение URL. Разрешает извлечение содержимого по указанному URL-адресу.",
   "settings.autoApprove.tool.external_directory":

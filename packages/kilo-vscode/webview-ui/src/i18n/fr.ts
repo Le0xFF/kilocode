@@ -242,7 +242,6 @@ export const dict = {
   "ui.permission.toolLabel.webFetch": "Récupération Web",
   "ui.permission.toolLabel.task": "Tâche",
   "ui.permission.toolLabel.skill": "Compétence",
-  "ui.permission.toolLabel.lsp": "LSP",
   "ui.permission.toolLabel.bash": "Bash",
   "ui.permission.toolLabel.todoRead": "Lire Todo",
   "ui.permission.toolLabel.todoWrite": "Écrire Todo",
@@ -518,8 +517,6 @@ export const dict = {
   "settings.permissions.tool.task.description": "Lancer des sous-agents",
   "settings.permissions.tool.skill.title": "Compétence",
   "settings.permissions.tool.skill.description": "Charger une compétence par son nom",
-  "settings.permissions.tool.lsp.title": "LSP",
-  "settings.permissions.tool.lsp.description": "Exécuter des requêtes de serveur de langage",
   "settings.permissions.tool.todoread.title": "Lire Todo",
   "settings.permissions.tool.todoread.description": "Lire la liste de tâches",
   "settings.permissions.tool.todowrite.title": "Écrire Todo",
@@ -725,8 +722,6 @@ export const dict = {
   "settings.experimental.share.disabled": "Désactivé",
   "settings.experimental.formatter.title": "Formateur",
   "settings.experimental.formatter.description": "Activer le formateur de code automatique",
-  "settings.experimental.lsp.title": "LSP",
-  "settings.experimental.lsp.description": "Activer l'intégration du protocole de serveur de langage",
   "settings.experimental.batch.title": "Outil par lot",
   "settings.experimental.batch.description": "Activer le traitement par lot d'appels d'outils",
   "settings.experimental.imageGeneration.title": "Génération d'images",
@@ -914,10 +909,7 @@ export const dict = {
   "settings.autoApprove.tool.task":
     "Lancer des sous-agents. Permet de démarrer des sous-agents spécialisés pour des tâches spécifiques.",
   "settings.autoApprove.tool.skill":
-    "Charger des compétences. Permet de charger des compétences prédéfinies par leur nom.",
-  "settings.autoApprove.tool.lsp":
-    "Interroger le serveur de langage. Permet d'exécuter des requêtes de serveur de langage pour l'intelligence du code.",
-  "settings.autoApprove.tool.todoreadwrite":
+    "Charger des compétences. Permet de charger des compétences prédéfinies par leur nom.",  "settings.autoApprove.tool.todoreadwrite":
     "Gérer la liste des tâches. Permet de lire et de mettre à jour la liste des tâches interne.",
   "settings.autoApprove.tool.webfetch": "Récupérer une URL. Permet de récupérer le contenu d'une URL spécifique.",
   "settings.autoApprove.tool.external_directory":

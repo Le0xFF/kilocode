@@ -315,12 +315,11 @@ describe("Config", () => {
             fs.writeFile(
               path.join(tmp.path, "opencode.json"),
               JSON.stringify({
-                shell: "/bin/bash",
-                model: "anthropic/claude",
-                default_agent: "reviewer",
-                autoupdate: "notify",
-                share: "disabled",
-                enterprise: { url: "https://share.example.com" },
+shell: "/bin/bash",
+                 model: "anthropic/claude",
+                 default_agent: "reviewer",
+                 // kilocode_change - session sharing feature removed; no share key written
+                 enterprise: { url: "https://share.example.com" },
                 username: "test-user",
                 permissions: [
                   { action: "bash", resource: "*", effect: "ask" },
@@ -404,8 +403,7 @@ describe("Config", () => {
             expect(documents[0]?.info.shell).toBe("/bin/bash")
             expect(documents[0]?.info.model).toBe("anthropic/claude")
             expect(documents[0]?.info.default_agent).toBe("reviewer")
-            expect(documents[0]?.info.autoupdate).toBe("notify")
-            expect(documents[0]?.info.share).toBe("disabled")
+            // kilocode_change - session sharing feature removed; no share assertion
             expect(documents[0]?.info.enterprise).toEqual({ url: "https://share.example.com" })
             expect(documents[0]?.info.username).toBe("test-user")
             expect(documents[0]?.info.permissions).toEqual([
@@ -433,10 +431,7 @@ describe("Config", () => {
               prettier: { disabled: true },
               custom: { command: ["custom-fmt", "$FILE"], extensions: [".foo"] },
             })
-            expect(documents[0]?.info.lsp).toEqual({
-              typescript: { disabled: true },
-              custom: { command: ["custom-lsp"], extensions: [".foo"] },
-            })
+            // kilocode_change - LSP removed; no lsp config in core tests
             expect(documents[0]?.info.attachments).toEqual({
               image: { auto_resize: false, max_width: 1200, max_height: 900, max_base64_bytes: 1048576 },
             })
@@ -542,7 +537,7 @@ describe("Config", () => {
                 shell: "/bin/zsh",
                 default_agent: "reviewer",
                 snapshot: false,
-                autoshare: true,
+                // kilocode_change - session sharing feature removed; autoshare no longer migrates to share
                 permission: {
                   bash: "ask",
                   edit: { "*.md": "allow", "*": "deny" },
@@ -622,7 +617,7 @@ describe("Config", () => {
             expect(documents[0]?.info.shell).toBe("/bin/zsh")
             expect(documents[0]?.info.default_agent).toBe("reviewer")
             expect(documents[0]?.info.snapshots).toBe(false)
-            expect(documents[0]?.info.share).toBe("auto")
+            // kilocode_change - session sharing feature removed; no share migration assertion
             expect(documents[0]?.info.permissions).toEqual([
               { action: "bash", resource: "*", effect: "ask" },
               { action: "edit", resource: "*.md", effect: "allow" },

@@ -242,7 +242,6 @@ export const dict = {
   "ui.permission.toolLabel.webFetch": "Web Ophalen",
   "ui.permission.toolLabel.task": "Taak",
   "ui.permission.toolLabel.skill": "Vaardigheid",
-  "ui.permission.toolLabel.lsp": "LSP",
   "ui.permission.toolLabel.bash": "Bash",
   "ui.permission.toolLabel.todoRead": "Todo Lezen",
   "ui.permission.toolLabel.todoWrite": "Todo Schrijven",
@@ -469,8 +468,6 @@ export const dict = {
   "settings.permissions.tool.task.description": "Sub-agents starten",
   "settings.permissions.tool.skill.title": "Skill",
   "settings.permissions.tool.skill.description": "Laad een skill op naam",
-  "settings.permissions.tool.lsp.title": "LSP",
-  "settings.permissions.tool.lsp.description": "Voer language server queries uit",
   "settings.permissions.tool.todoread.title": "Todo Lezen",
   "settings.permissions.tool.todoread.description": "Lees de todo-lijst",
   "settings.permissions.tool.todowrite.title": "Todo Schrijven",
@@ -707,8 +704,6 @@ export const dict = {
   "settings.experimental.share.disabled": "Uitgeschakeld",
   "settings.experimental.formatter.title": "Formatter",
   "settings.experimental.formatter.description": "Schakel de automatische code formatter in",
-  "settings.experimental.lsp.title": "LSP",
-  "settings.experimental.lsp.description": "Schakel language server protocol integratie in",
   "settings.experimental.batch.title": "Batch Tool",
   "settings.experimental.batch.description": "Schakel batching van meerdere tool calls in",
   "settings.experimental.imageGeneration.title": "Afbeeldingsgeneratie",
@@ -860,10 +855,7 @@ export const dict = {
     "Mapinhoud weergeven. Staat het bekijken van bestanden en mappen binnen een map toe.",
   "settings.autoApprove.tool.task":
     "Sub-agents starten. Staat het starten van gespecialiseerde sub-agents toe voor specifieke taken.",
-  "settings.autoApprove.tool.skill": "Skills laden. Staat het laden van vooraf gedefinieerde skills op naam toe.",
-  "settings.autoApprove.tool.lsp":
-    "Language server raadplegen. Staat het uitvoeren van language server queries toe voor code-intelligentie.",
-  "settings.autoApprove.tool.todoreadwrite":
+  "settings.autoApprove.tool.skill": "Skills laden. Staat het laden van vooraf gedefinieerde skills op naam toe.",  "settings.autoApprove.tool.todoreadwrite":
     "Takenlijst beheren. Staat het lezen en bijwerken van de interne takenlijst toe.",
   "settings.autoApprove.tool.webfetch": "Een URL ophalen. Staat het ophalen van inhoud van een specifieke URL toe.",
   "settings.autoApprove.tool.doom_loop":

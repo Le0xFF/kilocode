@@ -19,7 +19,7 @@ import { BackgroundJob } from "@/background/job"
 import { Command } from "../../src/command"
 import { Auth } from "../../src/auth"
 import { Config } from "@/config/config"
-import { LSP } from "@/lsp/lsp"
+// kilocode_change - LSP removed; no language-server in prompt tests
 import { MCP } from "../../src/mcp"
 import { Permission } from "../../src/permission"
 import { Plugin } from "../../src/plugin"
@@ -150,25 +150,7 @@ function makeMcp(instructions: MCP.ServerInstructions[] = []) {
   )
 }
 
-const lsp = Layer.succeed(
-  LSP.Service,
-  LSP.Service.of({
-    init: () => Effect.void,
-    status: () => Effect.succeed([]),
-    hasClients: () => Effect.succeed(false),
-    touchFile: () => Effect.void,
-    diagnostics: () => Effect.succeed({}),
-    hover: () => Effect.succeed(undefined),
-    definition: () => Effect.succeed([]),
-    references: () => Effect.succeed([]),
-    implementation: () => Effect.succeed([]),
-    documentSymbol: () => Effect.succeed([]),
-    workspaceSymbol: () => Effect.succeed([]),
-    prepareCallHierarchy: () => Effect.succeed([]),
-    incomingCalls: () => Effect.succeed([]),
-    outgoingCalls: () => Effect.succeed([]),
-  }),
-)
+// kilocode_change - LSP removed; no language-server in prompt tests
 
 // kilocode_change start - one compiled graph per env. Effect v4 does not memoize nested layers, so
 // LayerNode.compile's cache is the only dedupe; building services with separate AppNodeBuilder.build
@@ -221,7 +203,7 @@ const promptRoot = LayerNode.group([
   Plugin.node,
   Config.node,
   ProviderSvc.node,
-  LSP.node,
+  // kilocode_change - LSP removed; no language-server in prompt tests
   MCP.node,
   FSUtil.node,
   BackgroundJob.node,
@@ -251,7 +233,7 @@ const promptRoot = LayerNode.group([
 function makePrompt(input?: { processor?: "blocking" }) {
   const replacements = [
     [SessionSummary.node, summary],
-    [LSP.node, lsp],
+    // kilocode_change - LSP removed; no language-server in prompt tests
     [MCP.node, makeMcp()],
     [RuntimeFlags.node, runtimeFlags],
   ] as const
@@ -270,7 +252,7 @@ function makeHttp(input?: { processor?: "blocking" }) {
   const root = LayerNode.group([promptRoot, testLLMServerNode])
   const replacements = [
     [SessionSummary.node, summary],
-    [LSP.node, lsp],
+    // kilocode_change - LSP removed; no language-server in prompt tests
     [MCP.node, makeMcp()],
     [RuntimeFlags.node, runtimeFlags],
   ] as const

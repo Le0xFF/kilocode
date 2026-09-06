@@ -14,7 +14,7 @@ import { Parameters as Edit } from "../../src/tool/edit"
 import { Parameters as Glob } from "../../src/tool/glob"
 import { Parameters as Grep } from "../../src/tool/grep"
 import { Parameters as Invalid } from "../../src/tool/invalid"
-import { Parameters as Lsp } from "../../src/tool/lsp"
+// kilocode_change - LSP removed; no lsp tool parameters in tests
 import { Parameters as Plan } from "../../src/tool/plan"
 import { Parameters as Question } from "../../src/tool/question"
 import { Parameters as Read } from "../../src/tool/read"
@@ -42,7 +42,7 @@ describe("tool parameters", () => {
     test("glob", () => expect(toJsonSchema(Glob)).toMatchSnapshot())
     test("grep", () => expect(toJsonSchema(Grep)).toMatchSnapshot())
     test("invalid", () => expect(toJsonSchema(Invalid)).toMatchSnapshot())
-    test("lsp", () => expect(toJsonSchema(Lsp)).toMatchSnapshot())
+    // kilocode_change - LSP removed; no lsp tool parameters in tests
     test("plan", () => expect(toJsonSchema(Plan)).toMatchSnapshot())
     test("question", () => expect(toJsonSchema(Question)).toMatchSnapshot())
     test("read", () => expect(toJsonSchema(Read)).toMatchSnapshot())
@@ -193,21 +193,7 @@ describe("tool parameters", () => {
     })
   })
 
-  describe("lsp", () => {
-    test("accepts all fields", () => {
-      const parsed = parse(Lsp, { operation: "hover", filePath: "/a.ts", line: 1, character: 1 })
-      expect(parsed.operation).toBe("hover")
-    })
-    test("rejects line < 1", () => {
-      expect(accepts(Lsp, { operation: "hover", filePath: "/a.ts", line: 0, character: 1 })).toBe(false)
-    })
-    test("rejects character < 1", () => {
-      expect(accepts(Lsp, { operation: "hover", filePath: "/a.ts", line: 1, character: 0 })).toBe(false)
-    })
-    test("rejects unknown operation", () => {
-      expect(accepts(Lsp, { operation: "bogus", filePath: "/a.ts", line: 1, character: 1 })).toBe(false)
-    })
-  })
+  // kilocode_change - LSP removed; no lsp tool parameters in tests
 
   describe("plan", () => {
     test("accepts empty object", () => {

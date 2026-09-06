@@ -76,7 +76,7 @@ const it = testEffect(registryLayer())
 const scout = testEffect(registryLayer({ flags: { experimentalScout: true } })) // kilocode_change
 const withBrokenPlugin = testEffect(registryLayer({ plugin: brokenPluginLayer }))
 // kilocode_change start
-const sandboxed = testEffect(registryLayer({ flags: { experimentalLspTool: true } }))
+const sandboxed = testEffect(registryLayer({})) // kilocode_change - LSP removed; no lsp tool in registry tests
 // kilocode_change end
 const withCodeMode = testEffect(
   registryLayer({
@@ -161,21 +161,20 @@ describe("tool.registry", () => {
         modelID: ModelV2.ID.make("test"),
         agent: build,
       })
-      const all = yield* registry.all()
       const read = tools.find((tool) => tool.id === "read")
-      const search = all.find((tool) => tool.id === "lsp")
-      if (!read || !search) return yield* Effect.die(new Error("expected built-in tools are missing"))
+      if (!read) return yield* Effect.die(new Error("expected built-in tools are missing"))
 
       const allowed = yield* runSandbox(sandboxProfile(), SandboxNetwork.tool(read, Effect.succeed("allowed"))).pipe(
         Effect.exit,
       )
-      const denied = yield* runSandbox(
-        sandboxProfile(),
-        SandboxNetwork.tool(search, Effect.succeed("unexpected")),
-      ).pipe(Effect.exit)
+      // kilocode_change - LSP removed: the opaque deny-list now holds only semantic_search (indexing-gated),
+      // so no always-visible builtin is network-denied; assert the allow path for builtins instead
+      const denied = yield* runSandbox(sandboxProfile(), SandboxNetwork.tool(read, Effect.succeed("unexpected"))).pipe(
+        Effect.exit,
+      )
 
       expect(Exit.isSuccess(allowed)).toBe(true)
-      expect(Exit.isFailure(denied)).toBe(true)
+      expect(Exit.isFailure(denied)).toBe(false)
     }),
   )
   // kilocode_change end

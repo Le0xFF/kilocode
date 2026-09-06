@@ -109,7 +109,7 @@ describe("legacy instance SSE", () => {
           version: 2,
         })
       }),
-    { git: true, config: { formatter: false, lsp: false } },
+    { git: true, config: { formatter: false } },
   )
 
   it.instance(
@@ -132,6 +132,6 @@ describe("legacy instance SSE", () => {
           data: { sessionID: session.id, info: { id: session.id } },
         })
       }),
-    { git: true, config: { formatter: false, lsp: false } },
+    { git: true, config: { formatter: false } },
   )
 })

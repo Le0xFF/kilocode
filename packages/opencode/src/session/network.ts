@@ -32,7 +32,7 @@ export namespace SessionNetwork {
     "UND_ERR_SOCKET",
     "ERR_SOCKET_CONNECTION_TIMEOUT",
   ])
-  const urls = ["https://www.google.com", "https://example.com", "https://cloudflare.com/cdn-cgi/trace"] // kilocode_change - neutral probe targets for offline retry detection
+  const urls = [] as string[] // kilocode_change - offline surface: no external probe hosts; the watch loop keeps local provider error handling but performs no outbound probes
   const POLL_MS = 3_000
   const PROBE_MS = 5_000
   const RESUME_MS = 10_000

@@ -445,14 +445,7 @@ it.instance(
   { config: { formatter: true } },
 )
 
-it.instance(
-  "loads lsp boolean config",
-  Effect.gen(function* () {
-    const config = yield* Config.use.get()
-    expect(config.lsp).toBe(true)
-  }),
-  { config: { lsp: true } },
-)
+// kilocode_change - LSP removed; no lsp config test
 
 test("loads project config from Git Bash and MSYS2 paths on Windows", async () => {
   // Git Bash and MSYS2 both use /<drive>/... paths on Windows.
@@ -847,7 +840,7 @@ it.instance("handles command configuration", () =>
   }),
 )
 
-it.instance("migrates autoshare to share field", () =>
+it.instance("ignores the removed autoshare field", () =>
   Effect.gen(function* () {
     const test = yield* TestInstance
     yield* writeConfigEffect(test.directory, {
@@ -855,8 +848,8 @@ it.instance("migrates autoshare to share field", () =>
       autoshare: true,
     })
     const config = yield* Config.use.get()
-    expect(config.share).toBe("auto")
-    expect(config.autoshare).toBe(true)
+    // kilocode_change - session sharing feature removed; autoshare no longer normalizes to share
+    expect((config as unknown as { autoshare?: boolean }).autoshare).toBeUndefined()
   }),
 )
 
@@ -1389,15 +1382,13 @@ it.instance(
     yield* writeManagedSettingsEffect({
       $schema: "https://app.kilo.ai/config.json", // kilocode_change
       model: "managed/model",
-      share: "disabled",
     })
 
     const config = yield* Config.use.get()
     expect(config.model).toBe("managed/model")
-    expect(config.share).toBe("disabled")
     expect(config.username).toBe("testuser")
   }),
-  { config: { model: "user/model", share: "auto", username: "testuser" } },
+  { config: { model: "user/model", username: "testuser" } },
 )
 
 it.instance(
@@ -1405,15 +1396,13 @@ it.instance(
   Effect.gen(function* () {
     yield* writeManagedSettingsEffect({
       $schema: "https://app.kilo.ai/config.json", // kilocode_change
-      autoupdate: false,
       disabled_providers: ["openai"],
     })
 
     const config = yield* Config.use.get()
-    expect(config.autoupdate).toBe(false)
     expect(config.disabled_providers).toEqual(["openai"])
   }),
-  { config: { autoupdate: true, disabled_providers: [] } },
+  { config: { disabled_providers: [] } },
 )
 
 it.instance("managed jsonc settings override managed json settings", () =>
@@ -2258,7 +2247,6 @@ test("parseManagedPlist strips MDM metadata keys", async () => {
           PayloadUUID: "AAAA-BBBB-CCCC",
           PayloadVersion: 1,
           _manualProfile: true,
-          share: "disabled",
           model: "mdm/model",
         }),
       ),
@@ -2266,7 +2254,6 @@ test("parseManagedPlist strips MDM metadata keys", async () => {
     ),
     "test:mobileconfig",
   )
-  expect(config.share).toBe("disabled")
   expect(config.model).toBe("mdm/model")
   // MDM keys must not leak into the parsed config
   expect((config as any).PayloadUUID).toBeUndefined()
@@ -2282,7 +2269,6 @@ test("parseManagedPlist parses server settings", async () => {
         JSON.stringify({
           $schema: "https://opencode.ai/config.json",
           server: { hostname: "127.0.0.1", mdns: false },
-          autoupdate: true,
         }),
       ),
       "test:mobileconfig",
@@ -2291,7 +2277,6 @@ test("parseManagedPlist parses server settings", async () => {
   )
   expect(config.server?.hostname).toBe("127.0.0.1")
   expect(config.server?.mdns).toBe(false)
-  expect(config.autoupdate).toBe(true)
 })
 
 test("parseManagedPlist parses permission rules", async () => {

@@ -495,21 +495,9 @@ export const kiloScenarios: Scenario[] = [
       check(typeof body.available === "boolean", "sandbox toggle should report backend availability")
       check(typeof body.version === "number", "sandbox toggle should report its revision")
     }),
-  http.protected.get("/remote/status", "remote.status").json(200, (body) => {
-    object(body)
-    check(body.enabled === false && body.connected === false, "remote should start disabled")
-  }),
-  http.protected.post("/remote/disable", "remote.disable").json(200, (body) => {
-    object(body)
-    check(body.enabled === false && body.connected === false, "remote disable should report disconnected state")
-  }),
-  http.protected
-    .post("/remote/enable", "remote.enable")
-    .probe({ path: "/path" })
-    .json(200, (body) => {
-      object(body)
-      check(body.enabled === false && body.connected === false, "disabled ingest should keep remote disconnected")
-    }),
+  // kilocode_change start - RemoteApi removed with Remote Control; only its auth behavior is still worth proving
+  http.protected.post("/remote/enable", "remote.enable").skipValidAuthProbe().status(401),
+  // kilocode_change end
   http.protected.get("/suggestion", "suggestion.list").json(200, array),
   http.protected
     .post("/suggestion/{requestID}/accept", "suggestion.accept")

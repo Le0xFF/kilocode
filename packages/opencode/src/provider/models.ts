@@ -20,7 +20,9 @@ export const layer: Layer.Layer<Service, never, Core.Service | Config.Service> =
   Service,
   Effect.gen(function* () {
     const core = yield* Core.Service
-    // kilocode_change start - apertis (online fetch to api.apertis.ai) and the anaconda-desktop overlay are excluded from the offline surface; drop both from the catalog so no online model-cache traffic is started
+    // kilocode_change start - apertis (online fetch to api.apertis.ai) is excluded from the offline surface, so it is dropped from the catalog.
+    // The anaconda-desktop entry is no longer created by a snapshot here; it is whitelisted in LOCAL_PROVIDER_IDS and injected by the AnacondaDesktopPlugin overlay,
+    // so the delete below is belt-and-braces coherence with apertis (it also guards against any future anaconda-desktop entry re-entering via models-dev.local.json).
     const get = Effect.fn("ModelsDev.get")(function* () {
       const providers = yield* core.get()
       delete providers["apertis"]

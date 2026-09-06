@@ -51,7 +51,6 @@ export function createFetch(override?: FetchHandler) {
       // case "/experimental/workspace": // kilocode_change
       case "/experimental/workspace/status":
       case "/formatter":
-      case "/lsp":
       case "/network": // kilocode_change
       case "/background-process": // kilocode_change
         return json([])

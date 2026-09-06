@@ -23,7 +23,7 @@ import { kilocodeHandlers } from "./handlers/kilocode"
 import { mediaLocalHandlers } from "./handlers/media-local"
 import { memoryHandlers } from "./handlers/memory"
 import { networkHandlers } from "./handlers/network"
-import { remoteHandlers } from "./handlers/remote"
+// kilocode_change - RemoteApi removed: no call sites after Remote Control removal
 import { sandboxHandlers } from "./handlers/sandbox"
 import { sessionImportHandlers } from "./handlers/session-import"
 import { suggestionHandlers } from "./handlers/suggestion"
@@ -43,7 +43,7 @@ export const provide = Layer.provide([
   mediaLocalHandlers,
   memoryHandlers,
   networkHandlers,
-  remoteHandlers,
+  // kilocode_change - RemoteApi removed: no call sites after Remote Control removal
   sandboxHandlers,
   sessionImportHandlers,
   suggestionHandlers,

@@ -24,9 +24,9 @@ const AVAILABLE_PERMISSIONS = [
   "grep",
   "webfetch",
   "task",
-  "todowrite",
-  
-  "lsp",
+"todowrite", // kilocode_change - LSP removed; list reflows after lsp key removal
+
+  // kilocode_change - LSP removed; no lsp permission key
   "skill",
 ]
 

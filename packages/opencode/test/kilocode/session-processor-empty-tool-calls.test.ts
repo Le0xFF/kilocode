@@ -581,8 +581,8 @@ describe("session processor empty tool-calls", () => {
           const processors = yield* SessionProcessor.Service
           const session = yield* Session.Service
           const selection = {
-            providerID: ProviderV2.ID.make("kilo"),
-            modelID: ModelV2.ID.make("openrouter/openai/gpt-5.5-20260423"),
+            providerID: ProviderV2.ID.make("test"),
+            modelID: ModelV2.ID.make("openai/gpt-5.5"),
           }
 
           yield* test.reply(
@@ -650,14 +650,14 @@ describe("session processor empty tool-calls", () => {
           const parts = yield* MessageV2.parts(msg.id)
           const part = parts.find((item): item is MessageV2.StepFinishPart => item.type === "step-finish")
 
-          expect(part?.model).toEqual({
-            providerID: selection.providerID,
-            modelID: ModelV2.ID.make("openai/gpt-5.5-20260423"),
-          })
-          expect(part?.generationID).toBe("gen_test")
-          expect(part?.vercelID).toBe("fra1::test")
-          expect(part).not.toHaveProperty("providerMetadata")
-          expect(part).not.toHaveProperty("gateway")
+          // kilocode_change start - kilo routing removed with the offline surface: step-finish no longer
+          // carries a `model` field, only gateway generation/vercel IDs in metadata
+            expect(part?.model).toBeUndefined()
+            expect(part?.generationID).toBe("gen_test")
+            expect(part?.vercelID).toBe("fra1::test")
+            expect(part).not.toHaveProperty("providerMetadata")
+            expect(part).not.toHaveProperty("gateway")
+            // kilocode_change end
         }),
       { git: true },
     ),

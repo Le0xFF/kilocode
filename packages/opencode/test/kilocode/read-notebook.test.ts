@@ -5,7 +5,6 @@ import path from "path"
 import { Agent } from "../../src/agent/agent"
 import * as CrossSpawnSpawner from "@opencode-ai/core/cross-spawn-spawner"
 import { FSUtil } from "@opencode-ai/core/fs-util"
-import { LSP } from "../../src/lsp/lsp"
 import { Instruction } from "../../src/session/instruction"
 import { MessageID, SessionID } from "../../src/session/schema"
 import { ReadTool } from "../../src/tool/read"
@@ -31,7 +30,6 @@ const it = testEffect(
     AppNodeBuilder.build(FSUtil.node),
     AppNodeBuilder.build(CrossSpawnSpawner.node),
     AppNodeBuilder.build(Instruction.node),
-    AppNodeBuilder.build(LSP.node),
     AppNodeBuilder.build(Truncate.node),
     testInstanceStoreLayer,
   ),

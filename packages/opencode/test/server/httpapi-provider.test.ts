@@ -17,7 +17,7 @@ const testStateLayer = Layer.effectDiscard(
 )
 
 const it = testEffect(Layer.mergeAll(testStateLayer, LayerNode.compile(FSUtil.node), httpApiLayer))
-const projectOptions = { config: { formatter: false, lsp: false } }
+const projectOptions = { config: { formatter: false } }
 const providerID = "test-oauth-parity"
 const oauthURL = "https://example.com/oauth"
 const oauthInstructions = "Finish OAuth"

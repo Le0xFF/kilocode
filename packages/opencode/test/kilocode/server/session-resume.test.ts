@@ -73,7 +73,6 @@ it.live(
           model: "test/test-model",
           enabled_providers: ["test"],
           formatter: false,
-          lsp: false,
           provider: {
             test: {
               name: "Test",

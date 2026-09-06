@@ -165,9 +165,7 @@ function stateApi(sync: ReturnType<typeof useSync>): TuiPluginApi["state"] {
     part(messageID) {
       return sync.data.part[messageID] ?? []
     },
-    lsp() {
-      return sync.data.lsp.map((item) => ({ id: item.id, root: item.root, status: item.status }))
-    },
+    // kilocode_change - LSP removed; no lsp adapter in TUI plugin
     mcp() {
       return Object.entries(sync.data.mcp)
         .sort(([a], [b]) => a.localeCompare(b))

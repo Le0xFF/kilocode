@@ -73,12 +73,7 @@ import type {
   SessionAbortData,
   SessionAbortResponses,
   SessionAbortErrors,
-  SessionUnshareData,
-  SessionUnshareResponses,
-  SessionUnshareErrors,
-  SessionShareData,
-  SessionShareResponses,
-  SessionShareErrors,
+  // kilocode_change - session sharing feature removed; no SessionUnshare/SessionShare types
   SessionDiffData,
   SessionDiffResponses,
   SessionDiffErrors,
@@ -164,8 +159,6 @@ import type {
   McpConnectResponses,
   McpDisconnectData,
   McpDisconnectResponses,
-  LspStatusData,
-  LspStatusResponses,
   FormatterStatusData,
   FormatterStatusResponses,
   TuiAppendPromptData,
@@ -555,25 +548,7 @@ class Session extends _HeyApiClient {
     })
   }
 
-  /**
-   * Unshare the session
-   */
-  public unshare<ThrowOnError extends boolean = false>(options: Options<SessionUnshareData, ThrowOnError>) {
-    return (options.client ?? this._client).delete<SessionUnshareResponses, SessionUnshareErrors, ThrowOnError>({
-      url: "/session/{id}/share",
-      ...options,
-    })
-  }
-
-  /**
-   * Share a session
-   */
-  public share<ThrowOnError extends boolean = false>(options: Options<SessionShareData, ThrowOnError>) {
-    return (options.client ?? this._client).post<SessionShareResponses, SessionShareErrors, ThrowOnError>({
-      url: "/session/{id}/share",
-      ...options,
-    })
-  }
+  // kilocode_change - session sharing feature removed; no share/unshare methods
 
   /**
    * Get the diff for this session
@@ -973,18 +948,6 @@ class Mcp extends _HeyApiClient {
   auth = new Auth({ client: this._client })
 }
 
-class Lsp extends _HeyApiClient {
-  /**
-   * Get LSP server status
-   */
-  public status<ThrowOnError extends boolean = false>(options?: Options<LspStatusData, ThrowOnError>) {
-    return (options?.client ?? this._client).get<LspStatusResponses, unknown, ThrowOnError>({
-      url: "/lsp",
-      ...options,
-    })
-  }
-}
-
 class Formatter extends _HeyApiClient {
   /**
    * Get formatter status
@@ -1189,7 +1152,6 @@ export class KiloClient extends _HeyApiClient {
   file = new File({ client: this._client })
   app = new App({ client: this._client })
   mcp = new Mcp({ client: this._client })
-  lsp = new Lsp({ client: this._client })
   formatter = new Formatter({ client: this._client })
   tui = new Tui({ client: this._client })
   auth = new Auth({ client: this._client })

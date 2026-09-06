@@ -240,7 +240,6 @@ export const dict = {
   "ui.permission.toolLabel.webFetch": "Web dohvat",
   "ui.permission.toolLabel.task": "Zadatak",
   "ui.permission.toolLabel.skill": "Vještina",
-  "ui.permission.toolLabel.lsp": "LSP",
   "ui.permission.toolLabel.bash": "Bash",
   "ui.permission.toolLabel.todoRead": "Čitanje liste zadataka",
   "ui.permission.toolLabel.todoWrite": "Ažuriranje liste zadataka",
@@ -514,8 +513,6 @@ export const dict = {
   "settings.permissions.tool.task.description": "Pokretanje pod-agenta",
   "settings.permissions.tool.skill.title": "Vještina",
   "settings.permissions.tool.skill.description": "Učitaj vještinu po nazivu",
-  "settings.permissions.tool.lsp.title": "LSP",
-  "settings.permissions.tool.lsp.description": "Pokreni upite jezičnog servera",
   "settings.permissions.tool.todoread.title": "Čitanje liste zadataka",
   "settings.permissions.tool.todoread.description": "Čitanje liste zadataka",
   "settings.permissions.tool.todowrite.title": "Ažuriranje liste zadataka",
@@ -710,8 +707,6 @@ export const dict = {
   "settings.experimental.share.disabled": "Onemogućeno",
   "settings.experimental.formatter.title": "Formater",
   "settings.experimental.formatter.description": "Omogući automatsko formatiranje koda",
-  "settings.experimental.lsp.title": "LSP",
-  "settings.experimental.lsp.description": "Omogući integraciju jezičkog servera",
   "settings.experimental.batch.title": "Batch alat",
   "settings.experimental.batch.description": "Omogući batch obradu poziva alata",
   "settings.experimental.imageGeneration.title": "Generisanje slika",
@@ -894,10 +889,7 @@ export const dict = {
   "settings.autoApprove.tool.task":
     "Pokretanje pod-agenata. Omogućava pokretanje specijalizovanih pod-agenata za određene zadatke.",
   "settings.autoApprove.tool.skill":
-    "Učitavanje vještina. Omogućava učitavanje unaprijed definisanih vještina po imenu.",
-  "settings.autoApprove.tool.lsp":
-    "Upit ka jezičkom serveru. Omogućava pokretanje upita jezičkom serveru za analizu koda.",
-  "settings.autoApprove.tool.todoreadwrite":
+    "Učitavanje vještina. Omogućava učitavanje unaprijed definisanih vještina po imenu.",  "settings.autoApprove.tool.todoreadwrite":
     "Upravljanje listom zadataka. Dozvoljava čitanje i ažuriranje interne liste zadataka.",
   "settings.autoApprove.tool.webfetch": "Preuzimanje URL-a. Omogućava preuzimanje sadržaja sa određenog URL-a.",
   "settings.autoApprove.tool.external_directory":

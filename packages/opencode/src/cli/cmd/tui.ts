@@ -440,10 +440,6 @@ export const TuiThreadCommand = cmd({
 
       // kilocode_change - upstream validates here, but --cloud-fork's session id is only local after
       // the import below; the guarded validateSession further down covers both paths.
-      setTimeout(() => {
-        client.call("checkUpgrade", { directory: cwd }).catch((err) => console.error("Upgrade check failed", err))
-      }, 1000).unref?.()
-
       try {
         // kilocode_change start - import cloud session before TUI renders
         if (args.cloudFork && args.session) {

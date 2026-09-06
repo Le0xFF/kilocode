@@ -239,7 +239,6 @@ export const dict = {
   "ui.permission.toolLabel.webFetch": "Webhentning",
   "ui.permission.toolLabel.task": "Opgave",
   "ui.permission.toolLabel.skill": "Færdighed",
-  "ui.permission.toolLabel.lsp": "LSP",
   "ui.permission.toolLabel.bash": "Bash",
   "ui.permission.toolLabel.todoRead": "Læs To-do",
   "ui.permission.toolLabel.todoWrite": "Skriv To-do",
@@ -511,8 +510,6 @@ export const dict = {
   "settings.permissions.tool.task.description": "Start underagenter",
   "settings.permissions.tool.skill.title": "Færdighed",
   "settings.permissions.tool.skill.description": "Indlæs en færdighed efter navn",
-  "settings.permissions.tool.lsp.title": "LSP",
-  "settings.permissions.tool.lsp.description": "Kør sprogserverforespørgsler",
   "settings.permissions.tool.todoread.title": "Læs To-do",
   "settings.permissions.tool.todoread.description": "Læs to-do listen",
   "settings.permissions.tool.todowrite.title": "Skriv To-do",
@@ -709,8 +706,6 @@ export const dict = {
   "settings.experimental.share.disabled": "Deaktiveret",
   "settings.experimental.formatter.title": "Formater",
   "settings.experimental.formatter.description": "Aktiver automatisk kodeformatering",
-  "settings.experimental.lsp.title": "LSP",
-  "settings.experimental.lsp.description": "Aktiver sprogserverprotokol-integration",
   "settings.experimental.batch.title": "Batchværktøj",
   "settings.experimental.batch.description": "Aktiver batchbehandling af flere værktøjskald",
   "settings.experimental.imageGeneration.title": "Billedgenerering",
@@ -889,10 +884,7 @@ export const dict = {
   "settings.autoApprove.tool.task":
     "Start underagenter. Tillader start af specialiserede underagenter til specifikke opgaver.",
   "settings.autoApprove.tool.skill":
-    "Indlæs færdigheder. Tillader indlæsning af foruddefinerede færdigheder efter navn.",
-  "settings.autoApprove.tool.lsp":
-    "Forespørg sprogserver. Tillader kørsel af sprogserverforespørgsler til kodeintelligens.",
-  "settings.autoApprove.tool.todoreadwrite":
+    "Indlæs færdigheder. Tillader indlæsning af foruddefinerede færdigheder efter navn.",  "settings.autoApprove.tool.todoreadwrite":
     "Administrer opgaveliste. Tillader læsning og opdatering af den interne opgaveliste.",
   "settings.autoApprove.tool.webfetch": "Hent en URL. Tillader hentning af indhold fra en specifik URL.",
   "settings.autoApprove.tool.external_directory":

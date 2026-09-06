@@ -2,8 +2,6 @@ import { describe, expect, test } from "bun:test"
 import { Effect } from "effect"
 import type { Part, StepFinishPart } from "@kilocode/sdk/v2"
 import { KiloRoutedModel } from "../../src/kilocode/session/routed-model"
-import { ProviderV2 } from "@opencode-ai/core/provider"
-import { ModelV2 } from "@opencode-ai/core/model"
 import { LLMAISDK } from "../../src/session/llm/ai-sdk"
 
 describe("session routed model", () => {
@@ -86,38 +84,5 @@ describe("session routed model", () => {
     )
     expect(KiloRoutedModel.displayName("moonshotai/kimi-k2.7-code")).toBe("kimi-k2.7-code")
     expect(KiloRoutedModel.displayName("o3")).toBe("o3")
-  })
-
-  test("reads routed model only for Kilo auto selections that still route", () => {
-    const meta = { kilocode: { routedModelID: "openai/gpt-5.5-20260423" } }
-
-    expect(
-      KiloRoutedModel.readAuto(meta, {
-        providerID: ProviderV2.ID.make("kilo"),
-        modelID: "openrouter/openai/gpt-5.5-20260423",
-      }),
-    ).toEqual({
-      providerID: ProviderV2.ID.make("kilo"),
-      modelID: ModelV2.ID.make("openai/gpt-5.5-20260423"),
-    })
-
-    expect(
-      KiloRoutedModel.readAuto(meta, {
-        providerID: ProviderV2.ID.make("kilo"),
-        modelID: "kilo-auto/efficient",
-      }),
-    ).toBeUndefined()
-    expect(
-      KiloRoutedModel.readAuto(meta, {
-        providerID: ProviderV2.ID.make("kilo"),
-        modelID: "openai/gpt-5.5",
-      }),
-    ).toBeUndefined()
-    expect(
-      KiloRoutedModel.readAuto(meta, {
-        providerID: ProviderV2.ID.openai,
-        modelID: "gpt-5.5",
-      }),
-    ).toBeUndefined()
   })
 })

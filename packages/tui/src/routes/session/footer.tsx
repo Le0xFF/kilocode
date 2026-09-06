@@ -15,7 +15,7 @@ export function Footer() {
   const route = useRoute()
   const mcp = createMemo(() => Object.values(sync.data.mcp).filter((x) => x.status === "connected").length)
   const mcpError = createMemo(() => Object.values(sync.data.mcp).some((x) => x.status === "failed"))
-  const lsp = createMemo(() => Object.keys(sync.data.lsp))
+  // kilocode_change - LSP removed; no lsp in session footer
   const permissions = createMemo(() => {
     if (route.data.type !== "session") return []
     return sync.data.permission[route.data.sessionID] ?? []
@@ -78,9 +78,7 @@ export function Footer() {
                 {permissions().length > 1 ? "s" : ""}
               </text>
             </Show>
-            <text fg={theme.text}>
-              <span style={{ fg: lsp().length > 0 ? theme.success : theme.textMuted }}>•</span> {lsp().length} LSP
-            </text>
+            // kilocode_change - LSP removed; no LSP count in session footer
             {/* kilocode_change start */}
             <Show when={mcp()}>
               <text fg={theme.text}>

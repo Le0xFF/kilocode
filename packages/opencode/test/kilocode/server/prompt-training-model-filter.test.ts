@@ -53,7 +53,6 @@ it.live(
         tmpdir({
           config: {
             formatter: false,
-            lsp: false,
             hide_prompt_training_models: true,
             provider: {
               mylocal: {

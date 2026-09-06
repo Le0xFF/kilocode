@@ -22,7 +22,6 @@ function fatConfig() {
   }
   return {
     formatter: false,
-    lsp: false,
     username: "compression-test-user",
     instructions,
   }
@@ -97,7 +96,7 @@ describe("HttpApi compression", () => {
     test("when the response body is below the 1024-byte threshold", async () => {
       // kilocode_change - /config now serialises enough defaults to clear the threshold on its own,
       // so use /global/health, which stays a handful of bytes.
-      await using tmp = await tmpdir({ config: { formatter: false, lsp: false } })
+      await using tmp = await tmpdir({ config: { formatter: false } })
       const response = await app().request("/global/health", {
         headers: { "x-kilo-directory": tmp.path, "accept-encoding": "gzip" },
       })
@@ -119,7 +118,7 @@ describe("HttpApi compression", () => {
 
   describe("streaming exclusions", () => {
     test("/event SSE is not compressed", async () => {
-      await using tmp = await tmpdir({ config: { formatter: false, lsp: false } })
+      await using tmp = await tmpdir({ config: { formatter: false } })
       const controller = new AbortController()
       const response = await app().request("/event", {
         headers: { "x-kilo-directory": tmp.path, "accept-encoding": "gzip" },

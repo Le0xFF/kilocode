@@ -14,14 +14,14 @@ const enabledByExperimental = (name: string) =>
   )
 
 export class Service extends ConfigService.Service<Service>()("@opencode/RuntimeFlags", {
-  autoShare: bool("KILO_AUTO_SHARE"),
+  // kilocode_change - session sharing feature removed; no autoShare flag
   pure: bool("KILO_PURE"),
   disableDefaultPlugins: bool("KILO_DISABLE_DEFAULT_PLUGINS"),
   disableChannelDb: bool("KILO_DISABLE_CHANNEL_DB"), // kilocode_change
   disableEmbeddedWebUi: bool("KILO_DISABLE_EMBEDDED_WEB_UI"),
   disableExternalSkills: bool("KILO_DISABLE_EXTERNAL_SKILLS"),
   disableSkillShell: bool("KILO_DISABLE_SKILL_SHELL"), // kilocode_change - disable shell injection in skill bodies
-  disableLspDownload: bool("KILO_DISABLE_LSP_DOWNLOAD"),
+  // kilocode_change - LSP removed; no disableLspDownload flag
   skipMigrations: bool("KILO_SKIP_MIGRATIONS"), // kilocode_change
   disableClaudeCodePrompt: Config.all({
     broad: bool("KILO_DISABLE_CLAUDE_CODE"),
@@ -41,8 +41,6 @@ export class Service extends ConfigService.Service<Service>()("@opencode/Runtime
     Config.withDefault(true),
   ),
   // kilocode_change end
-  experimentalLspTy: bool("KILO_EXPERIMENTAL_LSP_TY"),
-  experimentalLspTool: enabledByExperimental("KILO_EXPERIMENTAL_LSP_TOOL"),
   experimentalOxfmt: enabledByExperimental("KILO_EXPERIMENTAL_OXFMT"),
   experimentalPlanMode: enabledByExperimental("KILO_EXPERIMENTAL_PLAN_MODE"),
   experimentalCodeMode: enabledByExperimental("KILO_EXPERIMENTAL_CODE_MODE"),

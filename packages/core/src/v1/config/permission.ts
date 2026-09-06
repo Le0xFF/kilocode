@@ -28,9 +28,9 @@ const InputObject = Schema.StructWithRest(
     markdown_source: Schema.optional(Rule), // kilocode_change - explicitly authorize external agent/command sources
     todowrite: Schema.optional(Action),
     question: Schema.optional(Action),
-    webfetch: Schema.optional(Action),
-    
-    lsp: Schema.optional(Rule),
+webfetch: Schema.optional(Action), // kilocode_change - LSP removed; list reflows after lsp key removal
+
+    // kilocode_change - LSP removed; no lsp permission key
     doom_loop: Schema.optional(Action),
     skill: Schema.optional(Rule),
     agent_manager: Schema.optional(Rule), // kilocode_change

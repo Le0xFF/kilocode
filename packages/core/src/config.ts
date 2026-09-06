@@ -17,7 +17,7 @@ import { ConfigCompaction } from "./config/compaction"
 import { ConfigCommand } from "./config/command"
 import { ConfigExperimental } from "./config/experimental"
 import { ConfigFormatter } from "./config/formatter"
-import { ConfigLSP } from "./config/lsp"
+// kilocode_change - LSP removed; no lsp config key (v2 schema)
 import { ConfigMCP } from "./config/mcp"
 import { ConfigPlugin } from "./config/plugin"
 import { ConfigProvider } from "./config/provider"
@@ -37,17 +37,10 @@ export class Info extends Schema.Class<Info>("Config.Info")({
   model: Schema.String.pipe(Schema.optional).annotate({
     description: "Default model to use when no session or agent model is selected",
   }),
-  default_agent: Schema.String.pipe(Schema.optional).annotate({
-    description: "Default primary agent to use when no session agent is selected",
+default_agent: Schema.String.pipe(Schema.optional).annotate({
+    description: "Default primary agent to use when no session or agent model is selected",
   }),
-  autoupdate: Schema.Union([Schema.Boolean, Schema.Literal("notify")])
-    .pipe(Schema.optional)
-    .annotate({
-      description: "Automatically update or notify when a new version is available",
-    }),
-  share: Schema.Literals(["manual", "auto", "disabled"]).pipe(Schema.optional).annotate({
-    description: "Control whether sessions may be shared manually, automatically, or not at all",
-  }),
+  // kilocode_change - auto-update removed; no autoupdate key
   enterprise: Schema.Struct({
     url: Schema.String.pipe(Schema.optional),
   })
@@ -73,9 +66,7 @@ export class Info extends Schema.Class<Info>("Config.Info")({
   formatter: ConfigFormatter.Info.pipe(Schema.optional).annotate({
     description: "Enable built-in formatters or configure formatter overrides",
   }),
-  lsp: ConfigLSP.Info.pipe(Schema.optional).annotate({
-    description: "Enable built-in language servers or configure server overrides",
-  }),
+  // kilocode_change - LSP removed; no lsp config key (v2 schema)
   attachments: ConfigAttachments.Info.pipe(Schema.optional).annotate({
     description: "Attachment processing configuration",
   }),

@@ -1,8 +1,8 @@
 // kilocode_change - new file
 // Detection of the pull request (PR) linked to the current worktree, plus the
 // manual override stored in session storage. The detection runs `gh pr view`
-// and caches like `getGitUrl` (in-flight + TTL); the override is the same
-// Storage shape used for `session_share`.
+// and caches like `getGitUrl` (in-flight + TTL); the override uses a per-worktree
+// Storage key.
 import { Instance } from "@/kilocode/instance"
 import { Storage } from "@/storage/storage"
 import { Process } from "@/util/process"

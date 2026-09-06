@@ -81,7 +81,6 @@ describe("kilo tui thread", () => {
             KILO_CONFIG_CONTENT: "{}",
             KILO_AUTH_CONTENT: "{}",
             KILO_DISABLE_PROJECT_CONFIG: "1",
-            KILO_DISABLE_AUTOUPDATE: "1",
             KILO_DISABLE_MODELS_FETCH: "1",
             KILO_DISABLE_TERMINAL_TITLE: "0",
             KILO_DEV_CWD: "",

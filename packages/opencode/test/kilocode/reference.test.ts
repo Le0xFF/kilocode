@@ -38,7 +38,7 @@ describe("configured references", () => {
   })
 
   test("clears previously initialized references when configuration becomes empty", async () => {
-    await using tmp = await tmpdir({ config: { formatter: false, lsp: false } })
+    await using tmp = await tmpdir({ config: { formatter: false } })
     const result = await Effect.runPromise(
       Effect.gen(function* () {
         const map = yield* LocationServiceMap.Service
@@ -165,7 +165,6 @@ describe("configured references", () => {
     await using tmp = await tmpdir({
       config: {
         formatter: false,
-        lsp: false,
         references: {
           docs: { path: "./docs", description: "Internal documentation" },
         },

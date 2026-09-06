@@ -31,7 +31,7 @@ afterEach(async () => {
 test("listener aborts shared parent and subagent runners", async () => {
   Flag.KILO_SERVER_PASSWORD = undefined
   delete process.env.KILO_SERVER_PASSWORD
-  await using tmp = await tmpdir({ git: true, config: { formatter: false, lsp: false } })
+  await using tmp = await tmpdir({ git: true, config: { formatter: false } })
   const ctx = await reloadTestInstance({ directory: tmp.path })
   const tree = await AppRuntime.runPromise(
     Effect.gen(function* () {

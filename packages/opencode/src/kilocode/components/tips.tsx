@@ -97,7 +97,8 @@ const TIPS = [
   "Ask Kilo to {highlight}save this workflow as a /command{/highlight}",
   "Kilo auto-handles OAuth for remote MCP servers requiring auth",
   "Kilo auto-formats files using prettier, gofmt, ruff, and more",
-  "Kilo uses LSP servers for intelligent code analysis",
+  // kilocode_change - LSP removed; no lsp tip
+  "Kilo provides intelligent code analysis for your project",
   "Use {highlight}kilo run{/highlight} for non-interactive scripting",
   "Use {highlight}kilo --continue{/highlight} to resume the last session",
   "Use {highlight}kilo run -f file.ts{/highlight} to attach files via CLI",

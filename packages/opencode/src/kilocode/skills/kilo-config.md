@@ -143,7 +143,7 @@ Scalar form applies to all patterns. Object form maps glob patterns to actions. 
 
 Actions: `"allow"`, `"ask"`, `"deny"`. Set `null` to delete an inherited key.
 
-Tool permissions: `read`, `edit`, `glob`, `grep`, `list`, `bash`, `task`, `webfetch`, `semantic_search`, `kilo_memory_save`, `kilo_memory_recall`, `lsp`, `skill`, `external_directory`, `todowrite`, `todoread`, `question`, `doom_loop`.
+Tool permissions: `read`, `edit`, `glob`, `grep`, `list`, `bash`, `task`, `webfetch`, `semantic_search`, `kilo_memory_save`, `kilo_memory_recall`, `skill`, `external_directory`, `todowrite`, `todoread`, `question`, `doom_loop`.
 
 ## MCP Servers
 
@@ -269,7 +269,6 @@ Skills are markdown files at `skills/<name>/SKILL.md` (or `skill/<name>/SKILL.md
 | `plugin` | `string[]` | Plugin specifiers (npm packages or `file://` paths) |
 | `snapshot` | `boolean` | Enable git snapshots |
 | `share` | `"manual"\|"auto"\|"disabled"` | Session sharing mode |
-| `autoupdate` | `boolean\|"notify"` | Auto-update behavior |
 | `username` | `string` | Display name override |
 | `compaction.auto` | `boolean` | Auto-compact when context full (default: true) |
 | `compaction.prune` | `boolean` | Prune old tool outputs (default: true) |

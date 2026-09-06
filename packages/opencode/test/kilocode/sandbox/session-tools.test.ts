@@ -15,7 +15,7 @@ import { EventV2Bridge } from "@/event-v2-bridge"
 import { RuntimeFlags } from "@/effect/runtime-flags"
 import { InstanceRef } from "@/effect/instance-ref"
 import { Format } from "@/format"
-import { LSP } from "@/lsp/lsp"
+// kilocode_change - LSP removed; no lsp in session-tools tests
 import * as ToolNetwork from "@/kilocode/sandbox/network"
 import { MCP } from "@/mcp"
 import { Permission } from "@/permission"
@@ -114,10 +114,7 @@ const mcp = Layer.mock(MCP.Service)({
   tools: () => Effect.succeed({}),
   clients: () => Effect.succeed({}), // kilocode_change - upstream's MCP resource tools probe the clients
 })
-const lsp = Layer.mock(LSP.Service)({
-  touchFile: () => Effect.void,
-  diagnostics: () => Effect.succeed({}),
-})
+// kilocode_change - LSP removed; no lsp mock in session-tools tests
 const format = Layer.mock(Format.Service)({
   file: () => Effect.succeed(false),
 })
@@ -132,7 +129,7 @@ const base = Layer.mergeAll(
   permission,
   plugin,
   mcp,
-  lsp,
+  // kilocode_change - LSP removed; no lsp mock in session-tools tests
   format,
   truncate,
   Bus.layer,

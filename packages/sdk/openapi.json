@@ -484,95 +484,6 @@
         ]
       }
     },
-    "/global/upgrade": {
-      "post": {
-        "tags": ["global"],
-        "operationId": "global.upgrade",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "Upgrade result",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "type": "object",
-                      "properties": {
-                        "success": {
-                          "type": "boolean",
-                          "enum": [true]
-                        },
-                        "version": {
-                          "type": "string"
-                        }
-                      },
-                      "required": ["success", "version"],
-                      "additionalProperties": false
-                    },
-                    {
-                      "type": "object",
-                      "properties": {
-                        "success": {
-                          "type": "boolean",
-                          "enum": [false]
-                        },
-                        "error": {
-                          "type": "string"
-                        }
-                      },
-                      "required": ["success", "error"],
-                      "additionalProperties": false
-                    }
-                  ],
-                  "description": "Upgrade result"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "BadRequest | InvalidRequestError",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/effect_HttpApiError_BadRequest"
-                    },
-                    {
-                      "$ref": "#/components/schemas/InvalidRequestError"
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        },
-        "description": "Upgrade kilo to the specified version or latest if not specified.",
-        "summary": "Upgrade kilo",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "target": {
-                    "type": "string"
-                  }
-                },
-                "additionalProperties": false
-              }
-            }
-          }
-        },
-        "x-codeSamples": [
-          {
-            "lang": "js",
-            "source": "import { createKiloClient } from \"@kilocode/sdk\"\n\nconst client = createKiloClient()\nawait client.global.upgrade({\n  ...\n})"
-          }
-        ]
-      }
-    },
     "/event": {
       "get": {
         "tags": ["event"],
@@ -2327,9 +2238,6 @@
               "application/json": {
                 "schema": {
                   "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Symbol"
-                  },
                   "description": "Symbols"
                 }
               }
@@ -2346,7 +2254,7 @@
             }
           }
         },
-        "description": "Search for workspace symbols like functions, classes, and variables using LSP.",
+        "description": "Search for workspace symbols like functions, classes, and variables.",
         "summary": "Find symbols",
         "x-codeSamples": [
           {
@@ -3167,64 +3075,6 @@
           {
             "lang": "js",
             "source": "import { createKiloClient } from \"@kilocode/sdk\"\n\nconst client = createKiloClient()\nawait client.app.skills({\n  ...\n})"
-          }
-        ]
-      }
-    },
-    "/lsp": {
-      "get": {
-        "tags": ["instance"],
-        "operationId": "lsp.status",
-        "parameters": [
-          {
-            "name": "directory",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            },
-            "required": false
-          },
-          {
-            "name": "workspace",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            },
-            "required": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "LSP server status",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/LSPStatus"
-                  },
-                  "description": "LSP server status"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BadRequestError"
-                }
-              }
-            }
-          }
-        },
-        "description": "Get LSP server status",
-        "summary": "Get LSP status",
-        "x-codeSamples": [
-          {
-            "lang": "js",
-            "source": "import { createKiloClient } from \"@kilocode/sdk\"\n\nconst client = createKiloClient()\nawait client.lsp.status({\n  ...\n})"
           }
         ]
       }
@@ -7668,170 +7518,6 @@
         ]
       }
     },
-    "/session/{sessionID}/share": {
-      "post": {
-        "tags": ["session"],
-        "operationId": "session.share",
-        "parameters": [
-          {
-            "name": "sessionID",
-            "in": "path",
-            "schema": {
-              "type": "string",
-              "pattern": "^ses.*"
-            },
-            "required": true
-          },
-          {
-            "name": "directory",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            },
-            "required": false
-          },
-          {
-            "name": "workspace",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            },
-            "required": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successfully shared session",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Session6"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BadRequestError"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "NotFoundError",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/NotFoundError"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "InternalServerError",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/effect_HttpApiError_InternalServerError"
-                }
-              }
-            }
-          }
-        },
-        "description": "Create a shareable link for a session, allowing others to view the conversation.",
-        "summary": "Share session",
-        "x-codeSamples": [
-          {
-            "lang": "js",
-            "source": "import { createKiloClient } from \"@kilocode/sdk\"\n\nconst client = createKiloClient()\nawait client.session.share({\n  ...\n})"
-          }
-        ]
-      },
-      "delete": {
-        "tags": ["session"],
-        "operationId": "session.unshare",
-        "parameters": [
-          {
-            "name": "sessionID",
-            "in": "path",
-            "schema": {
-              "type": "string",
-              "pattern": "^ses.*"
-            },
-            "required": true
-          },
-          {
-            "name": "directory",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            },
-            "required": false
-          },
-          {
-            "name": "workspace",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            },
-            "required": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successfully unshared session",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Session7"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BadRequestError"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "NotFoundError",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/NotFoundError"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "InternalServerError",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/effect_HttpApiError_InternalServerError"
-                }
-              }
-            }
-          }
-        },
-        "description": "Remove the shareable link for a session, making it private again.",
-        "summary": "Unshare session",
-        "x-codeSamples": [
-          {
-            "lang": "js",
-            "source": "import { createKiloClient } from \"@kilocode/sdk\"\n\nconst client = createKiloClient()\nawait client.session.unshare({\n  ...\n})"
-          }
-        ]
-      }
-    },
     "/session/{sessionID}/summarize": {
       "post": {
         "tags": ["session"],
@@ -8447,7 +8133,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Session8"
+                  "$ref": "#/components/schemas/Session6"
                 }
               }
             }
@@ -8558,7 +8244,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Session9"
+                  "$ref": "#/components/schemas/Session7"
                 }
               }
             }
@@ -16162,9 +15848,6 @@
                     "type": "string"
                   },
                   "version": {
-                    "type": "string"
-                  },
-                  "shareURL": {
                     "type": "string"
                   },
                   "summary": {
@@ -24755,9 +24438,6 @@
             "$ref": "#/components/schemas/EventTodoUpdated1"
           },
           {
-            "$ref": "#/components/schemas/EventLspUpdated1"
-          },
-          {
             "$ref": "#/components/schemas/EventPermissionAsked1"
           },
           {
@@ -24900,9 +24580,6 @@
           },
           {
             "$ref": "#/components/schemas/EventSuggestionDismissed"
-          },
-          {
-            "$ref": "#/components/schemas/EventLspClientDiagnostics"
           },
           {
             "$ref": "#/components/schemas/EventMemoryStatus1"
@@ -25107,9 +24784,6 @@
           },
           {
             "$ref": "#/components/schemas/EventTodoUpdated"
-          },
-          {
-            "$ref": "#/components/schemas/EventLspUpdated"
           },
           {
             "$ref": "#/components/schemas/EventPermissionAsked"
@@ -26168,16 +25842,6 @@
               }
             },
             "required": ["input", "output", "reasoning", "cache"],
-            "additionalProperties": false
-          },
-          "share": {
-            "type": "object",
-            "properties": {
-              "url": {
-                "type": "string"
-              }
-            },
-            "required": ["url"],
             "additionalProperties": false
           },
           "title": {
@@ -27756,7 +27420,6 @@
                     "enum": [
                       "session.list",
                       "session.new",
-                      "session.share",
                       "session.interrupt",
                       "session.compact",
                       "session.page.up",
@@ -28096,9 +27759,6 @@
                 "$ref": "#/components/schemas/EventSuggestionDismissed"
               },
               {
-                "$ref": "#/components/schemas/EventLspClientDiagnostics"
-              },
-              {
                 "$ref": "#/components/schemas/EventMemoryStatus"
               },
               {
@@ -28301,9 +27961,6 @@
               },
               {
                 "$ref": "#/components/schemas/EventTodoUpdated"
-              },
-              {
-                "$ref": "#/components/schemas/EventLspUpdated"
               },
               {
                 "$ref": "#/components/schemas/EventPermissionAsked"
@@ -30625,25 +30282,6 @@
                   },
                   "type": {
                     "type": "string",
-                    "enum": ["lsp.updated"]
-                  },
-                  "properties": {
-                    "type": "object",
-                    "properties": {}
-                  }
-                },
-                "required": ["id", "type", "properties"],
-                "additionalProperties": false
-              },
-              {
-                "type": "object",
-                "properties": {
-                  "id": {
-                    "type": "string",
-                    "pattern": "^evt_"
-                  },
-                  "type": {
-                    "type": "string",
                     "enum": ["permission.asked"]
                   },
                   "properties": {
@@ -30776,7 +30414,6 @@
                             "enum": [
                               "session.list",
                               "session.new",
-                              "session.share",
                               "session.interrupt",
                               "session.compact",
                               "session.page.up",
@@ -31846,9 +31483,6 @@
               "webfetch": {
                 "$ref": "#/components/schemas/PermissionActionConfig"
               },
-              "lsp": {
-                "$ref": "#/components/schemas/PermissionRuleConfig"
-              },
               "doom_loop": {
                 "$ref": "#/components/schemas/PermissionActionConfig"
               },
@@ -32060,7 +31694,7 @@
                 },
                 "ai_sdk_provider": {
                   "type": "string",
-                  "enum": ["anthropic", "openai", "openai-compatible", "openrouter"]
+                  "enum": ["anthropic", "openai", "openai-compatible"]
                 },
                 "mayTrainOnYourPrompts": {
                   "type": "boolean"
@@ -32499,25 +32133,6 @@
               ]
             }
           },
-          "share": {
-            "type": "string",
-            "enum": ["manual", "auto", "disabled"]
-          },
-          "autoshare": {
-            "type": "boolean"
-          },
-          "autoupdate": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "string",
-                "enum": ["notify"]
-              }
-            ],
-            "description": "Automatically update to the latest version. Set to true to auto-update, false to disable, or 'notify' to show update notifications"
-          },
           "disabled_providers": {
             "type": "array",
             "items": {
@@ -32759,63 +32374,6 @@
               }
             ],
             "description": "Enable or configure formatters. Omit or set to false to disable, true to enable built-ins, or an object to enable built-ins with overrides."
-          },
-          "lsp": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "object",
-                "additionalProperties": {
-                  "anyOf": [
-                    {
-                      "type": "object",
-                      "properties": {
-                        "disabled": {
-                          "type": "boolean",
-                          "enum": [true]
-                        }
-                      },
-                      "required": ["disabled"],
-                      "additionalProperties": false
-                    },
-                    {
-                      "type": "object",
-                      "properties": {
-                        "command": {
-                          "type": "array",
-                          "items": {
-                            "type": "string"
-                          }
-                        },
-                        "extensions": {
-                          "type": "array",
-                          "items": {
-                            "type": "string"
-                          }
-                        },
-                        "disabled": {
-                          "type": "boolean"
-                        },
-                        "env": {
-                          "type": "object",
-                          "additionalProperties": {
-                            "type": "string"
-                          }
-                        },
-                        "initialization": {
-                          "type": "object"
-                        }
-                      },
-                      "required": ["command"],
-                      "additionalProperties": false
-                    }
-                  ]
-                }
-              }
-            ],
-            "description": "Enable or configure LSP servers. Omit or set to false to disable, true to enable built-ins, or an object to enable built-ins with overrides."
           },
           "instructions": {
             "type": "array",
@@ -33284,7 +32842,7 @@
           },
           "ai_sdk_provider": {
             "type": "string",
-            "enum": ["anthropic", "openai", "openai-compatible", "openrouter"]
+            "enum": ["anthropic", "openai", "openai-compatible"]
           }
         },
         "required": [
@@ -33671,16 +33229,6 @@
             "required": ["input", "output", "reasoning", "cache"],
             "additionalProperties": false
           },
-          "share": {
-            "type": "object",
-            "properties": {
-              "url": {
-                "type": "string"
-              }
-            },
-            "required": ["url"],
-            "additionalProperties": false
-          },
           "title": {
             "type": "string"
           },
@@ -33796,33 +33344,6 @@
           }
         },
         "required": ["name", "uri", "client"],
-        "additionalProperties": false
-      },
-      "Symbol": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string"
-          },
-          "kind": {
-            "type": "integer",
-            "minimum": 0
-          },
-          "location": {
-            "type": "object",
-            "properties": {
-              "uri": {
-                "type": "string"
-              },
-              "range": {
-                "$ref": "#/components/schemas/Range"
-              }
-            },
-            "required": ["uri", "range"],
-            "additionalProperties": false
-          }
-        },
-        "required": ["name", "kind", "location"],
         "additionalProperties": false
       },
       "FileNode": {
@@ -34158,26 +33679,6 @@
           }
         },
         "required": ["name", "mode", "permission", "options"],
-        "additionalProperties": false
-      },
-      "LSPStatus": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "name": {
-            "type": "string"
-          },
-          "root": {
-            "type": "string"
-          },
-          "status": {
-            "type": "string",
-            "enum": ["connected", "error"]
-          }
-        },
-        "required": ["id", "name", "root", "status"],
         "additionalProperties": false
       },
       "FormatterStatus": {
@@ -34740,16 +34241,6 @@
             "required": ["input", "output", "reasoning", "cache"],
             "additionalProperties": false
           },
-          "share": {
-            "type": "object",
-            "properties": {
-              "url": {
-                "type": "string"
-              }
-            },
-            "required": ["url"],
-            "additionalProperties": false
-          },
           "title": {
             "type": "string"
           },
@@ -34911,16 +34402,6 @@
               }
             },
             "required": ["input", "output", "reasoning", "cache"],
-            "additionalProperties": false
-          },
-          "share": {
-            "type": "object",
-            "properties": {
-              "url": {
-                "type": "string"
-              }
-            },
-            "required": ["url"],
             "additionalProperties": false
           },
           "title": {
@@ -35105,16 +34586,6 @@
             "required": ["input", "output", "reasoning", "cache"],
             "additionalProperties": false
           },
-          "share": {
-            "type": "object",
-            "properties": {
-              "url": {
-                "type": "string"
-              }
-            },
-            "required": ["url"],
-            "additionalProperties": false
-          },
           "title": {
             "type": "string"
           },
@@ -35278,16 +34749,6 @@
             "required": ["input", "output", "reasoning", "cache"],
             "additionalProperties": false
           },
-          "share": {
-            "type": "object",
-            "properties": {
-              "url": {
-                "type": "string"
-              }
-            },
-            "required": ["url"],
-            "additionalProperties": false
-          },
           "title": {
             "type": "string"
           },
@@ -35449,362 +34910,6 @@
               }
             },
             "required": ["input", "output", "reasoning", "cache"],
-            "additionalProperties": false
-          },
-          "share": {
-            "type": "object",
-            "properties": {
-              "url": {
-                "type": "string"
-              }
-            },
-            "required": ["url"],
-            "additionalProperties": false
-          },
-          "title": {
-            "type": "string"
-          },
-          "agent": {
-            "type": "string"
-          },
-          "model": {
-            "type": "object",
-            "properties": {
-              "id": {
-                "type": "string"
-              },
-              "providerID": {
-                "type": "string"
-              },
-              "variant": {
-                "type": "string"
-              }
-            },
-            "required": ["id", "providerID"],
-            "additionalProperties": false
-          },
-          "version": {
-            "type": "string"
-          },
-          "metadata": {
-            "type": "object"
-          },
-          "time": {
-            "type": "object",
-            "properties": {
-              "created": {
-                "type": "integer",
-                "minimum": 0
-              },
-              "updated": {
-                "type": "integer",
-                "minimum": 0
-              },
-              "compacting": {
-                "type": "integer",
-                "minimum": 0
-              },
-              "archived": {
-                "type": "number"
-              }
-            },
-            "required": ["created", "updated"],
-            "additionalProperties": false
-          },
-          "permission": {
-            "$ref": "#/components/schemas/PermissionRuleset"
-          },
-          "revert": {
-            "type": "object",
-            "properties": {
-              "messageID": {
-                "type": "string",
-                "pattern": "^msg"
-              },
-              "partID": {
-                "type": "string",
-                "pattern": "^prt"
-              },
-              "snapshot": {
-                "type": "string"
-              },
-              "diff": {
-                "type": "string"
-              },
-              "workspace": {
-                "type": "string",
-                "enum": ["restored", "snapshots-disabled", "unavailable"]
-              }
-            },
-            "required": ["messageID"],
-            "additionalProperties": false
-          }
-        },
-        "required": ["id", "slug", "projectID", "directory", "title", "version", "time"],
-        "additionalProperties": false
-      },
-      "Session6": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "pattern": "^ses"
-          },
-          "slug": {
-            "type": "string"
-          },
-          "projectID": {
-            "type": "string"
-          },
-          "workspaceID": {
-            "type": "string",
-            "pattern": "^wrk"
-          },
-          "directory": {
-            "type": "string"
-          },
-          "path": {
-            "type": "string"
-          },
-          "parentID": {
-            "type": "string",
-            "pattern": "^ses"
-          },
-          "summary": {
-            "type": "object",
-            "properties": {
-              "additions": {
-                "type": "number"
-              },
-              "deletions": {
-                "type": "number"
-              },
-              "files": {
-                "type": "number"
-              },
-              "diffs": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/SnapshotSummaryFileDiff"
-                }
-              }
-            },
-            "required": ["additions", "deletions", "files"],
-            "additionalProperties": false
-          },
-          "cost": {
-            "type": "number"
-          },
-          "tokens": {
-            "type": "object",
-            "properties": {
-              "input": {
-                "type": "number"
-              },
-              "output": {
-                "type": "number"
-              },
-              "reasoning": {
-                "type": "number"
-              },
-              "cache": {
-                "type": "object",
-                "properties": {
-                  "read": {
-                    "type": "number"
-                  },
-                  "write": {
-                    "type": "number"
-                  }
-                },
-                "required": ["read", "write"],
-                "additionalProperties": false
-              }
-            },
-            "required": ["input", "output", "reasoning", "cache"],
-            "additionalProperties": false
-          },
-          "share": {
-            "type": "object",
-            "properties": {
-              "url": {
-                "type": "string"
-              }
-            },
-            "required": ["url"],
-            "additionalProperties": false
-          },
-          "title": {
-            "type": "string"
-          },
-          "agent": {
-            "type": "string"
-          },
-          "model": {
-            "type": "object",
-            "properties": {
-              "id": {
-                "type": "string"
-              },
-              "providerID": {
-                "type": "string"
-              },
-              "variant": {
-                "type": "string"
-              }
-            },
-            "required": ["id", "providerID"],
-            "additionalProperties": false
-          },
-          "version": {
-            "type": "string"
-          },
-          "metadata": {
-            "type": "object"
-          },
-          "time": {
-            "type": "object",
-            "properties": {
-              "created": {
-                "type": "integer",
-                "minimum": 0
-              },
-              "updated": {
-                "type": "integer",
-                "minimum": 0
-              },
-              "compacting": {
-                "type": "integer",
-                "minimum": 0
-              },
-              "archived": {
-                "type": "number"
-              }
-            },
-            "required": ["created", "updated"],
-            "additionalProperties": false
-          },
-          "permission": {
-            "$ref": "#/components/schemas/PermissionRuleset"
-          },
-          "revert": {
-            "type": "object",
-            "properties": {
-              "messageID": {
-                "type": "string",
-                "pattern": "^msg"
-              },
-              "partID": {
-                "type": "string",
-                "pattern": "^prt"
-              },
-              "snapshot": {
-                "type": "string"
-              },
-              "diff": {
-                "type": "string"
-              },
-              "workspace": {
-                "type": "string",
-                "enum": ["restored", "snapshots-disabled", "unavailable"]
-              }
-            },
-            "required": ["messageID"],
-            "additionalProperties": false
-          }
-        },
-        "required": ["id", "slug", "projectID", "directory", "title", "version", "time"],
-        "additionalProperties": false
-      },
-      "Session7": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "pattern": "^ses"
-          },
-          "slug": {
-            "type": "string"
-          },
-          "projectID": {
-            "type": "string"
-          },
-          "workspaceID": {
-            "type": "string",
-            "pattern": "^wrk"
-          },
-          "directory": {
-            "type": "string"
-          },
-          "path": {
-            "type": "string"
-          },
-          "parentID": {
-            "type": "string",
-            "pattern": "^ses"
-          },
-          "summary": {
-            "type": "object",
-            "properties": {
-              "additions": {
-                "type": "number"
-              },
-              "deletions": {
-                "type": "number"
-              },
-              "files": {
-                "type": "number"
-              },
-              "diffs": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/SnapshotSummaryFileDiff"
-                }
-              }
-            },
-            "required": ["additions", "deletions", "files"],
-            "additionalProperties": false
-          },
-          "cost": {
-            "type": "number"
-          },
-          "tokens": {
-            "type": "object",
-            "properties": {
-              "input": {
-                "type": "number"
-              },
-              "output": {
-                "type": "number"
-              },
-              "reasoning": {
-                "type": "number"
-              },
-              "cache": {
-                "type": "object",
-                "properties": {
-                  "read": {
-                    "type": "number"
-                  },
-                  "write": {
-                    "type": "number"
-                  }
-                },
-                "required": ["read", "write"],
-                "additionalProperties": false
-              }
-            },
-            "required": ["input", "output", "reasoning", "cache"],
-            "additionalProperties": false
-          },
-          "share": {
-            "type": "object",
-            "properties": {
-              "url": {
-                "type": "string"
-              }
-            },
-            "required": ["url"],
             "additionalProperties": false
           },
           "title": {
@@ -36054,7 +35159,7 @@
         "required": ["_tag", "sessionID", "message"],
         "additionalProperties": false
       },
-      "Session8": {
+      "Session6": {
         "type": "object",
         "properties": {
           "id": {
@@ -36133,16 +35238,6 @@
               }
             },
             "required": ["input", "output", "reasoning", "cache"],
-            "additionalProperties": false
-          },
-          "share": {
-            "type": "object",
-            "properties": {
-              "url": {
-                "type": "string"
-              }
-            },
-            "required": ["url"],
             "additionalProperties": false
           },
           "title": {
@@ -36227,7 +35322,7 @@
         "required": ["id", "slug", "projectID", "directory", "title", "version", "time"],
         "additionalProperties": false
       },
-      "Session9": {
+      "Session7": {
         "type": "object",
         "properties": {
           "id": {
@@ -36306,16 +35401,6 @@
               }
             },
             "required": ["input", "output", "reasoning", "cache"],
-            "additionalProperties": false
-          },
-          "share": {
-            "type": "object",
-            "properties": {
-              "url": {
-                "type": "string"
-              }
-            },
-            "required": ["url"],
             "additionalProperties": false
           },
           "title": {
@@ -36438,7 +35523,6 @@
                     "enum": [
                       "session.list",
                       "session.new",
-                      "session.share",
                       "session.interrupt",
                       "session.compact",
                       "session.page.up",
@@ -39158,9 +38242,6 @@
             "$ref": "#/components/schemas/TodoUpdated"
           },
           {
-            "$ref": "#/components/schemas/LspUpdated"
-          },
-          {
             "$ref": "#/components/schemas/PermissionAsked"
           },
           {
@@ -40114,33 +39195,6 @@
               }
             },
             "required": ["sessionID", "requestID"],
-            "additionalProperties": false
-          }
-        },
-        "required": ["id", "type", "properties"],
-        "additionalProperties": false
-      },
-      "EventLspClientDiagnostics": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "type": {
-            "type": "string",
-            "enum": ["lsp.client.diagnostics"]
-          },
-          "properties": {
-            "type": "object",
-            "properties": {
-              "serverID": {
-                "type": "string"
-              },
-              "path": {
-                "type": "string"
-              }
-            },
-            "required": ["serverID", "path"],
             "additionalProperties": false
           }
         },
@@ -43688,24 +42742,6 @@
             },
             "required": ["sessionID", "todos"],
             "additionalProperties": false
-          }
-        },
-        "required": ["id", "type", "properties"],
-        "additionalProperties": false
-      },
-      "EventLspUpdated": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "type": {
-            "type": "string",
-            "enum": ["lsp.updated"]
-          },
-          "properties": {
-            "type": "object",
-            "properties": {}
           }
         },
         "required": ["id", "type", "properties"],
@@ -52102,47 +51138,6 @@
         "required": ["id", "type", "data"],
         "additionalProperties": false
       },
-      "LspUpdated": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "pattern": "^evt_"
-          },
-          "metadata": {
-            "type": "object"
-          },
-          "type": {
-            "type": "string",
-            "enum": ["lsp.updated"]
-          },
-          "durable": {
-            "type": "object",
-            "properties": {
-              "aggregateID": {
-                "type": "string"
-              },
-              "seq": {
-                "type": "integer"
-              },
-              "version": {
-                "type": "integer"
-              }
-            },
-            "required": ["aggregateID", "seq", "version"],
-            "additionalProperties": false
-          },
-          "location": {
-            "$ref": "#/components/schemas/LocationRef"
-          },
-          "data": {
-            "type": "object",
-            "properties": {}
-          }
-        },
-        "required": ["id", "type", "data"],
-        "additionalProperties": false
-      },
       "PermissionAsked": {
         "type": "object",
         "properties": {
@@ -52372,7 +51367,6 @@
                     "enum": [
                       "session.list",
                       "session.new",
-                      "session.share",
                       "session.interrupt",
                       "session.compact",
                       "session.page.up",
@@ -55706,25 +54700,6 @@
         "required": ["id", "type", "properties"],
         "additionalProperties": false
       },
-      "EventLspUpdated1": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "pattern": "^evt_"
-          },
-          "type": {
-            "type": "string",
-            "enum": ["lsp.updated"]
-          },
-          "properties": {
-            "type": "object",
-            "properties": {}
-          }
-        },
-        "required": ["id", "type", "properties"],
-        "additionalProperties": false
-      },
       "EventPermissionAsked1": {
         "type": "object",
         "properties": {
@@ -55866,7 +54841,6 @@
                     "enum": [
                       "session.list",
                       "session.new",
-                      "session.share",
                       "session.interrupt",
                       "session.compact",
                       "session.page.up",

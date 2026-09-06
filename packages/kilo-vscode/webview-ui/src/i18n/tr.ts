@@ -239,7 +239,6 @@ export const dict = {
   "ui.permission.toolLabel.webFetch": "Web Getir",
   "ui.permission.toolLabel.task": "Görev",
   "ui.permission.toolLabel.skill": "Beceri",
-  "ui.permission.toolLabel.lsp": "LSP",
   "ui.permission.toolLabel.bash": "Bash",
   "ui.permission.toolLabel.todoRead": "Görev Oku",
   "ui.permission.toolLabel.todoWrite": "Görev Yaz",
@@ -465,8 +464,6 @@ export const dict = {
   "settings.permissions.tool.task.description": "Alt ajanlar başlat",
   "settings.permissions.tool.skill.title": "Beceri",
   "settings.permissions.tool.skill.description": "Ada göre bir beceri yükle",
-  "settings.permissions.tool.lsp.title": "LSP",
-  "settings.permissions.tool.lsp.description": "Dil sunucusu sorguları çalıştır",
   "settings.permissions.tool.todoread.title": "Görev Oku",
   "settings.permissions.tool.todoread.description": "Görev listesini oku",
   "settings.permissions.tool.todowrite.title": "Görev Yaz",
@@ -702,8 +699,6 @@ export const dict = {
   "settings.experimental.share.disabled": "Devre Dışı",
   "settings.experimental.formatter.title": "Biçimlendirici",
   "settings.experimental.formatter.description": "Otomatik kod biçimlendiriciyi etkinleştir",
-  "settings.experimental.lsp.title": "LSP",
-  "settings.experimental.lsp.description": "Dil sunucu protokolü entegrasyonunu etkinleştir",
   "settings.experimental.batch.title": "Toplu Araç",
   "settings.experimental.batch.description": "Birden fazla araç çağrısının toplu işlenmesini etkinleştir",
   "settings.experimental.imageGeneration.title": "Görüntü oluşturma",
@@ -851,10 +846,7 @@ export const dict = {
   "settings.autoApprove.tool.list":
     "Dizin içerikleri listele. Bir dizindeki dosya ve klasörleri görüntülemeye izin verir.",
   "settings.autoApprove.tool.task": "Alt ajanlar başlat. Belirli görevler için özel alt ajanlar başlatmaya izin verir.",
-  "settings.autoApprove.tool.skill": "Becerileri yükle. Ada göre önceden tanımlanmış becerileri yüklemeye izin verir.",
-  "settings.autoApprove.tool.lsp":
-    "Dil sunucusunu sorgula. Kod zekası için dil sunucusu sorguları çalıştırmaya izin verir.",
-  "settings.autoApprove.tool.todoreadwrite":
+  "settings.autoApprove.tool.skill": "Becerileri yükle. Ada göre önceden tanımlanmış becerileri yüklemeye izin verir.",  "settings.autoApprove.tool.todoreadwrite":
     "Görev listesini yönet. Dahili görev listesini okuma ve güncellemeye izin verir.",
   "settings.autoApprove.tool.webfetch": "URL getir. Belirli bir URL'den içerik almaya izin verir.",
   "settings.autoApprove.tool.doom_loop":

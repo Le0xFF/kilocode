@@ -6,7 +6,7 @@
 import * as path from "path"
 import { Effect, Schema, Semaphore } from "effect"
 import * as Tool from "./tool"
-import { LSP } from "@/lsp/lsp"
+// kilocode_change - LSP removed; no language-server diagnostics on edit
 import { createTwoFilesPatch, diffLines } from "diff"
 import DESCRIPTION from "./edit.txt"
 import { FileSystem } from "@opencode-ai/core/filesystem"
@@ -18,7 +18,6 @@ import { Snapshot } from "@/snapshot"
 import { assertExternalDirectoryEffect } from "./external-directory"
 import { FSUtil } from "@opencode-ai/core/fs-util"
 import * as Bom from "@/util/bom"
-import { filterDiagnostics } from "./diagnostics" // kilocode_change
 import { ConfigValidation } from "../kilocode/config-validation" // kilocode_change
 import * as EncodedIO from "../kilocode/tool/encoded-io" // kilocode_change
 import * as Encoding from "../kilocode/encoding" // kilocode_change
@@ -85,7 +84,6 @@ export const Parameters = Schema.Struct({
 export const EditTool = Tool.define(
   "edit",
   Effect.gen(function* () {
-    const lsp = yield* LSP.Service
     const afs = yield* FSUtil.Service
     const format = yield* Format.Service
     const events = yield* EventV2Bridge.Service
@@ -220,16 +218,13 @@ export const EditTool = Tool.define(
           })
 
           let output = "Edit applied successfully."
-          yield* lsp.touchFile(filePath, "document")
-          const diagnostics = yield* lsp.diagnostics()
-          const normalizedFilePath = FSUtil.normalizePath(filePath)
-          const block = LSP.Diagnostic.report(filePath, diagnostics[normalizedFilePath] ?? [])
-          if (block) output += `\n\nLSP errors detected in this file, please fix:\n${block}`
+          // kilocode_change start - LSP removed; skip language-server diagnostic enrichment
           output += yield* Effect.promise(() => ConfigValidation.check(filePath)) // kilocode_change
+          // kilocode_change end
 
           return {
             metadata: {
-              diagnostics: filterDiagnostics(diagnostics, [normalizedFilePath]), // kilocode_change
+              diagnostics: {}, // kilocode_change - LSP removed; no per-file diagnostics
               diff,
               filediff, // kilocode_change
             },

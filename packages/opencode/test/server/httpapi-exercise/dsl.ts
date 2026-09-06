@@ -29,7 +29,7 @@ class ScenarioBuilder<S = undefined> {
       seed: () => Effect.succeed(undefined as S),
       request: (ctx) => ({ path, headers: ctx.headers() }),
       authProbe: undefined,
-      validAuthProbe: true, // kilocode_change
+      validAuthProbe: true, // kilocode_change - whether the auth probe should also verify a valid credential round-trip
       capture: "full",
       mutates: false,
       reset: true,
@@ -57,7 +57,7 @@ class ScenarioBuilder<S = undefined> {
     return this.clone({ authProbe })
   }
 
-  // kilocode_change start - blocking routes only prove they reject missing credentials so no valid request leaks into app disposal
+  // kilocode_change start - blocking routes only prove they reject missing credentials so no valid request leaks into app disposal; RemoteApi removal makes this a marker for the auth probe to skip
   skipValidAuthProbe() {
     return this.clone({ validAuthProbe: false })
   }

@@ -89,7 +89,6 @@ Opzioni:
   -s, --session      session id to continue                                                [stringa]
       --fork         fork the session before continuing (requires --continue or --session)[booleano]
       --cloud-fork   fetch session from cloud and continue locally (use with --session)   [booleano]
-      --share        share the session                                                    [booleano]
   -m, --model        model to use in the format of provider/model                          [stringa]
       --agent        agent to use                                                          [stringa]
       --format       format: default (formatted) or json (raw JSON events)
@@ -118,7 +117,6 @@ debugging and troubleshooting tools
 
 Comandi:
   kilo debug config        show resolved configuration
-  kilo debug lsp           LSP debugging utilities
   kilo debug rg            ripgrep debugging utilities
   kilo debug file          file system debugging utilities
   kilo debug scrap         list all known projects
@@ -543,7 +541,7 @@ Opzioni:
       --mode                  agent mode            [stringa] [scelte: "all", "primary", "subagent"]
       --permissions, --tools  comma-separated list of permissions to allow (default: all).
                               Available: "bash, read, edit, glob, grep, webfetch, task, todowrite,
-                              lsp, skill"                                                  [stringa]
+                              skill"                                                       [stringa]
   -m, --model                 model to use in the format of provider/model                 [stringa]
 "
 `;

@@ -52,7 +52,7 @@ afterEach(async () => {
 
 describe("HttpApi instance route authorization", () => {
   test("requires configured auth before opening the instance event stream", async () => {
-    await using tmp = await tmpdir({ git: true, config: { formatter: false, lsp: false } })
+    await using tmp = await tmpdir({ git: true, config: { formatter: false } })
     const server = app({ password: "secret" })
     const headers = { "x-kilo-directory": tmp.path }
 
@@ -68,7 +68,7 @@ describe("HttpApi instance route authorization", () => {
   })
 
   test("requires configured auth before resolving the PTY websocket route", async () => {
-    await using tmp = await tmpdir({ git: true, config: { formatter: false, lsp: false } })
+    await using tmp = await tmpdir({ git: true, config: { formatter: false } })
     const server = app({ password: "secret" })
     const route = PtyPaths.connect.replace(":ptyID", PtyID.ascending())
     const headers = { "x-kilo-directory": tmp.path }

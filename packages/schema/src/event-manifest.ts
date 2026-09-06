@@ -8,7 +8,7 @@ import { FileSystemWatcher } from "./filesystem-watcher"
 import { InstallationEvent } from "./installation-event"
 import { Integration } from "./integration"
 import { LegacyEvent } from "./legacy-event"
-import { LspEvent } from "./lsp-event"
+// kilocode_change - LSP removed; no lsp events in the manifest
 import { McpEvent } from "./mcp-event"
 import { ModelsDev } from "./models-dev"
 import { Permission } from "./permission"
@@ -66,7 +66,7 @@ export const Definitions = Event.inventory(
   ...InstallationEvent.Definitions,
   ...featureDefinitions,
   ...SessionTodo.Event.Definitions,
-  ...LspEvent.Definitions,
+  // kilocode_change - LSP removed; no lsp events in the manifest
   ...PermissionV1.Event.Definitions,
   ...TuiEvent.Definitions,
   ...McpEvent.Definitions,

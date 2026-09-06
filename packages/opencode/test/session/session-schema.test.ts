@@ -14,7 +14,7 @@ const info = {
   summary: undefined,
   cost: 0,
   tokens: { input: 0, output: 0, reasoning: 0, cache: { read: 0, write: 0 } },
-  share: undefined,
+  // kilocode_change - session sharing feature removed; no share field
   title: "Test session",
   version: "1.0.0",
   time: {
@@ -31,7 +31,7 @@ describe("Session schema", () => {
   test("encodes undefined optional session fields as omitted keys", () => {
     const encoded = Schema.encodeUnknownSync(Session.Info)(info) as Record<string, unknown>
 
-    for (const key of ["workspaceID", "parentID", "summary", "share", "permission", "revert"]) {
+    for (const key of ["workspaceID", "parentID", "summary", "permission", "revert"]) { // kilocode_change - session sharing removed; no share key
       expect(Object.hasOwn(encoded, key)).toBe(false)
     }
     expect(Object.hasOwn(encoded.time as Record<string, unknown>, "compacting")).toBe(false)

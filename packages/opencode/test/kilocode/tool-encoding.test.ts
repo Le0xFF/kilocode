@@ -19,7 +19,6 @@ import { EditTool } from "../../src/tool/edit"
 import { Format } from "../../src/format"
 import { Instance } from "../../src/kilocode/instance"
 import { Instruction } from "../../src/session/instruction"
-import { LSP } from "../../src/lsp/lsp"
 import { MessageID, SessionID } from "../../src/session/schema"
 import { ReadTool } from "../../src/tool/read"
 import * as Tool from "../../src/tool/tool"
@@ -50,7 +49,6 @@ const it = testEffect(
     AppNodeBuilder.build(FSUtil.node),
     AppNodeBuilder.build(CrossSpawnSpawner.node),
     AppNodeBuilder.build(Instruction.node),
-    AppNodeBuilder.build(LSP.node),
     Bus.layer,
     AppNodeBuilder.build(Format.node),
     AppNodeBuilder.build(Truncate.node),
