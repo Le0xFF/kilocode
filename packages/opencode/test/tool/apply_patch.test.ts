@@ -4,7 +4,7 @@ import * as fs from "fs/promises"
 import { LayerNode } from "@opencode-ai/core/effect/layer-node"
 import { Cause, Effect, Exit, Layer } from "effect"
 import { ApplyPatchTool } from "../../src/tool/apply_patch"
-import { LSP } from "@/lsp/lsp"
+// kilocode_change - LSP removed; no language-server in apply_patch tests
 import { FSUtil } from "@opencode-ai/core/fs-util"
 import { Format } from "../../src/format"
 import { Agent } from "../../src/agent/agent"
@@ -16,7 +16,8 @@ import { testEffect } from "../lib/effect"
 
 const it = testEffect(
   LayerNode.compile(
-    LayerNode.group([LSP.node, FSUtil.node, Format.node, EventV2Bridge.node, Truncate.node, Agent.node]),
+    // kilocode_change - LSP removed; no language-server in apply_patch tests
+    LayerNode.group([FSUtil.node, Format.node, EventV2Bridge.node, Truncate.node, Agent.node]), // kilocode_change - LSP removed; no LSP.node in layer group
   ),
 )
 

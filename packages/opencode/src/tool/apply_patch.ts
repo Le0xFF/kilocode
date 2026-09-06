@@ -8,11 +8,10 @@ import { Patch } from "../patch"
 import { createTwoFilesPatch, diffLines } from "diff"
 import { assertExternalDirectoryEffect } from "./external-directory"
 import { trimDiff } from "./edit"
-import { LSP } from "@/lsp/lsp"
+// kilocode_change - LSP removed; no language-server diagnostics on apply_patch
 import { FSUtil } from "@opencode-ai/core/fs-util"
 import DESCRIPTION from "./apply_patch.txt"
 import { FileSystem } from "@opencode-ai/core/filesystem"
-import { filterDiagnostics } from "./diagnostics" // kilocode_change
 import { ConfigValidation } from "../kilocode/config-validation" // kilocode_change
 import * as EncodedIO from "../kilocode/tool/encoded-io" // kilocode_change
 import { Format } from "../format"
@@ -26,7 +25,6 @@ export const Parameters = Schema.Struct({
 export const ApplyPatchTool = Tool.define(
   "apply_patch",
   Effect.gen(function* () {
-    const lsp = yield* LSP.Service
     const afs = yield* FSUtil.Service
     const format = yield* Format.Service
     const events = yield* EventV2Bridge.Service
@@ -281,18 +279,11 @@ export const ApplyPatchTool = Tool.define(
         }
       }
 
+      // kilocode_change start - LSP removed; skip language-server diagnostic enrichment
       // Publish file change events
       for (const update of updates) {
         yield* events.publish(Watcher.Event.Updated, update)
       }
-
-      // Notify LSP of file changes and collect diagnostics
-      for (const change of fileChanges) {
-        if (change.type === "delete") continue
-        const target = change.movePath ?? change.filePath
-        yield* lsp.touchFile(target, "document")
-      }
-      const diagnostics = yield* lsp.diagnostics()
 
       // Generate output summary
       const summaryLines = fileChanges.map((change) => {
@@ -307,21 +298,6 @@ export const ApplyPatchTool = Tool.define(
       })
       let output = `Success. Updated the following files:\n${summaryLines.join("\n")}`
 
-      // kilocode_change start
-      const changedPaths = fileChanges
-        .filter((c) => c.type !== "delete")
-        .map((c) => FSUtil.normalizePath(c.movePath ?? c.filePath))
-      // kilocode_change end
-
-      for (const change of fileChanges) {
-        if (change.type === "delete") continue
-        const target = change.movePath ?? change.filePath
-        const block = LSP.Diagnostic.report(target, diagnostics[FSUtil.normalizePath(target)] ?? [])
-        if (!block) continue
-        const rel = path.relative(instance.worktree, target).replaceAll("\\", "/")
-        output += `\n\nLSP errors detected in ${rel}, please fix:\n${block}`
-      }
-
       // kilocode_change start - append Kilo config validation warnings
       for (const changed of fileChanges) {
         if (changed.type === "delete") continue
@@ -334,10 +310,11 @@ export const ApplyPatchTool = Tool.define(
         metadata: {
           diff: totalDiff,
           files,
-          diagnostics: filterDiagnostics(diagnostics, changedPaths), // kilocode_change
+          diagnostics: {}, // kilocode_change - LSP removed; no per-file diagnostics
         },
         output,
       }
+      // kilocode_change end
     })
 
     return {

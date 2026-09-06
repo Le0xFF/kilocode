@@ -65,7 +65,7 @@ function setAuth(password: string) {
 
 describe("POST /kilocode/snapshot/remove authorization", () => {
   test("fails closed without configured auth and requires valid credentials when configured", async () => {
-    await using tmp = await tmpdir({ git: true, config: { formatter: false, lsp: false } })
+    await using tmp = await tmpdir({ git: true, config: { formatter: false } })
     const worktree = path.join(tmp.path, ".kilo", "worktrees", "snapshot-auth")
     const route = `/kilocode/snapshot/remove?directory=${encodeURIComponent(tmp.path)}`
     const init = (authorization?: string): RequestInit => ({

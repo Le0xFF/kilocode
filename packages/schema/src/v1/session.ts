@@ -569,9 +569,7 @@ const SessionTokens = Schema.Struct({
   }),
 })
 
-const SessionShare = Schema.Struct({
-  url: Schema.String,
-})
+// kilocode_change - session sharing feature removed; no SessionShare struct (the share_url DB column is kept inert for data compat)
 
 const SessionRevert = Schema.Struct({
   messageID: MessageID,
@@ -598,7 +596,7 @@ export const SessionInfo = Schema.Struct({
   summary: optional(SessionSummary),
   cost: optional(Schema.Finite),
   tokens: optional(SessionTokens),
-  share: optional(SessionShare),
+  // kilocode_change - session sharing feature removed; no share field (share_url DB column kept inert)
   title: Schema.String,
   agent: optional(Schema.String),
   model: optional(SessionModel),

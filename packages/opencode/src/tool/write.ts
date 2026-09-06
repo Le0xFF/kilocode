@@ -2,7 +2,7 @@ import { Schema } from "effect"
 import * as path from "path"
 import { Effect } from "effect"
 import * as Tool from "./tool"
-import { LSP } from "@/lsp/lsp"
+// kilocode_change - LSP removed; no language-server diagnostics on write
 import { createTwoFilesPatch } from "diff"
 import DESCRIPTION from "./write.txt"
 import { EventV2Bridge } from "@/event-v2-bridge"
@@ -13,13 +13,10 @@ import { FSUtil } from "@opencode-ai/core/fs-util"
 import { InstanceState } from "@/effect/instance-state"
 import { trimDiff, buildFileDiff } from "./edit" // kilocode_change
 import { assertExternalDirectoryEffect } from "./external-directory"
-import { filterDiagnostics } from "./diagnostics" // kilocode_change
 import { ConfigValidation } from "../kilocode/config-validation" // kilocode_change
 import * as EncodedIO from "../kilocode/tool/encoded-io" // kilocode_change
 import { assertMutablePath } from "../kilocode/agent-manager/protection" // kilocode_change
 import * as Bom from "@/util/bom"
-
-const MAX_PROJECT_DIAGNOSTICS_FILES = 5
 
 export const Parameters = Schema.Struct({
   content: Schema.String.annotate({ description: "The content to write to the file" }),
@@ -31,7 +28,6 @@ export const Parameters = Schema.Struct({
 export const WriteTool = Tool.define(
   "write",
   Effect.gen(function* () {
-    const lsp = yield* LSP.Service
     const fs = yield* FSUtil.Service
     const events = yield* EventV2Bridge.Service
     const format = yield* Format.Service
@@ -83,28 +79,14 @@ export const WriteTool = Tool.define(
           })
 
           let output = "Wrote file successfully."
-          yield* lsp.touchFile(filepath, "document")
-          const diagnostics = yield* lsp.diagnostics()
-          const normalizedFilepath = FSUtil.normalizePath(filepath)
-          let projectDiagnosticsCount = 0
-          for (const [file, issues] of Object.entries(diagnostics)) {
-            const current = file === normalizedFilepath
-            if (!current && projectDiagnosticsCount >= MAX_PROJECT_DIAGNOSTICS_FILES) continue
-            const block = LSP.Diagnostic.report(current ? filepath : file, issues)
-            if (!block) continue
-            if (current) {
-              output += `\n\nLSP errors detected in this file, please fix:\n${block}`
-              continue
-            }
-            projectDiagnosticsCount++
-            output += `\n\nLSP errors detected in other files:\n${block}`
-          }
+          // kilocode_change start - LSP removed; skip language-server diagnostic enrichment
           output += yield* Effect.promise(() => ConfigValidation.check(filepath)) // kilocode_change
+          // kilocode_change end
 
           return {
             title: path.relative(instance.worktree, filepath),
             metadata: {
-              diagnostics: filterDiagnostics(diagnostics, [normalizedFilepath]), // kilocode_change
+              diagnostics: {}, // kilocode_change - LSP removed; no per-file diagnostics
               filepath,
               exists: exists,
               diff, // kilocode_change

@@ -10,11 +10,10 @@ const fromConfig = (input: Record<string, unknown>) =>
 const readFlags = RuntimeFlags.Service.useSync((flags) => flags)
 
 describe("RuntimeFlags", () => {
-  it.effect("layer defaults autoShare to false", () =>
+  it.effect("layer defaults background subagents to enabled", () =>
     Effect.gen(function* () {
       const flags = yield* readFlags.pipe(Effect.provide(fromConfig({})))
 
-      expect(flags.autoShare).toBe(false)
       expect(flags.experimentalBackgroundSubagents).toBe(true) // kilocode_change
     }),
   )
@@ -38,10 +37,10 @@ describe("RuntimeFlags", () => {
           fromConfig({
             KILO_PURE: "true",
             KILO_DISABLE_DEFAULT_PLUGINS: "true",
-            KILO_AUTO_SHARE: "true",
+            // kilocode_change - session sharing feature removed; no KILO_AUTO_SHARE flag
             KILO_DISABLE_EMBEDDED_WEB_UI: "true",
             KILO_DISABLE_EXTERNAL_SKILLS: "true",
-            KILO_DISABLE_LSP_DOWNLOAD: "true",
+            // kilocode_change - LSP removed; no KILO_DISABLE_LSP_DOWNLOAD flag
             KILO_EXPERIMENTAL: "true",
             KILO_ENABLE_EXA: "true",
             KILO_ENABLE_PARALLEL: "true",
@@ -53,17 +52,16 @@ describe("RuntimeFlags", () => {
       )
 
       expect(flags.pure).toBe(true)
-      expect(flags.autoShare).toBe(true)
+      // kilocode_change - session sharing feature removed; no autoShare flag
       expect(flags.disableDefaultPlugins).toBe(true)
       expect(flags.disableEmbeddedWebUi).toBe(true)
       expect(flags.disableExternalSkills).toBe(true)
-      expect(flags.disableLspDownload).toBe(true)
+      // kilocode_change - LSP removed; no disableLspDownload flag
       expect(flags.disableClaudeCodePrompt).toBe(false)
       expect(flags.enableExperimentalModels).toBe(true)
       expect(flags.enableQuestionTool).toBe(true)
       expect(flags.experimentalReferences).toBe(true)
-      expect(flags.experimentalLspTy).toBe(false)
-      expect(flags.experimentalLspTool).toBe(true)
+      // kilocode_change - LSP removed; no experimentalLspTy/experimentalLspTool flags
       expect(flags.experimentalOxfmt).toBe(true)
       expect(flags.experimentalPlanMode).toBe(true)
       expect(flags.experimentalEventSystem).toBe(true)
@@ -75,19 +73,7 @@ describe("RuntimeFlags", () => {
     }),
   )
 
-  it.effect("layer parses KILO_EXPERIMENTAL_LSP_TY", () =>
-    Effect.gen(function* () {
-      const flags = yield* readFlags.pipe(
-        Effect.provide(
-          fromConfig({
-            KILO_EXPERIMENTAL_LSP_TY: "true",
-          }),
-        ),
-      )
-
-      expect(flags.experimentalLspTy).toBe(true)
-    }),
-  )
+  // kilocode_change - LSP removed; no KILO_EXPERIMENTAL_LSP_TY test
 
   it.effect("enables native LLM via dedicated flag only", () =>
     Effect.gen(function* () {
@@ -116,11 +102,11 @@ describe("RuntimeFlags", () => {
       )
 
       expect(flags.pure).toBe(false)
-      expect(flags.autoShare).toBe(false)
+      // kilocode_change - session sharing feature removed; no autoShare flag
       expect(flags.disableDefaultPlugins).toBe(true)
       expect(flags.disableEmbeddedWebUi).toBe(false)
       expect(flags.disableExternalSkills).toBe(false)
-      expect(flags.disableLspDownload).toBe(false)
+      // kilocode_change - LSP removed; no disableLspDownload flag
       expect(flags.disableClaudeCodePrompt).toBe(false)
       expect(flags.disableClaudeCodeSkills).toBe(false)
       expect(flags.experimentalIconDiscovery).toBe(false)
@@ -156,21 +142,7 @@ describe("RuntimeFlags", () => {
     }),
   )
 
-  it.effect("disableLspDownload defaults to false", () =>
-    Effect.gen(function* () {
-      const flags = yield* readFlags.pipe(Effect.provide(fromConfig({})))
-
-      expect(flags.disableLspDownload).toBe(false)
-    }),
-  )
-
-  it.effect("disableLspDownload reads KILO_DISABLE_LSP_DOWNLOAD", () =>
-    Effect.gen(function* () {
-      const flags = yield* readFlags.pipe(Effect.provide(fromConfig({ KILO_DISABLE_LSP_DOWNLOAD: "true" })))
-
-      expect(flags.disableLspDownload).toBe(true)
-    }),
-  )
+  // kilocode_change - LSP removed; no disableLspDownload tests
 
   it.effect("disableClaudeCodePrompt defaults to false", () =>
     Effect.gen(function* () {
@@ -331,7 +303,7 @@ describe("RuntimeFlags", () => {
               KILO_PURE: "true",
               KILO_DISABLE_DEFAULT_PLUGINS: "true",
               KILO_DISABLE_EXTERNAL_SKILLS: "true",
-              KILO_DISABLE_LSP_DOWNLOAD: "true",
+              // kilocode_change - LSP removed; no KILO_DISABLE_LSP_DOWNLOAD flag
               KILO_EXPERIMENTAL: "true",
               KILO_ENABLE_EXA: "true",
               KILO_EXPERIMENTAL_BASH_DEFAULT_TIMEOUT_MS: "1234",
@@ -345,7 +317,7 @@ describe("RuntimeFlags", () => {
       expect(flags.disableDefaultPlugins).toBe(false)
       expect(flags.disableEmbeddedWebUi).toBe(false)
       expect(flags.disableExternalSkills).toBe(false)
-      expect(flags.disableLspDownload).toBe(false)
+      // kilocode_change - LSP removed; no disableLspDownload flag
       expect(flags.disableClaudeCodePrompt).toBe(false)
       expect(flags.disableClaudeCodeSkills).toBe(false)
       expect(flags.experimentalIconDiscovery).toBe(false)

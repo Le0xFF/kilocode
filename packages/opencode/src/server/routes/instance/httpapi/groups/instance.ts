@@ -1,7 +1,7 @@
 import { Agent } from "@/agent/agent"
 import { Command } from "@/command"
 import { Format } from "@/format"
-import { LSP } from "@/lsp/lsp"
+// kilocode_change - LSP removed; no lsp status endpoint
 import { Vcs } from "@/project/vcs"
 import { Skill } from "@/skill"
 import { Schema } from "effect"
@@ -51,7 +51,7 @@ export const InstancePaths = {
   command: "/command",
   agent: "/agent",
   skill: "/skill",
-  lsp: "/lsp",
+  // kilocode_change - LSP removed; no lsp status endpoint
   formatter: "/formatter",
 } as const
 
@@ -165,16 +165,7 @@ export const InstanceApi = HttpApi.make("instance")
             description: "Get a list of all available skills in the Kilo system.", // kilocode_change
           }),
         ),
-        HttpApiEndpoint.get("lsp", InstancePaths.lsp, {
-          query: WorkspaceRoutingQuery,
-          success: described(Schema.Array(LSP.Status), "LSP server status"),
-        }).annotateMerge(
-          OpenApi.annotations({
-            identifier: "lsp.status",
-            summary: "Get LSP status",
-            description: "Get LSP server status",
-          }),
-        ),
+        // kilocode_change - LSP removed; no lsp status endpoint
         HttpApiEndpoint.get("formatter", InstancePaths.formatter, {
           query: WorkspaceRoutingQuery,
           success: described(Schema.Array(Format.Status), "Formatter status"),

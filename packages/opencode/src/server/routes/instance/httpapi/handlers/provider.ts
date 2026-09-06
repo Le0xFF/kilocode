@@ -51,6 +51,8 @@ export const providerHandlers = HttpApiBuilder.group(InstanceHttpApi, "provider"
       // Hard cut: out-of-surface providers are excluded from the raw catalog before any merge with connected.
       // credentials/connected (+ ids) are computed first because inLocalSurface whitelists them, and so that
       // a stale auto-connect (e.g. Kilo Gateway) can no longer re-enter `all` via Object.assign below.
+      // overlayAnacondaDesktop is belt-and-braces: anaconda-desktop is now whitelisted in LOCAL_PROVIDER_IDS, but its
+      // catalog entry is injected only by the plugin/overlay (not present in models-dev.local.json), so pickBy alone would drop it.
       const credentials = yield* auth.all().pipe(Effect.orDie)
       const creds = new Set(Object.keys(credentials))
       const connected = yield* provider.list()

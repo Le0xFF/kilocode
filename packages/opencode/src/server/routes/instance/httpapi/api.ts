@@ -39,7 +39,7 @@ import { InteractiveTerminalApi } from "@/kilocode/server/httpapi/groups/interac
 import { KilocodeApi } from "@/kilocode/server/httpapi/groups/kilocode"
 import { MediaLocalApi } from "@/kilocode/media-local/group" // kilocode_change
 import { NetworkApi } from "@/kilocode/server/httpapi/groups/network"
-import { RemoteApi } from "@/kilocode/server/httpapi/groups/remote"
+// kilocode_change - RemoteApi removed: no call sites after Remote Control removal
 import { SandboxApi } from "@/kilocode/server/httpapi/groups/sandbox"
 import { SessionImportApi } from "@/kilocode/server/httpapi/groups/session-import"
 import { SuggestionApi } from "@/kilocode/server/httpapi/groups/suggestion"
@@ -108,10 +108,10 @@ export const InstanceHttpApi = HttpApi.make("opencode-instance")
   .addHttpApi(KilocodeApi)
   .addHttpApi(MediaLocalApi) // kilocode_change
   .addHttpApi(NetworkApi)
-  .addHttpApi(RemoteApi)
+  // kilocode_change - RemoteApi removed: no call sites after Remote Control removal
   .addHttpApi(SandboxApi)
   .addHttpApi(SessionImportApi)
-.addHttpApi(SuggestionApi)
+  .addHttpApi(SuggestionApi)
    .addHttpApi(MemoryApi)
   // kilocode_change end
   .middleware(SchemaErrorMiddleware)

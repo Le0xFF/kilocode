@@ -223,7 +223,7 @@ function httpapiInstance<A, E>(
       yield* options.setup?.(instance.directory) ?? Effect.void
       return yield* run({ sdk: yield* client(options.serverPath, instance.directory), directory: instance.directory })
     }),
-    { git: options.git ?? true, config: { formatter: false, lsp: false, ...options.config } },
+    { git: options.git ?? true, config: { formatter: false, ...options.config } },
   )
 }
 
@@ -243,7 +243,7 @@ function withProject<A, E, E2 = never>(
   return Effect.gen(function* () {
     const directory = yield* tmpdirScoped({
       git: options.git ?? false,
-      config: { formatter: false, lsp: false, ...options.config },
+      config: { formatter: false, ...options.config },
     })
     yield* options.setup?.(directory) ?? Effect.void
     return yield* run({ sdk: yield* client(serverPath, directory), directory })
@@ -563,7 +563,7 @@ describe("HttpApi SDK", () => {
         const tools = yield* capture(() => sdk.tool.ids())
         const vcs = yield* capture(() => sdk.vcs.get())
         const formatter = yield* capture(() => sdk.formatter.status())
-        const lsp = yield* capture(() => sdk.lsp.status())
+        // kilocode_change - LSP removed; no lsp status in sdk tests
 
         return {
           statuses: statuses({
@@ -582,7 +582,6 @@ describe("HttpApi SDK", () => {
             tools,
             vcs,
             formatter,
-            lsp,
           }),
           project: { worktreeSelected: record(project.data).worktree === directory },
           paths: { directorySelected: record(paths.data).directory === directory },

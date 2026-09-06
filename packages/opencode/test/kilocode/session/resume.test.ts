@@ -41,7 +41,6 @@ const setup = Effect.fnUntraced(function* () {
       small_model: "test/test-model",
       enabled_providers: ["test"],
       formatter: false,
-      lsp: false,
       provider: {
         test: {
           name: "Test",

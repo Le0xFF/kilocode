@@ -50,28 +50,12 @@ const GlobalEventSchema = Schema.Struct({
   ]),
 }).annotate({ identifier: "GlobalEvent" })
 
-export const GlobalUpgradeInput = Schema.Struct({
-  target: Schema.optional(Schema.String),
-})
-
-const GlobalUpgradeResult = Schema.Union([
-  Schema.Struct({
-    success: Schema.Literal(true),
-    version: Schema.String,
-  }),
-  Schema.Struct({
-    success: Schema.Literal(false),
-    error: Schema.String,
-  }),
-])
-
 export const GlobalPaths = {
   health: "/global/health",
   event: "/global/event",
   config: "/global/config",
   dispose: "/global/dispose",
-  upgrade: "/global/upgrade",
-} as const
+} as const // kilocode_change - auto-update removed; no /global/upgrade path
 
 export const GlobalApi = HttpApi.make("global").add(
   HttpApiGroup.make("global")
@@ -121,17 +105,6 @@ export const GlobalApi = HttpApi.make("global").add(
           identifier: "global.dispose",
           summary: "Dispose instance",
           description: "Clean up and dispose all Kilo instances, releasing all resources.", // kilocode_change
-        }),
-      ),
-      HttpApiEndpoint.post("upgrade", GlobalPaths.upgrade, {
-        payload: [HttpApiSchema.NoContent, GlobalUpgradeInput],
-        success: described(GlobalUpgradeResult, "Upgrade result"),
-        error: HttpApiError.BadRequest,
-      }).annotateMerge(
-        OpenApi.annotations({
-          identifier: "global.upgrade",
-          summary: "Upgrade kilo", // kilocode_change
-          description: "Upgrade kilo to the specified version or latest if not specified.", // kilocode_change
         }),
       ),
     )

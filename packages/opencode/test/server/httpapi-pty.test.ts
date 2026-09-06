@@ -63,7 +63,7 @@ afterEach(async () => {
 
 describe("pty HttpApi bridge", () => {
   test("serves available shell list through experimental Effect routes", async () => {
-    await using tmp = await tmpdir({ git: true, config: { formatter: false, lsp: false } })
+    await using tmp = await tmpdir({ git: true, config: { formatter: false } })
     const response = await app().request(PtyPaths.shells, { headers: { "x-kilo-directory": tmp.path } })
 
     expect(response.status).toBe(200)
@@ -79,7 +79,7 @@ describe("pty HttpApi bridge", () => {
   })
 
   testPty("serves PTY JSON routes through experimental Effect routes", async () => {
-    await using tmp = await tmpdir({ git: true, config: { formatter: false, lsp: false } })
+    await using tmp = await tmpdir({ git: true, config: { formatter: false } })
     const headers = { "x-kilo-directory": tmp.path }
     const list = await app().request(PtyPaths.list, { headers })
     expect(list.status).toBe(200)
@@ -148,7 +148,7 @@ describe("pty HttpApi bridge", () => {
   })
 
   testPty("hides exited sessions on the legacy surface", async () => {
-    await using tmp = await tmpdir({ git: true, config: { formatter: false, lsp: false } })
+    await using tmp = await tmpdir({ git: true, config: { formatter: false } })
     const headers = { "x-kilo-directory": tmp.path }
     const created = await app().request(PtyPaths.create, {
       method: "POST",
@@ -179,7 +179,7 @@ describe("pty HttpApi bridge", () => {
 
   // kilocode_change start - location disposal must preserve the process-wide PTY registry.
   testPty("preserves PTY sessions across legacy instance disposal", async () => {
-    await using tmp = await tmpdir({ git: true, config: { formatter: false, lsp: false } })
+    await using tmp = await tmpdir({ git: true, config: { formatter: false } })
     const headers = { "x-kilo-directory": tmp.path }
     const created = await app().request(PtyPaths.create, {
       method: "POST",
@@ -202,7 +202,7 @@ describe("pty HttpApi bridge", () => {
   // kilocode_change end
 
   test("returns 404 for missing PTY websocket before upgrade", async () => {
-    await using tmp = await tmpdir({ git: true, config: { formatter: false, lsp: false } })
+    await using tmp = await tmpdir({ git: true, config: { formatter: false } })
     const response = await app().request(PtyPaths.connect.replace(":ptyID", PtyID.ascending()), {
       headers: { "x-kilo-directory": tmp.path },
     })
@@ -210,7 +210,7 @@ describe("pty HttpApi bridge", () => {
   })
 
   test("returns 404 for missing PTY websocket before decoding cursor query", async () => {
-    await using tmp = await tmpdir({ git: true, config: { formatter: false, lsp: false } })
+    await using tmp = await tmpdir({ git: true, config: { formatter: false } })
     const response = await app().request(`${PtyPaths.connect.replace(":ptyID", PtyID.ascending())}?cursor=a&cursor=b`, {
       headers: { "x-kilo-directory": tmp.path },
     })
@@ -218,7 +218,7 @@ describe("pty HttpApi bridge", () => {
   })
 
   test("returns typed not found errors for missing PTY HTTP resources", async () => {
-    await using tmp = await tmpdir({ git: true, config: { formatter: false, lsp: false } })
+    await using tmp = await tmpdir({ git: true, config: { formatter: false } })
     const headers = { "x-kilo-directory": tmp.path }
     const missingID = String(PtyID.ascending())
     const expected = {
@@ -245,7 +245,7 @@ describe("pty HttpApi bridge", () => {
   })
 
   test("returns typed errors for PTY connect token failures", async () => {
-    await using tmp = await tmpdir({ git: true, config: { formatter: false, lsp: false } })
+    await using tmp = await tmpdir({ git: true, config: { formatter: false } })
     const headers = { "x-kilo-directory": tmp.path }
     const missingID = String(PtyID.ascending())
 
@@ -276,7 +276,7 @@ describe("pty HttpApi bridge", () => {
   // kilocode_change start - portable coverage for the exact legacy routes used by regular Agent Manager terminals
   effectIt.live("serves Agent Manager regular terminal create, resize, input, output, and remove routes", () =>
     Effect.gen(function* () {
-      const dir = yield* tmpdirScoped({ git: true, config: { formatter: false, lsp: false } })
+      const dir = yield* tmpdirScoped({ git: true, config: { formatter: false } })
       const child = [
         'let input = ""',
         "process.stdout.write(`READY:${process.stdout.isTTY}:${process.stdout.columns}x${process.stdout.rows}\\n`)",

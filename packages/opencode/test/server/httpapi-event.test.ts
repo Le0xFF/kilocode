@@ -144,7 +144,7 @@ describe("event HttpApi", () => {
         expect(response.headers["x-content-type-options"]).toBe("nosniff")
         expect(yield* readEvent(reader)).toMatchObject({ type: "server.connected", properties: {} })
       }),
-    { git: true, config: { formatter: false, lsp: false } },
+    { git: true, config: { formatter: false } },
   )
 
   it.instance(
@@ -163,7 +163,7 @@ describe("event HttpApi", () => {
         )
         expect(["open", "event"]).toContain(status)
       }),
-    { git: true, config: { formatter: false, lsp: false } },
+    { git: true, config: { formatter: false } },
   )
 
   it.instance(
@@ -179,7 +179,7 @@ describe("event HttpApi", () => {
         // kilocode_change - skip ambient instance events that may interleave before session.created
         expect(yield* readEventOfType(reader, "session.created")).toMatchObject({ type: "session.created" })
       }),
-    { git: true, config: { formatter: false, lsp: false } },
+    { git: true, config: { formatter: false } },
   )
 
   // kilocode_change start - transformed EventV2 data is numeric on legacy SSE while domain data stays decoded
@@ -260,7 +260,7 @@ describe("event HttpApi", () => {
           prompt: { text: "hello" },
         })
       }),
-    { git: true, config: { formatter: false, lsp: false } },
+    { git: true, config: { formatter: false } },
   )
   // kilocode_change end
 })

@@ -68,7 +68,6 @@ export type Event =
   | EventQuestionV2Replied1
   | EventQuestionV2Rejected1
   | EventTodoUpdated1
-  | EventLspUpdated1
   | EventPermissionAsked1
   | EventPermissionReplied1
   | EventTuiPromptAppend1
@@ -117,7 +116,6 @@ export type Event =
   | EventSuggestionShown
   | EventSuggestionAccepted
   | EventSuggestionDismissed
-  | EventLspClientDiagnostics
   | EventMemoryStatus1
   | EventMemoryUpdated1
   | EventMemoryError1
@@ -186,7 +184,6 @@ export type Event =
   | EventQuestionV2Replied
   | EventQuestionV2Rejected
   | EventTodoUpdated
-  | EventLspUpdated
   | EventPermissionAsked
   | EventPermissionReplied
   | EventTuiPromptAppend
@@ -518,9 +515,6 @@ export type Session = {
       read: number
       write: number
     }
-  }
-  share?: {
-    url: string
   }
   title: string
   agent?: string
@@ -1040,7 +1034,6 @@ export type EventTuiCommandExecute = {
     command:
       | "session.list"
       | "session.new"
-      | "session.share"
       | "session.interrupt"
       | "session.compact"
       | "session.page.up"
@@ -1174,7 +1167,6 @@ export type GlobalEvent = {
     | EventSuggestionShown
     | EventSuggestionAccepted
     | EventSuggestionDismissed
-    | EventLspClientDiagnostics
     | EventMemoryStatus
     | EventMemoryUpdated
     | EventMemoryError
@@ -1243,7 +1235,6 @@ export type GlobalEvent = {
     | EventQuestionV2Replied
     | EventQuestionV2Rejected
     | EventTodoUpdated
-    | EventLspUpdated
     | EventPermissionAsked
     | EventPermissionReplied
     | EventTuiPromptAppend
@@ -1907,13 +1898,6 @@ export type GlobalEvent = {
       }
     | {
         id: string
-        type: "lsp.updated"
-        properties: {
-          [key: string]: unknown
-        }
-      }
-    | {
-        id: string
         type: "permission.asked"
         properties: {
           id: string
@@ -1953,7 +1937,6 @@ export type GlobalEvent = {
           command:
             | "session.list"
             | "session.new"
-            | "session.share"
             | "session.interrupt"
             | "session.compact"
             | "session.page.up"
@@ -2295,7 +2278,6 @@ export type PermissionConfig =
       todowrite?: PermissionActionConfig
       question?: PermissionActionConfig
       webfetch?: PermissionActionConfig
-      lsp?: PermissionRuleConfig
       doom_loop?: PermissionActionConfig
       skill?: PermissionRuleConfig
       agent_manager?: PermissionRuleConfig
@@ -2521,12 +2503,6 @@ export type Config = {
         },
       ]
   >
-  share?: "manual" | "auto" | "disabled"
-  autoshare?: boolean
-  /**
-   * Automatically update to the latest version. Set to true to auto-update, false to disable, or 'notify' to show update notifications
-   */
-  autoupdate?: boolean | "notify"
   disabled_providers?: Array<string>
   enabled_providers?: Array<string>
   remote_control?: boolean
@@ -2619,28 +2595,6 @@ export type Config = {
           }
           extensions?: Array<string>
         }
-      }
-  /**
-   * Enable or configure LSP servers. Omit or set to false to disable, true to enable built-ins, or an object to enable built-ins with overrides.
-   */
-  lsp?:
-    | boolean
-    | {
-        [key: string]:
-          | {
-              disabled: true
-            }
-          | {
-              command: Array<string>
-              extensions?: Array<string>
-              disabled?: boolean
-              env?: {
-                [key: string]: string
-              }
-              initialization?: {
-                [key: string]: unknown
-              }
-            }
       }
   instructions?: Array<string>
   layout?: LayoutConfig
@@ -2923,9 +2877,6 @@ export type GlobalSession = {
       write: number
     }
   }
-  share?: {
-    url: string
-  }
   title: string
   agent?: string
   model?: {
@@ -2961,15 +2912,6 @@ export type McpResource = {
   description?: string
   mimeType?: string
   client: string
-}
-
-export type Symbol = {
-  name: string
-  kind: number
-  location: {
-    uri: string
-    range: Range
-  }
 }
 
 export type FileNode = {
@@ -3081,13 +3023,6 @@ export type Agent = {
     [key: string]: unknown
   }
   steps?: number
-}
-
-export type LspStatus = {
-  id: string
-  name: string
-  root: string
-  status: "connected" | "error"
 }
 
 export type FormatterStatus = {
@@ -3279,9 +3214,6 @@ export type Session1 = {
       write: number
     }
   }
-  share?: {
-    url: string
-  }
   title: string
   agent?: string
   model?: {
@@ -3332,9 +3264,6 @@ export type Session2 = {
       read: number
       write: number
     }
-  }
-  share?: {
-    url: string
   }
   title: string
   agent?: string
@@ -3394,9 +3323,6 @@ export type Session3 = {
       write: number
     }
   }
-  share?: {
-    url: string
-  }
   title: string
   agent?: string
   model?: {
@@ -3448,9 +3374,6 @@ export type Session4 = {
       write: number
     }
   }
-  share?: {
-    url: string
-  }
   title: string
   agent?: string
   model?: {
@@ -3501,117 +3424,6 @@ export type Session5 = {
       read: number
       write: number
     }
-  }
-  share?: {
-    url: string
-  }
-  title: string
-  agent?: string
-  model?: {
-    id: string
-    providerID: string
-    variant?: string
-  }
-  version: string
-  metadata?: {
-    [key: string]: unknown
-  }
-  time: {
-    created: number
-    updated: number
-    compacting?: number
-    archived?: number
-  }
-  permission?: PermissionRuleset
-  revert?: {
-    messageID: string
-    partID?: string
-    snapshot?: string
-    diff?: string
-    workspace?: "restored" | "snapshots-disabled" | "unavailable"
-  }
-}
-
-export type Session6 = {
-  id: string
-  slug: string
-  projectID: string
-  workspaceID?: string
-  directory: string
-  path?: string
-  parentID?: string
-  summary?: {
-    additions: number
-    deletions: number
-    files: number
-    diffs?: Array<SnapshotSummaryFileDiff>
-  }
-  cost?: number
-  tokens?: {
-    input: number
-    output: number
-    reasoning: number
-    cache: {
-      read: number
-      write: number
-    }
-  }
-  share?: {
-    url: string
-  }
-  title: string
-  agent?: string
-  model?: {
-    id: string
-    providerID: string
-    variant?: string
-  }
-  version: string
-  metadata?: {
-    [key: string]: unknown
-  }
-  time: {
-    created: number
-    updated: number
-    compacting?: number
-    archived?: number
-  }
-  permission?: PermissionRuleset
-  revert?: {
-    messageID: string
-    partID?: string
-    snapshot?: string
-    diff?: string
-    workspace?: "restored" | "snapshots-disabled" | "unavailable"
-  }
-}
-
-export type Session7 = {
-  id: string
-  slug: string
-  projectID: string
-  workspaceID?: string
-  directory: string
-  path?: string
-  parentID?: string
-  summary?: {
-    additions: number
-    deletions: number
-    files: number
-    diffs?: Array<SnapshotSummaryFileDiff>
-  }
-  cost?: number
-  tokens?: {
-    input: number
-    output: number
-    reasoning: number
-    cache: {
-      read: number
-      write: number
-    }
-  }
-  share?: {
-    url: string
   }
   title: string
   agent?: string
@@ -3695,7 +3507,7 @@ export type SessionBusyError = {
   message: string
 }
 
-export type Session8 = {
+export type Session6 = {
   id: string
   slug: string
   projectID: string
@@ -3718,9 +3530,6 @@ export type Session8 = {
       read: number
       write: number
     }
-  }
-  share?: {
-    url: string
   }
   title: string
   agent?: string
@@ -3749,7 +3558,7 @@ export type Session8 = {
   }
 }
 
-export type Session9 = {
+export type Session7 = {
   id: string
   slug: string
   projectID: string
@@ -3772,9 +3581,6 @@ export type Session9 = {
       read: number
       write: number
     }
-  }
-  share?: {
-    url: string
   }
   title: string
   agent?: string
@@ -3816,7 +3622,6 @@ export type EventTuiCommandExecute2 = {
     command:
       | "session.list"
       | "session.new"
-      | "session.share"
       | "session.interrupt"
       | "session.compact"
       | "session.page.up"
@@ -4437,10 +4242,6 @@ export type MediaLocalFailedError = {
   message: string
 }
 
-export type EffectHttpApiErrorUnauthorized = {
-  _tag: "Unauthorized"
-}
-
 export type KilocodeSessionImportResult = {
   ok: boolean
   id: string
@@ -4697,7 +4498,6 @@ export type V2Event =
   | QuestionV2Replied
   | QuestionV2Rejected
   | TodoUpdated
-  | LspUpdated
   | PermissionAsked
   | PermissionReplied
   | TuiPromptAppend
@@ -4999,15 +4799,6 @@ export type EventSuggestionDismissed = {
   properties: {
     sessionID: string
     requestID: string
-  }
-}
-
-export type EventLspClientDiagnostics = {
-  id: string
-  type: "lsp.client.diagnostics"
-  properties: {
-    serverID: string
-    path: string
   }
 }
 
@@ -5959,14 +5750,6 @@ export type EventTodoUpdated = {
   properties: {
     sessionID: string
     todos: Array<Todo>
-  }
-}
-
-export type EventLspUpdated = {
-  id: string
-  type: "lsp.updated"
-  properties: {
-    [key: string]: unknown
   }
 }
 
@@ -8714,23 +8497,6 @@ export type TodoUpdated = {
   }
 }
 
-export type LspUpdated = {
-  id: string
-  metadata?: {
-    [key: string]: unknown
-  }
-  type: "lsp.updated"
-  durable?: {
-    aggregateID: string
-    seq: number
-    version: number
-  }
-  location?: LocationRef
-  data: {
-    [key: string]: unknown
-  }
-}
-
 export type PermissionAsked = {
   id: string
   metadata?: {
@@ -8811,7 +8577,6 @@ export type TuiCommandExecute = {
     command:
       | "session.list"
       | "session.new"
-      | "session.share"
       | "session.interrupt"
       | "session.compact"
       | "session.page.up"
@@ -9923,14 +9688,6 @@ export type EventTodoUpdated1 = {
   }
 }
 
-export type EventLspUpdated1 = {
-  id: string
-  type: "lsp.updated"
-  properties: {
-    [key: string]: unknown
-  }
-}
-
 export type EventPermissionAsked1 = {
   id: string
   type: "permission.asked"
@@ -9975,7 +9732,6 @@ export type EventTuiCommandExecute1 = {
     command:
       | "session.list"
       | "session.new"
-      | "session.share"
       | "session.interrupt"
       | "session.compact"
       | "session.page.up"
@@ -10620,41 +10376,6 @@ export type GlobalDisposeResponses = {
 }
 
 export type GlobalDisposeResponse = GlobalDisposeResponses[keyof GlobalDisposeResponses]
-
-export type GlobalUpgradeData = {
-  body?: {
-    target?: string
-  }
-  path?: never
-  query?: never
-  url: "/global/upgrade"
-}
-
-export type GlobalUpgradeErrors = {
-  /**
-   * BadRequest | InvalidRequestError
-   */
-  400: EffectHttpApiErrorBadRequest | InvalidRequestError
-}
-
-export type GlobalUpgradeError = GlobalUpgradeErrors[keyof GlobalUpgradeErrors]
-
-export type GlobalUpgradeResponses = {
-  /**
-   * Upgrade result
-   */
-  200:
-    | {
-        success: true
-        version: string
-      }
-    | {
-        success: false
-        error: string
-      }
-}
-
-export type GlobalUpgradeResponse = GlobalUpgradeResponses[keyof GlobalUpgradeResponses]
 
 export type EventSubscribeData = {
   body?: never
@@ -11383,7 +11104,7 @@ export type FindSymbolsResponses = {
   /**
    * Symbols
    */
-  200: Array<Symbol>
+  200: Array<unknown>
 }
 
 export type FindSymbolsResponse = FindSymbolsResponses[keyof FindSymbolsResponses]
@@ -11765,34 +11486,6 @@ export type AppSkillsResponses = {
 }
 
 export type AppSkillsResponse = AppSkillsResponses[keyof AppSkillsResponses]
-
-export type LspStatusData = {
-  body?: never
-  path?: never
-  query?: {
-    directory?: string
-    workspace?: string
-  }
-  url: "/lsp"
-}
-
-export type LspStatusErrors = {
-  /**
-   * Bad request
-   */
-  400: BadRequestError
-}
-
-export type LspStatusError = LspStatusErrors[keyof LspStatusErrors]
-
-export type LspStatusResponses = {
-  /**
-   * LSP server status
-   */
-  200: Array<LspStatus>
-}
-
-export type LspStatusResponse = LspStatusResponses[keyof LspStatusResponses]
 
 export type FormatterStatusData = {
   body?: never
@@ -13598,82 +13291,6 @@ export type SessionInitResponses = {
 
 export type SessionInitResponse = SessionInitResponses[keyof SessionInitResponses]
 
-export type SessionUnshareData = {
-  body?: never
-  path: {
-    sessionID: string
-  }
-  query?: {
-    directory?: string
-    workspace?: string
-  }
-  url: "/session/{sessionID}/share"
-}
-
-export type SessionUnshareErrors = {
-  /**
-   * Bad request
-   */
-  400: BadRequestError
-  /**
-   * NotFoundError
-   */
-  404: NotFoundError
-  /**
-   * InternalServerError
-   */
-  500: EffectHttpApiErrorInternalServerError
-}
-
-export type SessionUnshareError = SessionUnshareErrors[keyof SessionUnshareErrors]
-
-export type SessionUnshareResponses = {
-  /**
-   * Successfully unshared session
-   */
-  200: Session7
-}
-
-export type SessionUnshareResponse = SessionUnshareResponses[keyof SessionUnshareResponses]
-
-export type SessionShareData = {
-  body?: never
-  path: {
-    sessionID: string
-  }
-  query?: {
-    directory?: string
-    workspace?: string
-  }
-  url: "/session/{sessionID}/share"
-}
-
-export type SessionShareErrors = {
-  /**
-   * Bad request
-   */
-  400: BadRequestError
-  /**
-   * NotFoundError
-   */
-  404: NotFoundError
-  /**
-   * InternalServerError
-   */
-  500: EffectHttpApiErrorInternalServerError
-}
-
-export type SessionShareError = SessionShareErrors[keyof SessionShareErrors]
-
-export type SessionShareResponses = {
-  /**
-   * Successfully shared session
-   */
-  200: Session6
-}
-
-export type SessionShareResponse = SessionShareResponses[keyof SessionShareResponses]
-
 export type SessionSummarizeData = {
   body?: {
     providerID: string
@@ -13908,7 +13525,7 @@ export type SessionRevertResponses = {
   /**
    * Updated session
    */
-  200: Session8
+  200: Session6
 }
 
 export type SessionRevertResponse = SessionRevertResponses[keyof SessionRevertResponses]
@@ -13946,7 +13563,7 @@ export type SessionUnrevertResponses = {
   /**
    * Updated session
    */
-  200: Session9
+  200: Session7
 }
 
 export type SessionUnrevertResponse = SessionUnrevertResponses[keyof SessionUnrevertResponses]
@@ -16833,99 +16450,6 @@ export type NetworkRejectResponses = {
 
 export type NetworkRejectResponse = NetworkRejectResponses[keyof NetworkRejectResponses]
 
-export type RemoteEnableData = {
-  body?: never
-  path?: never
-  query?: {
-    directory?: string
-    workspace?: string
-  }
-  url: "/remote/enable"
-}
-
-export type RemoteEnableErrors = {
-  /**
-   * Bad request
-   */
-  400: BadRequestError
-}
-
-export type RemoteEnableError = RemoteEnableErrors[keyof RemoteEnableErrors]
-
-export type RemoteEnableResponses = {
-  /**
-   * Remote connection enabled
-   */
-  200: {
-    enabled: boolean
-    connected: boolean
-  }
-}
-
-export type RemoteEnableResponse = RemoteEnableResponses[keyof RemoteEnableResponses]
-
-export type RemoteDisableData = {
-  body?: never
-  path?: never
-  query?: {
-    directory?: string
-    workspace?: string
-  }
-  url: "/remote/disable"
-}
-
-export type RemoteDisableErrors = {
-  /**
-   * Bad request
-   */
-  400: BadRequestError
-}
-
-export type RemoteDisableError = RemoteDisableErrors[keyof RemoteDisableErrors]
-
-export type RemoteDisableResponses = {
-  /**
-   * Remote connection disabled
-   */
-  200: {
-    enabled: boolean
-    connected: boolean
-  }
-}
-
-export type RemoteDisableResponse = RemoteDisableResponses[keyof RemoteDisableResponses]
-
-export type RemoteStatusData = {
-  body?: never
-  path?: never
-  query?: {
-    directory?: string
-    workspace?: string
-  }
-  url: "/remote/status"
-}
-
-export type RemoteStatusErrors = {
-  /**
-   * Bad request
-   */
-  400: BadRequestError
-}
-
-export type RemoteStatusError = RemoteStatusErrors[keyof RemoteStatusErrors]
-
-export type RemoteStatusResponses = {
-  /**
-   * Remote connection status
-   */
-  200: {
-    enabled: boolean
-    connected: boolean
-  }
-}
-
-export type RemoteStatusResponse = RemoteStatusResponses[keyof RemoteStatusResponses]
-
 export type SandboxSupportData = {
   body?: never
   path?: never
@@ -17092,7 +16616,6 @@ export type KilocodeSessionImportSessionData = {
     directory: string
     title: string
     version: string
-    shareURL?: string
     summary?: {
       additions: number
       deletions: number

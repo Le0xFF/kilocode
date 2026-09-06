@@ -1,6 +1,6 @@
 import { FileSystem } from "@opencode-ai/core/filesystem"
 import { NonNegativeInt } from "@opencode-ai/core/schema"
-import { LSP } from "@/lsp/lsp"
+// kilocode_change - LSP removed; findSymbol returns no symbols
 import { Schema } from "effect"
 import { HttpApi, HttpApiEndpoint, HttpApiGroup, OpenApi } from "effect/unstable/httpapi"
 import { Authorization } from "../middleware/authorization"
@@ -127,12 +127,13 @@ export const FileApi = HttpApi.make("file")
         ),
         HttpApiEndpoint.get("findSymbol", FilePaths.findSymbol, {
           query: FindSymbolQuery,
-          success: described(Schema.Array(LSP.Symbol), "Symbols"),
+          // kilocode_change - LSP removed; findSymbol returns an empty array
+          success: described(Schema.Array(Schema.Unknown), "Symbols"), // kilocode_change
         }).annotateMerge(
           OpenApi.annotations({
             identifier: "find.symbols",
             summary: "Find symbols",
-            description: "Search for workspace symbols like functions, classes, and variables using LSP.",
+            description: "Search for workspace symbols like functions, classes, and variables.", // kilocode_change
           }),
         ),
         HttpApiEndpoint.get("list", FilePaths.list, {

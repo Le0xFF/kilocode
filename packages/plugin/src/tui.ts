@@ -3,7 +3,7 @@ import type {
   KiloClient,
   Event,
   FilePart,
-  LspStatus,
+  // kilocode_change - LSP removed; no LspStatus import from SDK
   McpStatus,
   Todo,
   Message,
@@ -397,7 +397,7 @@ export type TuiState = {
     question: (sessionID: string) => ReadonlyArray<QuestionRequest>
   }
   part: (messageID: string) => ReadonlyArray<Part>
-  lsp: () => ReadonlyArray<TuiSidebarLspItem>
+  // kilocode_change - LSP removed; no lsp in TUI sidebar state
   mcp: () => ReadonlyArray<TuiSidebarMcpItem>
 }
 
@@ -445,7 +445,7 @@ export type TuiSidebarMcpItem = {
   error?: string
 }
 
-export type TuiSidebarLspItem = Pick<LspStatus, "id" | "root" | "status">
+// kilocode_change - LSP removed; no TuiSidebarLspItem
 
 export type TuiSidebarTodoItem = Pick<Todo, "content" | "status">
 
@@ -483,7 +483,7 @@ export type TuiHostSlotMap = {
   sidebar_title: {
     session_id: string
     title: string
-    share_url?: string
+    // kilocode_change - session sharing feature removed; no share_url slot prop
   }
   sidebar_content: {
     session_id: string

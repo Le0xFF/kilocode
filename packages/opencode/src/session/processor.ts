@@ -25,7 +25,6 @@ import { Question } from "@/question"
 import { KiloSessionProcessor, type ReviewTelemetry } from "@/kilocode/session/processor"
 import { PermissionProvenance } from "@/kilocode/permission/provenance" // kilocode_change
 import { KiloSessionOverflow } from "@/kilocode/session/overflow"
-import { KiloRoutedModel } from "@/kilocode/session/routed-model"
 import { KiloResponseMetadata } from "@/kilocode/session/response-metadata"
 import { Suggestion } from "@/kilocode/suggestion"
 // kilocode_change end
@@ -614,11 +613,6 @@ const layer = Layer.effect(
               metadata: value.providerMetadata,
             })
             // kilocode_change start
-            const model = KiloRoutedModel.readAuto(value.providerMetadata, {
-              providerID: ctx.model.providerID,
-              modelID: ctx.model.id,
-              selected: ctx.assistantMessage.modelID,
-            })
             const generationID = KiloSessionProcessor.generationID(value.providerMetadata)
             const vercelID = KiloResponseMetadata.read(value.providerMetadata)
             // kilocode_change end
@@ -656,7 +650,6 @@ const layer = Layer.effect(
               sessionID: ctx.assistantMessage.sessionID,
               type: "step-finish",
               time: { start: startDate, end: endDate, elapsed: elapsedMs }, // kilocode_change
-              ...(model ? { model } : {}), // kilocode_change
               ...(generationID ? { generationID } : {}), // kilocode_change
               ...(vercelID ? { vercelID } : {}), // kilocode_change
               ...(metrics ? { metrics } : {}), // kilocode_change

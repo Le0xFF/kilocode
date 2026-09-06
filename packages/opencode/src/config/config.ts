@@ -915,9 +915,7 @@ const layer = Layer.effect(
           }
         }
 
-        if (result.autoshare === true && !result.share) {
-          result.share = "auto"
-        }
+        // kilocode_change - session sharing feature removed; no autoshare->share normalization
 
         if (Flag.KILO_DISABLE_AUTOCOMPACT) {
           result.compaction = { ...result.compaction, auto: false }

@@ -95,7 +95,7 @@ export const SessionPaths = {
   update: `${root}/:sessionID`,
   fork: `${root}/:sessionID/fork`,
   abort: `${root}/:sessionID/abort`,
-  share: `${root}/:sessionID/share`,
+  // kilocode_change - session sharing route removed
   init: `${root}/:sessionID/init`,
   summarize: `${root}/:sessionID/summarize`,
   prompt: `${root}/:sessionID/message`,
@@ -282,30 +282,7 @@ export const SessionApi = HttpApi.make("session")
               "Analyze the current application and create an AGENTS.md file with project-specific agent configurations.",
           }),
         ),
-        HttpApiEndpoint.post("share", SessionPaths.share, {
-          params: { sessionID: SessionID },
-          query: WorkspaceRoutingQuery,
-          success: described(Session.Info, "Successfully shared session"),
-          error: [HttpApiError.InternalServerError, ApiNotFoundError],
-        }).annotateMerge(
-          OpenApi.annotations({
-            identifier: "session.share",
-            summary: "Share session",
-            description: "Create a shareable link for a session, allowing others to view the conversation.",
-          }),
-        ),
-        HttpApiEndpoint.delete("unshare", SessionPaths.share, {
-          params: { sessionID: SessionID },
-          query: WorkspaceRoutingQuery,
-          success: described(Session.Info, "Successfully unshared session"),
-          error: [HttpApiError.InternalServerError, ApiNotFoundError],
-        }).annotateMerge(
-          OpenApi.annotations({
-            identifier: "session.unshare",
-            summary: "Unshare session",
-            description: "Remove the shareable link for a session, making it private again.",
-          }),
-        ),
+        // kilocode_change start - session sharing endpoints removed (POST share / DELETE unshare)
         HttpApiEndpoint.post("summarize", SessionPaths.summarize, {
           params: { sessionID: SessionID },
           query: WorkspaceRoutingQuery,
@@ -318,7 +295,7 @@ export const SessionApi = HttpApi.make("session")
             summary: "Summarize session",
             description: "Generate a concise summary of the session using AI compaction to preserve key information.",
           }),
-        ),
+        ), // kilocode_change end
         HttpApiEndpoint.post("prompt", SessionPaths.prompt, {
           params: { sessionID: SessionID },
           query: WorkspaceRoutingQuery,

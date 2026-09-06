@@ -69,7 +69,7 @@ afterEach(async () => {
 
 describe("v2 pty HttpApi", () => {
   testPty("serves location-wrapped PTY routes and retains exited sessions", async () => {
-    await using tmp = await tmpdir({ git: true, config: { formatter: false, lsp: false } })
+    await using tmp = await tmpdir({ git: true, config: { formatter: false } })
 
     const empty = await request("/api/pty", tmp.path)
     expect(empty.status).toBe(200)
@@ -106,7 +106,7 @@ describe("v2 pty HttpApi", () => {
   })
 
   testPty("rejects connect tokens without the CSRF header and connects with a valid ticket", async () => {
-    await using tmp = await tmpdir({ git: true, config: { formatter: false, lsp: false } })
+    await using tmp = await tmpdir({ git: true, config: { formatter: false } })
     const created = await request("/api/pty", tmp.path, {
       method: "POST",
       headers: { "content-type": "application/json" },
@@ -137,7 +137,7 @@ describe("v2 pty HttpApi", () => {
   // kilocode_change start - portable live PTY coverage on Linux, macOS, and Windows CI
   effectIt.live("serves Agent Manager script terminal create, resize, input, output, exit, and remove routes", () =>
     Effect.gen(function* () {
-      const dir = yield* tmpdirScoped({ git: true, config: { formatter: false, lsp: false } })
+      const dir = yield* tmpdirScoped({ git: true, config: { formatter: false } })
       const child = [
         'const state = { input: "", pong: false }',
         "process.stdout.write(`READY:${process.stdout.isTTY}:${process.stdout.columns}x${process.stdout.rows}\\n`)",
@@ -235,7 +235,7 @@ describe("v2 pty HttpApi", () => {
     "applies plugin shell environment before forced PTY values",
     () =>
       Effect.gen(function* () {
-        const dir = yield* tmpdirScoped({ git: true, config: { formatter: false, lsp: false } })
+        const dir = yield* tmpdirScoped({ git: true, config: { formatter: false } })
         // kilocode_change start - verify child env precedence and credential stripping through the canonical PTY route
         const previous = {
           password: process.env.KILO_SERVER_PASSWORD,
@@ -280,7 +280,7 @@ describe("v2 pty HttpApi", () => {
         yield* Effect.promise(() =>
           Bun.write(
             path.join(dir, "opencode.json"),
-            JSON.stringify({ plugin: [pathToFileURL(plugin).href], formatter: false, lsp: false }),
+            JSON.stringify({ plugin: [pathToFileURL(plugin).href], formatter: false }),
           ),
         )
 

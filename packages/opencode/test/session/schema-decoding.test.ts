@@ -61,7 +61,6 @@ describe("Session.Info", () => {
         files: 2,
         diffs: [{ additions: 1, deletions: 0, file: "a.ts" }], // kilocode_change
       },
-      share: { url: "https://share.example.com/s/1" },
       title: "Full session",
       version: "1.0.0",
       metadata: { source: "test" },

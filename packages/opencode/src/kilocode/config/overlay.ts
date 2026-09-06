@@ -92,8 +92,8 @@ export namespace KilocodeConfigOverlay {
     ["privacy_mode"],
     ["default_agent"],
     ["snapshot"],
-    ["share"],
-    ["autoupdate"],
+    // kilocode_change - session sharing feature removed; no share field overlay
+    // kilocode_change - auto-update removed; no autoupdate field overlay
     ["enabled_providers"],
     ["disabled_providers"],
     ["watcher", "ignore"],
@@ -126,7 +126,7 @@ export namespace KilocodeConfigOverlay {
     ["indexing", "fileExtensions"],
   ] as const
 
-  const collectionPaths = ["provider", "mcp", "permission", "agent", "formatter", "lsp"] as const
+  const collectionPaths = ["provider", "mcp", "permission", "agent", "formatter"] as const // kilocode_change - LSP removed
   const blocked = new Set(["__proto__", "constructor", "prototype"])
 
   export async function project(input: { directory: string; worktree?: string }): Promise<Config.Info> {

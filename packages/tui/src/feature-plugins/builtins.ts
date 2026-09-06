@@ -4,7 +4,7 @@ import HomeTips from "./home/tips"
 import SidebarContext from "./sidebar/context"
 import SidebarFiles from "./sidebar/files"
 import SidebarFooter from "./sidebar/footer"
-import SidebarLsp from "./sidebar/lsp"
+// kilocode_change - LSP removed; no sidebar LSP plugin
 import SidebarMcp from "./sidebar/mcp"
 import SidebarTodo from "./sidebar/todo"
 import DiffViewer from "./system/diff-viewer"
@@ -24,7 +24,7 @@ export function createBuiltinPlugins(options: { experimentalEventSystem: boolean
     HomeTips,
     SidebarContext,
     SidebarMcp,
-    SidebarLsp,
+    // kilocode_change - LSP removed; no sidebar LSP plugin
     SidebarTodo,
     SidebarFiles,
     SidebarFooter,

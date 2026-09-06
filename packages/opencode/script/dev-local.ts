@@ -74,7 +74,6 @@ async function main() {
   }
   env.KILO_API_URL = `http://localhost:${webPort}`
   env.KILO_DEV_CWD = project
-  env.KILO_DISABLE_AUTOUPDATE = "1"
   if (ingestPort) env.KILO_SESSION_INGEST_URL = `http://localhost:${ingestPort}`
   else env.KILO_DISABLE_SESSION_INGEST = "1"
   if (eventsPort) {

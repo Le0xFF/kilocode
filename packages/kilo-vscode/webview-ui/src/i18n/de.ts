@@ -246,7 +246,6 @@ export const dict = {
   "ui.permission.toolLabel.webFetch": "Web-Abruf",
   "ui.permission.toolLabel.task": "Aufgabe",
   "ui.permission.toolLabel.skill": "Fähigkeit",
-  "ui.permission.toolLabel.lsp": "LSP",
   "ui.permission.toolLabel.bash": "Bash",
   "ui.permission.toolLabel.todoRead": "Todo lesen",
   "ui.permission.toolLabel.todoWrite": "Todo schreiben",
@@ -521,8 +520,6 @@ export const dict = {
   "settings.permissions.tool.task.description": "Unteragenten starten",
   "settings.permissions.tool.skill.title": "Fähigkeit",
   "settings.permissions.tool.skill.description": "Eine Fähigkeit nach Namen laden",
-  "settings.permissions.tool.lsp.title": "LSP",
-  "settings.permissions.tool.lsp.description": "Language-Server-Abfragen ausführen",
   "settings.permissions.tool.todoread.title": "Todo lesen",
   "settings.permissions.tool.todoread.description": "Die Todo-Liste lesen",
   "settings.permissions.tool.todowrite.title": "Todo schreiben",
@@ -723,8 +720,6 @@ export const dict = {
   "settings.experimental.share.disabled": "Deaktiviert",
   "settings.experimental.formatter.title": "Formatierer",
   "settings.experimental.formatter.description": "Automatischen Code-Formatierer aktivieren",
-  "settings.experimental.lsp.title": "LSP",
-  "settings.experimental.lsp.description": "Language-Server-Protokoll-Integration aktivieren",
   "settings.experimental.batch.title": "Batch-Werkzeug",
   "settings.experimental.batch.description": "Bündelung mehrerer Werkzeugaufrufe aktivieren",
   "settings.experimental.imageGeneration.title": "Bildgenerierung",
@@ -908,10 +903,7 @@ export const dict = {
     "Terminalbefehle ausführen. Erlaubt die Ausführung von Shell-Befehlen (z. B. git status).",
   "settings.autoApprove.tool.task":
     "Sub-Agenten starten. Erlaubt das Starten spezialisierter Sub-Agenten für bestimmte Aufgaben.",
-  "settings.autoApprove.tool.skill": "Fähigkeiten laden. Erlaubt das Laden vordefinierter Fähigkeiten nach Namen.",
-  "settings.autoApprove.tool.lsp":
-    "Sprachserver abfragen. Erlaubt das Ausführen von Sprachserver-Abfragen für Code-Intelligenz.",
-  "settings.autoApprove.tool.todoreadwrite":
+  "settings.autoApprove.tool.skill": "Fähigkeiten laden. Erlaubt das Laden vordefinierter Fähigkeiten nach Namen.",  "settings.autoApprove.tool.todoreadwrite":
     "Aufgabenliste verwalten. Ermöglicht das Lesen und Aktualisieren der internen Aufgabenliste.",
   "settings.autoApprove.tool.webfetch": "URL abrufen. Erlaubt das Abrufen von Inhalten einer bestimmten URL.",
   "settings.autoApprove.tool.external_directory":

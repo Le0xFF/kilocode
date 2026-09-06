@@ -245,7 +245,6 @@ export const dict = {
   "ui.permission.toolLabel.webFetch": "Webhenting",
   "ui.permission.toolLabel.task": "Oppgave",
   "ui.permission.toolLabel.skill": "Ferdighet",
-  "ui.permission.toolLabel.lsp": "LSP",
   "ui.permission.toolLabel.bash": "Bash",
   "ui.permission.toolLabel.todoRead": "Les gjøremål",
   "ui.permission.toolLabel.todoWrite": "Skriv gjøremål",
@@ -477,8 +476,6 @@ export const dict = {
   "settings.permissions.tool.task.description": "Start underagenter",
   "settings.permissions.tool.skill.title": "Ferdighet",
   "settings.permissions.tool.skill.description": "Last en ferdighet etter navn",
-  "settings.permissions.tool.lsp.title": "LSP",
-  "settings.permissions.tool.lsp.description": "Kjør språkserverforespørsler",
   "settings.permissions.tool.todoread.title": "Les gjøremål",
   "settings.permissions.tool.todoread.description": "Les gjøremålslisten",
   "settings.permissions.tool.todowrite.title": "Skriv gjøremål",
@@ -673,8 +670,6 @@ export const dict = {
   "settings.experimental.share.disabled": "Deaktivert",
   "settings.experimental.formatter.title": "Formater",
   "settings.experimental.formatter.description": "Aktiver automatisk kodeformatering",
-  "settings.experimental.lsp.title": "LSP",
-  "settings.experimental.lsp.description": "Aktiver språkserverprotokoll-integrasjon",
   "settings.experimental.batch.title": "Batchverktøy",
   "settings.experimental.batch.description": "Aktiver batchbehandling av verktøykall",
   "settings.experimental.imageGeneration.title": "Bildegenerering",
@@ -889,7 +884,6 @@ export const dict = {
     "Start underagenter. Tillater start av spesialiserte underagenter for spesifikke oppgaver.",
   "settings.autoApprove.tool.skill":
     "Last inn ferdigheter. Tillater innlasting av forhåndsdefinerte ferdigheter etter navn.",
-  "settings.autoApprove.tool.lsp": "Spør språkserver. Tillater kjøring av språkserverforespørsler for kodeintelligens.",
   "settings.autoApprove.tool.todoreadwrite":
     "Administrer oppgaveliste. Tillater lesing og oppdatering av den interne oppgavelisten.",
   "settings.autoApprove.tool.webfetch": "Hent en URL. Tillater henting av innhold fra en spesifikk URL.",

@@ -53,7 +53,7 @@ afterEach(async () => {
 describe("global config refresh", () => {
   test("update reloads existing instance before responding", async () => {
     await using config = await tmpdir()
-    await using workspace = await tmpdir({ config: { formatter: false, lsp: false } })
+    await using workspace = await tmpdir({ config: { formatter: false } })
     ;(Global.Path as { config: string }).config = config.path
     await disposeAllInstances()
     const target = app()
@@ -100,7 +100,7 @@ describe("global config refresh", () => {
 
   test("detects external global config edits", async () => {
     await using global = await tmpdir()
-    await using workspace = await tmpdir({ config: { formatter: false, lsp: false } })
+    await using workspace = await tmpdir({ config: { formatter: false } })
     ;(Global.Path as { config: string }).config = global.path
     await config(global.path, { permission: { edit: "ask" } })
     await disposeAllInstances()

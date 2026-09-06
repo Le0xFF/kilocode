@@ -171,7 +171,7 @@ const TIPS: Tip[] = [
   (shortcuts) => press(shortcuts.agentCycle(), "to cycle between Build and Plan agents"),
   "Use {highlight}/undo{/highlight} to revert the last message and file changes",
   "Use {highlight}/redo{/highlight} to restore previously undone messages and file changes",
-  "Run {highlight}/share{/highlight} to create a public opencode.ai link",
+  // kilocode_change - session sharing feature removed; no /share tip
   "Drag and drop images or PDFs into the terminal as context",
   (shortcuts) => press(shortcuts.inputPaste(), "to paste images from your clipboard into the prompt"),
   (shortcuts) => `Use ${commandText("/editor", shortcuts.editorOpen())} to compose messages in your external editor`,
@@ -232,7 +232,7 @@ const TIPS: Tip[] = [
   'Set {highlight}"formatter": true{/highlight} to enable built-in formatters',
   'Set {highlight}"formatter": false{/highlight} to disable inherited formatters',
   "Define custom formatter commands with file extensions in config",
-  'Set {highlight}"lsp": true{/highlight} to enable built-in LSP code analysis',
+  // kilocode_change - LSP removed; no lsp tip
   "Create {highlight}.ts{/highlight} files in {highlight}.kilo/tools/{/highlight} to define new LLM tools", // kilocode_change
   "Tool definitions can invoke scripts written in Python, Go, etc",
   "Add {highlight}.ts{/highlight} files to {highlight}.kilo/plugins/{/highlight} for event hooks", // kilocode_change
@@ -244,7 +244,6 @@ const TIPS: Tip[] = [
   "Use {highlight}--format json{/highlight} for machine-readable output in scripts",
   "Run {highlight}opencode serve{/highlight} for headless API access to OpenCode",
   "Use {highlight}opencode run --attach{/highlight} to connect to a running server",
-  "Run {highlight}opencode upgrade{/highlight} to update to the latest version",
   "Run {highlight}opencode auth list{/highlight} to see all configured providers",
   "Run {highlight}opencode agent create{/highlight} for guided agent creation",
   "Use {highlight}/opencode{/highlight} in GitHub issues/PRs to trigger AI actions",
@@ -263,9 +262,7 @@ const TIPS: Tip[] = [
   'Set {highlight}"tools": {"bash": false}{/highlight} to disable specific tools',
   'Set {highlight}"mcp_*": false{/highlight} to disable all tools from an MCP server',
   "Override global tool settings per agent configuration",
-  'Set {highlight}"share": "auto"{/highlight} to automatically share all sessions',
-  'Set {highlight}"share": "disabled"{/highlight} to prevent any session sharing',
-  "Run {highlight}/unshare{/highlight} to remove a session from public access",
+  // kilocode_change - session sharing feature removed; no share config tips
   "Permission {highlight}doom_loop{/highlight} prevents infinite tool call loops",
   "Permission {highlight}external_directory{/highlight} protects files outside project",
   "Run {highlight}opencode debug config{/highlight} to troubleshoot configuration",

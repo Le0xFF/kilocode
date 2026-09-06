@@ -55,7 +55,6 @@ describe("Kilo experimental HttpApi", () => {
     {
       config: {
         formatter: false,
-        lsp: false,
         provider: {
           "test-provider": {
             npm: "@ai-sdk/openai-compatible",

@@ -17,7 +17,7 @@ export const CommandExecute = Event.define({
       Schema.Literals([
         "session.list",
         "session.new",
-        "session.share",
+        // kilocode_change - session sharing feature removed; no session.share command
         "session.interrupt",
         "session.compact",
         "session.page.up",

@@ -13,11 +13,11 @@ This branch (`leocode`) is a reduced copy of the Kilo Code monorepo containing *
 
 ## Surviving package set
 
-The root `package.json` lists workspaces **explicitly** (no `packages/*` glob) so future merges from `main` cannot resurrect removed packages even if main re-adds them to a glob. The list is the transitive closure of `@kilocode/cli` (the spawned backend) plus direct bundle-time deps of the extension: `opencode`, `core`, `ui`, `plugin`, `kilo-gateway`, `kilo-telemetry`, `kilo-indexing`, `kilo-memory`, `kilo-sandbox`, `kilo-i18n`, `kilo-ui`, `script`, `tui`, `server`, `codemode`, `schema`, `protocol`, `llm`, `effect-drizzle-sqlite`, `effect-sqlite-node`, `http-recorder`, `plugin-atomic-chat`, `sdk/js`, and `kilo-vscode` itself. Batch-B follow-up (vendoring the CLI binary) could shrink this further.
+The root `package.json` lists workspaces **explicitly** (no `packages/*` glob) so future merges from `main` cannot resurrect removed packages even if main re-adds them to a glob. The list is the transitive closure of `@kilocode/cli` (the spawned backend) plus direct bundle-time deps of the extension: `opencode`, `core`, `ui`, `plugin`, `kilo-indexing`, `kilo-memory`, `kilo-sandbox`, `kilo-i18n`, `kilo-ui`, `script`, `tui`, `server`, `codemode`, `schema`, `protocol`, `llm`, `effect-drizzle-sqlite`, `effect-sqlite-node`, `http-recorder`, `plugin-atomic-chat`, `sdk/js`, and `kilo-vscode` itself. `kilo-gateway` and `kilo-telemetry` were later fully removed from the workspace list (see "Online-services removal" below; their surviving references are commented-out stubs, not live imports). Batch-B follow-up (vendoring the CLI binary) could shrink this further.
 
 ## Sync flow (the ONLY sync path)
 
-The only upstream is `origin/main` = https://github.com/Kilo-Org/kilocode/. There is no `upstream` remote and there never will be again.
+The only upstream is `origin/main` = https://github.com/Kilo-Org/kilocode/. There is no `upstream` remote and there never will be again. The fork-sync toolchain (including the `check-opencode-annotations` script) was removed with it, so the annotation check documented in `AGENTS.md` is stale and cannot be run from this checkout; `kilocode_change` markers are still honored by manual merge resolution.
 
 ```
 git switch main      # 1. go to main
@@ -75,6 +75,31 @@ A controlled drill with synthetic changes on `turbo.json`, root `package.json`, 
 
 Not runnable from root: `bun test` (deliberately exits 1), old root scripts (`dev*`, `sso`, `random`, …) are gone.
 
+## Residui volutamente online (gated) — matrice finale
+
+Chiusura dell'audit offline (step 12): i percorsi di rete che restano volontariamente disponibili sono tutti gated da scelta utente, azione esplicita, o caché fredda. Nessuno è attivabile automaticamente dal processo.
+
+Rimangono online (gated):
+
+- `webfetch` tool: GET arbitrari verso URL dichiarati dall'agente, permission-gated (`webfetch`). Capacità intrinseca dell'agente, non un servizio Kilo.
+- `skills.urls` config: pull di `index.json` dagli URL dichiarati dall'utente.
+- MCP remote/OAuth: server con URL dichiarati dall'utente; il flow OAuth apre il browser di sistema.
+- Browser automation (`npx @playwright/mcp@latest`): npm registry solo al primo uso con caché fredda; feature off di default.
+- Embedders hosted per l'indexing: selezionabili solo se l'utente li configura esplicitamente; la UI limita le opzioni a ollama/openai-compatible.
+- Import PR da GitHub (Agent Manager): `gh` / `git fetch` su azione utente esplicita.
+- Download on-demand di binary/plugin: ripgrep dai GitHub releases se assente a sistema; `Npm.add` per plugin/dynamic-provider-SDK/@lancedb al primo uso con caché fredda.
+- Comando manuale `kilo upgrade`: npm registry/brew/choco/scoop su azione esplicita (l'auto-update è stato rimosso).
+- Link `openExternal` nella webview (kilo.ai/docs, github, reddit): aprono il browser di sistema, non socket del processo.
+
+Assenti per costruzione:
+
+- models.dev fetch: disabilitato da flag (`KILO_DISABLE_MODELS_FETCH`) + committed snapshot `models-dev.local.json`.
+- LSP: feature rimossa interamente (binari language-server, download, toggle, permission row).
+- Session sharing: feature rimossa (`opncd.ai`/console più referenziati; dati storici compatibili).
+- Auto-update: rimosso (nessuna route `/global/upgrade`, nessun check automatico; resta il comando manuale).
+- Network probe: lista di host esterni azzerata in `session/network.ts`; dopo errori di connessione del provider non parte alcuna richiesta verso l'esterno.
+- Telemetria OTel: env del child `kilo serve` sanificata allo spawn (tutte le `OTEL_*` e le proxy var non gestite da VS Code sono tolte).
+
 ## Future work (out of scope here)
 
 - **Vendoring/offline**: replace `packages/opencode` with a prebuilt CLI binary (`CLI_DIST_DIR`), then drop batch-B packages (`tui`, `server`, `llm`, `schema`, `protocol`, `codemode`, `script`, `effect-*`, `http-recorder`) and the `prepare:cli-binary`/`prepare:sdk` steps. Separate effort.
@@ -86,8 +111,8 @@ The online Kilo surface has been stripped from both the extension and the CLI so
 
 Dead code that remains in the workspace (kept, not deleted):
 
-- `packages/kilo-gateway/` — still imported by `packages/core/src/v1/config/provider.ts` (`PROMPTS`, `AI_SDK_PROVIDERS`) and a few residual CLI sites (`core/src/plugin/provider/kilo.ts`, `opencode/src/kilocode/provider/provider.ts`). Kept as a conservative dead dependency (assumption A2); physical removal is deferred until those imports are relocated or dropped.
-- `packages/kilo-telemetry/` — no longer declared by any package's `dependencies`; it survives only because the root workspace list keeps it. Safe to delete once the last reference is gone.
+- `packages/kilo-gateway/` — removed from disk and from the workspace list; its former exports (`PROMPTS`, `AI_SDK_PROVIDERS`) were re-hosted into `packages/core/src/v1/config/constants.ts` (see "Online-services removal" below). Only commented-out references remain.
+- `packages/kilo-telemetry/` — removed from disk and from the workspace list; no package declares it as a dependency anymore.
 - Orphaned i18n keys for removed UI (`profile.*`, `deviceAuth.*`, `session.cloud.*`, `notifications.action.*`, etc.) are retained across all locales and protected in `tests/unit/i18n-unused-keys.test.ts` rather than mass-deleted.
 - The generated SDK client exposes an empty legacy `kilo` namespace getter (`client.kilo`) so pre-regen call sites keep typechecking; the underlying routes are gone.
 

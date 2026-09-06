@@ -171,10 +171,7 @@ export const RunCommand = effectCmd({
         describe: "fetch session from cloud and continue locally (use with --session)",
       })
       // kilocode_change end
-      .option("share", {
-        type: "boolean",
-        describe: "share the session",
-      })
+      // kilocode_change - session sharing feature removed; no --share option
       .option("model", {
         type: "string",
         alias: ["m"],
@@ -616,20 +613,7 @@ export const RunCommand = effectCmd({
         }
       }
 
-      async function share(sdk: KiloClient, sessionID: string) {
-        const cfg = await sdk.config.get()
-        if (!cfg.data) return
-        if (cfg.data.share !== "auto" && !flags.autoShare && !args.share) return
-        const res = await sdk.session.share({ sessionID }).catch((error) => {
-          if (error instanceof Error && error.message.includes("disabled")) {
-            UI.println(UI.Style.TEXT_DANGER_BOLD + "!  " + error.message)
-          }
-          return { error }
-        })
-        if (!res.error && "data" in res && res.data?.share?.url) {
-          UI.println(UI.Style.TEXT_INFO_BOLD + "~  " + res.data.share.url)
-        }
-      }
+      // kilocode_change - session sharing feature removed; no share() helper
 
       async function createFreshSession(
         sdk: KiloClient,
@@ -652,7 +636,7 @@ export const RunCommand = effectCmd({
           throw new Error("Failed to create session")
         }
 
-        void share(sdk, id).catch(() => {})
+        // kilocode_change - session sharing feature removed; no auto-share on fresh sessions
         return {
           id,
           title: result.data?.title,
@@ -1030,7 +1014,7 @@ export const RunCommand = effectCmd({
         // Validate agent if specified
         const agent = await pickAgent(client)
 
-        await share(client, sessionID)
+        // kilocode_change - session sharing feature removed; no share(client, sessionID)
 
         if (!interactive) {
           const events = await client.event.subscribe()
@@ -1136,7 +1120,7 @@ export const RunCommand = effectCmd({
             fetch: fetchFn,
             resolveAgent: localAgent,
             session,
-            share,
+            // kilocode_change - session sharing feature removed; no share input
             createSession: createFreshSession,
             agent: args.agent,
             model,
@@ -1207,7 +1191,7 @@ export async function runMini(input: MiniCommandInput) {
     fork: input.fork,
     "cloud-fork": undefined, // kilocode_change
     cloudFork: undefined, // kilocode_change
-    share: undefined,
+    // kilocode_change - session sharing feature removed; no share field
     model: input.model,
     agent: input.agent,
     format: "default",

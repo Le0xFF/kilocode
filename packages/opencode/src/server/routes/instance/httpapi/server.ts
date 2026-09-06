@@ -17,7 +17,7 @@ import { EventV2Bridge } from "@/event-v2-bridge"
 import { Format } from "@/format"
 import { Git } from "@/git"
 import { Installation } from "@/installation"
-import { LSP } from "@/lsp/lsp"
+// kilocode_change - LSP removed; no language-server in the httpapi layer
 import { MCP } from "@/mcp"
 import { McpAuth } from "@/mcp/auth"
 import { Permission } from "@/permission"
@@ -45,8 +45,7 @@ import { Session } from "@/session/session"
 import { SessionStatus } from "@/session/status"
 import { SessionSummary } from "@/session/summary"
 import { Todo } from "@/session/todo"
-import { SessionShare } from "@/share/session"
-import { ShareNext } from "@/share/share-next"
+// kilocode_change - session sharing feature removed; no SessionShare/ShareNext wiring
 import { Credential } from "@opencode-ai/core/credential" // kilocode_change
 import { Skill } from "@/skill"
 import { Discovery } from "@/skill/discovery"
@@ -270,7 +269,7 @@ const app = LayerNode.group([
   SessionPrompt.node,
   Instruction.node,
   LLM.node,
-  LSP.node,
+  // kilocode_change - LSP removed; no language-server in the httpapi layer
   MCP.node,
   McpAuth.node,
   Command.node,
@@ -282,8 +281,6 @@ const app = LayerNode.group([
   Workspace.node,
   Worktree.node,
   Installation.node,
-  ShareNext.node,
-  SessionShare.node,
   InstanceStore.node,
   httpClient,
   EventV2.node,

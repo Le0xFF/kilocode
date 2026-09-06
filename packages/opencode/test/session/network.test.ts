@@ -7,10 +7,12 @@ import { SessionID } from "../../src/session/schema"
 
 const timer = globalThis.setTimeout
 const clear = globalThis.clearTimeout
+const fetch0 = globalThis.fetch
 
 afterEach(() => {
   globalThis.setTimeout = timer
   globalThis.clearTimeout = clear
+  globalThis.fetch = fetch0
 })
 
 function manual() {
@@ -83,6 +85,38 @@ describe("session.network", () => {
     const err = new Error("request failed", { cause: timeout })
     expect(SessionNetwork.disconnected(err)).toBe(true)
     expect(SessionNetwork.message(err)).toBe("Request timed out")
+  })
+
+  test("watch schedules no outbound probes with an empty host list", async () => {
+    await using tmp = await tmpdir({ git: true })
+    await provideTestInstance({
+      directory: tmp.path,
+      fn: async () => {
+        const run = manual()
+        const seen: string[] = []
+        globalThis.fetch = ((url: unknown) => {
+          seen.push(String(url))
+          return Promise.reject(new Error("no network"))
+        }) as typeof fetch
+        try {
+          const abort = new AbortController()
+          const { promise } = await SessionNetwork.ask({
+            sessionID: SessionID.make("ses_test"),
+            message: "Connection refused",
+            abort: abort.signal,
+          })
+          expect(await SessionNetwork.list()).toHaveLength(1)
+          // let the watch loop reach its first probe tick without restoring
+          run()
+          abort.abort()
+          await expect(promise).rejects.toBeInstanceOf(DOMException)
+          expect(seen).toStrictEqual([])
+          expect(await SessionNetwork.list()).toHaveLength(0)
+        } finally {
+          globalThis.fetch = fetch0
+        }
+      },
+    })
   })
 
   test("reply resolves pending request", async () => {

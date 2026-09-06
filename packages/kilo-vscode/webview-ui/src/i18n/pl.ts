@@ -240,7 +240,6 @@ export const dict = {
   "ui.permission.toolLabel.webFetch": "Pobieranie Web",
   "ui.permission.toolLabel.task": "Zadanie",
   "ui.permission.toolLabel.skill": "Umiejętność",
-  "ui.permission.toolLabel.lsp": "LSP",
   "ui.permission.toolLabel.bash": "Bash",
   "ui.permission.toolLabel.todoRead": "Odczyt Todo",
   "ui.permission.toolLabel.todoWrite": "Zapis Todo",
@@ -473,8 +472,6 @@ export const dict = {
   "settings.permissions.tool.task.description": "Uruchamianie pod-agentów",
   "settings.permissions.tool.skill.title": "Umiejętność",
   "settings.permissions.tool.skill.description": "Ładowanie umiejętności według nazwy",
-  "settings.permissions.tool.lsp.title": "LSP",
-  "settings.permissions.tool.lsp.description": "Uruchamianie zapytań serwera językowego",
   "settings.permissions.tool.todoread.title": "Odczyt Todo",
   "settings.permissions.tool.todoread.description": "Odczyt listy zadań",
   "settings.permissions.tool.todowrite.title": "Zapis Todo",
@@ -670,8 +667,6 @@ export const dict = {
   "settings.experimental.share.disabled": "Wyłączony",
   "settings.experimental.formatter.title": "Formater",
   "settings.experimental.formatter.description": "Włącz automatyczny formater kodu",
-  "settings.experimental.lsp.title": "LSP",
-  "settings.experimental.lsp.description": "Włącz integrację protokołu serwera języka",
   "settings.experimental.batch.title": "Narzędzie wsadowe",
   "settings.experimental.batch.description": "Włącz przetwarzanie wsadowe wywołań narzędzi",
   "settings.experimental.imageGeneration.title": "Generowanie obrazów",
@@ -892,10 +887,7 @@ export const dict = {
   "settings.autoApprove.tool.task":
     "Uruchamianie podagentów. Pozwala na uruchamianie wyspecjalizowanych podagentów do określonych zadań.",
   "settings.autoApprove.tool.skill":
-    "Ładowanie umiejętności. Pozwala na ładowanie predefiniowanych umiejętności po nazwie.",
-  "settings.autoApprove.tool.lsp":
-    "Zapytania do serwera języka. Pozwala na uruchamianie zapytań do serwera języka w celu analizy kodu.",
-  "settings.autoApprove.tool.todoreadwrite":
+    "Ładowanie umiejętności. Pozwala na ładowanie predefiniowanych umiejętności po nazwie.",  "settings.autoApprove.tool.todoreadwrite":
     "Zarządzaj listą zadań. Pozwala na odczytywanie i aktualizowanie wewnętrznej listy zadań.",
   "settings.autoApprove.tool.webfetch": "Pobieranie URL. Pozwala na pobieranie zawartości z określonego adresu URL.",
   "settings.autoApprove.tool.external_directory":

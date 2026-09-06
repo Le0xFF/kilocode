@@ -78,6 +78,6 @@ it.instance(
       data: { message: "Too many pending authorization requests. Please try again later." },
     })
   }),
-  { config: { formatter: false, lsp: false } },
+  { config: { formatter: false } },
   30000,
 )

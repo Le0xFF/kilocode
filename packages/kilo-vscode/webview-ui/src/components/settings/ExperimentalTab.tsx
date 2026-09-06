@@ -71,19 +71,6 @@ const ExperimentalTab: Component = () => {
         </SettingsRow>
 
         <SettingsRow
-          title={language.t("settings.experimental.lsp.title")}
-          description={language.t("settings.experimental.lsp.description")}
-        >
-          <Switch
-            checked={config().lsp !== false}
-            onChange={(checked) => updateConfig({ lsp: checked ? {} : false })}
-            hideLabel
-          >
-            {language.t("settings.experimental.lsp.title")}
-          </Switch>
-        </SettingsRow>
-
-        <SettingsRow
           title={language.t("settings.experimental.batch.title")}
           description={language.t("settings.experimental.batch.description")}
         >

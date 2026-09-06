@@ -242,7 +242,6 @@ export const dict = {
   "ui.permission.toolLabel.webFetch": "Busca Web",
   "ui.permission.toolLabel.task": "Tarefa",
   "ui.permission.toolLabel.skill": "Habilidade",
-  "ui.permission.toolLabel.lsp": "LSP",
   "ui.permission.toolLabel.bash": "Bash",
   "ui.permission.toolLabel.todoRead": "Ler Tarefas",
   "ui.permission.toolLabel.todoWrite": "Escrever Tarefas",
@@ -476,8 +475,6 @@ export const dict = {
   "settings.permissions.tool.task.description": "Lançar sub-agentes",
   "settings.permissions.tool.skill.title": "Habilidade",
   "settings.permissions.tool.skill.description": "Carregar uma habilidade por nome",
-  "settings.permissions.tool.lsp.title": "LSP",
-  "settings.permissions.tool.lsp.description": "Executar consultas de servidor de linguagem",
   "settings.permissions.tool.todoread.title": "Ler Tarefas",
   "settings.permissions.tool.todoread.description": "Ler a lista de tarefas",
   "settings.permissions.tool.todowrite.title": "Escrever Tarefas",
@@ -713,8 +710,6 @@ export const dict = {
   "settings.experimental.share.disabled": "Desativado",
   "settings.experimental.formatter.title": "Formatador",
   "settings.experimental.formatter.description": "Ativar formatador automático de código",
-  "settings.experimental.lsp.title": "LSP",
-  "settings.experimental.lsp.description": "Ativar integração do protocolo de servidor de linguagem",
   "settings.experimental.batch.title": "Ferramenta em lote",
   "settings.experimental.batch.description": "Ativar processamento em lote de chamadas de ferramentas",
   "settings.experimental.imageGeneration.title": "Geração de imagens",
@@ -899,10 +894,7 @@ export const dict = {
     "Executar comandos de terminal. Permite a execução de comandos shell (ex: git status).",
   "settings.autoApprove.tool.task":
     "Iniciar subagentes. Permite iniciar subagentes especializados para tarefas específicas.",
-  "settings.autoApprove.tool.skill": "Carregar habilidades. Permite carregar habilidades predefinidas pelo nome.",
-  "settings.autoApprove.tool.lsp":
-    "Consultar language server. Permite executar consultas ao servidor de linguagem para inteligência de código.",
-  "settings.autoApprove.tool.todoreadwrite":
+  "settings.autoApprove.tool.skill": "Carregar habilidades. Permite carregar habilidades predefinidas pelo nome.",  "settings.autoApprove.tool.todoreadwrite":
     "Gerenciar lista de tarefas. Permite ler e atualizar a lista de tarefas interna.",
   "settings.autoApprove.tool.webfetch": "Buscar uma URL. Permite recuperar o conteúdo de uma URL específica.",
   "settings.autoApprove.tool.external_directory":

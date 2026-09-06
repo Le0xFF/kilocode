@@ -29,9 +29,17 @@ export function resolveIndexingEnv(folders: readonly WorkspaceFolderLike[] | und
   return { KILO_DISABLE_CODEBASE_INDEXING: "vscode-no-workspace" }
 }
 
+const PROXY_KEYS = ["HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY", "http_proxy", "https_proxy", "all_proxy", "NO_PROXY", "no_proxy"] as const
+
 export function resolveManagedServerEnv(env: NodeJS.ProcessEnv): NodeJS.ProcessEnv {
+  const out: Record<string, string | undefined> = {}
+  for (const [key, value] of Object.entries(env)) {
+    if (key.startsWith("OTEL_")) continue
+    if ((PROXY_KEYS as readonly string[]).includes(key)) continue
+    out[key] = value
+  }
   return {
-    ...env,
+    ...out,
     KILO_DISABLE_CHANNEL_DB: "true",
     // VS Code does not consume the backend's file.watcher.updated events.
     KILO_EXPERIMENTAL_DISABLE_FILEWATCHER: "true",

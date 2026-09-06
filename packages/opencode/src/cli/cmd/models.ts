@@ -54,10 +54,10 @@ export const ModelsCommand = effectCmd({
       return
     }
 
-    // kilocode_change start
+    // kilocode_change start - list local-surface providers first; the kilo/opencode preference is gone with the offline surface
     const ids = Object.keys(providers).sort((a, b) => {
-      const aIsKilo = a === "kilo" || a.startsWith("opencode")
-      const bIsKilo = b === "kilo" || b.startsWith("opencode")
+      const aIsKilo = a.startsWith("opencode")
+      const bIsKilo = b.startsWith("opencode")
       if (aIsKilo && !bIsKilo) return -1
       if (!aIsKilo && bIsKilo) return 1
       return a.localeCompare(b)

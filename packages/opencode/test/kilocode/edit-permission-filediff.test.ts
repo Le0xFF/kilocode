@@ -10,7 +10,6 @@ import { Effect, Layer, ManagedRuntime } from "effect"
 import { EditTool } from "../../src/tool/edit"
 import { provideTestInstance } from "../fixture/fixture"
 import { disposeAllInstances, tmpdir } from "../fixture/fixture"
-import { LSP } from "../../src/lsp/lsp"
 import { FSUtil } from "@opencode-ai/core/fs-util"
 import { Format } from "../../src/format"
 import { Agent } from "../../src/agent/agent"
@@ -21,7 +20,6 @@ import { SessionID, MessageID } from "../../src/session/schema"
 
 const runtime = ManagedRuntime.make(
   Layer.mergeAll(
-    AppNodeBuilder.build(LSP.node),
     AppNodeBuilder.build(FSUtil.node),
     AppNodeBuilder.build(Format.node),
     Bus.layer,

@@ -402,4 +402,37 @@ describe("server workspace helpers", () => {
       KILO_DISABLE_MODELS_FETCH: "true",
     })
   })
+
+  it("strips OTEL_ and proxy env vars from the inherited environment", () => {
+    const out = resolveManagedServerEnv({
+      PATH: "/usr/bin",
+      OTEL_EXPORTER_OTLP_ENDPOINT: "http://localhost:4318",
+      OTEL_EXPORTER_OTLP_HEADERS: "key=value",
+      HTTP_PROXY: "http://proxy:8080",
+      http_proxy: "http://proxy:8080",
+      HTTPS_PROXY: "http://proxy:8080",
+      ALL_PROXY: "socks5://proxy:1080",
+      NO_PROXY: "localhost",
+    })
+
+    expect(out).not.toHaveProperty("OTEL_EXPORTER_OTLP_ENDPOINT")
+    expect(out).not.toHaveProperty("OTEL_EXPORTER_OTLP_HEADERS")
+    expect(out).not.toHaveProperty("HTTP_PROXY")
+    expect(out).not.toHaveProperty("http_proxy")
+    expect(out).not.toHaveProperty("HTTPS_PROXY")
+    expect(out).not.toHaveProperty("ALL_PROXY")
+    expect(out).not.toHaveProperty("NO_PROXY")
+    expect(out.PATH).toBe("/usr/bin")
+    expect(out.KILO_DISABLE_MODELS_FETCH).toBe("true")
+  })
+
+  it("does not add proxy vars when none are present in the input", () => {
+    const out = resolveManagedServerEnv({ PATH: "/usr/bin" })
+
+    expect(out).not.toHaveProperty("HTTP_PROXY")
+    expect(out).not.toHaveProperty("https_proxy")
+    expect(out).not.toHaveProperty("all_proxy")
+    expect(out).not.toHaveProperty("no_proxy")
+    expect(out.PATH).toBe("/usr/bin")
+  })
 })

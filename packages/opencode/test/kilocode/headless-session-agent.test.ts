@@ -12,7 +12,6 @@ test("headless prompts preserve the agent selected when the session was created"
   await using tmp = await tmpdir({
     config: {
       formatter: false,
-      lsp: false,
       agent: {
         "test-engineer": {
           mode: "primary",

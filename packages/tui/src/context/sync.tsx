@@ -11,7 +11,7 @@ import type {
   QuestionRequest,
   SuggestionRequest, // kilocode_change
   SessionNetworkWait, // kilocode_change
-  LspStatus,
+  // kilocode_change - LSP removed; no LspStatus in TUI sync
   McpStatus,
   McpResource,
   FormatterStatus,
@@ -114,7 +114,7 @@ export const {
       part: {
         [messageID: string]: Part[]
       }
-      lsp: LspStatus[]
+      // kilocode_change - LSP removed; no lsp in TUI sync store
       mcp: {
         [key: string]: McpStatus
       }
@@ -155,7 +155,7 @@ export const {
       interactive_terminal: {}, // kilocode_change
       message: {},
       part: {},
-      lsp: [],
+      // kilocode_change - LSP removed; no lsp in TUI sync store init
       mcp: {},
       mcp_resource: {},
       formatter: [],
@@ -607,11 +607,7 @@ export const {
           break
         }
 
-        case "lsp.updated": {
-          const workspace = project.workspace.current()
-          void sdk.client.lsp.status({ workspace }).then((x) => setStore("lsp", x.data ?? []))
-          break
-        }
+        // kilocode_change - LSP removed; no lsp.updated event handler
 
         case "vcs.branch.updated": {
           if (workspace === project.workspace.current()) {
@@ -856,7 +852,7 @@ export const {
             ...(args.continue ? [] : [sessionListPromise.then((sessions) => setStore("session", reconcile(sessions)))]),
             consoleStatePromise.then((consoleState) => setStore("console_state", reconcile(consoleState))),
             sdk.client.command.list({ workspace }).then((x) => setStore("command", reconcile(x.data ?? []))),
-            sdk.client.lsp.status({ workspace }).then((x) => setStore("lsp", reconcile(x.data ?? []))),
+            // kilocode_change - LSP removed; no lsp status fetch in TUI sync
             sdk.client.mcp.status({ workspace }).then((x) => setStore("mcp", reconcile(x.data ?? {}))),
             sdk.client.experimental.resource
               .list({ workspace })

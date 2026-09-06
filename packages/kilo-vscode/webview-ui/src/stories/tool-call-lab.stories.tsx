@@ -793,14 +793,6 @@ const blocks: SDKPart[] = [
     { requestID: "am-story", count: 1 },
   ),
   done(
-    "lsp",
-    "lsp",
-    { operation: "hover", filePath: "src/index.ts", line: 1, character: 1 },
-    "Inspect symbol",
-    '[{"contents":"function main(): void"}]',
-    { result: [{ contents: "function main(): void" }] },
-  ),
-  done(
     "mcp",
     "linear_search_documentation",
     { query: "Linear attachments", page: 1 },
@@ -900,7 +892,6 @@ for (const key of [
   "semantic_search:matrix-call-semantic-search",
   "kilo_local_recall:matrix-call-local-recall",
   "agent_manager:matrix-call-agent-manager",
-  "lsp:matrix-call-lsp",
   "linear_search_documentation:matrix-call-mcp",
   "list:matrix-call-list",
   "codesearch:matrix-call-codesearch",

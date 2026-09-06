@@ -102,7 +102,6 @@ const SIMPLE_TOOLS: ToolDef[] = [
   { id: "list", descriptionKey: "settings.autoApprove.tool.list" },
   { id: "task", descriptionKey: "settings.autoApprove.tool.task" },
   { id: "skill", descriptionKey: "settings.autoApprove.tool.skill" },
-  { id: "lsp", descriptionKey: "settings.autoApprove.tool.lsp" },
 ]
 
 const GROUPED_TOOLS: GroupedToolDef[] = [

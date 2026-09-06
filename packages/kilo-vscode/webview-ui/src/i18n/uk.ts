@@ -242,7 +242,6 @@ export const dict = {
   "ui.permission.toolLabel.webFetch": "Веб-запит",
   "ui.permission.toolLabel.task": "Завдання",
   "ui.permission.toolLabel.skill": "Навичка",
-  "ui.permission.toolLabel.lsp": "LSP",
   "ui.permission.toolLabel.bash": "Bash",
   "ui.permission.toolLabel.todoRead": "Читати завдання",
   "ui.permission.toolLabel.todoWrite": "Записати завдання",
@@ -468,8 +467,6 @@ export const dict = {
   "settings.permissions.tool.task.description": "Запускати підагентів",
   "settings.permissions.tool.skill.title": "Навичка",
   "settings.permissions.tool.skill.description": "Завантажувати навичку за назвою",
-  "settings.permissions.tool.lsp.title": "LSP",
-  "settings.permissions.tool.lsp.description": "Виконувати запити до мовного сервера",
   "settings.permissions.tool.todoread.title": "Читати завдання",
   "settings.permissions.tool.todoread.description": "Читати список завдань",
   "settings.permissions.tool.todowrite.title": "Записати завдання",
@@ -704,8 +701,6 @@ export const dict = {
   "settings.experimental.share.disabled": "Вимкнено",
   "settings.experimental.formatter.title": "Форматер",
   "settings.experimental.formatter.description": "Увімкнути автоматичне форматування коду",
-  "settings.experimental.lsp.title": "LSP",
-  "settings.experimental.lsp.description": "Увімкнути інтеграцію з мовним сервером",
   "settings.experimental.batch.title": "Пакетний інструмент",
   "settings.experimental.batch.description": "Увімкнути пакетну обробку кількох викликів інструментів",
   "settings.experimental.imageGeneration.title": "Генерація зображень",
@@ -853,7 +848,6 @@ export const dict = {
     "Запускати підагентів. Дозволяє запуск спеціалізованих підагентів для конкретних завдань.",
   "settings.autoApprove.tool.skill":
     "Завантажувати навички. Дозволяє завантаження попередньо визначених навичок за назвою.",
-  "settings.autoApprove.tool.lsp": "Запитувати мовний сервер. Дозволяє запити до мовного сервера для аналізу коду.",
   "settings.autoApprove.tool.todoreadwrite":
     "Керувати списком завдань. Дозволяє читання та оновлення внутрішнього списку завдань.",
   "settings.autoApprove.tool.webfetch": "Отримати URL. Дозволяє отримання вмісту з вказаного URL.",

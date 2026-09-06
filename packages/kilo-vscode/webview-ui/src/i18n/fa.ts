@@ -238,7 +238,6 @@ export const dict = {
   "ui.permission.toolLabel.webFetch": "دریافت از وب",
   "ui.permission.toolLabel.task": "وظیفه",
   "ui.permission.toolLabel.skill": "مهارت",
-  "ui.permission.toolLabel.lsp": "LSP",
   "ui.permission.toolLabel.bash": "Bash",
   "ui.permission.toolLabel.todoRead": "خواندن Todo",
   "ui.permission.toolLabel.todoWrite": "نوشتن Todo",
@@ -434,8 +433,6 @@ export const dict = {
   "settings.permissions.tool.task.description": "راه‌اندازی زیر-عامل‌ها",
   "settings.permissions.tool.skill.title": "مهارت",
   "settings.permissions.tool.skill.description": "بارگذاری یک مهارت با نام",
-  "settings.permissions.tool.lsp.title": "LSP",
-  "settings.permissions.tool.lsp.description": "اجرای پرس‌وجوهای سرور زبان",
   "settings.permissions.tool.todoread.title": "خواندن وظایف",
   "settings.permissions.tool.todoread.description": "خواندن فهرست وظایف",
   "settings.permissions.tool.todowrite.title": "نوشتن وظایف",
@@ -695,8 +692,6 @@ export const dict = {
   "settings.experimental.share.disabled": "غیرفعال",
   "settings.experimental.formatter.title": "قالب‌بند",
   "settings.experimental.formatter.description": "فعال‌سازی قالب‌بند خودکار کد",
-  "settings.experimental.lsp.title": "LSP",
-  "settings.experimental.lsp.description": "فعال‌سازی یکپارچه‌سازی پروتکل سرور زبان",
   "settings.experimental.batch.title": "ابزار دسته‌ای",
   "settings.experimental.batch.description": "فعال‌سازی دسته‌بندی چندین فراخوانی ابزار",
   "settings.experimental.imageGeneration.title": "تولید تصویر",
@@ -879,7 +874,6 @@ export const dict = {
   "settings.autoApprove.tool.task": "راه‌اندازی زیرعامل‌ها. اجازه شروع زیرعامل‌های تخصصی برای وظایف خاص را می‌دهد.",
   "settings.autoApprove.tool.skill":
     "بارگذاری مهارت‌ها. اجازه بارگذاری مهارت‌های از پیش تعریف‌شده بر اساس نام را می‌دهد.",
-  "settings.autoApprove.tool.lsp": "پرس‌وجو از سرور زبان. اجازه اجرای پرس‌وجوهای LSP برای هوشمندی کد را می‌دهد.",
   "settings.autoApprove.tool.todoreadwrite":
     "مدیریت فهرست وظایف. اجازه خواندن و به‌روزرسانی فهرست وظایف داخلی را می‌دهد.",
   "settings.autoApprove.tool.webfetch": "دریافت یک URL. امکان بازیابی محتوا از یک URL مشخص را فراهم می‌کند.",

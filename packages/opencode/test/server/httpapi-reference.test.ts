@@ -17,7 +17,6 @@ describe("reference HttpApi", () => {
     await using tmp = await tmpdir({
       config: {
         formatter: false,
-        lsp: false,
         references: {
           docs: "./docs",
           effect: { repository: "Effect-TS/effect", branch: "main" },
@@ -66,7 +65,6 @@ describe("reference HttpApi", () => {
     await using tmp = await tmpdir({
       config: {
         formatter: false,
-        lsp: false,
         references: { docs: "./docs" },
       },
     })
@@ -81,7 +79,6 @@ describe("reference HttpApi", () => {
       headers,
       body: JSON.stringify({
         formatter: false,
-        lsp: false,
         references: { docs: { path: "./updated", description: "Updated documentation" } },
       }),
     })
@@ -111,7 +108,7 @@ describe("reference HttpApi", () => {
     })
 
     try {
-      await using tmp = await tmpdir({ config: { formatter: false, lsp: false } })
+      await using tmp = await tmpdir({ config: { formatter: false } })
       const response = await Server.Default().app.request("/api/reference", {
         headers: { "x-kilo-directory": tmp.path },
       })

@@ -92,8 +92,7 @@ export const Definitions = {
   session_fork: keybind("none", "Fork session from message"),
   session_rename: keybind("ctrl+r", "Rename session"),
   session_delete: keybind("ctrl+d", "Delete session"),
-  session_share: keybind("none", "Share current session"),
-  session_unshare: keybind("none", "Unshare current session"),
+  // kilocode_change - session sharing feature removed; no session_share/session_unshare keybinds
   session_interrupt: keybind("escape", "Interrupt current session"),
   session_background: keybind("ctrl+b", "Background synchronous subagents"),
   session_compact: keybind("<leader>c", "Compact the session"),
@@ -299,8 +298,7 @@ export const CommandMap = {
   session_fork: "session.fork",
   session_rename: "session.rename",
   session_delete: "session.delete",
-  session_share: "session.share",
-  session_unshare: "session.unshare",
+  // kilocode_change - session sharing feature removed; no session_share/session_unshare command mappings
   session_interrupt: "session.interrupt",
   session_background: "session.background",
   session_compact: "session.compact",

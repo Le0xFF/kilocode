@@ -6,6 +6,8 @@
 
 - Removed the online Kilo services so the extension runs fully offline. Gone: Kilo Gateway auth/profile/balance, marketplace, KiloClaw, cloud sessions, remote notifications, PostHog telemetry, and gateway-powered autocomplete (FIM / next-edit). Speech-to-text and image generation now target user-configured local OpenAI-compatible endpoints (llama.cpp, vLLM, Ollama). Chat/agent, Agent Manager, local indexing, MCP, snapshot/worktree, and browser automation all work with local providers configured as custom OpenAI-compatible entries.
 
+- Closed out the offline surface. Also removed: LSP/language-server integration (tools, config key, experimental toggle, permission row), session sharing (routes, SDK methods, TUI surface; historical share data stays compatible), automatic updates (the manual `kilo upgrade` command remains), and the external network-probe hosts used for provider fault tolerance — after a local provider connection error the backend no longer reaches any public host. The spawned backend starts with a sanitized environment (no inherited `OTEL_*` or unmanaged proxy vars) and serves its model catalog from the committed local snapshot instead of fetching models.dev. A few paths stay intentionally online, gated by explicit user choice: the `webfetch` tool, user-declared skill URLs and remote MCP servers, on-demand binary/plugin downloads with a cold cache, hosted embedding models if explicitly configured, GitHub PR import, and the links in the webview that open the system browser. See `PRUNE-NOTES.md` ("Residui volutamente online (gated)") for the full matrix.
+
 - [#13512](https://github.com/Kilo-Org/kilocode/pull/13512) [`13a9673`](https://github.com/Kilo-Org/kilocode/commit/13a9673d08cfc69eebb89898861a1ee80278f226) - Reference other Agent Manager worktrees with a searchable @ picker that prioritizes recently opened worktrees. Share paths, branches, and session IDs without attaching diffs or chat history. Keep picker results in sync when clearing search.
 
 - [#13533](https://github.com/Kilo-Org/kilocode/pull/13533) [`6d15d18`](https://github.com/Kilo-Org/kilocode/commit/6d15d18fa766aaf6a478b63aa98c10ffd23e3d4c) - Choose a separate model for conversation compaction in Context settings.
@@ -69,7 +71,6 @@
   - @opencode-ai/core@7.5.6
   - @kilocode/kilo-indexing@7.5.6
   - @kilocode/plugin@7.5.6
-  - @kilocode/kilo-gateway@7.5.6
 
 ## 7.5.5
 

@@ -1,6 +1,6 @@
 export const opaque = [
   { id: "semantic_search", file: "kilocode/tool/semantic-search.ts" },
-  { id: "lsp", file: "tool/lsp.ts" },
+  // kilocode_change - LSP removed; no lsp tool in the sandbox network list
 ] as const
 
 export const host = [

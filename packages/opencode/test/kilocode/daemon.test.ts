@@ -57,7 +57,6 @@ function cli(args: string[], env: NodeJS.ProcessEnv = {}) {
       ...env,
       KILO_CONFIG_CONTENT: '{"experimental":{"openTelemetry":false}}',
       KILO_DISABLE_PROJECT_CONFIG: "1",
-      KILO_DISABLE_AUTOUPDATE: "1",
       KILO_DISABLE_MODELS_FETCH: "1",
       KILO_AUTH_CONTENT: "{}",
       KILO_PURE: "1",

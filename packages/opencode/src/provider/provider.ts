@@ -1133,7 +1133,7 @@ const layer = Layer.effect(
         }
       }
 
-      // kilocode_change start - offline surface: azure is unconfigurable now; the early return also covers "azure-cognitive-services" (both unreachable)
+      // kilocode_change start - offline surface: azure is unconfigurable now; the early return also covers "azure-cognitive-services" (both unreachable); amazonBedrock cross-region matching was dead code (not in the offline catalog) and was removed
         if (providerID === ProviderV2.ID.azure) {
           return undefined
         }
@@ -1147,25 +1147,6 @@ const layer = Layer.effect(
       )
       for (const family of priority) {
         const candidates = models.filter((model) => model.family === family)
-        if (providerID === ProviderV2.ID.amazonBedrock) {
-          const crossRegionPrefixes = ["global.", "us.", "eu."]
-
-          const globalMatch = candidates.find((model) => model.id.startsWith("global."))
-          if (globalMatch) return globalMatch
-
-          const region = provider.options?.region
-          if (region) {
-            const regionPrefix = region.split("-")[0]
-            if (regionPrefix === "us" || regionPrefix === "eu") {
-              const regionalMatch = candidates.find((model) => model.id.startsWith(`${regionPrefix}.`))
-              if (regionalMatch) return regionalMatch
-            }
-          }
-
-          const unprefixed = candidates.find((model) => !crossRegionPrefixes.some((p) => model.id.startsWith(p)))
-          if (unprefixed) return unprefixed
-          continue
-        }
         if (candidates[0]) return candidates[0]
       }
 

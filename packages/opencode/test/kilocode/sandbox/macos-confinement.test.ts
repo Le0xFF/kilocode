@@ -25,7 +25,6 @@ import { BackgroundProcess } from "@/kilocode/background-process"
 import { BackgroundProcessTool } from "@/kilocode/tool/background-process"
 import * as EncodedIO from "@/kilocode/tool/encoded-io"
 import { Instruction } from "@/session/instruction"
-import { LSP } from "@/lsp/lsp"
 import { Permission } from "@/permission"
 import { MessageID, SessionID } from "@/session/schema"
 import { ApplyPatchTool } from "@/tool/apply_patch"
@@ -50,7 +49,6 @@ const it = testEffect(
     AppNodeBuilder.build(AppProcess.node),
     AppNodeBuilder.build(CrossSpawnSpawner.node),
     AppNodeBuilder.build(Instruction.node),
-    AppNodeBuilder.build(LSP.node),
     Bus.layer,
     AppNodeBuilder.build(Format.node),
     AppNodeBuilder.build(Truncate.node),

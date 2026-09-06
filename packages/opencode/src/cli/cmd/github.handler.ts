@@ -18,7 +18,6 @@ import type {
 import { UI } from "../ui"
 import { ModelsDev } from "@opencode-ai/core/models-dev"
 import { InstanceRef } from "@/effect/instance-ref"
-import { SessionShare } from "@/share/session"
 import { Session } from "@/session/session"
 import type { SessionID } from "../../session/schema"
 import { MessageID, PartID } from "../../session/schema"
@@ -286,18 +285,13 @@ export const githubInstall = Effect.fn("Cli.github.install")(function* () {
       }
 
       async function addWorkflowFiles() {
-        // kilocode_change start - updated workflow template with Kilo branding and gateway secrets
+        // kilocode_change start - updated workflow template with Kilo branding
         const providerEnvStr =
           provider === "amazon-bedrock"
             ? ""
             : filteredProviders[provider].env.map((e) => `\n          ${e}: \${{ secrets.${e} }}`).join("")
 
-        const kiloGatewayEnv =
-          provider === "kilo"
-            ? `\n          KILO_API_KEY: \${{ secrets.KILO_API_KEY }}\n          KILO_ORG_ID: \${{ secrets.KILO_ORG_ID }}`
-            : ""
-
-        const envStr = providerEnvStr || kiloGatewayEnv ? `\n        env:${providerEnvStr}${kiloGatewayEnv}` : ""
+        const envStr = providerEnvStr ? `\n        env:${providerEnvStr}` : ""
 
         await Filesystem.write(
           path.join(app.root, WORKFLOW_FILE),
@@ -346,7 +340,7 @@ export const githubRun = Effect.fn("Cli.github.run")(function* (args: { event?: 
   if (!ctx) return yield* Effect.die("InstanceRef not provided")
   const gitSvc = yield* Git.Service
   const sessionSvc = yield* Session.Service
-  const sessionShare = yield* SessionShare.Service
+  // kilocode_change - session sharing feature removed; no SessionShare service (share URLs are no longer exposed)
   const sessionPrompt = yield* SessionPrompt.Service
   const events = yield* EventV2Bridge.Service
   const runLocalEffect = <A, E>(effect: Effect.Effect<A, E>) =>
@@ -483,11 +477,14 @@ export const githubRun = Effect.fn("Cli.github.run")(function* (args: { event?: 
         }),
       )
       await subscribeSessionEvents()
+      // kilocode_change - session sharing feature removed: the `kilo github` integration no longer
+      // exposes a share URL. Defined behavior: `SHARE=true` is accepted (for backward-compatible
+      // workflow inputs) but has no effect; `shareId` stays undefined, so the footer omits the
+      // "[kilo session]" link and dedup checks always find no prior share comment.
       shareId = await (async () => {
         if (share === false) return
         if (!share && repoData.data.private) return
-        await runLocalEffect(sessionShare.share(session.id))
-        return session.id.slice(-8)
+        return
       })()
       console.log("kilo session", session.id) // kilocode_change
 

@@ -122,7 +122,8 @@ export const KILO_TIPS: Tip[] = [
   'Set {highlight}"formatter": true{/highlight} in config to enable built-in formatters like prettier, gofmt, and ruff',
   'Set {highlight}"formatter": false{/highlight} in config to disable formatters enabled by another config layer',
   "Define custom formatter commands with file extensions in config",
-  'Set {highlight}"lsp": true{/highlight} in config to enable built-in LSP servers for code analysis',
+  // kilocode_change - LSP removed; no lsp tip
+'Kilo provides intelligent code analysis for your project',
   "Create {highlight}.ts{/highlight} files in {highlight}.kilo/tools/{/highlight} to define new LLM tools",
   "Tool definitions can invoke scripts written in Python, Go, etc",
   "Add {highlight}.ts{/highlight} files to {highlight}.kilo/plugins/{/highlight} for event hooks",

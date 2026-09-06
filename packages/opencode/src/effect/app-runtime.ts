@@ -33,7 +33,7 @@ import { SessionSummary } from "@/session/summary"
 import { SessionPrompt } from "@/session/prompt"
 import { Instruction } from "@/session/instruction"
 import { LLM } from "@/session/llm"
-import { LSP } from "@/lsp/lsp"
+// kilocode_change - LSP removed; no language-server in the app runtime
 import { MCP } from "@/mcp"
 import { McpAuth } from "@/mcp/auth"
 import { Command } from "@/command"
@@ -47,8 +47,7 @@ import { Workspace } from "@/control-plane/workspace"
 import { Worktree } from "@/worktree"
 import { Installation } from "@/installation"
 import { MemoryService } from "@kilocode/kilo-memory/effect/service" // kilocode_change
-import { ShareNext } from "@/share/share-next"
-import { SessionShare } from "@/share/session"
+// kilocode_change - session sharing feature removed; no ShareNext/SessionShare nodes in the app runtime
 import { Npm } from "@opencode-ai/core/npm"
 import { memoMap } from "@opencode-ai/core/effect/memo-map"
 import { BackgroundJob } from "@/background/job"
@@ -109,7 +108,7 @@ export const AppLayer = AppNodeBuilderV1.build(
     SessionPrompt.node,
     Instruction.node,
     LLM.node,
-    LSP.node,
+    // kilocode_change - LSP removed; no language-server in the app runtime
     MCP.node,
     McpAuth.node,
     Command.node,
@@ -122,8 +121,7 @@ export const AppLayer = AppNodeBuilderV1.build(
     Workspace.node,
     Worktree.node,
     Installation.node,
-    ShareNext.node,
-    SessionShare.node,
+    // kilocode_change - session sharing feature removed; no ShareNext/SessionShare nodes
     // kilocode_change start - the app runtime must provide these; the v2 handlers resolve them
     // when their layer is built, outside the server's own layer list
     EventV2.node,

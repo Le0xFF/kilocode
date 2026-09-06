@@ -149,7 +149,6 @@ export interface Config {
   username?: string
   watcher?: WatcherConfig
   formatter?: false | Record<string, unknown>
-  lsp?: false | Record<string, unknown>
   compaction?: CompactionConfig
   commit_message?: CommitMessageConfig
   tools?: Record<string, boolean>
