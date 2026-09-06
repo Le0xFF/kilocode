@@ -460,7 +460,6 @@ export const dict = {
   "session.tabs.switcher.pending": "New",
   "session.tabs.switcher.busy": "Working",
   "session.tab.local": "Local",
-  "session.tab.cloud": "Cloud",
   "session.tab.worktree": "Worktree",
   "feedback.button": "Feedback & Support",
   "feedback.dialog.message": "We'd love to hear your feedback or help with any issues you're experiencing.",
@@ -496,7 +495,7 @@ export const dict = {
   "settings.agentBehaviour.title": "Agent Behaviour",
   "settings.autoApprove.title": "Auto-Approve",
   "settings.webTools.title": "Web Tools",
-  "settings.webTools.description": "Configure web search and browser automation.",
+  "settings.webTools.description": "Configure browser automation.",
   "settings.webTools.browserAutomation": "Browser Automation",
   "settings.checkpoints.title": "Checkpoints",
   "settings.display.title": "Display",
@@ -1093,11 +1092,6 @@ export const dict = {
   "settings.saveBar.saveAnyway": "Save anyway",
   "settings.saveBar.cancel": "Cancel",
   "settings.saveBar.saveFailed": "Couldn't save settings",
-
-  "notifications.action.next": "Next",
-  "notifications.action.close": "Close",
-  "notifications.action.tryModel": "Try {{model}}",
-  "notifications.action.tryModelGeneric": "Try Model",
 
   "diffViewer.source.workspace.label": "Branch",
   "diffViewer.source.workspace.tooltip":

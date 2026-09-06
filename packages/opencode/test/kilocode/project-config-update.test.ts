@@ -10,7 +10,6 @@ import { FSUtil } from "@opencode-ai/core/fs-util"
 import { EffectFlock } from "@opencode-ai/core/util/effect-flock"
 import { Config } from "../../src/config/config"
 import { Auth } from "../../src/auth"
-import { Account } from "../../src/account/account"
 import { Env } from "../../src/env"
 import { Git } from "../../src/git"
 import { Npm } from "@opencode-ai/core/npm"
@@ -25,10 +24,6 @@ const infra = AppNodeBuilder.build(CrossSpawnSpawner.node).pipe(
   Layer.provideMerge(Layer.mergeAll(NodeFileSystem.layer, NodePath.layer)),
 )
 
-const emptyAccount = Layer.mock(Account.Service)({
-  active: () => Effect.succeed(Option.none()),
-  activeOrg: () => Effect.succeed(Option.none()),
-})
 
 const emptyAuth = Layer.mock(Auth.Service)({
   all: () => Effect.succeed({}),
@@ -46,7 +41,6 @@ const unexpectedHttp = HttpClient.make((request) =>
 
 const layer = AppNodeBuilder.build(Config.node, [
   [Auth.node, emptyAuth],
-  [Account.node, emptyAccount],
   [Npm.node, noopNpm],
   [LayerNodePlatform.httpClient, Layer.succeed(HttpClient.HttpClient, unexpectedHttp)],
 ]).pipe(Layer.provideMerge(infra))

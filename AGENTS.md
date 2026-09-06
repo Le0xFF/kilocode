@@ -17,7 +17,7 @@ This repo has been pruned to contain only the Kilo VS Code extension (`packages/
 - **Knip** (unused exports): `bun run knip` from `packages/kilo-vscode/`. CI runs this — all exported types/functions must be imported somewhere. Remove or unexport unused exports before pushing.
 - **kilocode_change check**: `bun run check-kilocode-change` from `packages/kilo-vscode/`. CI runs this — `kilocode_change` is a marker for merge conflicts in shared files and must not appear in `packages/kilo-vscode/` or `packages/kilo-ui/` (these are entirely Kilo Code additions). Remove the markers before pushing.
 - **kilocode_change check**: `bun run check-kilocode-change` from `packages/kilo-vscode/`. CI runs this — `kilocode_change` is a marker for merge conflicts in shared files and must not appear in `packages/kilo-vscode/` or `packages/kilo-ui/` (these are entirely Kilo Code additions). Remove the markers before pushing.
-- **opencode annotation check**: `bun run script/check-opencode-annotations.ts --worktree` from repo root when verifying local agent changes. Every Kilo-specific change in shared opencode files must be annotated with `kilocode_change` markers. Exempt paths (no markers needed): `packages/opencode/src/kilocode/`, `packages/opencode/test/kilocode/`, and any path containing `kilocode` in the name.
+- **opencode annotation check**: the `script/check-opencode-annotations.ts` guard was removed with the fork-sync toolchain, so it cannot be run from this checkout; `kilocode_change` markers are still honored by manual merge resolution (see PRUNE-NOTES). Every Kilo-specific change in shared opencode files should carry a `kilocode_change` marker. Exempt paths (no markers needed): `packages/opencode/src/kilocode/`, `packages/opencode/test/kilocode/`, and any path containing `kilocode` in the name.
 - **Effect facade ratchet**: Do not add runtime-backed Promise facades to shared `packages/opencode/src` Effect services; use service dependencies, `AppRuntime`, or Kilo-owned boundaries. Run `bun run script/check-opencode-promise-facades.ts` when touching service adapters.
 - **workflow allowlist**: `bun run script/check-workflows.ts` from repo root. Any `.yml` / `.yaml` file added to or removed from `.github/workflows/` must be reflected in the hardcoded list in `script/check-workflows.ts`.
 - **Backend/SDK programmatic testing**: spawn the local backend with `bun dev serve` from `packages/opencode/` and drive it via `curl`; use this instead of `kilo serve` (prod binary) when testing backend fixes.
@@ -32,7 +32,7 @@ Before saying an implementation is ready, run the smallest relevant checks that 
 | CLI | From `packages/opencode/`: `bun run typecheck`, `bun test` or targeted `bun test ./path/to/file.test.ts` |
 | VS Code extension | From `packages/kilo-vscode/`: `bun run typecheck`, `bun run lint`, `bun run test:unit` or `bun run test` |
 | Extension build/package | From `packages/kilo-vscode/`: `bun run compile` or `bun run package` when touching build, packaging, SDK, or webview integration paths |
-| CI/local guards | Run affected guards documented above, such as `bun run knip`, `bun run check-kilocode-change`, `bun run script/check-opencode-annotations.ts --worktree`, or source link extraction |
+| CI/local guards | Run affected guards documented above, such as `bun run knip`, `bun run check-kilocode-change`, or source link extraction (`kilocode_change` marker placement is reviewed manually; the annotation script was removed) |
 
 Never run root `bun test`; the root script prints `do not run tests from root` and exits with code 1. Use package-level tests instead.
 
@@ -60,11 +60,8 @@ Turborepo + Bun workspaces. The packages you'll work with most:
 | `packages/opencode/` | `@kilocode/cli` | Core CLI -- agents, tools, sessions, server, TUI. Kept as the extension's runtime dependency. |
 | `packages/sdk/js/` | `@kilocode/sdk` | Auto-generated TypeScript SDK (client for the server API). Do not edit `src/gen/` by hand. |
 | `packages/kilo-vscode/` | `kilo-code` | VS Code extension with sidebar chat + Agent Manager. See its own `AGENTS.md` for details. |
-| `packages/kilo-gateway/` | `@kilocode/kilo-gateway` | Kilo auth, provider routing, API integration |
-| `packages/kilo-telemetry/` | `@kilocode/kilo-telemetry` | PostHog analytics + OpenTelemetry |
 | `packages/kilo-i18n/` | `@kilocode/kilo-i18n` | Internationalization / translations |
 | `packages/kilo-ui/` | `@kilocode/kilo-ui` | SolidJS component library shared by the extension webview |
-| `packages/util/` | `@opencode-ai/util` | Shared utilities (error, path, retry, slug, etc.) |
 | `packages/plugin/` | `@kilocode/plugin` | Plugin/tool interface definitions |
 
 Pruned (removed) products, no longer present in this repo: `kilo-jetbrains`, `kilo-docs`, storybook, `sdk-next`, `httpapi-codegen`, `client`, `session-ui`, `kilo-console`, `kilo-web-ui`, plus top-level `perf/`, `plans/`, `specs/`, `translations/`, `artifacts/`, `docs/`, `bin/`, `github/`, `.opencode/`, and nix/flake config.

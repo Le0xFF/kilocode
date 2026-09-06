@@ -20,7 +20,6 @@ import type {
   ProviderAuthMethod,
   VcsInfo,
   SnapshotFileDiff,
-  ConsoleState,
   BackgroundProcessInfo, // kilocode_change
   InteractiveTerminalSnapshot, // kilocode_change
   IndexingStatus, // kilocode_change
@@ -41,11 +40,6 @@ import { appendTerminalOutput } from "@/kilocode/interactive-terminal/output" //
 import { at, recent, slot } from "../kilocode/message-order" // kilocode_change
 import { useToast } from "../ui/toast" // kilocode_change
 import { usePermission } from "./permission"
-
-const emptyConsoleState: ConsoleState = {
-  consoleManagedProviders: [],
-  switchableOrgCount: 0,
-}
 
 function search<T>(items: T[], target: string, key: (item: T) => string) {
   let left = 0
@@ -75,7 +69,6 @@ export const {
       provider: Provider[]
       provider_default: Record<string, string>
       provider_next: ProviderListResponse
-      console_state: ConsoleState
       capabilities: {
         experimentalBackgroundSubagents: boolean
       }
@@ -131,7 +124,6 @@ export const {
         connected: [],
         failed: [],
       },
-      console_state: emptyConsoleState,
       capabilities: {
         experimentalBackgroundSubagents: true, // kilocode_change - background subagents are enabled by default
       },
@@ -780,10 +772,6 @@ export const {
         .get({ workspace }, { throwOnError: true })
         .then((x) => x.data)
         .catch(() => undefined)
-      const consoleStatePromise = sdk.client.experimental.console
-        .get({ workspace }, { throwOnError: true })
-        .then((x) => x.data)
-        .catch(() => emptyConsoleState)
       const agentsPromise = sdk.client.app.agents({ workspace }, { throwOnError: true })
       const configPromise = sdk.client.config.get({ workspace }, { throwOnError: true })
       const globalConfigPromise = sdk.client.global.config.get({ throwOnError: true }) // kilocode_change
@@ -801,7 +789,6 @@ export const {
           const providersResponse = providersPromise.then((x) => x.data!)
           const providerListResponse = providerListPromise.then((x) => x.data!)
           const capabilitiesResponse = capabilitiesPromise
-          const consoleStateResponse = consoleStatePromise
           const agentsResponse = agentsPromise.then((x) => x.data ?? [])
           const configResponse = configPromise.then((x) => x.data!)
           const globalConfigResponse = globalConfigPromise.then((x) => x.data!) // kilocode_change
@@ -811,7 +798,6 @@ export const {
             providersResponse,
             providerListResponse,
             capabilitiesResponse,
-            consoleStateResponse,
             agentsResponse,
             configResponse,
             globalConfigResponse, // kilocode_change
@@ -820,11 +806,10 @@ export const {
             const providers = responses[0]
             const providerList = responses[1]
             const capabilities = responses[2]
-            const consoleState = responses[3]
-            const agents = responses[4]
-            const config = responses[5]
-            const globalConfig = responses[6] // kilocode_change
-            const sessions = responses[7]
+            const agents = responses[3]
+            const config = responses[4]
+            const globalConfig = responses[5] // kilocode_change
+            const sessions = responses[6]
 
             batch(() => {
               setStore("provider", reconcile(providers.providers))
@@ -837,7 +822,6 @@ export const {
                 capabilities?.backgroundSubagents === true,
               )
               // kilocode_change end
-              setStore("console_state", reconcile(consoleState))
               setStore("agent", reconcile(agents))
               setStore("config", reconcile(config))
               setStore("globalConfig", reconcile(globalConfig)) // kilocode_change
@@ -850,7 +834,6 @@ export const {
           // non-blocking
           void Promise.all([
             ...(args.continue ? [] : [sessionListPromise.then((sessions) => setStore("session", reconcile(sessions)))]),
-            consoleStatePromise.then((consoleState) => setStore("console_state", reconcile(consoleState))),
             sdk.client.command.list({ workspace }).then((x) => setStore("command", reconcile(x.data ?? []))),
             // kilocode_change - LSP removed; no lsp status fetch in TUI sync
             sdk.client.mcp.status({ workspace }).then((x) => setStore("mcp", reconcile(x.data ?? {}))),

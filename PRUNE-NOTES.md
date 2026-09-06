@@ -103,7 +103,10 @@ Assenti per costruzione:
 ## Future work (out of scope here)
 
 - **Vendoring/offline**: replace `packages/opencode` with a prebuilt CLI binary (`CLI_DIST_DIR`), then drop batch-B packages (`tui`, `server`, `llm`, `schema`, `protocol`, `codemode`, `script`, `effect-*`, `http-recorder`) and the `prepare:cli-binary`/`prepare:sdk` steps. Separate effort.
-- Full offline operation of the extension (no network at install/build) is a separate follow-up.
+
+Done in this branch (no longer future work):
+
+- Full offline operation of the extension (no network at install/build/runtime) is complete. Closed across four commits: `1673a9fbf1` (remove online Kilo services for a fully offline extension), `cfacab50d3` (hard-cut out-of-surface providers from GET /provider to eliminate Kilo Gateway from the model picker), `969f948140` (close remaining online residuals for a fully offline extension), and `5d613a008b` (close out the offline surface — remove LSP, sharing, auto-update and probe residuals). The residual-online matrix above lists only user-gated paths; nothing is auto-enabled by the process.
 
 ## Online-services removal (this branch, step 13)
 
@@ -113,7 +116,7 @@ Dead code that remains in the workspace (kept, not deleted):
 
 - `packages/kilo-gateway/` — removed from disk and from the workspace list; its former exports (`PROMPTS`, `AI_SDK_PROVIDERS`) were re-hosted into `packages/core/src/v1/config/constants.ts` (see "Online-services removal" below). Only commented-out references remain.
 - `packages/kilo-telemetry/` — removed from disk and from the workspace list; no package declares it as a dependency anymore.
-- Orphaned i18n keys for removed UI (`profile.*`, `deviceAuth.*`, `session.cloud.*`, `notifications.action.*`, etc.) are retained across all locales and protected in `tests/unit/i18n-unused-keys.test.ts` rather than mass-deleted.
+- Orphaned i18n keys for removed UI (`profile.*`, `deviceAuth.*`, `session.cloud.*`, `notifications.action.*`, etc.) were deleted across all 21 locales in the offline dead-code closure (step 4); the protection list in `tests/unit/i18n-unused-keys.test.ts` was updated accordingly.
 - The generated SDK client exposes an empty legacy `kilo` namespace getter (`client.kilo`) so pre-regen call sites keep typechecking; the underlying routes are gone.
 
-Removed dependencies: `openai` and `js-tiktoken` (extension); `@kilocode/kilo-telemetry` (CLI, done earlier) and the extension's `@kilocode/kilo-gateway` (done in step 11). `@anthropic-ai/sdk` stays (type-only, used by legacy-migration per A9).
+Removed dependencies: `openai` and `js-tiktoken` (extension); `@kilocode/kilo-telemetry` (CLI, done earlier) and the extension's `@kilocode/kilo-gateway` (done in step 11). The offline dead-code closure additionally pruned 7 orphaned extension dependencies and re-activated knip to watch `dependencies`. `@anthropic-ai/sdk` stays (type-only, used by legacy-migration per A9).

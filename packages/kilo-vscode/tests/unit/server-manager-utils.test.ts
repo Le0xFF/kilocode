@@ -426,6 +426,20 @@ describe("server workspace helpers", () => {
     expect(out.KILO_DISABLE_MODELS_FETCH).toBe("true")
   })
 
+  it("strips NODE_OPTIONS and BUN_ prefixed vars from the inherited environment", () => {
+    const out = resolveManagedServerEnv({
+      PATH: "/usr/bin",
+      NODE_OPTIONS: "--max-old-space-size=4096",
+      BUN_INSTALL: "/home/user/.bun",
+      BUN_CONFIG: "{}",
+    })
+
+    expect(out).not.toHaveProperty("NODE_OPTIONS")
+    expect(out).not.toHaveProperty("BUN_INSTALL")
+    expect(out).not.toHaveProperty("BUN_CONFIG")
+    expect(out.PATH).toBe("/usr/bin")
+  })
+
   it("does not add proxy vars when none are present in the input", () => {
     const out = resolveManagedServerEnv({ PATH: "/usr/bin" })
 

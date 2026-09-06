@@ -28,7 +28,7 @@ import type { KiloClient, Session, ToolPart } from "@kilocode/sdk/v2"
 import { FormatError, FormatUnknownError } from "../error"
 import { INTERACTIVE_INPUT_ERROR, resolveInteractiveStdin } from "./run/runtime.stdin"
 // kilocode_change start - Kilo implementations (createKiloClient, run-message,
-// cloud-session, run-auto, headless, KiloRun) are dynamically imported inside the
+// run-auto, headless, KiloRun) are dynamically imported inside the
 // handler so other CLI commands don't pay their module cost at startup.
 // kilocode_change end
 
@@ -165,12 +165,6 @@ export const RunCommand = effectCmd({
         describe: "fork the session before continuing (requires --continue or --session)",
         type: "boolean",
       })
-      // kilocode_change start - support cloud fork in run command
-      .option("cloud-fork", {
-        type: "boolean",
-        describe: "fetch session from cloud and continue locally (use with --session)",
-      })
-      // kilocode_change end
       // kilocode_change - session sharing feature removed; no --share option
       .option("model", {
         type: "string",
@@ -278,9 +272,6 @@ export const RunCommand = effectCmd({
     // kilocode_change start - lazy Kilo implementations (see top-of-file note)
     const { createKiloClient } = yield* Effect.promise(() => import("@kilocode/sdk/v2"))
     const { buildRunMessage } = yield* Effect.promise(() => import("@/kilocode/cli/cmd/run-message"))
-    const { importCloudSession, validateCloudFork, reportCloudImportError } = yield* Effect.promise(
-      () => import("@/kilocode/cloud-session"),
-    )
     const { KiloRunAuto } = yield* Effect.promise(() => import("@/kilocode/cli/run-auto"))
     const { KiloHeadless } = yield* Effect.promise(() => import("@/kilocode/permission/headless"))
     const { KiloRun, KiloRunDaemon } = yield* Effect.promise(() => import("@/kilocode/cli/cmd/run"))
@@ -450,19 +441,6 @@ export const RunCommand = effectCmd({
         process.exit(1)
       }
 
-      // kilocode_change start - validate cloud session imports before local lookup
-      const cloudForkError = validateCloudFork({
-        cloudFork: args["cloud-fork"],
-        fork: args.fork,
-        continue: args.continue,
-        session: args.session,
-      })
-      if (cloudForkError) {
-        UI.error(cloudForkError)
-        process.exit(1)
-      }
-      // kilocode_change end
-
       const rules: PermissionV1.Ruleset = interactive
         ? []
         : [
@@ -502,34 +480,6 @@ export const RunCommand = effectCmd({
       }
 
       async function session(sdk: KiloClient): Promise<SessionInfo | undefined> {
-        // kilocode_change start - import cloud session before local lookup
-        if (args.session && args["cloud-fork"]) {
-          try {
-            const id = await importCloudSession(sdk, args.session)
-            const current = await sdk.session
-              .get({
-                sessionID: id,
-              })
-              .catch(() => undefined)
-
-            if (!current?.data) {
-              UI.error("Session not found")
-              process.exit(1)
-            }
-
-            return {
-              id: current.data.id,
-              title: current.data.title,
-              directory: current.data.directory,
-              model: current.data.model,
-            }
-          } catch (err) {
-            reportCloudImportError(err)
-            process.exit(1)
-          }
-        }
-        // kilocode_change end
-
         if (args.session) {
           const current = await sdk.session
             .get({
@@ -1189,8 +1139,6 @@ export async function runMini(input: MiniCommandInput) {
     continue: input.continue,
     session: input.session,
     fork: input.fork,
-    "cloud-fork": undefined, // kilocode_change
-    cloudFork: undefined, // kilocode_change
     // kilocode_change - session sharing feature removed; no share field
     model: input.model,
     agent: input.agent,

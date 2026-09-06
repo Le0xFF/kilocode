@@ -462,7 +462,6 @@ export const dict = {
   "session.tabs.switcher.pending": "جدید",
   "session.tabs.switcher.busy": "در حال کار",
   "session.tab.local": "محلی",
-  "session.tab.cloud": "Cloud",
   "session.tab.worktree": "Worktree",
   "feedback.button": "بازخورد و پشتیبانی",
   "feedback.dialog.message": "خوشحال می‌شویم نظرات شما را بشنویم یا در رفع مشکلاتتان کمک کنیم.",
@@ -499,7 +498,7 @@ export const dict = {
   "settings.agentBehaviour.title": "رفتار عامل",
   "settings.autoApprove.title": "تأیید خودکار",
   "settings.webTools.title": "ابزارهای وب",
-  "settings.webTools.description": "جستجوی وب و اتوماسیون مرورگر را پیکربندی کنید.",
+  "settings.webTools.description": "پیکربندی اتوماسیون مرورگر را انجام دهید.",
   "settings.webTools.browserAutomation": "اتوماسیون مرورگر",
   "settings.checkpoints.title": "نقاط بازیابی",
   "settings.display.title": "نمایش",
@@ -1107,11 +1106,6 @@ export const dict = {
   "settings.saveBar.saveAnyway": "در هر صورت ذخیره کن",
   "settings.saveBar.cancel": "لغو",
   "settings.saveBar.saveFailed": "ذخیره تنظیمات ممکن نشد",
-
-  "notifications.action.next": "بعدی",
-  "notifications.action.close": "بستن",
-  "notifications.action.tryModel": "امتحان {{model}}",
-  "notifications.action.tryModelGeneric": "امتحان مدل",
 
   "diffViewer.source.workspace.label": "شاخه",
   "diffViewer.source.workspace.tooltip":

@@ -1059,11 +1059,6 @@ function App(props: { onSnapshot?: () => Promise<string[]>; pluginHost: TuiPlugi
                 {(_) => <Session />}
               </Show>
             </Match>
-            {/* kilocode_change start */}
-            <Match when={route.data.type === "kiloclaw"}>
-              <KiloApp.KiloClawView />
-            </Match>
-            {/* kilocode_change end */}
           </Switch>
           {plugin()}
         </box>

@@ -16,18 +16,15 @@ import { Plugin } from "../../src/plugin/index"
 
 import { TestInstance } from "../fixture/fixture"
 import { testEffect } from "../lib/effect"
-import { AccountTest } from "../fake/account"
 import { AuthTest } from "../fake/auth"
 import { NpmTest } from "../fake/npm"
 import { ProviderV2 } from "@opencode-ai/core/provider"
 import { ModelV2 } from "@opencode-ai/core/model"
 import { Auth } from "../../src/auth"
-import { Account } from "../../src/account/account"
 import { Npm } from "@opencode-ai/core/npm"
 
 const configLayer = AppNodeBuilder.build(Config.node, [
   [Auth.node, AuthTest.empty],
-  [Account.node, AccountTest.empty],
   [Npm.node, NpmTest.noop],
 ])
 const it = testEffect(

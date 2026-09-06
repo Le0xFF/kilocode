@@ -406,7 +406,6 @@ export const dict = {
   "session.tabs.switcher.pending": "Nuova",
   "session.tabs.switcher.busy": "In corso",
   "session.tab.local": "Locale",
-  "session.tab.cloud": "Cloud",
   "session.tab.worktree": "Albero di lavoro",
   "feedback.button": "Feedback e supporto",
   "feedback.dialog.message": "Ci piacerebbe ricevere feedback o aiutarti con eventuali problemi.",
@@ -441,7 +440,7 @@ export const dict = {
   "settings.agentBehaviour.title": "Comportamento agente",
   "settings.autoApprove.title": "Approvazione automatica",
   "settings.webTools.title": "Strumenti web",
-  "settings.webTools.description": "Configura la ricerca web e l'automazione del browser.",
+  "settings.webTools.description": "Configura l'automazione del browser.",
   "settings.webTools.browserAutomation": "Automazione del browser",
   "settings.checkpoints.title": "Checkpoint",
   "settings.display.title": "Visualizzazione",
@@ -1009,10 +1008,6 @@ export const dict = {
   "settings.saveBar.saveAnyway": "Salva comunque",
   "settings.saveBar.cancel": "Annulla",
   "settings.saveBar.saveFailed": "Impossibile salvare le impostazioni",
-  "notifications.action.next": "Avanti",
-  "notifications.action.close": "Chiudi",
-  "notifications.action.tryModel": "Prova {{model}}",
-  "notifications.action.tryModelGeneric": "Prova modello",
 
   // Marketplace agents (replaces modes)
   "settings.agentBehaviour.noAgentsFound": "Nessun agente trovato.",

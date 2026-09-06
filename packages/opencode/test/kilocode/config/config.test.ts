@@ -10,7 +10,6 @@ import { EffectFlock } from "@opencode-ai/core/util/effect-flock"
 import * as CrossSpawnSpawner from "@opencode-ai/core/cross-spawn-spawner"
 import { Npm } from "@opencode-ai/core/npm"
 import { HttpClient } from "effect/unstable/http"
-import { Account } from "../../../src/account/account"
 import { Auth } from "../../../src/auth"
 import { GlobalBus } from "../../../src/bus/global"
 import { Config } from "../../../src/config/config"
@@ -28,10 +27,6 @@ import { LayerNodePlatform } from "@opencode-ai/core/effect/app-node-platform"
 const infra = AppNodeBuilder.build(CrossSpawnSpawner.node).pipe(
   Layer.provideMerge(Layer.mergeAll(NodeFileSystem.layer, NodePath.layer)),
 )
-const emptyAccount = Layer.mock(Account.Service)({
-  active: () => Effect.succeed(Option.none()),
-  activeOrg: () => Effect.succeed(Option.none()),
-})
 const emptyAuth = Layer.mock(Auth.Service)({
   all: () => Effect.succeed({}),
 })
@@ -46,7 +41,6 @@ const unexpectedHttp = HttpClient.make((request) =>
 const make = (npm: Layer.Layer<Npm.Service>) =>
   AppNodeBuilder.build(Config.node, [
     [Auth.node, emptyAuth],
-    [Account.node, emptyAccount],
     [Npm.node, npm],
     [LayerNodePlatform.httpClient, Layer.succeed(HttpClient.HttpClient, unexpectedHttp)],
   ]).pipe(Layer.provideMerge(infra))

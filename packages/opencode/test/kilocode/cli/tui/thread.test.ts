@@ -191,18 +191,15 @@ describe("kilo tui thread", () => {
     expect(handler).toBeUndefined()
   })
 
-  test("validates imported daemon session over HTTP after importing from cloud", async () => {
+  test("validates the daemon session before starting the TUI", async () => {
     await using root = await tmpdir()
-    const cloud = "ses_cloud"
     const local = "ses_local"
-    const calls: string[] = []
-    const opened: Array<string | undefined> = []
+    const called: string[] = []
     using server = Bun.serve({
       port: 0,
       fetch(request) {
         const route = `${request.method} ${new URL(request.url).pathname}`
-        calls.push(route)
-        if (route === "POST /kilo/cloud/session/import") return Response.json({ id: local })
+        called.push(route)
         if (route === `GET /session/${local}`) return Response.json({ id: local })
         return new Response(null, { status: 404 })
       },
@@ -226,78 +223,21 @@ describe("kilo tui thread", () => {
     })
     const args = { port: 0, hostname: "127.0.0.1", mdns: false, "mdns-domain": "kilo.local", cors: [] }
     const start: Parameters<typeof KiloTuiThreadDaemon.attach>[0]["start"] = async (input) => {
-      opened.push(input.args.sessionID)
+      void input.args.sessionID
     }
 
     try {
-      await KiloTuiThreadDaemon.attach({
-        args: { ...args, session: cloud, cloudFork: true },
+      const handled = await KiloTuiThreadDaemon.attach({
+        args: { ...args, session: local },
         cwd: root.path,
         input: async () => undefined,
         start,
       })
 
-      expect(calls).toEqual(["POST /kilo/cloud/session/import", `GET /session/${local}`])
-      expect(opened).toEqual([local])
+      expect(handled).toBe(true)
+      expect(called).toEqual([`GET /session/${local}`])
     } finally {
       daemon.mockRestore()
     }
-  })
-
-  test("imports cloud fork before validating daemon session", async () => {
-    const seen: string[] = []
-    const started: string[] = []
-
-    mock.module("@kilocode/sdk/v2", () => ({
-      createKiloClient: () => ({
-        kilo: {
-          cloud: {
-            session: {
-              import: async (input: { sessionId: string }) => {
-                expect(input.sessionId).toBe("ses_cloud")
-                return { data: { id: "ses_local" } }
-              },
-            },
-          },
-        },
-      }),
-    }))
-    mock.module("@/cli/tui/validate-session", () => ({
-      validateSession: async (input: { sessionID?: string }) => {
-        seen.push(input.sessionID ?? "")
-      },
-    }))
-    mock.module("@/config/tui", () => ({
-      TuiConfig: {
-        get: async () => ({}),
-      },
-    }))
-    mock.module("@/kilocode/daemon/client", () => ({
-      DaemonClient: {
-        maybe: async () => ({ url: "http://127.0.0.1:4096", headers: {} }),
-      },
-    }))
-    mock.module("@/cli/ui", () => ({
-      UI: {
-        println: () => {},
-        error: () => {},
-      },
-    }))
-
-    const key = JSON.stringify({ time: Date.now(), rand: Math.random() })
-    const mod = await import(`../../../../src/kilocode/cli/cmd/tui/thread?${key}`)
-
-    const handled = await mod.KiloTuiThreadDaemon.attach({
-      args: { session: "ses_cloud", cloudFork: true },
-      cwd: "/tmp/project",
-      input: async () => undefined,
-      start: async (input: { args: { sessionID?: string } }) => {
-        started.push(input.args.sessionID ?? "")
-      },
-    })
-
-    expect(handled).toBe(true)
-    expect(seen).toEqual(["ses_local"])
-    expect(started).toEqual(["ses_local"])
   })
 })

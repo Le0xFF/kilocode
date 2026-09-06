@@ -543,7 +543,6 @@ export const dict = {
   "session.tabs.switcher.pending": "Nueva",
   "session.tabs.switcher.busy": "Trabajando",
   "session.tab.local": "Local",
-  "session.tab.cloud": "Nube",
   "session.tab.worktree": "Árbol de trabajo",
   "feedback.button": "Comentarios y soporte",
   "feedback.dialog.message":
@@ -582,7 +581,7 @@ export const dict = {
   "settings.agentBehaviour.title": "Comportamiento del agente",
   "settings.autoApprove.title": "Aprobación automática",
   "settings.webTools.title": "Herramientas web",
-  "settings.webTools.description": "Configura la búsqueda web y la automatización del navegador.",
+  "settings.webTools.description": "Configura la automatización del navegador.",
   "settings.webTools.browserAutomation": "Automatización del navegador",
   "settings.checkpoints.title": "Puntos de control",
   "settings.display.title": "Pantalla",
@@ -1122,10 +1121,6 @@ export const dict = {
   "settings.saveBar.cancel": "Cancelar",
   "settings.saveBar.saving": "Guardando…",
   "settings.saveBar.saveFailed": "No se pudieron guardar los ajustes",
-  "notifications.action.next": "Siguiente",
-  "notifications.action.close": "Cerrar",
-  "notifications.action.tryModel": "Probar {{model}}",
-  "notifications.action.tryModelGeneric": "Probar modelo",
   "diffViewer.source.workspace.label": "Rama",
   "diffViewer.source.workspace.tooltip":
     "Todos los cambios de esta rama respecto a la rama base. Incluye archivos sin commitear (staged, unstaged y no rastreados) y commits locales que todavía no están en la base.",
