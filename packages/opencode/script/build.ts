@@ -133,8 +133,6 @@ async function copyKiloConsole(input: string | null, outputDir: string) {
 
 function smokeEnv(root: string) {
   const env = { ...process.env }
-  delete env.KILO_MODELS_PATH
-  delete env.KILO_MODELS_URL
   delete env.KILO_CONFIG
   delete env.KILO_CONFIG_DIR
   return {

@@ -696,11 +696,6 @@ export const dict = {
   "settings.notifications.sound.description":
     "Standaard worden verschillende geluiden gebruikt voor voltooiing, invoer en fouten. Andere keuzes gebruiken voor elke gebeurtenis hetzelfde geluid.",
 
-  "settings.experimental.share.title": "Deelmodus",
-  "settings.experimental.share.description": "Hoe sessiedelen zich gedraagt",
-  "settings.experimental.share.manual": "Handmatig",
-  "settings.experimental.share.auto": "Auto",
-  "settings.experimental.share.disabled": "Uitgeschakeld",
   "settings.experimental.formatter.title": "Formatter",
   "settings.experimental.formatter.description": "Schakel de automatische code formatter in",
   "settings.experimental.batch.title": "Batch Tool",

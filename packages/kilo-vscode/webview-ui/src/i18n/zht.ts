@@ -632,11 +632,6 @@ export const dict = {
   "settings.notifications.sound.system": "系統",
   "settings.notifications.sound.description":
     "預設選項會為完成、輸入和錯誤使用不同的聲音。其他選項則會對所有事件使用同一種聲音。",
-  "settings.experimental.share.title": "分享模式",
-  "settings.experimental.share.description": "工作階段分享行為",
-  "settings.experimental.share.manual": "手動",
-  "settings.experimental.share.auto": "自動",
-  "settings.experimental.share.disabled": "停用",
   "settings.experimental.formatter.title": "格式化工具",
   "settings.experimental.formatter.description": "啟用自動程式碼格式化",
   "settings.experimental.batch.title": "批次工具",

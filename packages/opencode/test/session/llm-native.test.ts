@@ -8,10 +8,11 @@ import { LLMNative } from "@/session/llm/native-request"
 import { LLMNativeRuntime } from "@/session/llm/native-runtime"
 import type { Provider } from "@/provider/provider"
 
-import { OAUTH_DUMMY_KEY } from "@/auth"
 import { testEffect } from "../lib/effect"
 import { ProviderV2 } from "@opencode-ai/core/provider"
 import { ModelV2 } from "@opencode-ai/core/model"
+
+const OAUTH_DUMMY_KEY = "kilo-oauth-dummy-key"
 
 const baseModel: Provider.Model = {
   id: ModelV2.ID.make("gpt-5-mini"),

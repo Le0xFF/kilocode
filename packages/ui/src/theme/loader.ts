@@ -75,14 +75,6 @@ html[data-theme="${themeId}"] {
 `
 }
 
-export async function loadThemeFromUrl(url: string): Promise<DesktopTheme> {
-  const response = await fetch(url)
-  if (!response.ok) {
-    throw new Error(`Failed to load theme from ${url}: ${response.statusText}`)
-  }
-  return response.json()
-}
-
 export function getActiveTheme(): DesktopTheme | null {
   const activeId = document.documentElement.getAttribute("data-theme")
   if (!activeId) {

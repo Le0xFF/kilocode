@@ -686,11 +686,6 @@ export const dict = {
   "settings.notifications.sound.system": "ระบบ",
   "settings.notifications.sound.description":
     "ค่าเริ่มต้นจะใช้เสียงที่แตกต่างกันสำหรับการเสร็จสิ้น การป้อนข้อมูล และข้อผิดพลาด ส่วนตัวเลือกอื่นจะใช้เสียงเดียวสำหรับทุกเหตุการณ์",
-  "settings.experimental.share.title": "โหมดแชร์",
-  "settings.experimental.share.description": "พฤติกรรมการแชร์เซสชัน",
-  "settings.experimental.share.manual": "ด้วยตนเอง",
-  "settings.experimental.share.auto": "อัตโนมัติ",
-  "settings.experimental.share.disabled": "ปิดใช้งาน",
   "settings.experimental.formatter.title": "ฟอร์แมตเตอร์",
   "settings.experimental.formatter.description": "เปิดใช้งานฟอร์แมตโค้ดอัตโนมัติ",
   "settings.experimental.batch.title": "เครื่องมือแบทช์",

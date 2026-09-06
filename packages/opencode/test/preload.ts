@@ -37,7 +37,12 @@ process.env["XDG_DATA_HOME"] = path.join(dir, "share")
 process.env["XDG_CACHE_HOME"] = path.join(dir, "cache")
 process.env["XDG_CONFIG_HOME"] = path.join(dir, "config")
 process.env["XDG_STATE_HOME"] = path.join(dir, "state")
-process.env["KILO_MODELS_PATH"] = path.join(import.meta.dir, "tool", "fixtures", "models-api.json")
+// kilocode_change - KILO_MODELS_PATH flag removed; seed the fixed cache path with the
+// shared fixture so tests that depend on the pre-populated catalog (and any test that
+// warms up the memoized ModelsDev service before writing its own cache file) still work.
+const modelsCacheDir = path.join(dir, "cache", "kilo")
+await fs.mkdir(modelsCacheDir, { recursive: true })
+await fs.writeFile(path.join(modelsCacheDir, "models.json"), await fs.readFile(path.join(import.meta.dir, "tool", "fixtures", "models-api.json")))
 process.env["KILO_EXPERIMENTAL_EVENT_SYSTEM"] = "true"
 process.env["KILO_EXPERIMENTAL_WORKSPACES"] = "true"
 process.env["KILO_EXPERIMENTAL_DISABLE_FILEWATCHER"] ??= "true" // kilocode_change - see test.yml: per-instance watchers are too heavy/racy for unit tests; watcher tests opt back in

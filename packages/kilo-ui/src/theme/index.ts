@@ -26,7 +26,7 @@ export {
 } from "@opencode-ai/ui/theme/color"
 
 export { resolveThemeVariant, resolveTheme, themeToCss } from "@opencode-ai/ui/theme/resolve"
-export { applyTheme, loadThemeFromUrl, getActiveTheme, removeTheme, setColorScheme } from "@opencode-ai/ui/theme/loader"
+export { applyTheme, getActiveTheme, removeTheme, setColorScheme } from "@opencode-ai/ui/theme/loader"
 
 // Override: use our context with kilo default
 export { ThemeProvider, useTheme, type ColorScheme } from "./context"

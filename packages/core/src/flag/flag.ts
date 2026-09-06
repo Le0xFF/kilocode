@@ -55,6 +55,10 @@ export const Flag = {
   // kilocode_change end
   KILO_DISABLE_AUTOCOMPACT: truthy("KILO_DISABLE_AUTOCOMPACT"),
   KILO_DISABLE_MODELS_FETCH: truthy("KILO_DISABLE_MODELS_FETCH"),
+  // kilocode_change - kept (not removed): tests and script/generate.ts redirect the models.dev fetch to a local URL
+  KILO_MODELS_URL: process.env["KILO_MODELS_URL"],
+  // kilocode_change - kept (not removed): lets tests point loadFromDisk at a fixture file
+  KILO_MODELS_PATH: process.env["KILO_MODELS_PATH"],
   KILO_DISABLE_MOUSE: truthy("KILO_DISABLE_MOUSE"),
   // kilocode_change start
   KILO_DISABLE_CLAUDE_CODE,
@@ -101,9 +105,9 @@ export const Flag = {
 
   
 
-  KILO_MODELS_URL: process.env["KILO_MODELS_URL"],
-
-  KILO_MODELS_PATH: process.env["KILO_MODELS_PATH"],
+  // kilocode_change - KILO_MODELS_URL / KILO_MODELS_PATH are kept (declared above) so tests and
+  // process.env consumers (opencode script/generate.ts, ui vite.config.ts) can redirect the models.dev
+  // fetch to a local URL; the cache file path is per-source in core/src/models-dev.ts.
 
   KILO_DISABLE_EMBEDDED_WEB_UI: truthy("KILO_DISABLE_EMBEDDED_WEB_UI"), // kilocode_change
 

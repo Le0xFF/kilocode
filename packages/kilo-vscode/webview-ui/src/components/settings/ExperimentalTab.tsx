@@ -8,17 +8,6 @@ import { useLanguage } from "../../context/language"
 import { useImageModels } from "../../context/image-models"
 import SettingsRow from "./SettingsRow"
 
-interface ShareOption {
-  value: string
-  labelKey: string
-}
-
-const SHARE_OPTIONS: ShareOption[] = [
-  { value: "manual", labelKey: "settings.experimental.share.manual" },
-  { value: "auto", labelKey: "settings.experimental.share.auto" },
-  { value: "disabled", labelKey: "settings.experimental.share.disabled" },
-]
-
 const ExperimentalTab: Component = () => {
   const { config, settings, updateConfig, applySetting } = useConfig()
   const language = useLanguage()
@@ -35,28 +24,6 @@ const ExperimentalTab: Component = () => {
   return (
     <div>
       <Card>
-        {/* Share mode */}
-        <SettingsRow
-          title={language.t("settings.experimental.share.title")}
-          description={language.t("settings.experimental.share.description")}
-        >
-          <Select
-            options={SHARE_OPTIONS}
-            current={SHARE_OPTIONS.find((o) => o.value === (config().share ?? "manual"))}
-            value={(o) => o.value}
-            label={(o) => language.t(o.labelKey)}
-            onSelect={(o) => {
-              if (!o) return
-              const next = o.value as "manual" | "auto" | "disabled"
-              if (next === (config().share ?? "manual")) return
-              updateConfig({ share: next })
-            }}
-            variant="secondary"
-            size="small"
-            triggerVariant="settings"
-          />
-        </SettingsRow>
-
         <SettingsRow
           title={language.t("settings.experimental.formatter.title")}
           description={language.t("settings.experimental.formatter.description")}

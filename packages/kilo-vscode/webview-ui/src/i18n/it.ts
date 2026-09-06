@@ -594,11 +594,6 @@ export const dict = {
   "settings.notifications.sound.system": "Sistema",
   "settings.notifications.sound.description":
     "L'opzione predefinita usa suoni diversi per completamento, intervento ed errori. Le altre opzioni usano un unico suono per tutti gli eventi.",
-  "settings.experimental.share.title": "Modalità condivisione",
-  "settings.experimental.share.description": "Come si comporta la condivisione sessione",
-  "settings.experimental.share.manual": "Manuale",
-  "settings.experimental.share.auto": "Automatica",
-  "settings.experimental.share.disabled": "Disabilitata",
   "settings.experimental.formatter.title": "Formatter",
   "settings.experimental.formatter.description": "Abilita il formatter automatico del codice",
   "settings.experimental.batch.title": "Tool batch",

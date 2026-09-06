@@ -691,11 +691,6 @@ export const dict = {
   "settings.notifications.sound.description":
     "Varsayılan seçenekte tamamlanma, giriş ve hatalar için farklı sesler kullanılır. Diğer seçeneklerde tüm etkinlikler için tek bir ses kullanılır.",
 
-  "settings.experimental.share.title": "Paylaşım Modu",
-  "settings.experimental.share.description": "Oturum paylaşımının nasıl davranacağı",
-  "settings.experimental.share.manual": "Manuel",
-  "settings.experimental.share.auto": "Otomatik",
-  "settings.experimental.share.disabled": "Devre Dışı",
   "settings.experimental.formatter.title": "Biçimlendirici",
   "settings.experimental.formatter.description": "Otomatik kod biçimlendiriciyi etkinleştir",
   "settings.experimental.batch.title": "Toplu Araç",

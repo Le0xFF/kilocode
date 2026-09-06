@@ -11,7 +11,6 @@ import path from "path"
 import * as TestConsole from "effect/testing/TestConsole"
 import { it } from "../lib/effect"
 
-const ORIGINAL_MODELS_PATH = Flag.KILO_MODELS_PATH
 const ORIGINAL_DISABLE_FETCH = Flag.KILO_DISABLE_MODELS_FETCH
 const cache = Global.Path.cache
 const log = Global.Path.log
@@ -19,7 +18,6 @@ const root = path.join(Global.Path.tmp, `models-logger-${process.pid}-${Math.ran
 const logs = path.join(root, "log")
 
 beforeAll(async () => {
-  Flag.KILO_MODELS_PATH = undefined
   Flag.KILO_DISABLE_MODELS_FETCH = true
   Global.Path.cache = root
   Global.Path.log = logs
@@ -28,7 +26,6 @@ beforeAll(async () => {
 })
 
 afterAll(async () => {
-  Flag.KILO_MODELS_PATH = ORIGINAL_MODELS_PATH
   Flag.KILO_DISABLE_MODELS_FETCH = ORIGINAL_DISABLE_FETCH
   Global.Path.cache = cache
   Global.Path.log = log

@@ -684,11 +684,6 @@ export const dict = {
   "settings.notifications.sound.description":
     "پیش‌فرض از صداهای مختلف برای تکمیل، ورودی و خطاها استفاده می‌کند. سایر گزینه‌ها از یک صدا برای همه رویدادها استفاده می‌کنند.",
 
-  "settings.experimental.share.title": "حالت اشتراک‌گذاری",
-  "settings.experimental.share.description": "نحوه رفتار اشتراک‌گذاری جلسه",
-  "settings.experimental.share.manual": "دستی",
-  "settings.experimental.share.auto": "خودکار",
-  "settings.experimental.share.disabled": "غیرفعال",
   "settings.experimental.formatter.title": "قالب‌بند",
   "settings.experimental.formatter.description": "فعال‌سازی قالب‌بند خودکار کد",
   "settings.experimental.batch.title": "ابزار دسته‌ای",

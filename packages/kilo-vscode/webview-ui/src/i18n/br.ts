@@ -702,11 +702,6 @@ export const dict = {
   "settings.notifications.sound.system": "Sistema",
   "settings.notifications.sound.description":
     "A opção padrão usa sons diferentes para conclusão, interação e erros. As outras opções usam um único som para todos os eventos.",
-  "settings.experimental.share.title": "Modo de compartilhamento",
-  "settings.experimental.share.description": "Comportamento do compartilhamento de sessão",
-  "settings.experimental.share.manual": "Manual",
-  "settings.experimental.share.auto": "Automático",
-  "settings.experimental.share.disabled": "Desativado",
   "settings.experimental.formatter.title": "Formatador",
   "settings.experimental.formatter.description": "Ativar formatador automático de código",
   "settings.experimental.batch.title": "Ferramenta em lote",

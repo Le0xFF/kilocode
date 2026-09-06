@@ -556,6 +556,7 @@ it.live("session.processor effect tests reset reasoning state across retries", (
       Effect.gen(function* () {
         const { processors, session, provider } = yield* boot()
         // kilocode_change start — auto-reply to network reconnection prompts triggered by reset()
+        // kilocode_change - offline surface: no probe hosts means immediate retry fallback
         const offAsk = Bus.subscribe(SessionNetwork.Event.Asked, (event) => {
           void SessionNetwork.reply({ requestID: event.properties.id })
         })

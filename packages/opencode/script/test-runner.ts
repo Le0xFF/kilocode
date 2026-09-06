@@ -29,7 +29,7 @@ if (argv.includes("--help") || argv.includes("-h")) {
       "",
       "Options:",
       "  --ci                 Enable JUnit XML output to .artifacts/unit/junit.xml",
-      "  --concurrency <N>    Max parallel processes (default: min(4, CPU count), env: KILO_TEST_CONCURRENCY)",
+      "  --concurrency <N>    Max parallel processes (default: min(4, CPU count), env: KILO_TEST_CONCURRENCY; on Linux the default is further capped by available RAM, ~2GB per worker)",
       "  --timeout <ms>       Per-test timeout passed to bun test (default: 60000)",
       "  --file-timeout <ms>  Per-file process timeout (default: 300000, env: KILO_TEST_FILE_TIMEOUT)",
       "  --retries <N>        Extra attempts for failing files (default: 1)",
@@ -90,7 +90,29 @@ const concurrencyEnv = (() => {
   }
   return value
 })()
-const concurrency = opt("concurrency", concurrencyEnv ?? Math.min(4, os.cpus().length))
+// kilocode_change start - cap the DEFAULT concurrency on available RAM (~2GB budget per
+// worker process) to prevent OOM on small machines. Explicit --concurrency /
+// KILO_TEST_CONCURRENCY bypass the cap, as before. On Linux reads /proc/meminfo; if it is
+// missing or anomalous (< 100MB) the old min(4, cpus) default stands.
+// KILO_TEST_MEM_AVAILABLE_MB overrides the /proc/meminfo read (testing knob, inert by default).
+const memAvailableMB = await (async () => {
+  const override = process.env.KILO_TEST_MEM_AVAILABLE_MB?.trim()
+  if (override !== undefined) return Number(override)
+  try {
+    const info = await Bun.file("/proc/meminfo").text()
+    const match = info.match(/^MemAvailable:\s+(\d+)\s+kB$/m)
+    if (!match) return NaN
+    return Number(match[1]) / 1024
+  } catch {
+    return NaN
+  }
+})()
+const ramCap = Number.isFinite(memAvailableMB) && memAvailableMB >= 100 ? Math.max(1, Math.floor(memAvailableMB / 2048)) : undefined
+const effectiveDefault = ramCap === undefined ? Math.min(4, os.cpus().length) : Math.min(Math.min(4, os.cpus().length), ramCap)
+const concurrency = opt("concurrency", concurrencyEnv ?? effectiveDefault)
+if (ramCap !== undefined && !concurrencyEnv && !argv.includes("--concurrency") && ramCap < 4) {
+  console.log(`RAM-based cap: ${Math.floor(memAvailableMB)}MB available limits default concurrency to ${ramCap}`)
+}
 // kilocode_change end
 const timeout = opt("timeout", 60000)
 // kilocode_change start - allow CI to raise the per-file kill deadline via env. On Windows,

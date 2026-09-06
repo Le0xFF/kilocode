@@ -90,6 +90,7 @@ Rimangono online (gated):
 - Download on-demand di binary/plugin: ripgrep dai GitHub releases se assente a sistema; `Npm.add` per plugin/dynamic-provider-SDK/@lancedb al primo uso con caché fredda.
 - Comando manuale `kilo upgrade`: npm registry/brew/choco/scoop su azione esplicita (l'auto-update è stato rimosso).
 - Link `openExternal` nella webview (kilo.ai/docs, github, reddit): aprono il browser di sistema, non socket del processo.
+- `WellKnown` auth type + `KILO_AUTH_CONTENT`: wellknown fetch (`<url>/.well-known/opencode`) per `kilo login <url>` e remote config; host dichiarato dall'utente.
 
 Assenti per costruzione:
 
@@ -97,8 +98,20 @@ Assenti per costruzione:
 - LSP: feature rimossa interamente (binari language-server, download, toggle, permission row).
 - Session sharing: feature rimossa (`opncd.ai`/console più referenziati; dati storici compatibili).
 - Auto-update: rimosso (nessuna route `/global/upgrade`, nessun check automatico; resta il comando manuale).
-- Network probe: lista di host esterni azzerata in `session/network.ts`; dopo errori di connessione del provider non parte alcuna richiesta verso l'esterno.
+- Network probe: lista di host esterni azzerata in `session/network.ts` — con la lista vuota non parte alcuna richiesta verso l'esterno e gli errori di connessione del provider degradano al normale retry (nessun park permanente su stato offline). Il meccanismo network-wait resta come meccanismo per chi reintroducesse host di probe: UI nella TUI (`Connection lost — retrying automatically`) e auto-drain/rifiuto nell'estensione.
 - Telemetria OTel: env del child `kilo serve` sanificata allo spawn (tutte le `OTEL_*` e le proxy var non gestite da VS Code sono tolte).
+
+## Cosmetici accettati (chiusura step 8)
+
+Residui di superficie online accettati, tutti inert o gated da azione esplicita; tenuti in repo per coerenza con upstream:
+
+| Residuo | Dove | Perché resta |
+|---|---|---|
+| `openExternal` link nella webview | FeedbackDialog, CustomProviderDialog, AboutKiloCodeTab, ProviderConnectDialog, useSlashCommand | aprono il browser di sistema, mai un socket del processo |
+| MCP `client_uri` | `packages/opencode/src/mcp/oauth-provider.ts` (`https://kilo.ai`) | stringa dichiarativa nel metadata OAuth, nessun fetch al runtime |
+| URL di installazione | Npm/Brew/Choco/Scoop/Release in `packages/opencode/src/kilocode/installation/index.ts` | usati solo dal comando manuale `kilo upgrade` su azione esplicita |
+| `$schema` theme JSON | tema TUI | puntatore editor per l'autocomplete, non fetch |
+| Doc links in prompt/help text | `kilo.ai/docs`, github, reddit nei testi CLI/TUI | copy per l'utente, aperto col browser di sistema |
 
 ## Future work (out of scope here)
 

@@ -45,15 +45,6 @@ export async function load(
   return { plans, byok }
 }
 
-function base() {
-  if (!process.env.KILO_API_URL) return "https://app.kilo.ai"
-  try {
-    return new URL(process.env.KILO_API_URL).origin
-  } catch {
-    return "https://app.kilo.ai"
-  }
-}
-
 const error = (code: string, message: string) => ({ code, message, retryable: true })
 
 function installed(subscription: CodingPlanSubscription, state: Result<ByokEntry[]>) {
@@ -111,7 +102,6 @@ export async function managed(
       ? "past_due"
       : "active"
   const id = `kilo-managed:${subscription.id}`
-  const managementUrl = `${base()}/subscriptions/coding-plans/${subscription.id}`
 
   return usage(token, subscription.id)
     .then((usage) => {
@@ -127,7 +117,6 @@ export async function managed(
         planState,
         routingState: "active",
         fetchedAt: usage.fetchedAt,
-        managementUrl,
         windows,
       } satisfies ProviderUsage.UsageSnapshot
     })
@@ -142,7 +131,6 @@ export async function managed(
       planState,
       routingState: "active",
       fetchedAt,
-      managementUrl,
       windows: [],
       error: error("managed_subscription_unavailable", "Usage unavailable."),
     }))

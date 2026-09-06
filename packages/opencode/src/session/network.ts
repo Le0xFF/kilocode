@@ -312,6 +312,10 @@ export namespace SessionNetwork {
     return { id, promise }
   }
 
+  export function hasProbes() {
+    return urls.length > 0
+  }
+
   export const restore = fn(
     z.object({
       requestID: z.custom<QuestionID>((value) => typeof value === "string" && value.startsWith("que")),

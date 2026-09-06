@@ -1,7 +1,7 @@
 import path from "path"
 
 process.env.KILO_DB = ":memory:"
-process.env.KILO_MODELS_PATH = path.join(import.meta.dir, "plugin", "fixtures", "models-dev.json")
+// kilocode_change - KILO_MODELS_PATH flag removed; tests write <cache>/models.json directly instead
 process.env.KILO_DISABLE_MODELS_FETCH = "true"
 
 // kilocode_change start - fail closed: core unit tests do not redirect XDG dirs, so KILO_DB

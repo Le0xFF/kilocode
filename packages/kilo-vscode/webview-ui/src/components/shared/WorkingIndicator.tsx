@@ -81,6 +81,11 @@ export const WorkingIndicator: Component = () => {
   }
 
   const isRetrying = () => session.statusInfo().type === "retry"
+  // Offline inherits no retry countdown, but the turn can still be stopped.
+  const actionable = () => {
+    const t = session.statusInfo().type
+    return t === "retry" || t === "offline"
+  }
 
   // The counter's slot is reserved for exactly as long as the turn is timed, so a
   // state that never counts (a retry with no start time) keeps the row compact.
@@ -109,7 +114,7 @@ export const WorkingIndicator: Component = () => {
           {formatElapsed()}
         </span>
       </Show>
-      <Show when={isRetrying()}>
+      <Show when={actionable()}>
         <Button
           variant="secondary"
           size="small"

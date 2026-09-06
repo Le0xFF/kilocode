@@ -693,11 +693,6 @@ export const dict = {
   "settings.notifications.sound.description":
     "За замовчуванням для завершення, запиту на введення та помилок використовуються різні звуки. В інших варіантах для всіх подій використовується один і той самий звук.",
 
-  "settings.experimental.share.title": "Режим публікації",
-  "settings.experimental.share.description": "Як поводиться публікація сесій",
-  "settings.experimental.share.manual": "Вручну",
-  "settings.experimental.share.auto": "Автоматично",
-  "settings.experimental.share.disabled": "Вимкнено",
   "settings.experimental.formatter.title": "Форматер",
   "settings.experimental.formatter.description": "Увімкнути автоматичне форматування коду",
   "settings.experimental.batch.title": "Пакетний інструмент",

@@ -696,11 +696,6 @@ export const dict = {
   "settings.notifications.sound.system": "Системный",
   "settings.notifications.sound.description":
     "По умолчанию для завершения, запроса вашего участия и ошибок используются разные звуки. В остальных вариантах для всех событий используется один и тот же звук.",
-  "settings.experimental.share.title": "Режим обмена",
-  "settings.experimental.share.description": "Поведение обмена сессиями",
-  "settings.experimental.share.manual": "Вручную",
-  "settings.experimental.share.auto": "Автоматически",
-  "settings.experimental.share.disabled": "Отключено",
   "settings.experimental.formatter.title": "Форматтер",
   "settings.experimental.formatter.description": "Включить автоматическое форматирование кода",
   "settings.experimental.batch.title": "Пакетный инструмент",
