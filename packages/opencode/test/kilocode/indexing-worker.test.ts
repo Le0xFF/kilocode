@@ -9,7 +9,6 @@ test("runs indexing engine requests in its worker", async () => {
   const failures: unknown[] = []
   const engine = IndexingWorker.create(tmp.path, tmp.path, {
     status() {},
-    telemetry() {},
     warning() {},
     log() {},
     failure(err) {
@@ -34,7 +33,6 @@ test("routes multiple directories through the shared indexing worker", async () 
   const create = (directory: string) =>
     IndexingWorker.create(directory, directory, {
       status() {},
-      telemetry() {},
       warning() {},
       log() {},
       failure(err) {
@@ -63,7 +61,6 @@ test("pools workers by both directory and root", async () => {
   const failures: unknown[] = []
   const hooks: IndexingWorker.Hooks = {
     status() {},
-    telemetry() {},
     warning() {},
     log() {},
     failure(err) {
@@ -116,7 +113,6 @@ test("waits for the primary index instead of scanning a worktree independently",
   const failures: unknown[] = []
   const engine = IndexingWorker.create(worktree, tmp.path, {
     status() {},
-    telemetry() {},
     warning() {},
     log() {},
     failure(err) {
@@ -152,7 +148,6 @@ test("allows same-directory recreation while disposal is pending", async () => {
   await using tmp = await tmpdir()
   const hooks = {
     status() {},
-    telemetry() {},
     warning() {},
     log() {},
     failure() {},
@@ -179,7 +174,6 @@ test("releases enabled workers after provider initialization errors", async () =
     const warnings: string[] = []
     const engine = IndexingWorker.create(tmp.path, tmp.path, {
       status() {},
-      telemetry() {},
       warning(item) {
         warnings.push(item.code)
       },
@@ -213,7 +207,6 @@ test("releases enabled workers after provider initialization errors", async () =
 
   const engine = IndexingWorker.create(tmp.path, tmp.path, {
     status() {},
-    telemetry() {},
     warning() {},
     log() {},
     failure() {},

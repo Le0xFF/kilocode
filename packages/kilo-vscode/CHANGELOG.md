@@ -8,6 +8,8 @@
 
 - Closed out the offline surface. Also removed: LSP/language-server integration (tools, config key, experimental toggle, permission row), session sharing (routes, SDK methods, TUI surface; historical share data stays compatible), automatic updates (the manual `kilo upgrade` command remains), and the external network-probe hosts used for provider fault tolerance — after a local provider connection error the backend no longer reaches any public host. The spawned backend starts with a sanitized environment (no inherited `OTEL_*` or unmanaged proxy vars) and serves its model catalog from the committed local snapshot instead of fetching models.dev. A few paths stay intentionally online, gated by explicit user choice: the `webfetch` tool, user-declared skill URLs and remote MCP servers, on-demand binary/plugin downloads with a cold cache, hosted embedding models if explicitly configured, GitHub PR import, and the links in the webview that open the system browser. See `PRUNE-NOTES.md` ("Residui volutamente online (gated)") for the full matrix.
 
+- Pruned dead code left over from the removed online services: the gateway event-service WebSocket client (`EventServiceClient` + test), the no-op `trackStep` telemetry hook and its now-unread review-telemetry plumbing in the session prompt/processor, and the vestigial `shareBaseUrl`/`shareId` blocks in the `kilo github` handler. Kept (still used or loopback-only): the dev debug-workspace plugin, the indexing worker's telemetry protocol variant, and the `ReviewTelemetry` type.
+
 - [#13512](https://github.com/Kilo-Org/kilocode/pull/13512) [`13a9673`](https://github.com/Kilo-Org/kilocode/commit/13a9673d08cfc69eebb89898861a1ee80278f226) - Reference other Agent Manager worktrees with a searchable @ picker that prioritizes recently opened worktrees. Share paths, branches, and session IDs without attaching diffs or chat history. Keep picker results in sync when clearing search.
 
 - [#13533](https://github.com/Kilo-Org/kilocode/pull/13533) [`6d15d18`](https://github.com/Kilo-Org/kilocode/commit/6d15d18fa766aaf6a478b63aa98c10ffd23e3d4c) - Choose a separate model for conversation compaction in Context settings.
@@ -79,6 +81,8 @@
 - Removed the last dead-code residuals from the offline closure: balance-refresh, codex-refresh + the CodexAuthExpiredError case, the OAUTH_DUMMY_KEY export, the models-dev environmental fork/fetch machinery, the cloud base() URL, the bedrock-converse literal, the embedder kilo option, loadThemeFromUrl, the CSS speech/provider-usage blocks, the Share mode control + its i18n keys, and the TUI pricing special-case.
 
 - Calibrated test parallelism on available RAM so the unit suites stay within memory limits on small machines.
+
+- Closed out the offline-surface cosmetic residuals: removed `"openrouter"` from the `PROVIDER_PRIORITY` fallback and the `IndexingProvider` union (no live consumer references it); pointed the `session-title-generation` test fixture at a local model (`lmstudio`) instead of the removed gateway package; updated the `/kilo/cloud-sessions` probe expectation to 404 now that the route is gone; regenerated the tool-parameters snapshot to drop the retired `websearch` and `lsp` entries; annotated the MCP OAuth `client_uri` branding string; and extended PRUNE-NOTES with the A1–A5 + B changes (API-key env strip, ChatGPT-OAuth gate, dead-code deletions, dep removals).
 
 ## 7.5.5
 

@@ -31,6 +31,32 @@ export function resolveIndexingEnv(folders: readonly WorkspaceFolderLike[] | und
 
 const PROXY_KEYS = ["HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY", "http_proxy", "https_proxy", "all_proxy", "NO_PROXY", "no_proxy"] as const
 
+// Well-known online provider API keys and credential prefixes are stripped from
+// the child `kilo serve` environment so a managed (offline) backend never sees
+// them. Users who genuinely need one of these keys for a BYOK openai-compatible
+// endpoint must declare it via `config.provider.<id>.env` in their Kilo config —
+// the shell env value will not be forwarded to the backend.
+const PROVIDER_KEY_NAMES = [
+  "ANTHROPIC_API_KEY",
+  "OPENAI_API_KEY",
+  "OPENROUTER_API_KEY",
+  "GEMINI_API_KEY",
+  "GROQ_API_KEY",
+  "MISTRAL_API_KEY",
+  "TOGETHER_API_KEY",
+  "PERPLEXITY_API_KEY",
+  "CLOUDFLARE_API_KEY",
+  "COHERE_API_KEY",
+  "DEEPSEEK_API_KEY",
+  "ZAI_API_KEY",
+  "HUGGINGFACE_API_KEY",
+  "MINIMAX_API_KEY",
+  "GITHUB_TOKEN",
+  "COPILOT_GITHUB_DEVICE_ID",
+] as const
+
+const PROVIDER_KEY_PREFIXES = ["AWS_", "VERTEX_"] as const
+
 export function resolveManagedServerEnv(env: NodeJS.ProcessEnv): NodeJS.ProcessEnv {
   const out: Record<string, string | undefined> = {}
   for (const [key, value] of Object.entries(env)) {
@@ -38,6 +64,8 @@ export function resolveManagedServerEnv(env: NodeJS.ProcessEnv): NodeJS.ProcessE
     if (key.startsWith("BUN_")) continue
     if (key === "NODE_OPTIONS") continue
     if ((PROXY_KEYS as readonly string[]).includes(key)) continue
+    if ((PROVIDER_KEY_NAMES as readonly string[]).includes(key)) continue
+    if (PROVIDER_KEY_PREFIXES.some((prefix) => key.startsWith(prefix))) continue
     out[key] = value
   }
   return {

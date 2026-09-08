@@ -204,9 +204,6 @@ export const dict = {
 
   "error.providerAuth.title": "{{provider}} 已将您登出",
   "error.providerAuth.description": "请重新连接 {{provider}}，然后再次发送消息。",
-  "error.providerAuth.chatgpt.title": "OpenAI 已将您登出",
-  "error.providerAuth.chatgpt.description": "请再次登录 ChatGPT，然后重新发送消息以继续使用 Codex 模型。",
-
   "notification.permission.title": "需要权限",
   "notification.permission.titleSubagent": "需要权限（子代理）",
   "notification.permission.titleSkillShell": "要执行技能「{{skill}}」的 shell 命令吗？",
@@ -382,11 +379,9 @@ export const dict = {
   "settings.providers.select.placeholder": "选择提供商...",
   "settings.providers.tag.environment": "环境",
   "settings.providers.tag.config": "配置",
-  "settings.providers.tag.chatgpt": "ChatGPT",
   "settings.providers.tag.custom": "自定义",
   "settings.providers.tag.other": "其他",
   "settings.providers.connected.environmentDescription": "从您的环境变量连接",
-  "settings.providers.action.signInChatGPT": "使用 ChatGPT 登录",
   "settings.providers.custom.description": "通过基础 URL 添加自定义提供商。",
   "settings.providers.subagentModel.title": "子代理模型",
   "settings.providers.subagentModel.description": "task-tool 子代理的默认模型和推理工作量。留空以继承调用代理的模型。",

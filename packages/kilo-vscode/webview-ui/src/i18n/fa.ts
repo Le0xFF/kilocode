@@ -212,9 +212,6 @@ export const dict = {
 
   "error.providerAuth.title": "{{provider}} شما را خارج کرد",
   "error.providerAuth.description": "{{provider}} را دوباره متصل کنید، سپس پیام خود را مجدداً ارسال کنید.",
-  "error.providerAuth.chatgpt.title": "OpenAI شما را خارج کرد",
-  "error.providerAuth.chatgpt.description":
-    "دوباره با ChatGPT وارد شوید، سپس پیام خود را مجدداً ارسال کنید تا از مدل‌های Codex استفاده کنید.",
 
   "notification.permission.title": "مجوز لازم است",
   "notification.permission.titleSubagent": "مجوز مورد نیاز است (زیرعامل)",
@@ -329,11 +326,9 @@ export const dict = {
   "settings.providers.connected.empty": "هیچ ارائه‌دهنده متصلی وجود ندارد",
   "settings.providers.tag.environment": "محیط",
   "settings.providers.tag.config": "پیکربندی",
-  "settings.providers.tag.chatgpt": "ChatGPT",
   "settings.providers.tag.custom": "سفارشی",
   "settings.providers.tag.other": "سایر",
   "settings.providers.connected.environmentDescription": "از متغیرهای محیطی شما متصل شده است",
-  "settings.providers.action.signInChatGPT": "ورود با ChatGPT",
   "settings.providers.custom.description": "یک ارائه‌دهنده سفارشی از طریق URL پایه اضافه کنید.",
 
   "provider.custom.title": "ارائه‌دهنده سفارشی",

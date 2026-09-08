@@ -2,7 +2,7 @@ import z from "zod"
 import path from "path"
 import { realpathSync } from "node:fs"
 import { Effect, Schema } from "effect"
-import { type IndexingTelemetryEvent, type VectorStoreSearchResult } from "@kilocode/kilo-indexing/engine"
+import { type VectorStoreSearchResult } from "@kilocode/kilo-indexing/engine"
 import { toIndexingConfigInput, type IndexingConfig } from "@kilocode/kilo-indexing/config"
 import { hasIndexingPlugin } from "@kilocode/kilo-indexing/detect"
 import { IndexingStatus, disabledIndexingStatus } from "@kilocode/kilo-indexing/status"
@@ -77,11 +77,6 @@ function pending(): z.infer<typeof IndexingStatus> {
     percent: 0,
   }
 }
-
-// No-op: PostHog telemetry was removed with the online services. The indexing
-// worker still emits indexing telemetry events over its protocol; they are simply
-// no longer forwarded to a remote sink.
-function trackTelemetry(_event: IndexingTelemetryEvent): void {}
 
 export namespace KiloIndexing {
   export const Status = IndexingStatus
@@ -238,10 +233,6 @@ export namespace KiloIndexing {
         delay,
       )
     })
-    const telemetry = Instance.bind((event: IndexingTelemetryEvent) => {
-      if (disposed) return
-      trackTelemetry(event)
-    })
     const warning = Instance.bind((item: IndexingWarning) => {
       if (disposed) return
       const key = indexingWarningKey(item)
@@ -297,7 +288,7 @@ export namespace KiloIndexing {
     const err = await LanceDBRuntime.ensure(cfgInput.vectorStoreProvider)
       .then(async () => {
         if (hit.disposed) return
-        const engine = IndexingWorker.create(dir, root, { status, telemetry, warning, log: output, failure })
+        const engine = IndexingWorker.create(dir, root, { status, warning, log: output, failure })
         base.engine = engine
         box.status = await engine.init(cfgInput, baseline)
         base.initialized = true

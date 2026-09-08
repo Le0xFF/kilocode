@@ -31,14 +31,6 @@ export const ErrorDisplay: Component<ErrorDisplayProps> = (props) => {
     if (!err || !authProvider()) return false
     return (provider.authMethods()[err.providerID] ?? []).length > 0
   })
-  const oauth = createMemo(() => {
-    const err = auth()
-    if (!err) return false
-    return (
-      err.providerID === "openai" &&
-      (provider.authMethods()[err.providerID] ?? []).some((method) => method.type === "oauth")
-    )
-  })
 
   const errorText = createMemo(() => {
     const msg = props.error.data?.message
@@ -50,7 +42,7 @@ export const ErrorDisplay: Component<ErrorDisplayProps> = (props) => {
   function connectProvider() {
     const err = auth()
     if (!err) return
-    dialog.show(() => <ProviderConnectDialog providerID={err.providerID} oauthOnly={oauth()} />)
+    dialog.show(() => <ProviderConnectDialog providerID={err.providerID} />)
   }
 
   return (
@@ -78,20 +70,16 @@ export const ErrorDisplay: Component<ErrorDisplayProps> = (props) => {
           <div data-slot="auth-prompt-header">
             <span data-slot="auth-prompt-icon">↻</span>
             <span data-slot="auth-prompt-title">
-              {oauth()
-                ? t("error.providerAuth.chatgpt.title")
-                : t("error.providerAuth.title", { provider: authProvider()?.name ?? auth()?.providerID ?? "provider" })}
+              {t("error.providerAuth.title", { provider: authProvider()?.name ?? auth()?.providerID ?? "provider" })}
             </span>
           </div>
           <p data-slot="auth-prompt-description">
-            {oauth()
-              ? t("error.providerAuth.chatgpt.description")
-              : t("error.providerAuth.description", {
-                  provider: authProvider()?.name ?? auth()?.providerID ?? "provider",
-                })}
+            {t("error.providerAuth.description", {
+              provider: authProvider()?.name ?? auth()?.providerID ?? "provider",
+            })}
           </p>
           <Button variant="primary" onClick={connectProvider}>
-            {oauth() ? t("settings.providers.action.signInChatGPT") : t("common.connect")}
+            {t("common.connect")}
           </Button>
         </div>
       </Match>

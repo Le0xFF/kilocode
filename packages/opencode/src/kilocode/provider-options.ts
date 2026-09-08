@@ -1,11 +1,11 @@
 import type { AnthropicProviderOptions } from "@ai-sdk/anthropic"
 import type { OpenAIResponsesProviderOptions } from "@ai-sdk/openai"
 import type { OpenAICompatibleProviderOptions } from "@ai-sdk/openai-compatible"
-import type { OpenRouterProviderOptions } from "@openrouter/ai-sdk-provider"
 
 export function kiloProviderOptions(options: { [x: string]: any }) {
   const result: Record<string, any> = {}
-  const openrouter = options as OpenRouterProviderOptions & {
+  const openrouter = options as {
+    reasoning?: { enabled?: boolean } & ({ max_tokens: number } | { effort: string })
     verbosity?: "high" | "medium" | "low"
   }
   result.openrouter = openrouter

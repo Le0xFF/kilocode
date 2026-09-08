@@ -212,9 +212,6 @@ export const dict = {
 
   "error.providerAuth.title": "{{provider}} signed you out",
   "error.providerAuth.description": "Reconnect {{provider}}, then send your message again.",
-  "error.providerAuth.chatgpt.title": "OpenAI signed you out",
-  "error.providerAuth.chatgpt.description":
-    "Sign in with ChatGPT again, then send your message again to keep using Codex models.",
 
   "notification.permission.title": "Permission required",
   "notification.permission.titleSubagent": "Permission required (subagent)",
@@ -328,11 +325,9 @@ export const dict = {
   "settings.providers.connected.empty": "No connected providers",
   "settings.providers.tag.environment": "Environment",
   "settings.providers.tag.config": "Config",
-  "settings.providers.tag.chatgpt": "ChatGPT",
   "settings.providers.tag.custom": "Custom",
   "settings.providers.tag.other": "Other",
   "settings.providers.connected.environmentDescription": "Connected from your environment variables",
-  "settings.providers.action.signInChatGPT": "Sign in with ChatGPT",
   "settings.providers.custom.description": "Add a custom provider by base URL.",
 
   "provider.custom.title": "Custom provider",

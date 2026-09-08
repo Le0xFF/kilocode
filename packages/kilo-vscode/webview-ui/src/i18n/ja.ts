@@ -213,9 +213,6 @@ export const dict = {
 
   "error.providerAuth.title": "{{provider}} からログアウトしました",
   "error.providerAuth.description": "{{provider}} に再接続してから、メッセージを再送信してください。",
-  "error.providerAuth.chatgpt.title": "OpenAI からログアウトしました",
-  "error.providerAuth.chatgpt.description":
-    "Codex モデルを引き続き使用するには、ChatGPT に再度ログインしてから、メッセージを再送信してください。",
 
   "notification.permission.title": "権限が必要です",
   "notification.permission.titleSubagent": "権限が必要です（サブエージェント）",
@@ -394,11 +391,9 @@ export const dict = {
   "settings.providers.select.placeholder": "プロバイダーを選択...",
   "settings.providers.tag.environment": "環境",
   "settings.providers.tag.config": "設定",
-  "settings.providers.tag.chatgpt": "ChatGPT",
   "settings.providers.tag.custom": "カスタム",
   "settings.providers.tag.other": "その他",
   "settings.providers.connected.environmentDescription": "環境変数から接続されています",
-  "settings.providers.action.signInChatGPT": "ChatGPT でサインイン",
   "settings.providers.custom.description": "ベース URL でカスタムプロバイダーを追加します。",
   "settings.providers.subagentModel.title": "サブエージェントモデル",
   "settings.providers.subagentModel.description":

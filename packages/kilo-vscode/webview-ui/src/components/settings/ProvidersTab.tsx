@@ -74,7 +74,6 @@ const ProvidersTab: Component = () => {
       if (isCustomProviderPackage(cfg?.npm)) return language.t("settings.providers.tag.custom")
       return language.t("settings.providers.tag.config")
     }
-    if (item.id === "openai" && current === "custom") return language.t("settings.providers.tag.chatgpt")
     if (current === "custom") return language.t("settings.providers.tag.custom")
     return language.t("settings.providers.tag.other")
   }

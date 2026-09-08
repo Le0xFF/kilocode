@@ -59,7 +59,6 @@ const error = new Error("test indexing initialization failed")
 function inline(directory: string, root: string, hooks: IndexingWorker.Hooks): IndexingWorker.Driver {
   const manager = new CodeIndexManager(directory, root)
   const progress = manager.onProgressUpdate.on(() => hooks.status(normalizeIndexingStatus(manager)))
-  const telemetry = manager.onTelemetry.on(hooks.telemetry)
 
   return {
     async init(input) {
@@ -69,7 +68,6 @@ function inline(directory: string, root: string, hooks: IndexingWorker.Hooks): I
     search: (query, directoryPrefix) => manager.searchIndex(query, directoryPrefix),
     async dispose() {
       progress.dispose()
-      telemetry.dispose()
       await manager.dispose()
     },
   }
@@ -594,7 +592,6 @@ describe("indexing startup degradation", () => {
       created.push(directory)
       return inline(directory, "/index", {
         status() {},
-        telemetry() {},
         warning() {},
         log() {},
         failure() {},

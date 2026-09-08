@@ -21,7 +21,6 @@ import AnacondaDesktopDialog from "./AnacondaDesktopDialog"
 
 interface ProviderConnectDialogProps {
   providerID: string
-  oauthOnly?: boolean
 }
 
 interface ViewState {
@@ -65,11 +64,7 @@ const ProviderConnectDialog: Component<ProviderConnectDialogProps> = (props) => 
 
   const item = createMemo(() => provider.providers()[props.providerID])
   const name = () => item()?.name ?? props.providerID
-  const methods = createMemo<ProviderAuthMethod[]>(() => {
-    const list = provider.authMethods()[props.providerID] ?? [{ type: "api", label: language.t("provider.connect.method.apiKey") }]
-    if (props.oauthOnly) return list.filter((item) => item.type === "oauth")
-    return list
-  })
+  const methods = createMemo<ProviderAuthMethod[]>(() => provider.authMethods()[props.providerID] ?? [{ type: "api", label: language.t("provider.connect.method.apiKey") }])
   const method = createMemo(() => {
     const index = state.methodIndex
     return index === undefined ? undefined : methods()[index]

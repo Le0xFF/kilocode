@@ -216,9 +216,6 @@ export const dict = {
 
   "error.providerAuth.title": "{{provider}} heeft je afgemeld",
   "error.providerAuth.description": "Verbind opnieuw met {{provider}} en stuur je bericht nog een keer.",
-  "error.providerAuth.chatgpt.title": "OpenAI heeft je afgemeld",
-  "error.providerAuth.chatgpt.description":
-    "Meld je opnieuw aan bij ChatGPT en stuur je bericht nog een keer om Codex-modellen te blijven gebruiken.",
 
   "notification.permission.title": "Toestemming vereist",
   "notification.permission.titleSubagent": "Toestemming vereist (subagent)",
@@ -362,11 +359,9 @@ export const dict = {
   "settings.providers.connected.empty": "Geen gekoppelde providers",
   "settings.providers.tag.environment": "Omgeving",
   "settings.providers.tag.config": "Config",
-  "settings.providers.tag.chatgpt": "ChatGPT",
   "settings.providers.tag.custom": "Aangepast",
   "settings.providers.tag.other": "Overige",
   "settings.providers.connected.environmentDescription": "Gekoppeld via je omgevingsvariabelen",
-  "settings.providers.action.signInChatGPT": "Inloggen met ChatGPT",
   "settings.providers.custom.description": "Voeg een aangepaste provider toe via basis-URL.",
 
   "provider.custom.title": "Aangepaste provider",

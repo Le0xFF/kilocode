@@ -367,7 +367,6 @@ export const githubRun = Effect.fn("Cli.github.run")(function* (args: { event?: 
     const { providerID, modelID } = normalizeModel()
     const variant = process.env["VARIANT"] || undefined
     const runId = normalizeRunId()
-    const share = normalizeShare()
     const oidcBaseUrl = normalizeOidcBaseUrl()
     const { owner, repo } = context.repo
     // For repo events (schedule, workflow_dispatch), payload has no issue/comment data
@@ -388,14 +387,12 @@ export const githubRun = Effect.fn("Cli.github.run")(function* (args: { event?: 
         ? (payload as IssueCommentEvent | IssuesEvent).issue.number
         : (payload as PullRequestEvent | PullRequestReviewCommentEvent).pull_request.number
     const runUrl = `/${owner}/${repo}/actions/runs/${runId}`
-    const shareBaseUrl = isMock ? "https://dev.kilo.ai" : "https://kilo.ai" // kilocode_change
 
     let appToken: string
     let octoRest: Octokit
     let octoGraph: typeof graphql
     let gitConfig: string
     let session: { id: SessionID; title: string; version: string }
-    let shareId: string | undefined
     let exitCode = 0
     type PromptFiles = Awaited<ReturnType<typeof getUserPrompt>>["promptFiles"]
     const triggerCommentId = isCommentEvent
@@ -477,15 +474,6 @@ export const githubRun = Effect.fn("Cli.github.run")(function* (args: { event?: 
         }),
       )
       await subscribeSessionEvents()
-      // kilocode_change - session sharing feature removed: the `kilo github` integration no longer
-      // exposes a share URL. Defined behavior: `SHARE=true` is accepted (for backward-compatible
-      // workflow inputs) but has no effect; `shareId` stays undefined, so the footer omits the
-      // "[kilo session]" link and dedup checks always find no prior share comment.
-      shareId = await (async () => {
-        if (share === false) return
-        if (!share && repoData.data.private) return
-        return
-      })()
       console.log("kilo session", session.id) // kilocode_change
 
       // Handle event types:
@@ -544,8 +532,7 @@ export const githubRun = Effect.fn("Cli.github.run")(function* (args: { event?: 
             const summary = await summarize(response)
             await pushToLocalBranch(summary, uncommittedChanges)
           }
-          const hasShared = prData.comments.nodes.some((c) => c.body.includes(`${shareBaseUrl}/s/${shareId}`))
-          await createComment(`${response}${footer({ image: !hasShared })}`)
+          await createComment(`${response}${footer()}`)
           await removeReaction(commentType)
         }
         // Fork PR
@@ -562,8 +549,7 @@ export const githubRun = Effect.fn("Cli.github.run")(function* (args: { event?: 
             const summary = await summarize(response)
             await pushToForkBranch(summary, prData, uncommittedChanges)
           }
-          const hasShared = prData.comments.nodes.some((c) => c.body.includes(`${shareBaseUrl}/s/${shareId}`))
-          await createComment(`${response}${footer({ image: !hasShared })}`)
+          await createComment(`${response}${footer()}`)
           await removeReaction(commentType)
         }
       }
@@ -639,14 +625,6 @@ export const githubRun = Effect.fn("Cli.github.run")(function* (args: { event?: 
       const value = process.env["GITHUB_RUN_ID"]
       if (!value) throw new Error(`Environment variable "GITHUB_RUN_ID" is not set`)
       return value
-    }
-
-    function normalizeShare() {
-      const value = process.env["SHARE"]
-      if (!value) return undefined
-      if (value === "true") return true
-      if (value === "false") return false
-      throw new Error(`Invalid share value: ${value}. Share must be a boolean.`)
     }
 
     function normalizeUseGithubToken() {
@@ -1322,8 +1300,7 @@ export const githubRun = Effect.fn("Cli.github.run")(function* (args: { event?: 
 
     function footer(opts?: { image?: boolean }) {
       // kilocode_change start - simplified footer with text branding (no image backend yet)
-      const share = shareId ? `[kilo session](${shareBaseUrl}/s/${shareId})&nbsp;&nbsp;|&nbsp;&nbsp;` : ""
-      return `\n\n---\n*Powered by [Kilo](https://kilo.ai)*&nbsp;&nbsp;|&nbsp;&nbsp;${share}[github run](${runUrl})`
+      return `\n\n---\n*Powered by [Kilo](https://kilo.ai)*&nbsp;&nbsp;|&nbsp;&nbsp;[github run](${runUrl})`
       // kilocode_change end
     }
 

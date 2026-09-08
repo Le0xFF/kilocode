@@ -211,9 +211,6 @@ export const dict = {
 
   "error.providerAuth.title": "Сеанс {{provider}} завершен",
   "error.providerAuth.description": "Подключитесь к {{provider}} снова, затем отправьте сообщение еще раз.",
-  "error.providerAuth.chatgpt.title": "Сеанс OpenAI завершен",
-  "error.providerAuth.chatgpt.description":
-    "Войдите в ChatGPT снова, затем отправьте сообщение еще раз, чтобы продолжить использование моделей Codex.",
 
   "notification.permission.title": "Требуется разрешение",
   "notification.permission.titleSubagent": "Требуется разрешение (субагент)",
@@ -394,11 +391,9 @@ export const dict = {
   "settings.providers.select.placeholder": "Выберите провайдера...",
   "settings.providers.tag.environment": "Среда",
   "settings.providers.tag.config": "Конфигурация",
-  "settings.providers.tag.chatgpt": "ChatGPT",
   "settings.providers.tag.custom": "Пользовательский",
   "settings.providers.tag.other": "Другое",
   "settings.providers.connected.environmentDescription": "Подключён из ваших переменных окружения",
-  "settings.providers.action.signInChatGPT": "Войти через ChatGPT",
   "settings.providers.custom.description": "Добавьте пользовательский провайдер по базовому URL.",
   "settings.providers.subagentModel.title": "Модель субагента",
   "settings.providers.subagentModel.description":

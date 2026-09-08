@@ -1,6 +1,5 @@
 import type {
   IndexingConfigInput,
-  IndexingTelemetryEvent,
   VectorStoreSearchResult,
 } from "@kilocode/kilo-indexing/engine"
 import type { IndexingStatus } from "@kilocode/kilo-indexing/status"
@@ -16,7 +15,6 @@ declare global {
 export namespace IndexingWorker {
   export type Hooks = {
     status(status: IndexingStatus): void
-    telemetry(event: IndexingTelemetryEvent): void
     warning(warning: IndexingWarning): void
     log(event: Log): void
     failure(err: unknown): void
@@ -138,7 +136,6 @@ export namespace IndexingWorker {
       event(message) {
         if (!active) return
         if (message.event === "status") callbacks.status(message.data)
-        if (message.event === "telemetry") callbacks.telemetry(message.data)
         if (message.event === "warning") callbacks.warning(message.data)
         if (message.event === "log") callbacks.log(message.data)
       },

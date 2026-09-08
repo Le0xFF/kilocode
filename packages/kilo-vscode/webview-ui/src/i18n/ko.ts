@@ -213,9 +213,6 @@ export const dict = {
 
   "error.providerAuth.title": "{{provider}}에서 로그아웃되었습니다",
   "error.providerAuth.description": "{{provider}}에 다시 연결한 후 메시지를 다시 보내주세요.",
-  "error.providerAuth.chatgpt.title": "OpenAI에서 로그아웃되었습니다",
-  "error.providerAuth.chatgpt.description":
-    "ChatGPT에 다시 로그인한 후 메시지를 다시 보내 Codex 모델을 계속 사용하세요.",
 
   "notification.permission.title": "권한 필요",
   "notification.permission.titleSubagent": "권한 필요 (서브에이전트)",
@@ -358,11 +355,9 @@ export const dict = {
   "settings.providers.select.placeholder": "공급자 선택...",
   "settings.providers.tag.environment": "환경",
   "settings.providers.tag.config": "구성",
-  "settings.providers.tag.chatgpt": "ChatGPT",
   "settings.providers.tag.custom": "사용자 지정",
   "settings.providers.tag.other": "기타",
   "settings.providers.connected.environmentDescription": "환경 변수에서 연결됨",
-  "settings.providers.action.signInChatGPT": "ChatGPT로 로그인",
   "settings.providers.custom.description": "기본 URL로 사용자 정의 공급자를 추가합니다.",
   "settings.providers.subagentModel.title": "하위 에이전트 모델",
   "settings.providers.subagentModel.description":

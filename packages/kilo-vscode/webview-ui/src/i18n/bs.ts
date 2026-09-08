@@ -214,9 +214,6 @@ export const dict = {
 
   "error.providerAuth.title": "{{provider}} vas je odjavio",
   "error.providerAuth.description": "Ponovo se povežite sa {{provider}}, a zatim ponovo pošaljite poruku.",
-  "error.providerAuth.chatgpt.title": "OpenAI vas je odjavio",
-  "error.providerAuth.chatgpt.description":
-    "Ponovo se prijavite na ChatGPT, a zatim ponovo pošaljite poruku da nastavite koristiti Codex modele.",
 
   "notification.permission.title": "Potrebna dozvola",
   "notification.permission.titleSubagent": "Potrebna dozvola (podagent)",
@@ -399,11 +396,9 @@ export const dict = {
   "settings.providers.select.placeholder": "Odaberi provajdera...",
   "settings.providers.tag.environment": "Okruženje",
   "settings.providers.tag.config": "Konfiguracija",
-  "settings.providers.tag.chatgpt": "ChatGPT",
   "settings.providers.tag.custom": "Prilagođeno",
   "settings.providers.tag.other": "Ostalo",
   "settings.providers.connected.environmentDescription": "Povezano iz vaših varijabli okruženja",
-  "settings.providers.action.signInChatGPT": "Prijavi se putem ChatGPT",
   "settings.providers.custom.description": "Dodaj prilagođeni provajder putem osnovnog URL-a.",
   "settings.providers.subagentModel.title": "Model podagenta",
   "settings.providers.subagentModel.description":

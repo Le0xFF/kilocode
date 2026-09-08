@@ -216,9 +216,6 @@ export const dict = {
 
   "error.providerAuth.title": "{{provider}} cerró tu sesión",
   "error.providerAuth.description": "Vuelve a conectar {{provider}} y envía tu mensaje de nuevo.",
-  "error.providerAuth.chatgpt.title": "OpenAI cerró tu sesión",
-  "error.providerAuth.chatgpt.description":
-    "Vuelve a iniciar sesión con ChatGPT y envía tu mensaje de nuevo para seguir usando los modelos Codex.",
 
   "notification.permission.title": "Permiso requerido",
   "notification.permission.titleSubagent": "Permiso requerido (subagente)",
@@ -400,11 +397,9 @@ export const dict = {
   "settings.providers.select.placeholder": "Seleccionar proveedor...",
   "settings.providers.tag.environment": "Entorno",
   "settings.providers.tag.config": "Configuración",
-  "settings.providers.tag.chatgpt": "ChatGPT",
   "settings.providers.tag.custom": "Personalizado",
   "settings.providers.tag.other": "Otro",
   "settings.providers.connected.environmentDescription": "Conectado desde tus variables de entorno",
-  "settings.providers.action.signInChatGPT": "Iniciar sesión con ChatGPT",
   "settings.providers.custom.description": "Añade un proveedor personalizado por URL base.",
   "settings.providers.subagentModel.title": "Modelo de subagente",
   "settings.providers.subagentModel.description":

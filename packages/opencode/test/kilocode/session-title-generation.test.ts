@@ -9,11 +9,11 @@ import { KiloSessionPrompt } from "@/kilocode/session/prompt"
 function model(id: string, reasoning = true): Model {
   return {
     id: ModelV2.ID.make(id),
-    providerID: ProviderV2.ID.make("kilo"),
+    providerID: ProviderV2.ID.make("lmstudio"),
     api: {
       id,
-      url: "https://api.kilo.ai/api/openrouter",
-      npm: "@kilocode/kilo-gateway",
+      url: "http://127.0.0.1:1234/v1",
+      npm: "@ai-sdk/openai-compatible",
     },
     name: id,
     capabilities: {
@@ -40,12 +40,8 @@ describe("session title generation", () => {
   })
 
   test("uses the model default for reasoning-capable small models", () => {
-    expect(ProviderTransform.smallOptions(model("google/gemini-3.5-flash"))).toEqual({
-      reasoning: { enabled: true },
-    })
-    expect(ProviderTransform.smallOptions(model("anthropic/claude-haiku-4.5"))).toEqual({
-      reasoning: { enabled: true },
-    })
+    expect(ProviderTransform.smallOptions(model("google/gemini-3.5-flash"))).toEqual({})
+    expect(ProviderTransform.smallOptions(model("anthropic/claude-haiku-4.5"))).toEqual({})
   })
 
   test("omits reasoning options for models without reasoning support", () => {

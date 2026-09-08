@@ -22,7 +22,7 @@ import { SessionSummary } from "./summary"
 import type { Provider } from "@/provider/provider"
 import { Question } from "@/question"
 // kilocode_change start
-import { KiloSessionProcessor, type ReviewTelemetry } from "@/kilocode/session/processor"
+import { KiloSessionProcessor } from "@/kilocode/session/processor"
 import { PermissionProvenance } from "@/kilocode/permission/provenance" // kilocode_change
 import { KiloSessionOverflow } from "@/kilocode/session/overflow"
 import { KiloResponseMetadata } from "@/kilocode/session/response-metadata"
@@ -69,7 +69,6 @@ type Input = {
   sessionID: SessionID
   model: Provider.Model
   // kilocode_change start
-  telemetry?: ReviewTelemetry
   snapshotInitialization?: "wait"
   auth?: Auth.Info // kilocode_change - provider-cost escape hatch needs the stored auth payload
   // kilocode_change end
@@ -151,7 +150,6 @@ const layer = Layer.effect(
         currentText: undefined,
         reasoningMap: {},
         // kilocode_change start
-        telemetry: input.telemetry,
         stepStart: 0,
         stepStartDate: undefined,
         step: { reasoning: false, text: false, tool: false },
@@ -286,11 +284,6 @@ const layer = Layer.effect(
             attachments: output.attachments,
           },
         })
-        // kilocode_change start - accepted suggest review actions tag following LLM completion telemetry
-        if (match.part.tool === "suggest") {
-          ctx.telemetry = KiloSessionProcessor.suggestionReviewTelemetry(output.metadata) ?? ctx.telemetry
-        }
-        // kilocode_change end
         yield* settleToolCall(toolCallID)
       })
 
@@ -631,14 +624,6 @@ const layer = Layer.effect(
               providerMetadata: value.providerMetadata,
               tokens: usage.tokens,
               elapsedMs,
-            })
-            KiloSessionProcessor.trackStep({
-              sessionID: ctx.sessionID,
-              model: ctx.model,
-              tokens: usage.tokens,
-              cost: usage.cost,
-              elapsed: elapsedMs,
-              telemetry: ctx.telemetry,
             })
             // kilocode_change end
             ctx.assistantMessage.finish = value.reason

@@ -211,9 +211,6 @@ export const dict = {
 
   "error.providerAuth.title": "{{provider}} ออกจากระบบของคุณแล้ว",
   "error.providerAuth.description": "เชื่อมต่อ {{provider}} อีกครั้ง จากนั้นส่งข้อความของคุณใหม่",
-  "error.providerAuth.chatgpt.title": "OpenAI ออกจากระบบของคุณแล้ว",
-  "error.providerAuth.chatgpt.description":
-    "เข้าสู่ระบบ ChatGPT อีกครั้ง จากนั้นส่งข้อความของคุณใหม่เพื่อใช้งานโมเดล Codex ต่อไป",
 
   "notification.permission.title": "ต้องการสิทธิ์",
   "notification.permission.titleSubagent": "ต้องการสิทธิ์ (ตัวแทนย่อย)",
@@ -393,11 +390,9 @@ export const dict = {
   "settings.providers.select.placeholder": "เลือกผู้ให้บริการ...",
   "settings.providers.tag.environment": "สภาพแวดล้อม",
   "settings.providers.tag.config": "กำหนดค่า",
-  "settings.providers.tag.chatgpt": "ChatGPT",
   "settings.providers.tag.custom": "กำหนดเอง",
   "settings.providers.tag.other": "อื่น ๆ",
   "settings.providers.connected.environmentDescription": "เชื่อมต่อจากตัวแปรสภาพแวดล้อมของคุณ",
-  "settings.providers.action.signInChatGPT": "ลงชื่อเข้าใช้ด้วย ChatGPT",
   "settings.providers.custom.description": "เพิ่มผู้ให้บริการแบบกำหนดเองด้วย URL พื้นฐาน",
   "settings.providers.subagentModel.title": "โมเดลตัวแทนย่อย",
   "settings.providers.subagentModel.description":
