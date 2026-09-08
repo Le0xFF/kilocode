@@ -15,6 +15,7 @@ if (argv.includes("--help") || argv.includes("-h")) {
       "Options:",
       "  --concurrency <N>    Max parallel processes (default: min(4, CPU count); on Linux further capped by available RAM, ~2GB per worker)",
       "  --timeout <ms>       Per-test timeout passed to bun test (default: 300000)",
+      "  --global-timeout <ms>  Hard deadline for the whole suite; files not started by then are skipped (env: KILO_TEST_GLOBAL_TIMEOUT, default: 300000)",
       "  --shard <I/N>        Run one balanced file shard (env: KILO_TEST_SHARD)",
       "  --update-timings     After a full run, merge measured durations into test-unit-timings.json",
       "  --bail               Stop on first failure",
@@ -25,8 +26,10 @@ if (argv.includes("--help") || argv.includes("-h")) {
       "Environment:",
       "  KILO_TEST_CONCURRENCY    Override the concurrency cap",
       "  KILO_TEST_FILE_TIMEOUT   Per-file kill deadline in ms (default: 300000)",
+      "  KILO_TEST_GLOBAL_TIMEOUT Whole-suite hard deadline in ms (default: 300000); files not started by then are reported as budget-exceeded",
       "  KILO_TEST_MEM_AVAILABLE_MB  Simulate available RAM in MB (testing knob)",
       "  KILO_TEST_SHARD          Shard selection as I/N",
+      "  KILO_TEST_OOM_BACKOFF    Workers dropped per kernel OOM kill (default: 1); a proactive memory watchdog also lowers the cap when MemAvailable runs low",
       "",
     ].join("\n"),
   )
@@ -96,8 +99,18 @@ if (ramCap !== undefined && !concurrencyFlag && !concurrencyEnv && ramCap < 4) {
   console.log(`RAM-based cap: ${Math.floor(memAvailableMB)}MB available limits default concurrency to ${ramCap}`)
 }
 
+// Reactive OOM guardrail: Bun ignores NODE_OPTIONS heap caps (JSC, not V8), so kernel OOM kills are
+// handled process-based — a worker killed by the kernel (exit 137 / SIGKILL without our own timeout
+// kill) drops the shared concurrency cap by KILO_TEST_OOM_BACKOFF. A proactive watchdog on Linux
+// also re-reads MemAvailable every 5s and lowers the cap before the OOM killer acts. Non-Linux
+// platforms skip the watchdog and rely on the reactive backoff only.
+const oomBackoff = intEnv("KILO_TEST_OOM_BACKOFF", "KILO_TEST_OOM_BACKOFF") ?? 1
+const activeConcurrency = { value: concurrency }
+
 const timeoutEnv = intEnv("KILO_TEST_FILE_TIMEOUT", "KILO_TEST_FILE_TIMEOUT")
 const fileTimeout = opt("timeout", timeoutEnv ?? 300000)
+const globalTimeoutEnv = intEnv("KILO_TEST_GLOBAL_TIMEOUT", "KILO_TEST_GLOBAL_TIMEOUT")
+const globalTimeout = opt("global-timeout", globalTimeoutEnv ?? 300000)
 const patternFlag = text("pattern")
 const patternEnv = process.env.KILO_TEST_PATTERN?.trim() || undefined
 if (patternFlag && patternEnv && patternFlag !== patternEnv) {
@@ -130,7 +143,7 @@ if (parsed !== undefined && "error" in parsed) {
   shard = parsed.value
 }
 
-const valued = new Set(["--concurrency", "--timeout", "--shard", "--pattern"])
+const valued = new Set(["--concurrency", "--timeout", "--global-timeout", "--shard", "--pattern"])
 const positional = argv.filter((arg, i) => {
   if (arg.startsWith("-")) return false
   if (i > 0 && valued.has(argv[i - 1])) return false
@@ -210,6 +223,8 @@ type Result = {
   stderr: string
   duration: number
   timedout: boolean
+  oom: boolean
+  skipped: boolean
   attempts: number
 }
 
@@ -230,8 +245,10 @@ const marks = {
   retry: "R",
   fail: "F",
   timeout: "T",
+  oom: "O",
+  skipped: "S",
 } as const
-const legend = `Legend: ${marks.pass}=pass ${marks.retry}=pass-after-retry ${marks.fail}=fail ${marks.timeout}=timeout`
+const legend = `Legend: ${marks.pass}=pass ${marks.retry}=pass-after-retry ${marks.fail}=fail ${marks.timeout}=timeout ${marks.oom}=OOM-killed ${marks.skipped}=skipped-budget`
 
 function drain(stream: ReadableStream<Uint8Array>) {
   const reader = stream.getReader()
@@ -328,7 +345,14 @@ async function run(file: string): Promise<Result> {
     proc.exited.then((value) => ({ timedout: false, value })),
     Bun.sleep(fileTimeout).then(() => ({ timedout: true, value: -1 })),
   ]).then(async (result) => {
-    if (result.timedout) {
+if (result.oom) {
+    console.log(
+      `[${idx}/${files.length}] ${red("OOM")} ${result.file} ${dim(`(${secs}s - killed by kernel)`)}${tries}`,
+    )
+    return
+  }
+
+  if (result.timedout) {
       killed.value = true
       await terminate(proc)
     }
@@ -353,15 +377,50 @@ async function run(file: string): Promise<Result> {
     stderr: output[1],
     duration: performance.now() - start,
     timedout: killed.value,
+    // Kernel OOM kill: POSIX 128+9 = exit 137 (or SIGKILL) without our own timeout kill
+    oom: !killed.value && (code === 137 || code === null),
     attempts: 1,
   }
 }
+
+// Proactive watchdog: re-read MemAvailable every 5s and lower the concurrency cap before the kernel
+// OOM killer acts. Budget per worker is ~2GB (matches the RAM-based default cap); plus a 512MB
+// headroom for the runner itself. Linux only — elsewhere /proc/meminfo is absent and the reactive
+// backoff on exit-137 is the guardrail.
+const memWatchdog =
+  process.platform === "linux"
+    ? setInterval(() => {
+        const budgetMB = activeConcurrency.value * 2048 + 512
+        Bun.file("/proc/meminfo")
+          .text()
+          .then((info) => {
+            const match = info.match(/^MemAvailable:\s+(\d+)\s+kB$/m)
+            if (!match) return
+            const availableMB = Number(match[1]) / 1024
+            if (availableMB < budgetMB && activeConcurrency.value > 1) {
+              activeConcurrency.value = 1
+              console.log(
+                `[oom] memory low (${Math.floor(availableMB)}MB available vs ${budgetMB}MB budget); lowering concurrency to ${activeConcurrency.value}`,
+              )
+            }
+          })
+          .catch(() => undefined)
+      }, 5_000)
+    : undefined
+if (memWatchdog) memWatchdog.unref?.()
 
 // ---------------------------------------------------------------------------
 // Report
 // ---------------------------------------------------------------------------
 
+// Whole-suite hard deadline: files not started by then are reported as budget-exceeded. Soft
+// pre-check (weight > remaining time) avoids starting a 90s file with 20s left; hard check stops
+// all new starts at the deadline. In-flight files finish or hit their per-file timeout. --bail wins.
+const deadlineAt = performance.now() + globalTimeout
+
 function mark(result: Result) {
+  if (result.skipped) return marks.skipped
+  if (result.oom) return marks.oom
   if (result.timedout) return marks.timeout
   if (!result.passed) return marks.fail
   if (result.attempts > 1) return marks.retry
@@ -408,7 +467,12 @@ function report(result: Result) {
 // Parallel execution
 // ---------------------------------------------------------------------------
 
-console.log(`\nRunning ${bold(String(files.length))} test files with concurrency ${bold(String(concurrency))}`)
+console.log(
+  `\nRunning ${bold(String(files.length))} test files with concurrency ${bold(String(concurrency))}${
+    oomBackoff !== 1 ? ` (OOM backoff: -${oomBackoff})` : ""
+  }`,
+)
+if (globalTimeout !== 300000) console.log(`Global suite deadline: ${Math.round(globalTimeout / 1000)}s`)
 if (shard) console.log(`Using balanced test shard ${shard.index}/${shard.total}`)
 if (dots) console.log(dim(legend))
 console.log()
@@ -417,22 +481,77 @@ const start = performance.now()
 const results: Result[] = []
 const queue = [...files].sort((a, b) => weight(b) - weight(a))
 
-const workers = Array.from({ length: Math.min(concurrency, files.length) }, async () => {
-  while (queue.length > 0 && !stopped.value) {
+// Single dispatcher: take a file only when fewer than activeConcurrency.value workers are running.
+// The cap starts at `concurrency` and shrinks on kernel OOM kills / low-memory watchdog events.
+async function dispatch() {
+  while (!stopped.value) {
+    if (queue.length === 0 || active.size >= activeConcurrency.value) break
     const file = queue.shift()!
+    // Hard deadline: stop starting new files; in-flight ones finish or hit their per-file timeout.
+    if (performance.now() >= deadlineAt) {
+      stopped.value = true
+      const result: Result = {
+        file,
+        passed: false,
+        code: -1,
+        stdout: "",
+        stderr: "global timeout reached before this file started",
+        duration: 0,
+        timedout: false,
+        oom: false,
+        skipped: true,
+        attempts: 0,
+      }
+      results.push(result)
+      report(result)
+      continue
+    }
+    // Soft budget: don't start a file whose expected weight exceeds the remaining time.
+    if (weight(file) > deadlineAt - performance.now()) {
+      const result: Result = {
+        file,
+        passed: false,
+        code: -1,
+        stdout: "",
+        stderr: `expected weight ${Math.round(weight(file))}ms exceeds remaining budget`,
+        duration: 0,
+        timedout: false,
+        oom: false,
+        skipped: true,
+        attempts: 0,
+      }
+      results.push(result)
+      report(result)
+      continue
+    }
     let result = await run(file)
-    while (!result.passed && !result.timedout && result.attempts <= 1 && !stopped.value) {
+    while (!result.passed && !result.timedout && !result.oom && result.attempts <= 1 && !stopped.value) {
       const retry = await run(file)
       retry.attempts = result.attempts + 1
       result = retry
+    }
+if (result.skipped) {
+    console.log(
+      `[${idx}/${files.length}] ${yellow("SKIP")} ${result.file} ${dim("(budget exceeded — not started)")}`,
+    )
+    return
+  }
+
+  if (result.oom) {
+      const next = Math.max(1, activeConcurrency.value - oomBackoff)
+      if (next < activeConcurrency.value) {
+        activeConcurrency.value = next
+        console.log(`[oom] worker killed by kernel while running ${file}; lowering concurrency to ${activeConcurrency.value}`)
+      }
     }
     results.push(result)
     report(result)
     if (bail && !result.passed) stopped.value = true
   }
-})
+}
 
-await Promise.all(workers)
+await Promise.all(Array.from({ length: Math.min(concurrency, files.length) }, () => dispatch()))
+if (memWatchdog) clearInterval(memWatchdog)
 
 if (dots && counter.done % progress.width !== 0) console.log()
 
@@ -442,12 +561,13 @@ const elapsed = (performance.now() - start) / 1000
 // Failure details
 // ---------------------------------------------------------------------------
 
-const failures = results.filter((r) => !r.passed).sort((a, b) => a.file.localeCompare(b.file))
+const failures = results.filter((r) => !r.passed && !r.skipped).sort((a, b) => a.file.localeCompare(b.file))
+const skipped = results.filter((r) => r.skipped)
 
 if (failures.length > 0 && !verbose) {
   console.log(`\n${bold(red("--- FAILURES ---"))}\n`)
   for (const f of failures) {
-    const tag = f.timedout ? " (TIMED OUT)" : ""
+    const tag = f.oom ? " (OOM-KILLED)" : f.timedout ? " (TIMED OUT)" : ""
     console.log(`${bold(red(f.file))}${tag}:`)
     const output = (f.stderr || f.stdout).trim()
     if (output) console.log(output.split("\n").map((l) => "  " + l).join("\n"))
@@ -461,14 +581,26 @@ if (failures.length > 0 && !verbose) {
 
 const passed = results.filter((r) => r.passed).length
 const flaky = results.filter((r) => r.passed && r.attempts > 1)
+const oomCount = results.filter((r) => r.oom).length
 
 console.log(
   `\n${bold(String(results.length))} files | ` +
     `${green(passed + " passed")} | ` +
     `${failures.length > 0 ? red(failures.length + " failed") : failures.length + " failed"} | ` +
     `${flaky.length > 0 ? yellow(flaky.length + " flaky") : flaky.length + " flaky"} | ` +
+    `${oomCount > 0 ? red(oomCount + " OOM-killed") : oomCount + " OOM-killed"} | ` +
+    `${skipped.length > 0 ? yellow(skipped.length + " skipped-budget") : skipped.length + " skipped-budget"} | ` +
     `${elapsed.toFixed(1)}s\n`,
 )
+
+if (skipped.length > 0) {
+  const sorted = skipped.slice().sort((a, b) => a.file.localeCompare(b.file))
+  console.log(`${bold(yellow("--- BUDGET EXCEEDED ---"))}\n`)
+  for (const s of sorted) {
+    console.log(`  ${yellow(s.file)} ${dim("(not started: global timeout " + Math.round(globalTimeout / 1000) + "s reached)")}`)
+  }
+  console.log()
+}
 
 if (flaky.length > 0) {
   const sorted = flaky.slice().sort((a, b) => a.file.localeCompare(b.file))
@@ -498,4 +630,4 @@ if (updateTimings) {
   }
 }
 
-process.exit(failures.length > 0 ? 1 : 0)
+process.exit(failures.length > 0 || skipped.length > 0 ? 1 : 0)

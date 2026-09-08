@@ -44,11 +44,12 @@ export function failedDescription(providerID: string, failed: string[]): string 
 // ---------------------------------------------------------------------------
 
 export const PROVIDER_PRIORITY: Record<string, number> = {
-  anthropic: 0,
-  "github-copilot": 1,
-  openai: 2,
-  google: 3,
-  "anaconda-desktop": 4,
+  lmstudio: 0,
+  "atomic-chat": 1,
+  "privatemode-ai": 2,
+  "anaconda-desktop": 3,
+  openai: 4,
+  anthropic: 5,
 }
 
 // ---------------------------------------------------------------------------
@@ -56,14 +57,15 @@ export const PROVIDER_PRIORITY: Record<string, number> = {
 // ---------------------------------------------------------------------------
 
 export const PROVIDER_DESCRIPTIONS: Record<string, string> = {
-  anthropic: "(Claude Max or API key)",
-  openai: "(API key)",
+  lmstudio: "(Local models)",
+  "atomic-chat": "(Local models)",
+  "privatemode-ai": "(Local models)",
   "anaconda-desktop": "(Local models)",
+  openai: "(API key)",
+  anthropic: "(API key)",
 }
 
-export const PROVIDER_TITLES: Record<string, string> = {
-  openai: "OpenAI / Codex",
-}
+export const PROVIDER_TITLES: Record<string, string> = {}
 
 /** Local OpenAI-compatible providers where API key is optional (localhost). */
 export const LOCAL_OPTIONAL_API_KEY = new Set(["atomic-chat", "lmstudio"])

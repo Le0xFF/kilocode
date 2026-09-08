@@ -1,6 +1,13 @@
 import * as path from "path"
 import { existsSync } from "fs"
 
+type QuerySource = {
+  // Canonical URL kept as explicit fallback source (used only when KILO_TREE_SITTER_DOWNLOAD is set)
+  url: string
+  // Basename used for the co-located/vendored file lookup in KILO_TREE_SITTER_WASM_DIR
+  file: string
+}
+
 type WasmSource = {
   // Canonical URL kept as explicit fallback source (used only when KILO_TREE_SITTER_DOWNLOAD is set)
   url: string
@@ -13,8 +20,8 @@ const diffAliases: readonly string[] = ["udiff", "patch"]
 const makeAliases: readonly string[] = ["makefile"]
 
 type QuerySet = {
-  highlights: string[]
-  locals?: string[]
+  highlights: (string | QuerySource)[]
+  locals?: (string | QuerySource)[]
 }
 
 const wasms: Record<string, WasmSource> = {
@@ -165,11 +172,14 @@ const wasms: Record<string, WasmSource> = {
 //       marked for example `; inherits: ecma` at the top of the file. Just put the dependencies before the actual query.
 //       ALSO: Some queries use breaking changes in the nvim-treesitter repo, that are not compatible with the (web-)tree-sitter parser.
 
-// kilocode_change start - offline TUI: resolve wasm from the bundled/vendored directory first
-// (KILO_TREE_SITTER_WASM_DIR is set by the CLI launcher and the VS Code extension). The
-// canonical GitHub release URL below each file is only fetched when the user opts in with
-// KILO_TREE_SITTER_DOWNLOAD=1; otherwise a missing local file degrades silently (no syntax
-// highlighting for that language) so `kilo run` stays fully usable offline.
+// kilocode_change start - offline TUI: resolve wasm AND highlight queries from the bundled/vendored
+// directory first (KILO_TREE_SITTER_WASM_DIR is set by the CLI launcher and the VS Code extension).
+// The canonical GitHub raw URLs are only used when the user opts in with KILO_TREE_SITTER_DOWNLOAD=1;
+// otherwise a missing local file degrades silently (no syntax highlighting / no query for that
+// language) so `kilo run` stays fully usable offline. Verified against @opentui/core 0.4.5: the
+// parser worker fetch()s any http(s) source whose cache file is absent (downloadOrLoad), so passing
+// raw URLs through would trigger ~30 requests to raw.githubusercontent.com at launch. Vendored .scm
+// files are not shipped today (wasm-only packaging); vendoring them is a TODO of packaging, out of scope.
 const downloadEnabled = ["1", "true"].includes((process.env.KILO_TREE_SITTER_DOWNLOAD ?? "").toLowerCase())
 const wasmDir = process.env.KILO_TREE_SITTER_WASM_DIR
 
@@ -185,157 +195,187 @@ function resolveWasm(source: WasmSource): string {
   return source.url
 }
 
+function resolveQuery(source: string | QuerySource): string | undefined {
+  if (typeof source === "string") return downloadEnabled ? source : undefined
+  const local = wasmDir ? path.join(wasmDir, source.file) : undefined
+  if (local && existsSync(local)) return local
+  if (!downloadEnabled) return undefined
+  return source.url
+}
+
+function resolveQueries(list?: (string | QuerySource)[]): string[] | undefined {
+  if (!list) return undefined
+  const resolved = list.map(resolveQuery).filter((x): x is string => typeof x === "string")
+  return resolved.length > 0 ? resolved : undefined
+}
+
+const url = (repo: string, ref: string, file: string): QuerySource => ({
+  url: `https://github.com/${repo}/raw/${ref}/${file}`,
+  file,
+})
+
+// nvim-treesitter master-path shorthand: repo fixed to nvim-treesitter/nvim-treesitter, ref to refs/heads/master
+const nvim = (lang: string, kind: "highlights" | "locals"): QuerySource => url("nvim-treesitter/nvim-treesitter", "refs/heads/master", `queries/${lang}/${kind}.scm`)
+
 const queries: Record<string, QuerySet> = {
   python: {
     highlights: [
       // NOTE: This nvim-treesitter query is currently broken, because the parser is not compatible with the query apparently.
       //       it is using "except" nodes that the parser is complaining about, but it has been in the query for 3+ years.
       //       Unclear.
-      // "https://raw.githubusercontent.com/nvim-treesitter/nvim-treesitter/refs/heads/master/queries/python/highlights.scm",
-      "https://github.com/tree-sitter/tree-sitter-python/raw/refs/heads/master/queries/highlights.scm",
+      // url("nvim-treesitter/nvim-treesitter", "refs/heads/master", "queries/python/highlights.scm"),
+      url("tree-sitter/tree-sitter-python", "refs/heads/master", "queries/highlights.scm"),
     ],
-    locals: ["https://raw.githubusercontent.com/nvim-treesitter/nvim-treesitter/refs/heads/master/queries/python/locals.scm"],
+    locals: [nvim("python", "locals")],
   },
   rust: {
-    highlights: ["https://raw.githubusercontent.com/nvim-treesitter/nvim-treesitter/refs/heads/master/queries/rust/highlights.scm"],
-    locals: ["https://raw.githubusercontent.com/nvim-treesitter/nvim-treesitter/refs/heads/master/queries/rust/locals.scm"],
+    highlights: [nvim("rust", "highlights")],
+    locals: [nvim("rust", "locals")],
   },
   go: {
-    highlights: ["https://raw.githubusercontent.com/nvim-treesitter/nvim-treesitter/refs/heads/master/queries/go/highlights.scm"],
-    locals: ["https://raw.githubusercontent.com/nvim-treesitter/nvim-treesitter/refs/heads/master/queries/go/locals.scm"],
+    highlights: [nvim("go", "highlights")],
+    locals: [nvim("go", "locals")],
   },
   cpp: {
-    highlights: ["https://raw.githubusercontent.com/nvim-treesitter/nvim-treesitter/refs/heads/master/queries/cpp/highlights.scm"],
-    locals: ["https://raw.githubusercontent.com/nvim-treesitter/nvim-treesitter/refs/heads/master/queries/cpp/locals.scm"],
+    highlights: [nvim("cpp", "highlights")],
+    locals: [nvim("cpp", "locals")],
   },
   csharp: {
-    highlights: ["https://raw.githubusercontent.com/nvim-treesitter/nvim-treesitter/refs/heads/master/queries/c_sharp/highlights.scm"],
-    locals: ["https://raw.githubusercontent.com/nvim-treesitter/nvim-treesitter/refs/heads/master/queries/c_sharp/locals.scm"],
+    highlights: [nvim("c_sharp", "highlights")],
+    locals: [nvim("c_sharp", "locals")],
   },
   bash: {
-    highlights: ["https://raw.githubusercontent.com/nvim-treesitter/nvim-treesitter/refs/heads/master/queries/bash/highlights.scm"],
+    highlights: [nvim("bash", "highlights")],
   },
   c: {
-    highlights: ["https://raw.githubusercontent.com/nvim-treesitter/nvim-treesitter/refs/heads/master/queries/c/highlights.scm"],
-    locals: ["https://raw.githubusercontent.com/nvim-treesitter/nvim-treesitter/refs/heads/master/queries/c/locals.scm"],
+    highlights: [nvim("c", "highlights")],
+    locals: [nvim("c", "locals")],
   },
   java: {
-    highlights: ["https://raw.githubusercontent.com/nvim-treesitter/nvim-treesitter/refs/heads/master/queries/java/highlights.scm"],
-    locals: ["https://raw.githubusercontent.com/nvim-treesitter/nvim-treesitter/refs/heads/master/queries/java/locals.scm"],
+    highlights: [nvim("java", "highlights")],
+    locals: [nvim("java", "locals")],
   },
   kotlin: {
-    highlights: ["https://raw.githubusercontent.com/fwcd/tree-sitter-kotlin/0.3.8/queries/highlights.scm"],
-    locals: ["https://raw.githubusercontent.com/nvim-treesitter/nvim-treesitter/master/queries/kotlin/locals.scm"],
+    highlights: [url("fwcd/tree-sitter-kotlin", "0.3.8", "queries/highlights.scm")],
+    locals: [url("nvim-treesitter/nvim-treesitter", "master", "queries/kotlin/locals.scm")],
   },
   ruby: {
-    highlights: ["https://raw.githubusercontent.com/nvim-treesitter/nvim-treesitter/refs/heads/master/queries/ruby/highlights.scm"],
-    locals: ["https://raw.githubusercontent.com/nvim-treesitter/nvim-treesitter/refs/heads/master/queries/ruby/locals.scm"],
+    highlights: [nvim("ruby", "highlights")],
+    locals: [nvim("ruby", "locals")],
   },
   php: {
     highlights: [
       // NOTE: This nvim-treesitter query is currently broken, because the parser is not compatible with the query apparently.
-      // "https://raw.githubusercontent.com/nvim-treesitter/nvim-treesitter/refs/heads/master/queries/php/highlights.scm",
-      "https://github.com/tree-sitter/tree-sitter-php/raw/refs/heads/master/queries/highlights.scm",
+      // url("nvim-treesitter/nvim-treesitter", "refs/heads/master", "queries/php/highlights.scm"),
+      url("tree-sitter/tree-sitter-php", "refs/heads/master", "queries/highlights.scm"),
     ],
   },
   scala: {
-    highlights: ["https://raw.githubusercontent.com/nvim-treesitter/nvim-treesitter/refs/heads/master/queries/scala/highlights.scm"],
+    highlights: [nvim("scala", "highlights")],
   },
   html: {
     highlights: [
       // NOTE: This nvim-treesitter query is currently broken, because the parser is not compatible with the query apparently.
-      // "https://raw.githubusercontent.com/nvim-treesitter/nvim-treesitter/refs/heads/master/queries/html/highlights.scm",
-      "https://github.com/tree-sitter/tree-sitter-html/raw/refs/heads/master/queries/highlights.scm",
+      // url("nvim-treesitter/nvim-treesitter", "refs/heads/master", "queries/html/highlights.scm"),
+      url("tree-sitter/tree-sitter-html", "refs/heads/master", "queries/highlights.scm"),
     ],
     // TODO: Injections not working for some reason
     // injections: [
-    //   "https://github.com/tree-sitter/tree-sitter-html/raw/refs/heads/master/queries/injections.scm",
+    //   url("tree-sitter/tree-sitter-html", "refs/heads/master", "queries/injections.scm"),
     // ],
   },
   vue: {
     highlights: [
-      "https://raw.githubusercontent.com/anomalyco/tree-sitter-vue/v0.1.2/queries/html_tags/highlights.scm",
-      "https://raw.githubusercontent.com/anomalyco/tree-sitter-vue/v0.1.2/queries/vue/highlights.scm",
+      url("anomalyco/tree-sitter-vue", "v0.1.2", "queries/html_tags/highlights.scm"),
+      url("anomalyco/tree-sitter-vue", "v0.1.2", "queries/vue/highlights.scm"),
     ],
   },
   hcl: {
-    highlights: ["https://raw.githubusercontent.com/nvim-treesitter/nvim-treesitter/master/queries/hcl/highlights.scm"],
+    highlights: [url("nvim-treesitter/nvim-treesitter", "master", "queries/hcl/highlights.scm")],
   },
   json: {
-    highlights: ["https://raw.githubusercontent.com/nvim-treesitter/nvim-treesitter/refs/heads/master/queries/json/highlights.scm"],
+    highlights: [nvim("json", "highlights")],
   },
   yaml: {
-    highlights: ["https://raw.githubusercontent.com/nvim-treesitter/nvim-treesitter/refs/heads/master/queries/yaml/highlights.scm"],
+    highlights: [nvim("yaml", "highlights")],
   },
   haskell: {
-    highlights: ["https://raw.githubusercontent.com/nvim-treesitter/nvim-treesitter/refs/heads/master/queries/haskell/highlights.scm"],
+    highlights: [nvim("haskell", "highlights")],
   },
   css: {
-    highlights: ["https://raw.githubusercontent.com/nvim-treesitter/nvim-treesitter/refs/heads/master/queries/css/highlights.scm"],
+    highlights: [nvim("css", "highlights")],
   },
   julia: {
-    highlights: ["https://raw.githubusercontent.com/nvim-treesitter/nvim-treesitter/refs/heads/master/queries/julia/highlights.scm"],
+    highlights: [nvim("julia", "highlights")],
   },
   lua: {
-    highlights: ["https://raw.githubusercontent.com/tree-sitter-grammars/tree-sitter-lua/v0.5.0/queries/highlights.scm"],
-    locals: ["https://raw.githubusercontent.com/tree-sitter-grammars/tree-sitter-lua/v0.5.0/queries/locals.scm"],
+    highlights: [url("tree-sitter-grammars/tree-sitter-lua", "v0.5.0", "queries/highlights.scm")],
+    locals: [url("tree-sitter-grammars/tree-sitter-lua", "v0.5.0", "queries/locals.scm")],
   },
   ocaml: {
-    highlights: ["https://raw.githubusercontent.com/nvim-treesitter/nvim-treesitter/refs/heads/master/queries/ocaml/highlights.scm"],
+    highlights: [nvim("ocaml", "highlights")],
   },
   clojure: {
-    highlights: ["https://raw.githubusercontent.com/nvim-treesitter/nvim-treesitter/refs/heads/master/queries/clojure/highlights.scm"],
+    highlights: [nvim("clojure", "highlights")],
   },
   swift: {
     highlights: [
       // NOTE: Using parser repo queries instead of nvim-treesitter due to incompatible #lua-match? predicates
-      // "https://raw.githubusercontent.com/nvim-treesitter/nvim-treesitter/refs/heads/master/queries/highlights.scm
-      "https://raw.githubusercontent.com/alex-pinkus/tree-sitter-swift/main/queries/highlights.scm",
+      // url("nvim-treesitter/nvim-treesitter", "refs/heads/master", "queries/swift/highlights.scm"),
+      url("alex-pinkus/tree-sitter-swift", "main", "queries/highlights.scm"),
     ],
-    locals: ["https://raw.githubusercontent.com/nvim-treesitter/nvim-treesitter/refs/heads/master/queries/swift/locals.scm"],
+    locals: [nvim("swift", "locals")],
   },
   toml: {
-    highlights: ["https://raw.githubusercontent.com/nvim-treesitter/nvim-treesitter/master/queries/toml/highlights.scm"],
+    highlights: [url("nvim-treesitter/nvim-treesitter", "master", "queries/toml/highlights.scm")],
   },
   nix: {
-    highlights: ["https://raw.githubusercontent.com/nvim-treesitter/nvim-treesitter/refs/heads/master/queries/nix/highlights.scm"],
-    locals: ["https://raw.githubusercontent.com/nvim-treesitter/nvim-treesitter/refs/heads/master/queries/nix/locals.scm"],
+    highlights: [nvim("nix", "highlights")],
+    locals: [nvim("nix", "locals")],
   },
   diff: {
-    highlights: ["https://raw.githubusercontent.com/tree-sitter-grammars/tree-sitter-diff/master/queries/highlights.scm"],
+    highlights: [url("tree-sitter-grammars/tree-sitter-diff", "master", "queries/highlights.scm")],
   },
   elixir: {
-    highlights: ["https://raw.githubusercontent.com/nvim-treesitter/nvim-treesitter/refs/heads/master/queries/elixir/highlights.scm"],
-    locals: ["https://raw.githubusercontent.com/nvim-treesitter/nvim-treesitter/refs/heads/master/queries/elixir/locals.scm"],
+    highlights: [nvim("elixir", "highlights")],
+    locals: [nvim("elixir", "locals")],
   },
   fsharp: {
-    highlights: ["https://raw.githubusercontent.com/nvim-treesitter/nvim-treesitter/refs/heads/master/queries/fsharp/highlights.scm"],
+    highlights: [nvim("fsharp", "highlights")],
   },
   r: {
-    highlights: ["https://raw.githubusercontent.com/nvim-treesitter/nvim-treesitter/refs/heads/master/queries/r/highlights.scm"],
-    locals: ["https://raw.githubusercontent.com/nvim-treesitter/nvim-treesitter/refs/heads/master/queries/r/locals.scm"],
+    highlights: [nvim("r", "highlights")],
+    locals: [nvim("r", "locals")],
   },
   make: {
-    highlights: ["https://raw.githubusercontent.com/nvim-treesitter/nvim-treesitter/refs/heads/master/queries/make/highlights.scm"],
+    highlights: [nvim("make", "highlights")],
   },
   vim: {
-    highlights: ["https://raw.githubusercontent.com/nvim-treesitter/nvim-treesitter/refs/heads/master/queries/vim/highlights.scm"],
-    locals: ["https://raw.githubusercontent.com/nvim-treesitter/nvim-treesitter/refs/heads/master/queries/vim/locals.scm"],
+    highlights: [nvim("vim", "highlights")],
+    locals: [nvim("vim", "locals")],
   },
   xml: {
-    highlights: ["https://raw.githubusercontent.com/nvim-treesitter/nvim-treesitter/refs/heads/master/queries/xml/highlights.scm"],
-    locals: ["https://raw.githubusercontent.com/nvim-treesitter/nvim-treesitter/refs/heads/master/queries/xml/locals.scm"],
+    highlights: [nvim("xml", "highlights")],
+    locals: [nvim("xml", "locals")],
   },
   agda: {
-    highlights: ["https://raw.githubusercontent.com/nvim-treesitter/nvim-treesitter/refs/heads/master/queries/agda/highlights.scm"],
+    highlights: [nvim("agda", "highlights")],
   },
 }
 
 export default {
-  parsers: Object.entries(wasms).map(([filetype, source]) => ({
-    filetype,
-    ...(source.aliases ? { aliases: [...source.aliases] } : {}),
-    wasm: resolveWasm(source),
-    queries: queries[filetype],
-  })),
+  parsers: Object.entries(wasms).map(([filetype, source]) => {
+    const querySet = queries[filetype]
+    return {
+      filetype,
+      ...(source.aliases ? { aliases: [...source.aliases] } : {}),
+      wasm: resolveWasm(source),
+      // kilocode_change - resolve queries offline (local .scm file or omitted); OpenTUI tolerates an
+      // empty/absent highlights list and degrades to no highlighting for that language
+      queries: {
+        highlights: resolveQueries(querySet?.highlights) ?? [],
+        ...(querySet?.locals ? { locals: resolveQueries(querySet.locals) } : {}),
+      },
+    }
+  }),
 }

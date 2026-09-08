@@ -709,7 +709,7 @@ export const dict = {
   "settings.experimental.imageGeneration.description": "Habilitar generación de imágenes con IA",
   "settings.experimental.imageGenerationModel.title": "Modelo de imagen",
   "settings.experimental.imageGenerationModel.description": "Modelo de generación de imágenes",
-  "settings.experimental.imageGenerationModel.placeholder": "Predeterminado (Auto Router)",
+  "settings.experimental.imageGenerationModel.placeholder": "Select a model from your configured provider",
 
   "settings.experimental.nativeNotebookTools.title": "Herramientas nativas de notebook",
   "settings.experimental.nativeNotebookTools.description":

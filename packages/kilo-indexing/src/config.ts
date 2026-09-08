@@ -232,7 +232,7 @@ export const IndexingSchema = Schema.Struct({
 })
 
 export function toIndexingConfigInput(cfg: IndexingConfig | undefined): IndexingConfigInput {
-  const provider = cfg?.provider ?? "openai"
+  const provider = cfg?.provider ?? "ollama" // kilocode_change - local-first default (hosted openai requires an API key)
 
   return {
     enabled: cfg?.enabled ?? false,

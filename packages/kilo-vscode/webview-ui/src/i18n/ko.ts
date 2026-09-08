@@ -692,7 +692,7 @@ export const dict = {
   "settings.experimental.imageGeneration.description": "AI 이미지 생성 활성화",
   "settings.experimental.imageGenerationModel.title": "이미지 모델",
   "settings.experimental.imageGenerationModel.description": "이미지 생성 모델",
-  "settings.experimental.imageGenerationModel.placeholder": "기본값 (Auto Router)",
+  "settings.experimental.imageGenerationModel.placeholder": "Select a model from your configured provider",
 
   "settings.experimental.nativeNotebookTools.title": "네이티브 노트북 도구",
   "settings.experimental.nativeNotebookTools.description":

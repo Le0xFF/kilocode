@@ -699,7 +699,7 @@ export const dict = {
   "settings.experimental.imageGeneration.description": "Включить генерацию изображений с помощью ИИ",
   "settings.experimental.imageGenerationModel.title": "Модель изображений",
   "settings.experimental.imageGenerationModel.description": "Модель генерации изображений",
-  "settings.experimental.imageGenerationModel.placeholder": "По умолчанию (Auto Router)",
+  "settings.experimental.imageGenerationModel.placeholder": "Select a model from your configured provider",
 
   "settings.experimental.nativeNotebookTools.title": "Нативные инструменты блокнотов",
   "settings.experimental.nativeNotebookTools.description":

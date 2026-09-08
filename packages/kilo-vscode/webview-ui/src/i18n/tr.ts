@@ -694,7 +694,7 @@ export const dict = {
   "settings.experimental.imageGeneration.description": "AI görüntü oluşturmayı etkinleştir",
   "settings.experimental.imageGenerationModel.title": "Görüntü modeli",
   "settings.experimental.imageGenerationModel.description": "Görüntü oluşturma modeli",
-  "settings.experimental.imageGenerationModel.placeholder": "Varsayılan (Auto Router)",
+  "settings.experimental.imageGenerationModel.placeholder": "Select a model from your configured provider",
 
   "settings.experimental.nativeNotebookTools.title": "Yerel Not Defteri Araçları",
   "settings.experimental.nativeNotebookTools.description":

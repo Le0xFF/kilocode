@@ -603,7 +603,7 @@ export const dict = {
   "settings.experimental.imageGeneration.description": "Abilita la generazione di immagini con AI",
   "settings.experimental.imageGenerationModel.title": "Modello di immagine",
   "settings.experimental.imageGenerationModel.description": "Modello di generazione di immagini",
-  "settings.experimental.imageGenerationModel.placeholder": "Predefinito (Auto Router)",
+  "settings.experimental.imageGenerationModel.placeholder": "Select a model from your configured provider",
 
   "settings.experimental.nativeNotebookTools.title": "Strumenti nativi per notebook",
   "settings.experimental.nativeNotebookTools.description":

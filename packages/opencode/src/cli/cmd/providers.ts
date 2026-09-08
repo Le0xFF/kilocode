@@ -435,7 +435,7 @@ export const ProvidersLoginCommand = effectCmd({
       const input = args.provider
       const byID = options.find((x) => x.value === input)
       const byName = options.find((x) => x.label.toLowerCase() === input.toLowerCase())
-      // kilocode_change start - accept codex as an alias for OpenAI ChatGPT auth
+      // kilocode_change start - accept codex as an alias for OpenAI auth (ChatGPT OAuth removed from the local surface)
       const alias = input.toLowerCase() === "codex" ? options.find((x) => x.value === "openai") : undefined
       const match = byID ?? byName ?? alias
       // kilocode_change end
@@ -475,26 +475,6 @@ export const ProvidersLoginCommand = effectCmd({
 
       yield* Prompt.log.warn(
         `This only stores a credential for ${provider} - you will need configure it in kilo.json, check the docs for examples.`, // kilocode_change
-      )
-    }
-
-    if (provider === "amazon-bedrock") {
-      yield* Prompt.log.info(
-        "Amazon Bedrock authentication priority:\n" +
-          "  1. Bearer token (AWS_BEARER_TOKEN_BEDROCK or /connect)\n" +
-          "  2. AWS credential chain (profile, access keys, IAM roles, EKS IRSA)\n\n" +
-          "Configure via kilo.json options (profile, region, endpoint) or\n" + // kilocode_change
-          "AWS environment variables (AWS_PROFILE, AWS_REGION, AWS_ACCESS_KEY_ID, AWS_WEB_IDENTITY_TOKEN_FILE).",
-      )
-    }
-
-    if (provider === "vercel") {
-      yield* Prompt.log.info("You can create an api key at https://vercel.link/ai-gateway-token")
-    }
-
-    if (["cloudflare", "cloudflare-ai-gateway"].includes(provider)) {
-      yield* Prompt.log.info(
-        "Cloudflare AI Gateway can be configured with CLOUDFLARE_GATEWAY_ID, CLOUDFLARE_ACCOUNT_ID, and CLOUDFLARE_API_TOKEN environment variables. Read more: https://kilo.ai/docs/ai-providers/cloudflare", // kilocode_change
       )
     }
 

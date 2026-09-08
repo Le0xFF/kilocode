@@ -662,7 +662,7 @@ export const dict = {
   "settings.experimental.imageGeneration.description": "Włącz generowanie obrazów przez AI",
   "settings.experimental.imageGenerationModel.title": "Model obrazu",
   "settings.experimental.imageGenerationModel.description": "Model generowania obrazów",
-  "settings.experimental.imageGenerationModel.placeholder": "Domyślny (Auto Router)",
+  "settings.experimental.imageGenerationModel.placeholder": "Select a model from your configured provider",
 
   "settings.experimental.nativeNotebookTools.title": "Natywne narzędzia notatników",
   "settings.experimental.nativeNotebookTools.description":

@@ -635,7 +635,7 @@ export const dict = {
   "settings.experimental.imageGeneration.description": "啟用 AI 圖像生成",
   "settings.experimental.imageGenerationModel.title": "圖像模型",
   "settings.experimental.imageGenerationModel.description": "圖像生成模型",
-  "settings.experimental.imageGenerationModel.placeholder": "預設 (Auto Router)",
+  "settings.experimental.imageGenerationModel.placeholder": "Select a model from your configured provider",
 
   "settings.experimental.nativeNotebookTools.title": "原生筆記本工具",
   "settings.experimental.nativeNotebookTools.description": "啟用用於讀取、編輯和執行 VS Code 筆記本的實驗性工具",

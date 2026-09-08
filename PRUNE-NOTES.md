@@ -65,7 +65,7 @@ A controlled drill with synthetic changes on `turbo.json`, root `package.json`, 
 | `bun install --frozen-lockfile` | root | clean install, lock must match |
 | `bun typecheck` | root | turbo typecheck over all surviving packages |
 | `bun run lint` | root | oxlint over the tree |
-| `bun run test:unit` | `packages/kilo-vscode` | hermetic unit suite via RAM-aware runner (`script/run-unit-tests.ts`); auto-caps concurrency to ~2 GB/worker from `/proc/meminfo`; tune with `KILO_TEST_CONCURRENCY`, `KILO_TEST_FILE_TIMEOUT`, `KILO_TEST_SHARD=i/n`, `KILO_TEST_MEM_AVAILABLE_MB` |
+| `bun run test:unit` | `packages/kilo-vscode` | hermetic unit suite via RAM-aware runner (`script/run-unit-tests.ts`); auto-caps concurrency to ~2 GB/worker from `/proc/meminfo`; anti-OOM: reactive backoff on kernel kills (exit 137 / SIGKILL, `KILO_TEST_OOM_BACKOFF`) plus a proactive MemAvailable watchdog; global suite deadline `KILO_TEST_GLOBAL_TIMEOUT` (default 300000 ms) — files not started by the deadline are reported as budget-exceeded (exit 1); tune with `KILO_TEST_CONCURRENCY`, `KILO_TEST_FILE_TIMEOUT`, `KILO_TEST_SHARD=i/n`, `KILO_TEST_MEM_AVAILABLE_MB` |
 | `VSCODE_EXEC_PATH=/usr/bin/codium bun run test:integration` | `packages/kilo-vscode` | isolated integration run on system Codium (state in `.kilo-dev/vscode-test/`) |
 | `bun run compile` | `packages/kilo-vscode` | prepare:cli-binary + prepare:sdk + check-types + lint + bundle |
 | `bun run package` | `packages/kilo-vscode` | produce the VSIX |
@@ -85,12 +85,13 @@ Rimangono online (gated):
 - `skills.urls` config: pull di `index.json` dagli URL dichiarati dall'utente.
 - MCP remote/OAuth: server con URL dichiarati dall'utente; il flow OAuth apre il browser di sistema.
 - Browser automation (`npx @playwright/mcp@latest`): npm registry solo al primo uso con caché fredda; feature off di default.
-- Embedders hosted per l'indexing: selezionabili solo se l'utente li configura esplicitamente; la UI limita le opzioni a ollama/openai-compatible.
+- Embedders hosted per l'indexing: selezionabili solo se l'utente li configura esplicitamente via `config.indexing.<provider>`; la UI (webview e TUI) limita le opzioni a ollama/openai-compatible.
 - Import PR da GitHub (Agent Manager): `gh` / `git fetch` su azione utente esplicita.
 - Download on-demand di binary/plugin: ripgrep dai GitHub releases se assente a sistema; `Npm.add` per plugin/dynamic-provider-SDK/@lancedb al primo uso con caché fredda.
 - Comando manuale `kilo upgrade`: npm registry/brew/choco/scoop su azione esplicita (l'auto-update è stato rimosso).
 - Link `openExternal` nella webview (kilo.ai/docs, github, reddit): aprono il browser di sistema, non socket del processo.
 - `WellKnown` auth type + `KILO_AUTH_CONTENT`: wellknown fetch (`<url>/.well-known/opencode`) per `kilo login <url>` e remote config; host dichiarato dall'utente.
+- Tree-sitter wasm + highlight queries del TUI: risolte dalla directory vendored (`KILO_TREE_SITTER_WASM_DIR`); i download dai GitHub raw URLs restano attivi solo con opt-in `KILO_TREE_SITTER_DOWNLOAD=1`. I file `.scm` vendored non sono ancora spediti nel packaging (solo i `.wasm`): offline lo highlighting degrada per i linguaggi senza wasm locale — TODO di packaging, out of scope.
 
 Assenti per costruzione:
 
@@ -133,7 +134,12 @@ Dead code that remains in the workspace (kept, not deleted):
 - Orphaned i18n keys for removed UI (`profile.*`, `deviceAuth.*`, `session.cloud.*`, `notifications.action.*`, etc.) were deleted across all 21 locales in the offline dead-code closure (step 4); the protection list in `tests/unit/i18n-unused-keys.test.ts` was updated accordingly.
 - The generated SDK client exposes an empty legacy `kilo` namespace getter (`client.kilo`) so pre-regen call sites keep typechecking; the underlying routes are gone.
 
-- `kilo providers login`: la priority map e le hint non più presentano il gateway `kilo` come "recommended"; solo provider locali/custom compaiono nel picker.
+- `kilo providers login`: la priority map e le hint non più presentano il gateway `kilo` come "recommended"; solo provider locali/custom compaiono nel picker. L'alias `codex`→openai resta (BYOK openai-compatible) ma senza flow ChatGPT OAuth; i blocchi vestigiali di login per `amazon-bedrock`, `vercel` e `cloudflare`/`cloudflare-ai-gateway` sono stati rimossi (fuori superficie dichiarata, configurabili via `config.provider`).
+- Il messaggio d'errore `usage_not_included` non cita più Codex/ChatGPT ("Usage not included in your plan. Check your provider's billing page.").
+- Mappe del dialog provider TUI (`PROVIDER_PRIORITY`/`DESCRIPTIONS`/`TITLES`) tagliate alla superficie locale: niente più `github-copilot`/`google` in "Popular", nessun titolo "OpenAI / Codex", descrizione anthropic "(API key)".
+- URL highlight-query tree-sitter del TUI gated da `KILO_TREE_SITTER_DOWNLOAD` come i wasm: offline si degrada silenziosamente a nessun highlighting (il worker OpenTUI fetchava gli URL con cache assente); i `.scm` vendored restano un TODO di packaging.
+- Default embedder dell'indexing ora `ollama` (locale), schema `image_generation_model` senza `(default: openrouter/auto)`, placeholder i18n neutro "Select a model from your configured provider" nelle 21 locale, modulo `indexing-auth.ts` + test eliminati (provider "kilo" orfano), dialog indexing TUI allineato alla webview (solo ollama/openai-compatible esposti; hosted remain via config).
+- Link nativi `<a href>` della MigrationWizard convertiti al pattern `openExternal` (stesso wiring di AboutKiloCodeTab).
 - Dipendenze orfane rimosse: `@openauthjs/openauth` (CLI), `aws4fetch`/`@smithy/eventstream-codec`/`@smithy/util-utf8` (llm), e il type-only import `@openrouter/ai-sdk-provider` da `provider-options.ts` (sostituito da un tipo strutturale inline).
 
 Dead code deleted in the offline-surface finalization (step A5):

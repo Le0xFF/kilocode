@@ -689,7 +689,7 @@ export const dict = {
   "settings.experimental.imageGeneration.description": "เปิดใช้งานการสร้างภาพด้วย AI",
   "settings.experimental.imageGenerationModel.title": "โมเดลภาพ",
   "settings.experimental.imageGenerationModel.description": "โมเดลการสร้างภาพ",
-  "settings.experimental.imageGenerationModel.placeholder": "ค่าเริ่มต้น (Auto Router)",
+  "settings.experimental.imageGenerationModel.placeholder": "Select a model from your configured provider",
 
   "settings.experimental.nativeNotebookTools.title": "เครื่องมือโน้ตบุ๊กดั้งเดิม",
   "settings.experimental.nativeNotebookTools.description":

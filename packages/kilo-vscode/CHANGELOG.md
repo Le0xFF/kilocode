@@ -1,5 +1,15 @@
 # kilo-code
 
+## Unreleased
+
+### Minor Changes
+
+- Closed out the remaining online residuals of the offline surface. The TUI "Connect a provider" dialog now lists only local and BYOK providers (no more Copilot/Google in "Popular", no "OpenAI / Codex" title, Anthropic described as API-key based), the `kilo auth login` command dropped its vestigial Bedrock/Vercel/Cloudflare hint blocks, the `usage_not_included` error message no longer references Codex/ChatGPT plans, image-generation settings show a neutral "Select a model from your configured provider" placeholder instead of "(Auto Router)", codebase indexing defaults to the local Ollama embedder (hosted embedders stay configurable via `config.indexing`), and the migration wizard links open the system browser instead of navigating the webview.
+
+### Patch Changes
+
+- Hardened the unit-test runner against kernel OOM kills: a worker killed by the kernel (exit 137) lowers the concurrency cap (`KILO_TEST_OOM_BACKOFF`) and is reported distinctly (`O` mark), a proactive memory watchdog preempts low-memory situations on Linux, and a global suite deadline (`KILO_TEST_GLOBAL_TIMEOUT`, default 5 minutes) reports files that could not start as budget-exceeded so the run exits non-zero. CI enforces the same 5-minute budget and a 15-minute job timeout.
+
 ## 7.5.6
 
 ### Minor Changes

@@ -16,12 +16,10 @@ import { createMemo, createResource } from "solid-js"
 import { reconcile } from "solid-js/store"
 import type { IndexingConfig, Config } from "@kilocode/sdk/v2"
 import * as Log from "@opencode-ai/core/util/log"
-import { hasKiloIndexingAuth } from "../indexing-auth"
 import {
   createIndexingDialogState,
   indexingInheritance,
   indexingPatch,
-  indexingScopeConfig,
   inheritedDescription,
   mergeIndexingConfig,
   type IndexingScope,
@@ -33,41 +31,23 @@ type SDK = any
 
 type ProviderFieldDef = { key: string; label: string; placeholder: string; sensitive?: boolean }
 
-type EmbeddingProvider = Exclude<NonNullable<IndexingConfig["provider"]>, "kilo">
+// Local-surface embedding providers, aligned with the webview IndexingTab (hosted embedders stay
+// configurable via config.indexing.<provider> but are not offered in this dialog)
+type EmbeddingProvider = "ollama" | "openai-compatible"
 
 const log = Log.create({ service: "indexing-model-select" })
 
 const PROVIDER_LABELS: Record<EmbeddingProvider, string> = {
-  openai: "OpenAI",
   ollama: "Ollama (local)",
   "openai-compatible": "OpenAI-Compatible",
-  gemini: "Gemini",
-  mistral: "Mistral",
-  "vercel-ai-gateway": "Vercel AI Gateway",
-  bedrock: "AWS Bedrock",
-  openrouter: "OpenRouter",
-  voyage: "Voyage",
 }
 
 const PROVIDER_FIELDS: Record<EmbeddingProvider, ProviderFieldDef[]> = {
-  openai: [{ key: "apiKey", label: "API Key", placeholder: "sk-...", sensitive: true }],
   ollama: [{ key: "baseUrl", label: "Base URL", placeholder: "http://localhost:11434" }],
   "openai-compatible": [
     { key: "baseUrl", label: "Base URL", placeholder: "https://api.example.com/v1" },
     { key: "apiKey", label: "API Key (optional)", placeholder: "sk-...", sensitive: true },
   ],
-  gemini: [{ key: "apiKey", label: "API Key", placeholder: "AI...", sensitive: true }],
-  mistral: [{ key: "apiKey", label: "API Key", placeholder: "...", sensitive: true }],
-  "vercel-ai-gateway": [{ key: "apiKey", label: "API Key", placeholder: "...", sensitive: true }],
-  bedrock: [
-    { key: "region", label: "AWS Region", placeholder: "us-east-1" },
-    { key: "profile", label: "AWS Profile", placeholder: "default" },
-  ],
-  openrouter: [
-    { key: "apiKey", label: "API Key", placeholder: "sk-or-...", sensitive: true },
-    { key: "specificProvider", label: "Specific Provider", placeholder: "optional" },
-  ],
-  voyage: [{ key: "apiKey", label: "API Key", placeholder: "pa-...", sensitive: true }],
 }
 
 const VECTOR_STORE_LABELS: Record<string, string> = {
@@ -83,28 +63,6 @@ function maskSecret(value: string | undefined): string {
 
 function scopedIndexing(data: Config | undefined): IndexingConfig {
   return data?.indexing ?? {}
-}
-
-function hasKiloAuth(sync: ReturnType<typeof useSync>, scope: IndexingScope, indexing: IndexingConfig): boolean {
-  const provider = sync.data.provider_next.all.find((item) => item.id === "kilo")
-  const config = indexingScopeConfig(scope, sync.data.config, sync.data.globalConfig, indexing)
-  return hasKiloIndexingAuth({ config, provider })
-}
-
-function defaultIndexing(
-  sync: ReturnType<typeof useSync>,
-  scope: IndexingScope,
-  indexing: IndexingConfig,
-  global?: IndexingConfig,
-): IndexingConfig {
-  const provider = sync.data.provider_next.all.find((item) => item.id === "kilo")
-  const config = indexingScopeConfig(scope, sync.data.config, sync.data.globalConfig, indexing)
-  if (!hasKiloIndexingAuth({ config, provider })) return indexing
-  if (indexing.provider !== undefined) return indexing
-  for (const key of ["openai", "ollama", "openai-compatible", "gemini", "mistral", "vercel-ai-gateway", "bedrock", "openrouter", "voyage"]) {
-    if ((config as Record<string, unknown>)[key]) return indexing
-  }
-  return indexing
 }
 
 async function saveScopedIndexing(
@@ -460,7 +418,9 @@ export function DialogIndexing(props: DialogIndexingProps) {
     scope,
     global: globalCfg,
     project: projectCfg,
-    resolve: (current, global) => defaultIndexing(sync, scope(), current, global),
+    // kilocode_change - no provider-default resolution: the kilo provider is gone from the surface,
+    // so the scoped config stands as-is (hosted embedders stay reachable via config.indexing)
+    resolve: (current) => current,
   })
   const options = createMemo<DialogSelectOption<string>[]>(() => {
     const indexing = state.config()

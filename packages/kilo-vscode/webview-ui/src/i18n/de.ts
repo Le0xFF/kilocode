@@ -715,7 +715,7 @@ export const dict = {
   "settings.experimental.imageGeneration.description": "KI-Bildgenerierung aktivieren",
   "settings.experimental.imageGenerationModel.title": "Bildmodell",
   "settings.experimental.imageGenerationModel.description": "Bildgenerierungsmodell",
-  "settings.experimental.imageGenerationModel.placeholder": "Standard (Auto Router)",
+  "settings.experimental.imageGenerationModel.placeholder": "Select a model from your configured provider",
 
   "settings.experimental.nativeNotebookTools.title": "Native Notebook-Tools",
   "settings.experimental.nativeNotebookTools.description":
