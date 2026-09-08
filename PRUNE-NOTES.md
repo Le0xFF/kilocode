@@ -99,7 +99,8 @@ Assenti per costruzione:
 - Session sharing: feature rimossa (`opncd.ai`/console più referenziati; dati storici compatibili).
 - Auto-update: rimosso (nessuna route `/global/upgrade`, nessun check automatico; resta il comando manuale).
 - Network probe: lista di host esterni azzerata in `session/network.ts` — con la lista vuota non parte alcuna richiesta verso l'esterno e gli errori di connessione del provider degradano al normale retry (nessun park permanente su stato offline). Il meccanismo network-wait resta come meccanismo per chi reintroducesse host di probe: UI nella TUI (`Connection lost — retrying automatically`) e auto-drain/rifiuto nell'estensione.
-- Telemetria OTel: env del child `kilo serve` sanificata allo spawn (tutte le `OTEL_*` e le proxy var non gestite da VS Code sono tolte).
+- Telemetria OTel: env del child `kilo serve` sanificata allo spawn (tutte le `OTEL_*`, le proxy var non gestite da VS Code, e le API-key dei provider online ereditati — `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `OPENROUTER_API_KEY`, `GEMINI_API_KEY`, `GROQ_API_KEY`, `MISTRAL_API_KEY`, `TOGETHER_API_KEY`, `PERPLEXITY_API_KEY`, `CLOUDFLARE_API_KEY`, `COHERE_API_KEY`, `DEEPSEEK_API_KEY`, `ZAI_API_KEY`, `HUGGINGFACE_API_KEY`, `MINIMAX_API_KEY`, `GITHUB_TOKEN`, `COPILOT_GITHUB_DEVICE_ID`, prefissi `AWS_`/`VERTEX_` — sono tolte; chi usa quelle chiavi con un provider BYOK le dichiara in `config.provider.<id>.env`).
+- ChatGPT OAuth: i metodi `chatgpt-browser`/`chatgpt-headless` del plugin `openai` si registrano solo quando il provider non dichiara una `baseURL` custom; con un endpoint openai-compatible locale nessun flow verso `auth.openai.com` è raggiungibile. Le chiavi i18n `settings.providers.action.signInChatGPT` e `error.providerAuth.chatgpt.*` sono state rimosse dalle 21 locale.
 
 ## Cosmetici accettati (chiusura step 8)
 
@@ -131,5 +132,21 @@ Dead code that remains in the workspace (kept, not deleted):
 - `packages/kilo-telemetry/` — removed from disk and from the workspace list; no package declares it as a dependency anymore.
 - Orphaned i18n keys for removed UI (`profile.*`, `deviceAuth.*`, `session.cloud.*`, `notifications.action.*`, etc.) were deleted across all 21 locales in the offline dead-code closure (step 4); the protection list in `tests/unit/i18n-unused-keys.test.ts` was updated accordingly.
 - The generated SDK client exposes an empty legacy `kilo` namespace getter (`client.kilo`) so pre-regen call sites keep typechecking; the underlying routes are gone.
+
+- `kilo providers login`: la priority map e le hint non più presentano il gateway `kilo` come "recommended"; solo provider locali/custom compaiono nel picker.
+- Dipendenze orfane rimosse: `@openauthjs/openauth` (CLI), `aws4fetch`/`@smithy/eventstream-codec`/`@smithy/util-utf8` (llm), e il type-only import `@openrouter/ai-sdk-provider` da `provider-options.ts` (sostituito da un tipo strutturale inline).
+
+Dead code deleted in the offline-surface finalization (step A5):
+
+- `packages/opencode/src/kilocode/event-service/client.ts` + its test — `EventServiceClient` (WS ticket flow + ping interval) served only the removed gateway event service; grep proved zero importers outside the module's own test. Also removed the `event-service/` dirs and the `test-durations.json` entry.
+- `trackStep` no-op in `kilocode/session/processor.ts` + its call site in `src/session/processor.ts`. This cascaded into removing the now-unread review-telemetry pipeline: `Input.telemetry` / `ctx.telemetry`, the suggest-tagging block, the telemetry extraction in `src/session/prompt.ts` and `markReviewTelemetry` in `prompt.ts`/`tool/task.ts`, and two vestigial tests in `test/session/prompt.test.ts` that only asserted `expect(true).toBe(true)`.
+- Vestigial share plumbing in `cli/cmd/github.handler.ts`: `shareBaseUrl`, `shareId` (always undefined after session-sharing removal), `normalizeShare()`/`const share`, both `hasShared` comment-scan blocks, and the footer's `[kilo session]` link. The `footer({ image: true })` call sites were left untouched since the `image` option was already inert for the same reason.
+- Two integration tests in `test/session/prompt.test.ts` that exercised only the removed telemetry plumbing.
+
+Kept with reason:
+
+- `kilocode/session/processor.ts` `ReviewTelemetry` type + `reviewTelemetry`/`extractSuggestionReviewTelemetry` helpers — still consumed by `src/session/processor.ts` (Input type, suggest tagging) and `src/session/prompt.ts` (extraction at turn start); not dead.
+- `control-plane/dev/debug-workspace-plugin.ts` — dev-only adapter for the local workspace-sync simulation flow documented in `control-plane/dev/README.md` and referenced by `script/run-workspace-server`; it polls loopback `127.0.0.1`, not an online host.
+- `kilocode/indexing.ts` `trackTelemetry` no-op + the `"telemetry"` variant of `indexing-worker-protocol.ts` — the worker still emits indexing telemetry events from `CodeIndexManager.onTelemetry` (kilo-indexing package) over the protocol to the client hook; removing the variant would cascade into the engine package. The no-op just drops them.
 
 Removed dependencies: `openai` and `js-tiktoken` (extension); `@kilocode/kilo-telemetry` (CLI, done earlier) and the extension's `@kilocode/kilo-gateway` (done in step 11). The offline dead-code closure additionally pruned 7 orphaned extension dependencies and re-activated knip to watch `dependencies`. `@anthropic-ai/sdk` stays (type-only, used by legacy-migration per A9).

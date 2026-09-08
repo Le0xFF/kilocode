@@ -213,9 +213,6 @@ export const dict = {
 
   "error.providerAuth.title": "{{provider}} har logget dig af",
   "error.providerAuth.description": "Forbind til {{provider}} igen, og send din besked på ny.",
-  "error.providerAuth.chatgpt.title": "OpenAI har logget dig af",
-  "error.providerAuth.chatgpt.description":
-    "Log ind med ChatGPT igen, og send din besked på ny for at fortsætte med at bruge Codex-modeller.",
 
   "notification.permission.title": "Tilladelse påkrævet",
   "notification.permission.titleSubagent": "Tilladelse påkrævet (underagent)",
@@ -398,11 +395,9 @@ export const dict = {
   "settings.providers.select.placeholder": "Vælg udbyder...",
   "settings.providers.tag.environment": "Miljø",
   "settings.providers.tag.config": "Konfiguration",
-  "settings.providers.tag.chatgpt": "ChatGPT",
   "settings.providers.tag.custom": "Brugerdefineret",
   "settings.providers.tag.other": "Andet",
   "settings.providers.connected.environmentDescription": "Forbundet fra dine miljøvariabler",
-  "settings.providers.action.signInChatGPT": "Log ind med ChatGPT",
   "settings.providers.custom.description": "Tilføj en brugerdefineret udbyder via basis-URL.",
   "settings.providers.subagentModel.title": "Underagentmodel",
   "settings.providers.subagentModel.description":

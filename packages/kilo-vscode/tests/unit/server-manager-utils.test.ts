@@ -440,6 +440,56 @@ describe("server workspace helpers", () => {
     expect(out.PATH).toBe("/usr/bin")
   })
 
+  it("strips well-known provider API keys by exact name", () => {
+    const out = resolveManagedServerEnv({
+      PATH: "/usr/bin",
+      OPENAI_API_KEY: "sk-test",
+      ANTHROPIC_API_KEY: "sk-ant-test",
+      GEMINI_API_KEY: "gm-test",
+      GITHUB_TOKEN: "ghp_test",
+      COPILOT_GITHUB_DEVICE_ID: "device-123",
+    })
+
+    expect(out).not.toHaveProperty("OPENAI_API_KEY")
+    expect(out).not.toHaveProperty("ANTHROPIC_API_KEY")
+    expect(out).not.toHaveProperty("GEMINI_API_KEY")
+    expect(out).not.toHaveProperty("GITHUB_TOKEN")
+    expect(out).not.toHaveProperty("COPILOT_GITHUB_DEVICE_ID")
+    expect(out.PATH).toBe("/usr/bin")
+  })
+
+  it("strips AWS_ and VERTEX_ prefixed credentials", () => {
+    const out = resolveManagedServerEnv({
+      PATH: "/usr/bin",
+      AWS_ACCESS_KEY_ID: "AKIA123",
+      AWS_SECRET_ACCESS_KEY: "secret",
+      AWS_REGION: "us-east-1",
+      VERTEX_CREDENTIALS: "{\"project\":\"x\"}",
+      VERTEX_REGION: "global",
+      FOO_API_KEY: "keep-me",
+    })
+
+    expect(out).not.toHaveProperty("AWS_ACCESS_KEY_ID")
+    expect(out).not.toHaveProperty("AWS_SECRET_ACCESS_KEY")
+    expect(out).not.toHaveProperty("AWS_REGION")
+    expect(out).not.toHaveProperty("VERTEX_CREDENTIALS")
+    expect(out).not.toHaveProperty("VERTEX_REGION")
+    expect(out.FOO_API_KEY).toBe("keep-me")
+    expect(out.PATH).toBe("/usr/bin")
+  })
+
+  it("passes through *_API_KEY vars that are not in the strip list", () => {
+    const out = resolveManagedServerEnv({
+      PATH: "/usr/bin",
+      FOO_API_KEY: "foo-key",
+      MY_PROVIDER_KEY: "my-key",
+    })
+
+    expect(out.FOO_API_KEY).toBe("foo-key")
+    expect(out.MY_PROVIDER_KEY).toBe("my-key")
+    expect(out.PATH).toBe("/usr/bin")
+  })
+
   it("does not add proxy vars when none are present in the input", () => {
     const out = resolveManagedServerEnv({ PATH: "/usr/bin" })
 

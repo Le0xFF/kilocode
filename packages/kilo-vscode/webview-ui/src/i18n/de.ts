@@ -220,9 +220,6 @@ export const dict = {
 
   "error.providerAuth.title": "{{provider}} hat Sie abgemeldet",
   "error.providerAuth.description": "Verbinden Sie {{provider}} erneut und senden Sie Ihre Nachricht noch einmal.",
-  "error.providerAuth.chatgpt.title": "OpenAI hat Sie abgemeldet",
-  "error.providerAuth.chatgpt.description":
-    "Melden Sie sich erneut bei ChatGPT an und senden Sie Ihre Nachricht noch einmal, um weiterhin Codex-Modelle zu verwenden.",
 
   "notification.permission.title": "Berechtigung erforderlich",
   "notification.permission.titleSubagent": "Berechtigung erforderlich (Subagent)",
@@ -405,11 +402,9 @@ export const dict = {
   "settings.providers.select.placeholder": "Anbieter auswählen...",
   "settings.providers.tag.environment": "Umgebung",
   "settings.providers.tag.config": "Konfiguration",
-  "settings.providers.tag.chatgpt": "ChatGPT",
   "settings.providers.tag.custom": "Benutzerdefiniert",
   "settings.providers.tag.other": "Andere",
   "settings.providers.connected.environmentDescription": "Verbunden über Ihre Umgebungsvariablen",
-  "settings.providers.action.signInChatGPT": "Mit ChatGPT anmelden",
   "settings.providers.custom.description": "Fügen Sie einen benutzerdefinierten Anbieter über die Basis-URL hinzu.",
   "settings.providers.subagentModel.title": "Subagenten-Modell",
   "settings.providers.subagentModel.description":

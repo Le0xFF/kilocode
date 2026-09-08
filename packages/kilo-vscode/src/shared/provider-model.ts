@@ -9,7 +9,6 @@ export const PROVIDER_PRIORITY = [
   "deepseek",
   "openai",
   "google",
-  "openrouter",
   "vercel",
 ] as const
 

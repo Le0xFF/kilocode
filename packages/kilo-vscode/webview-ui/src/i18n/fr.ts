@@ -216,9 +216,6 @@ export const dict = {
 
   "error.providerAuth.title": "{{provider}} vous a déconnecté",
   "error.providerAuth.description": "Reconnectez {{provider}}, puis renvoyez votre message.",
-  "error.providerAuth.chatgpt.title": "OpenAI vous a déconnecté",
-  "error.providerAuth.chatgpt.description":
-    "Reconnectez-vous à ChatGPT, puis renvoyez votre message pour continuer à utiliser les modèles Codex.",
 
   "notification.permission.title": "Permission requise",
   "notification.permission.titleSubagent": "Permission requise (sous-agent)",
@@ -401,11 +398,9 @@ export const dict = {
   "settings.providers.select.placeholder": "Sélectionner un fournisseur...",
   "settings.providers.tag.environment": "Environnement",
   "settings.providers.tag.config": "Configuration",
-  "settings.providers.tag.chatgpt": "ChatGPT",
   "settings.providers.tag.custom": "Personnalisé",
   "settings.providers.tag.other": "Autre",
   "settings.providers.connected.environmentDescription": "Connecté depuis vos variables d'environnement",
-  "settings.providers.action.signInChatGPT": "Se connecter avec ChatGPT",
   "settings.providers.custom.description": "Ajoutez un fournisseur personnalisé par URL de base.",
   "settings.providers.subagentModel.title": "Modèle de sous-agent",
   "settings.providers.subagentModel.description":

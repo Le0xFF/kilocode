@@ -48,7 +48,6 @@ import { KiloSession } from "../../src/kilocode/session"
 import { KiloSessionPrompt } from "../../src/kilocode/session/prompt"
 import { KiloSessionPromptQueue } from "../../src/kilocode/session/prompt-queue"
 // kilocode_change end
-import { Suggestion } from "../../src/kilocode/suggestion"
 import { MessageID, PartID, SessionID } from "../../src/session/schema"
 import { SessionStatus } from "../../src/session/status"
 import { SessionV2 } from "@opencode-ai/core/session"
@@ -3066,74 +3065,6 @@ noLLMServer.instance(
       ).toBe(true)
     }),
   { config: cfg },
-  30_000,
-)
-
-it.instance(
-  "review command marks child completions with review telemetry",
-  () =>
-    Effect.gen(function* () {
-      const { llm } = yield* useServerConfig(providerCfg)
-      const prompt = yield* SessionPrompt.Service
-      const sessions = yield* Session.Service
-      const chat = yield* sessions.create({
-        title: "Review telemetry",
-        permission: [{ permission: "*", pattern: "*", action: "allow" }],
-      })
-
-      // child subagent's first LLM step needs non-zero usage so trackStep fires
-      yield* llm.text("review done", { usage: { input: 100, output: 50 } })
-
-      yield* prompt.command({
-        sessionID: chat.id,
-        command: "review",
-        arguments: "",
-        agent: "general",
-      })
-
-      expect(true).toBe(true)
-    }),
-  30_000,
-)
-
-it.instance(
-  "accepted suggest tool marks following completion with review telemetry",
-  () =>
-    Effect.gen(function* () {
-      const { llm } = yield* useServerConfig(providerCfg)
-      const prompt = yield* SessionPrompt.Service
-      const sessions = yield* Session.Service
-      const chat = yield* sessions.create({
-        title: "Suggest telemetry",
-        permission: [{ permission: "*", pattern: "*", action: "allow" }],
-      })
-
-      yield* llm.tool("suggest", {
-        suggest: "Run a local review?",
-        actions: [{ label: "Review", prompt: "/review uncommitted --focus telemetry" }],
-      })
-      yield* llm.text("review done", { usage: { input: 100, output: 50 } })
-
-      const fiber = yield* prompt
-        .prompt({
-          sessionID: chat.id,
-          agent: "build",
-          model: ref,
-          parts: [{ type: "text", text: "Suggest a review action." }],
-        })
-        .pipe(Effect.forkChild)
-      const request = yield* pollWithTimeout(
-        Effect.promise(() => Suggestion.list()).pipe(
-          Effect.map((items) => items.find((item) => item.sessionID === chat.id)),
-        ),
-        "timed out waiting for suggestion request",
-      )
-
-      yield* Effect.promise(() => Suggestion.accept({ requestID: request!.id, index: 0 }))
-      yield* Fiber.join(fiber)
-
-      expect(true).toBe(true)
-    }),
   30_000,
 )
 

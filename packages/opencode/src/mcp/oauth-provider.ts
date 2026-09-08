@@ -44,6 +44,7 @@ export class McpOAuthProvider implements OAuthClientProvider {
     return {
       redirect_uris: [this.redirectUrl],
       client_name: "Kilo",
+      // Declarative branding string sent to the user's authorization server; no runtime fetch.
       client_uri: "https://kilo.ai",
       grant_types: ["authorization_code", "refresh_token"],
       response_types: ["code"],

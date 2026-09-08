@@ -206,9 +206,6 @@ export const dict = {
 
   "error.providerAuth.title": "تم تسجيل خروجك من {{provider}}",
   "error.providerAuth.description": "أعد الاتصال بـ {{provider}}، ثم أرسل رسالتك مرة أخرى.",
-  "error.providerAuth.chatgpt.title": "تسجيل الدخول باستخدام ChatGPT مرة أخرى",
-  "error.providerAuth.chatgpt.description":
-    "سجل الدخول باستخدام ChatGPT مرة أخرى، ثم أرسل رسالتك مرة أخرى لمواصلة استخدام نماذج Codex.",
 
   "notification.permission.title": "مطلوب إذن",
   "notification.permission.titleSubagent": "مطلوب إذن (وكيل فرعي)",
@@ -351,11 +348,9 @@ export const dict = {
   "settings.providers.select.placeholder": "اختر موفرًا...",
   "settings.providers.tag.environment": "البيئة",
   "settings.providers.tag.config": "التكوين",
-  "settings.providers.tag.chatgpt": "ChatGPT",
   "settings.providers.tag.custom": "مخصص",
   "settings.providers.tag.other": "أخرى",
   "settings.providers.connected.environmentDescription": "متصل من متغيرات البيئة الخاصة بك",
-  "settings.providers.action.signInChatGPT": "تسجيل الدخول باستخدام ChatGPT",
   "settings.providers.custom.description": "أضف مزودًا مخصصًا عبر عنوان URL الأساسي.",
   "settings.providers.subagentModel.title": "نموذج الوكيل الفرعي",
   "settings.providers.subagentModel.description":

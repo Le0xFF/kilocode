@@ -314,14 +314,9 @@ export const MessageList: Component<MessageListProps> = (props) => {
     const authProvider = auth ? provider.providers()[auth.providerID] : undefined
     const authMethods = auth ? (provider.authMethods()[auth.providerID] ?? []) : []
     if (auth && authProvider && authMethods.length > 0) {
-      const oauth = auth.providerID === "openai" && authMethods.some((method) => method.type === "oauth")
       const name = authProvider.name ?? auth.providerID
-      const title = oauth
-        ? language.t("error.providerAuth.chatgpt.title")
-        : language.t("error.providerAuth.title", { provider: name })
-      const description = oauth
-        ? language.t("error.providerAuth.chatgpt.description")
-        : language.t("error.providerAuth.description", { provider: name })
+      const title = language.t("error.providerAuth.title", { provider: name })
+      const description = language.t("error.providerAuth.description", { provider: name })
       return [title, description].join("\n")
     }
     const msg = error.data?.message

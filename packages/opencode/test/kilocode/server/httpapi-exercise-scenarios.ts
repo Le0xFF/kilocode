@@ -439,7 +439,7 @@ export const kiloScenarios: Scenario[] = [
     .status(401),
   http.protected.get("/kilo/claw/status", "kilo.claw.status").probe({ path: "/path" }).status(401),
   http.protected.get("/kilo/claw/chat-credentials", "kilo.claw.chatCredentials").probe({ path: "/path" }).status(401),
-  http.protected.get("/kilo/cloud-sessions", "kilo.cloudSessions").probe({ path: "/path" }).status(401),
+  http.protected.get("/kilo/cloud-sessions", "kilo.cloudSessions").probe({ path: "/path" }).status(404),
   http.protected
     .get("/kilo/cloud/session/{id}", "kilo.cloud.session.get")
     .probe({ path: "/path" })

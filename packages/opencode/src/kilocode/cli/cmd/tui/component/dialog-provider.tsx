@@ -57,7 +57,7 @@ export const PROVIDER_PRIORITY: Record<string, number> = {
 
 export const PROVIDER_DESCRIPTIONS: Record<string, string> = {
   anthropic: "(Claude Max or API key)",
-  openai: "(ChatGPT login or API key)",
+  openai: "(API key)",
   "anaconda-desktop": "(Local models)",
 }
 

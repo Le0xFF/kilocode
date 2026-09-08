@@ -214,9 +214,6 @@ export const dict = {
 
   "error.providerAuth.title": "{{provider}} wylogował Cię",
   "error.providerAuth.description": "Połącz się ponownie z {{provider}}, a następnie wyślij wiadomość jeszcze raz.",
-  "error.providerAuth.chatgpt.title": "OpenAI wylogowało Cię",
-  "error.providerAuth.chatgpt.description":
-    "Zaloguj się ponownie do ChatGPT, a następnie wyślij wiadomość jeszcze raz, aby kontynuować korzystanie z modeli Codex.",
 
   "notification.permission.title": "Wymagane uprawnienie",
   "notification.permission.titleSubagent": "Wymagane uprawnienie (podagent)",
@@ -359,11 +356,9 @@ export const dict = {
   "settings.providers.select.placeholder": "Wybierz dostawcę...",
   "settings.providers.tag.environment": "Środowisko",
   "settings.providers.tag.config": "Konfiguracja",
-  "settings.providers.tag.chatgpt": "ChatGPT",
   "settings.providers.tag.custom": "Niestandardowe",
   "settings.providers.tag.other": "Inne",
   "settings.providers.connected.environmentDescription": "Połączony z twoich zmiennych środowiskowych",
-  "settings.providers.action.signInChatGPT": "Zaloguj przez ChatGPT",
   "settings.providers.custom.description": "Dodaj niestandardowego dostawcę przez bazowy URL.",
   "settings.providers.subagentModel.title": "Model podagenta",
   "settings.providers.subagentModel.description":

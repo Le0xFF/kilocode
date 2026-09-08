@@ -1,6 +1,5 @@
 import type {
   IndexingConfigInput,
-  IndexingTelemetryEvent,
   VectorStoreSearchResult,
 } from "@kilocode/kilo-indexing/engine"
 import type { IndexingStatus } from "@kilocode/kilo-indexing/status"
@@ -38,7 +37,6 @@ export type Log = {
 
 export type Event =
   | { type: "event"; key?: string; event: "status"; data: IndexingStatus }
-  | { type: "event"; key?: string; event: "telemetry"; data: IndexingTelemetryEvent }
   | { type: "event"; key?: string; event: "warning"; data: IndexingWarning }
   | { type: "event"; key?: string; event: "log"; data: Log }
 

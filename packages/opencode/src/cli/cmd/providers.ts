@@ -384,15 +384,13 @@ export const ProvidersLoginCommand = effectCmd({
     }
     const hooks = yield* pluginSvc.list()
 
-    // kilocode_change start
+    // kilocode_change start - local-only surface: kilo gateway is never offered in the login picker;
+    // only local OpenAI-compatible providers are prioritized, custom BYOK fall back to ?? 99
     const priority: Record<string, number> = {
-      kilo: 0,
-      anthropic: 2,
-      "github-copilot": 3,
-      openai: 4,
-      google: 5,
-      openrouter: 6,
-      vercel: 7,
+      "anaconda-desktop": 1,
+      lmstudio: 2,
+      "atomic-chat": 3,
+      "privatemode-ai": 4,
     }
     // kilocode_change end
     const pluginProviders = resolvePluginProviders({
@@ -418,9 +416,9 @@ export const ProvidersLoginCommand = effectCmd({
           label: x.name,
           value: x.id,
           hint: {
-            // kilocode_change start
-            kilo: "recommended",
-            openai: "ChatGPT login or API key",
+            // kilocode_change start - local-only surface: no "recommended" hint; kilo gateway never appears
+            // Step A2 removed ChatGPT OAuth entirely, so openai offers only an API key
+            openai: "API key",
             // kilocode_change end
           }[x.id],
         })),

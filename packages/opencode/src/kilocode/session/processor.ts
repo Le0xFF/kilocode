@@ -104,16 +104,6 @@ export namespace KiloSessionProcessor {
     }
   }
 
-  /** No-op: PostHog telemetry was removed with the online services. */
-  export function trackStep(_input: {
-    sessionID: string
-    model: { providerID: string; id: string }
-    tokens: { input: number; output: number; cache: { read: number; write: number } }
-    cost: number
-    elapsed: number
-    telemetry?: ReviewTelemetry
-  }) {}
-
   /** Pure throughput helper re-exported for namespace symmetry. */
   export const computeMetrics: typeof computeMetricsHelper = computeMetricsHelper
   /** Returned shape for downstream consumers that prefer the namespace. */

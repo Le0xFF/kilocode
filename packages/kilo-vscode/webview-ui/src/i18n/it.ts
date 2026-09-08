@@ -277,11 +277,9 @@ export const dict = {
   "settings.providers.connected.empty": "Nessun provider connesso",
   "settings.providers.tag.environment": "Ambiente",
   "settings.providers.tag.config": "Config",
-  "settings.providers.tag.chatgpt": "ChatGPT",
   "settings.providers.tag.custom": "Personalizzato",
   "settings.providers.tag.other": "Altro",
   "settings.providers.connected.environmentDescription": "Connesso dalle variabili d'ambiente",
-  "settings.providers.action.signInChatGPT": "Accedi con ChatGPT",
   "settings.providers.custom.description": "Aggiungi un provider personalizzato tramite URL base.",
   "provider.custom.title": "Provider personalizzato",
   "provider.custom.description.prefix": "Configura un provider personalizzato. Vedi la ",
@@ -1105,9 +1103,6 @@ export const dict = {
   // Error provider auth
   "error.providerAuth.title": "{{provider}} ti ha disconnesso",
   "error.providerAuth.description": "Riconnetti {{provider}}, quindi invia di nuovo il tuo messaggio.",
-  "error.providerAuth.chatgpt.title": "OpenAI ti ha disconnesso",
-  "error.providerAuth.chatgpt.description":
-    "Accedi di nuovo con ChatGPT, quindi invia di nuovo il tuo messaggio per continuare a usare i modelli Codex.",
 
   // Speech to Text tooltips and errors
   "chat.search.placeholder": "Cerca nella chat…",

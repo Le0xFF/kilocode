@@ -212,9 +212,6 @@ export const dict = {
 
   "error.providerAuth.title": "{{provider}} oturumunuzu kapattı",
   "error.providerAuth.description": "{{provider}} bağlantısını yeniden kurun ve mesajınızı tekrar gönderin.",
-  "error.providerAuth.chatgpt.title": "OpenAI oturumunuzu kapattı",
-  "error.providerAuth.chatgpt.description":
-    "Codex modellerini kullanmaya devam etmek için ChatGPT ile tekrar giriş yapın ve mesajınızı yeniden gönderin.",
 
   "notification.permission.title": "İzin gerekli",
   "notification.permission.titleSubagent": "İzin gerekli (alt ajan)",
@@ -358,11 +355,9 @@ export const dict = {
   "settings.providers.connected.empty": "Bağlı sağlayıcı yok",
   "settings.providers.tag.environment": "Ortam",
   "settings.providers.tag.config": "Yapılandırma",
-  "settings.providers.tag.chatgpt": "ChatGPT",
   "settings.providers.tag.custom": "Özel",
   "settings.providers.tag.other": "Diğer",
   "settings.providers.connected.environmentDescription": "Ortam değişkenlerinizden bağlandı",
-  "settings.providers.action.signInChatGPT": "ChatGPT ile oturum aç",
   "settings.providers.custom.description": "Temel URL üzerinden özel bir sağlayıcı ekleyin.",
 
   "provider.custom.title": "Özel sağlayıcı",

@@ -215,9 +215,6 @@ export const dict = {
 
   "error.providerAuth.title": "Сеанс {{provider}} завершено",
   "error.providerAuth.description": "Підключіться до {{provider}} знову, а потім надішліть повідомлення ще раз.",
-  "error.providerAuth.chatgpt.title": "Сеанс OpenAI завершено",
-  "error.providerAuth.chatgpt.description":
-    "Увійдіть у ChatGPT знову, а потім надішліть повідомлення ще раз, щоб продовжити використання моделей Codex.",
 
   "notification.permission.title": "Потрібен дозвіл",
   "notification.permission.titleSubagent": "Потрібен дозвіл (підагент)",
@@ -361,11 +358,9 @@ export const dict = {
   "settings.providers.connected.empty": "Підключених провайдерів немає",
   "settings.providers.tag.environment": "Середовище",
   "settings.providers.tag.config": "Конфігурація",
-  "settings.providers.tag.chatgpt": "ChatGPT",
   "settings.providers.tag.custom": "Власний",
   "settings.providers.tag.other": "Інші",
   "settings.providers.connected.environmentDescription": "Підключено зі змінних середовища",
-  "settings.providers.action.signInChatGPT": "Увійти через ChatGPT",
   "settings.providers.custom.description": "Додати власного провайдера через базовий URL.",
 
   "provider.custom.title": "Власний провайдер",
