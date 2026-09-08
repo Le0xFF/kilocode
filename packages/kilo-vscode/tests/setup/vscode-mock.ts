@@ -163,13 +163,6 @@ const mockVscode = {
       public end: { line: number; character: number },
     ) {}
   },
-  InlineCompletionItem: class {
-    constructor(
-      public insertText: string,
-      public range?: unknown,
-      public command?: unknown,
-    ) {}
-  },
   Disposable: class {
     constructor(private callback: () => void = noop) {}
     static from(...items: { dispose: () => void }[]) {

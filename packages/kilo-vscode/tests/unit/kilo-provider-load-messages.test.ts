@@ -178,7 +178,6 @@ function createClient(options?: {
       },
     },
     kilo: {
-      notifications: async () => ({ data: [] }),
       profile: async () => ({ data: {} }),
     },
     command: { list: async () => ({ data: [] }) },

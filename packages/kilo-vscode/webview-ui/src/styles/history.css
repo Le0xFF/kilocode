@@ -7,8 +7,7 @@
 }
 
 /* Session List Items */
-.session-list [data-slot="list-item-title"],
-.cloud-session-list [data-slot="list-item-title"] {
+.session-list [data-slot="list-item-title"] {
   flex: 1;
   min-width: 0;
   overflow: hidden;
@@ -17,8 +16,7 @@
   text-align: left;
 }
 
-.session-list [data-slot="list-item-description"],
-.cloud-session-list [data-slot="list-item-description"] {
+.session-list [data-slot="list-item-description"] {
   flex-shrink: 0;
   margin-left: 8px;
   font-size: var(--kilo-font-size-12);
@@ -27,12 +25,7 @@
 }
 
 body.vscode-light .session-list [data-slot="list-item"][data-active="true"] [data-slot="list-item-description"],
-body.vscode-light .session-list [data-slot="list-item"][data-selected="true"] [data-slot="list-item-description"],
-body.vscode-light .cloud-session-list [data-slot="list-item"][data-active="true"] [data-slot="list-item-description"],
-body.vscode-light
-  .cloud-session-list
-  [data-slot="list-item"][data-selected="true"]
-  [data-slot="list-item-description"] {
+body.vscode-light .session-list [data-slot="list-item"][data-selected="true"] [data-slot="list-item-description"] {
   color: var(--text-on-interactive-base, white);
 }
 
@@ -103,7 +96,7 @@ body.vscode-light
   }
 }
 
-/* History View (unified Local + Cloud + optional Worktree tabs) */
+/* History View (unified Local + optional Worktree tabs) */
 .history-view {
   display: flex;
   flex-direction: column;
@@ -169,60 +162,9 @@ body.vscode-light
   display: none;
 }
 
-/* Cloud Session List (inside History View) */
-.cloud-session-list {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  min-height: 0;
-}
-
-/* Make the list search wrapper wrap so the repo filter appears below search */
-.cloud-session-list [data-slot="list-search-wrapper"] {
-  flex-wrap: wrap;
-}
-
-.cloud-session-repo-filter {
-  width: 100%;
-  padding: 4px 10px 2px;
-
-  [data-component="checkbox"] {
-    gap: 8px;
-
-    [data-slot="checkbox-checkbox-label"] {
-      padding-inline-start: 0;
-      margin-inline-end: 0;
-    }
-  }
-}
-
 [data-component="input"][data-variant="normal"] [data-slot="input-wrapper"]:focus-within:not(:has([data-readonly])) {
   border-color: transparent;
   box-shadow: none;
   outline: 1px solid var(--vscode-focusBorder);
   outline-offset: -1px;
-}
-
-.cloud-session-load-more {
-  flex-shrink: 0;
-  display: flex;
-  justify-content: center;
-  padding: 8px;
-}
-
-.cloud-session-load-more-btn {
-  appearance: none;
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  font-size: var(--kilo-font-size-12);
-  color: var(--vscode-foreground);
-  opacity: 0.6;
-  padding: 4px 8px;
-  border-radius: 4px;
-}
-
-.cloud-session-load-more-btn:hover {
-  opacity: 1;
-  background: var(--vscode-toolbar-hoverBackground, rgba(128, 128, 128, 0.1));
 }

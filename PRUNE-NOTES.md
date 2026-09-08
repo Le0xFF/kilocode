@@ -65,7 +65,7 @@ A controlled drill with synthetic changes on `turbo.json`, root `package.json`, 
 | `bun install --frozen-lockfile` | root | clean install, lock must match |
 | `bun typecheck` | root | turbo typecheck over all surviving packages |
 | `bun run lint` | root | oxlint over the tree |
-| `bun run test:unit` | `packages/kilo-vscode` | hermetic unit suite (`vscode` mocked, no IDE) |
+| `bun run test:unit` | `packages/kilo-vscode` | hermetic unit suite via RAM-aware runner (`script/run-unit-tests.ts`); auto-caps concurrency to ~2 GB/worker from `/proc/meminfo`; tune with `KILO_TEST_CONCURRENCY`, `KILO_TEST_FILE_TIMEOUT`, `KILO_TEST_SHARD=i/n`, `KILO_TEST_MEM_AVAILABLE_MB` |
 | `VSCODE_EXEC_PATH=/usr/bin/codium bun run test:integration` | `packages/kilo-vscode` | isolated integration run on system Codium (state in `.kilo-dev/vscode-test/`) |
 | `bun run compile` | `packages/kilo-vscode` | prepare:cli-binary + prepare:sdk + check-types + lint + bundle |
 | `bun run package` | `packages/kilo-vscode` | produce the VSIX |

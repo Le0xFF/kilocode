@@ -22,6 +22,7 @@ jobs:
   unit:
     name: unit tests
     runs-on: ${{ github.repository == 'Kilo-Org/kilocode' && 'blacksmith-4vcpu-ubuntu-2404' || 'ubuntu-latest' }} # kilocode_change
+    timeout-minutes: 45 # kilocode_change - match test.yml's unit jobs; without this a hung runner consumes the full 360-min GitHub Actions default
     defaults:
       run:
         shell: bash
@@ -37,6 +38,19 @@ jobs:
       - name: Run unit tests
         working-directory: packages/kilo-vscode
         run: bun run test:unit
+        # kilocode_change start - align the extension CI with the RAM-aware runner (script/run-unit-tests.ts)
+        # and the tuning pattern already used by test.yml's unit jobs.
+        env:
+          # 600s per-file kill deadline, matching test.yml. The runner's default is 300s; a heavy
+          # file on a saturated worker can legitimately exceed that before it finishes or hangs.
+          KILO_TEST_FILE_TIMEOUT: "600000"
+          # KILO_TEST_CONCURRENCY is intentionally left unset so the runner applies its automatic
+          # RAM-based cap (~2GB per worker). The blacksmith-4vcpu host has uncertain RAM from here,
+          # and on forks this job falls back to ubuntu-latest (variable RAM); the automatic cap covers
+          # both. If the host were confirmed to have <=8GB and OOM still occurred, set this to "2"
+          # (test.yml caps Windows to 2 for exactly this reason: at the default min(4, cpus)=4, four
+          # heavy files share the vCPUs and blow their per-test timeouts).
+        # kilocode_change end
 
       - name: Check lint (ESLint)
         working-directory: packages/kilo-vscode

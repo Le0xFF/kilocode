@@ -113,7 +113,9 @@ describe("createWorktreeDiffs", () => {
 
   it("bounds retained worktree content without evicting the active context", () => {
     withDiffs((diffs) => {
-      const content = "x".repeat(17 * 1024 * 1024)
+      // 16MiB+1 per entry → tracked size 32MiB+2 each; two entries = 64MiB+4,
+      // just over the 64MiB BUDGET in worktree-diffs.ts, triggering eviction.
+      const content = "x".repeat(16 * 1024 * 1024 + 1)
       diffs.onWorktreeDiff({
         type: "agentManager.worktreeDiff",
         sessionId: "s1",

@@ -51,7 +51,6 @@ function mockConnection(getImpl?: (p: SessionGetParams) => Promise<unknown>, vcs
     config: { get: async () => ({ data: {} }) },
     indexing: { status: async () => ({ data: { state: "disabled" } }) },
     kilo: {
-      notifications: async () => ({ data: [] }),
       profile: async () => ({ data: {} }),
     },
   }

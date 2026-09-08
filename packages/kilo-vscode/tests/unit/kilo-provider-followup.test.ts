@@ -24,7 +24,6 @@ type Internals = {
   fetchAndSendSkills: () => Promise<void>
   fetchAndSendCommands: () => Promise<void>
   fetchAndSendConfig: () => Promise<void>
-  fetchAndSendNotifications: () => Promise<void>
   seedSessionStatusMap: () => Promise<void>
   sendNotificationSettings: () => void
   startStatsPolling: () => void
@@ -295,7 +294,6 @@ describe("KiloProvider follow-up sessions", () => {
     internal.fetchAndSendSkills = async () => {}
     internal.fetchAndSendCommands = async () => {}
     internal.fetchAndSendConfig = async () => {}
-    internal.fetchAndSendNotifications = async () => {}
     internal.seedSessionStatusMap = async () => {}
     internal.sendNotificationSettings = () => {}
     internal.startStatsPolling = () => {}
@@ -354,7 +352,6 @@ describe("KiloProvider follow-up sessions", () => {
     internal.fetchAndSendSkills = async () => {}
     internal.fetchAndSendCommands = async () => {}
     internal.fetchAndSendConfig = async () => {}
-    internal.fetchAndSendNotifications = async () => {}
     internal.seedSessionStatusMap = async () => {}
     internal.sendNotificationSettings = () => {}
     internal.startStatsPolling = () => {}

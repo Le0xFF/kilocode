@@ -175,7 +175,7 @@ export const WithItems: Story = {
 }
 
 export const Sources: Story = {
-  name: "Local and cloud sources",
+  name: "Local sources",
   render: () => (
     <WithSessions sessions={mockSessions as any}>
       <div style={{ height: "500px" }}>
