@@ -70,7 +70,6 @@ function createClient() {
       status: async () => ({ data: { state: "disabled" } }),
     },
     kilo: {
-      notifications: async () => ({ data: [] }),
       profile: async () => ({ data: {} }),
     },
   }

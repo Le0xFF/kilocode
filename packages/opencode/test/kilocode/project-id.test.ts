@@ -13,7 +13,7 @@ describe("project-id", () => {
         git: true,
         init: async (dir) => {
           // Set git origin to HTTPS URL
-          await Bun.$`git remote add origin https://github.com/Kilo-Org/handbook.git`.cwd(dir).quiet()
+          await Bun.$`git remote add origin git@example.com:Kilo-Org/handbook`.cwd(dir).quiet()
         },
       })
 
@@ -46,7 +46,7 @@ describe("project-id", () => {
       await using tmp = await tmpdir({
         git: true,
         init: async (dir) => {
-          await Bun.$`git remote add origin https://github.com/Kilo-Org/handbook`.cwd(dir).quiet()
+          await Bun.$`git remote add origin https://example.com/Kilo-Org/handbook`.cwd(dir).quiet()
         },
       })
 
@@ -62,7 +62,7 @@ describe("project-id", () => {
       await using tmp = await tmpdir({
         git: true,
         init: async (dir) => {
-          await Bun.$`git remote add origin ssh://git@github.com/Kilo-Org/handbook.git`.cwd(dir).quiet()
+          await Bun.$`git remote add origin ssh://git@example.com/Kilo-Org/handbook`.cwd(dir).quiet()
         },
       })
 
@@ -79,7 +79,7 @@ describe("project-id", () => {
       await using tmp = await tmpdir({
         git: true,
         init: async (dir) => {
-          await Bun.$`git remote add origin https://github.com/Kilo-Org/${longName}.git`.cwd(dir).quiet()
+          await Bun.$`git remote add origin git@example.com:Kilo-Org/${longName}`.cwd(dir).quiet()
         },
       })
 
@@ -109,7 +109,7 @@ describe("project-id", () => {
           )
 
           // Also set git origin - config should take priority
-          await Bun.$`git remote add origin https://github.com/Kilo-Org/handbook.git`.cwd(dir).quiet()
+          await Bun.$`git remote add origin git@example.com:Kilo-Org/handbook`.cwd(dir).quiet()
         },
       })
 
@@ -176,7 +176,7 @@ describe("project-id", () => {
             path.join(dir, ".kilo", "config.json"),
             JSON.stringify({
               project: {
-                id: "https://github.com/Kilo-Org/another-repo.git",
+                id: "https://example.com/Kilo-Org/another-repo",
               },
             }),
           )
@@ -205,7 +205,7 @@ describe("project-id", () => {
             }),
           )
 
-          await Bun.$`git remote add origin https://github.com/Kilo-Org/handbook.git`.cwd(dir).quiet()
+          await Bun.$`git remote add origin git@example.com:Kilo-Org/handbook`.cwd(dir).quiet()
         },
       })
 
@@ -231,7 +231,7 @@ describe("project-id", () => {
             }),
           )
 
-          await Bun.$`git remote add origin https://github.com/Kilo-Org/handbook.git`.cwd(dir).quiet()
+          await Bun.$`git remote add origin git@example.com:Kilo-Org/handbook`.cwd(dir).quiet()
         },
       })
 
@@ -281,7 +281,7 @@ describe("project-id", () => {
             }),
           )
 
-          await Bun.$`git remote add origin https://github.com/Kilo-Org/handbook.git`.cwd(dir).quiet()
+          await Bun.$`git remote add origin git@example.com:Kilo-Org/handbook`.cwd(dir).quiet()
         },
       })
 
@@ -324,7 +324,7 @@ describe("project-id", () => {
           await fs.mkdir(path.join(dir, ".kilo"), { recursive: true })
           await Bun.write(path.join(dir, ".kilo", "config.json"), "{ invalid json")
 
-          await Bun.$`git remote add origin https://github.com/Kilo-Org/handbook.git`.cwd(dir).quiet()
+          await Bun.$`git remote add origin git@example.com:Kilo-Org/handbook`.cwd(dir).quiet()
         },
       })
 
@@ -351,7 +351,7 @@ describe("project-id", () => {
             }),
           )
 
-          await Bun.$`git remote add origin https://github.com/Kilo-Org/handbook.git`.cwd(dir).quiet()
+          await Bun.$`git remote add origin git@example.com:Kilo-Org/handbook`.cwd(dir).quiet()
         },
       })
 
@@ -417,7 +417,7 @@ describe("project-id", () => {
       await using tmp = await tmpdir({
         git: true,
         init: async (dir) => {
-          await Bun.$`git remote add origin https://github.com:443/Kilo-Org/handbook.git`.cwd(dir).quiet()
+          await Bun.$`git remote add origin https://example.com:443/Kilo-Org/handbook`.cwd(dir).quiet()
         },
       })
 

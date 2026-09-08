@@ -289,8 +289,15 @@ jobs:
 
       - name: Check generated client
         if: runner.os == 'Linux'
-        working-directory: packages/client
-        run: bun run check:generated
+        run: |
+          # kilocode_change - packages/client was removed by the prune; guard on its
+          # presence instead of failing the job on a missing working-directory.
+          if [ ! -d packages/client ]; then
+            echo "packages/client absent (pruned); skipping generated client check"
+            exit 0
+          fi
+          cd packages/client
+          bun run check:generated
       - name: Run HttpApi exerciser gates
         run: bun turbo test:httpapi --filter='@kilocode/cli'
         env:
