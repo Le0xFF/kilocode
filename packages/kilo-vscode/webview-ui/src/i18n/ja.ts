@@ -694,7 +694,7 @@ export const dict = {
   "settings.experimental.imageGeneration.description": "AI画像生成を有効にする",
   "settings.experimental.imageGenerationModel.title": "画像モデル",
   "settings.experimental.imageGenerationModel.description": "画像生成モデル",
-  "settings.experimental.imageGenerationModel.placeholder": "デフォルト (Auto Router)",
+  "settings.experimental.imageGenerationModel.placeholder": "Select a model from your configured provider",
 
   "settings.experimental.nativeNotebookTools.title": "ネイティブノートブックツール",
   "settings.experimental.nativeNotebookTools.description":

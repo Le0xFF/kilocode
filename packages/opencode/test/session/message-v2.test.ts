@@ -1450,7 +1450,7 @@ describe("session.message-v2.fromError", () => {
       },
       {
         code: "usage_not_included",
-        message: "To use Codex with your ChatGPT plan, upgrade to Plus: https://chatgpt.com/explore/plus.",
+        message: "Usage not included in your plan. Check your provider's billing page.",
       },
       {
         code: "invalid_prompt",

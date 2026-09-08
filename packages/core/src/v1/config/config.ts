@@ -284,8 +284,11 @@ export const Info = Schema.Struct({
       batch_tool: Schema.optional(Schema.Boolean).annotate({ description: "Enable the batch tool" }),
       // kilocode_change start
       image_generation: Schema.optional(Schema.Boolean).annotate({ description: "Enable AI image generation" }),
+      // kilocode_change - legacy field: a providerID/modelID reference resolved against the configured local
+      // provider; superseded by image_generation_provider (no hosted default on the offline surface)
       image_generation_model: Schema.optional(Schema.String).annotate({
-        description: "Model ID to use for image generation (default: openrouter/auto)",
+        description:
+          "Legacy model reference (providerID/modelID) for image generation, resolved against your configured provider; prefer image_generation_provider",
       }),
       native_notebook_tools: Schema.optional(Schema.Boolean).annotate({
         description: "Enable native tools for reading, editing, and executing VS Code notebooks",

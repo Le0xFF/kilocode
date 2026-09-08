@@ -147,7 +147,7 @@ export function parseStreamError(input: unknown): ParsedStreamError | undefined 
     case "usage_not_included":
       return {
         type: "api_error",
-        message: "To use Codex with your ChatGPT plan, upgrade to Plus: https://chatgpt.com/explore/plus.",
+        message: "Usage not included in your plan. Check your provider's billing page.", // kilocode_change - no product-specific copy (Codex/ChatGPT) on the local surface
         isRetryable: false,
         responseBody,
       }

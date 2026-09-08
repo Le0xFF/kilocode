@@ -22,7 +22,7 @@ jobs:
   unit:
     name: unit tests
     runs-on: ${{ github.repository == 'Kilo-Org/kilocode' && 'blacksmith-4vcpu-ubuntu-2404' || 'ubuntu-latest' }} # kilocode_change
-    timeout-minutes: 45 # kilocode_change - match test.yml's unit jobs; without this a hung runner consumes the full 360-min GitHub Actions default
+    timeout-minutes: 15 # kilocode_change - suite hard deadline is 5 min (KILO_TEST_GLOBAL_TIMEOUT); 15 covers install/lint/knip/marker margin
     defaults:
       run:
         shell: bash
@@ -44,6 +44,10 @@ jobs:
           # 600s per-file kill deadline, matching test.yml. The runner's default is 300s; a heavy
           # file on a saturated worker can legitimately exceed that before it finishes or hangs.
           KILO_TEST_FILE_TIMEOUT: "600000"
+          # Hard 5-min budget for the whole suite: files not started by the deadline are reported as
+          # budget-exceeded (exit 1), so an over-budget run stays visible instead of silently running
+          # to the job timeout. In-flight files finish or hit their per-file deadline.
+          KILO_TEST_GLOBAL_TIMEOUT: "300000"
           # KILO_TEST_CONCURRENCY is intentionally left unset so the runner applies its automatic
           # RAM-based cap (~2GB per worker). The blacksmith-4vcpu host has uncertain RAM from here,
           # and on forks this job falls back to ubuntu-latest (variable RAM); the automatic cap covers
