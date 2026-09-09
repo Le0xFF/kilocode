@@ -127,6 +127,7 @@ export const configConsoleHandlers = HttpApiBuilder.group(InstanceHttpApi, "conf
         }
         yield* markInstanceForDisposal(instance)
       }
+
       const all = yield* auth.all().pipe(Effect.orElseSucceed(() => ({})))
       const [base, global, sources] = yield* Effect.all(
         [
@@ -152,6 +153,7 @@ export const configConsoleHandlers = HttpApiBuilder.group(InstanceHttpApi, "conf
           sources: sources.sources,
         }),
       )
+
       if (body.scope === "global" && result.changed && !hot) {
         yield* disposeAllInstancesAndEmitGlobalDisposed({ swallowErrors: true }).pipe(
           Effect.catchCause(() => Effect.void),

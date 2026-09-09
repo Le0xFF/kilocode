@@ -94,7 +94,7 @@ export const WorkingIndicator: Component = () => {
   const handleCancelRetry = () => {
     const sid = session.currentSessionID()
     if (sid) {
-      vscode.postMessage({ type: "abort", sessionID: sid })
+      vscode.postMessage({ type: "abort", sessionID: sid, scope: "session" })
     }
   }
 

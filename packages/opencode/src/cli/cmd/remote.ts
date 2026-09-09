@@ -6,7 +6,9 @@ export const RemoteCommand = cmd({
   describe: "enable remote connection for real-time session relay",
   builder: (yargs) => yargs,
   handler: async () => {
+
     console.log("Remote session relay is not available in this build. Sessions stay local.")
+
   },
 })
 

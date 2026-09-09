@@ -4,18 +4,15 @@ import type { PermissionFileDiff } from "./permissions"
 import type { ModelSelection, ProviderConfig } from "./providers"
 import type { Config } from "./config"
 import type { ModelAllocation, ReviewCommentEntry, TerminalDestination, TerminalPlacement } from "./agent-manager"
-import type { ReviewMessageData } from "../../../../src/shared/review-comments"
+import type { PRReviewCommentData, ReviewMessageData } from "../../../../src/shared/review-comments"
+import type { BrowserFeedbackData } from "../../../../src/shared/browser-feedback"
 import type { WorkStyle, WorkStyleState } from "../../../../src/shared/work-style-presets"
 import type { AnacondaDesktopWebviewMessage } from "../../../../src/shared/anaconda-desktop-messages"
-import type {
-  ClearLegacyDataMessage,
-  FinalizeLegacyMigrationMessage,
-  RequestMigrationDataMessage,
-  SkipLegacyMigrationMessage,
-  StartMigrationMessage,
-} from "./migration"
+import type { RequestMigrationDataMessage, StartMigrationMessage } from "./migration"
 import type { MemoryShowMessage, MemoryOperationMessage, RequestMemoryMessage } from "./memory"
+import type { RequestSessionBoardMessage, ResetSessionBoardMessage } from "./board"
 import type { Activity } from "../../utils/session-activity"
+import type { PRReactionContent } from "../../../agent-manager/pr/pr-types"
 
 // ============================================
 // Messages FROM webview TO extension
@@ -34,6 +31,7 @@ export interface SendMessageRequest {
   variant?: string
   files?: FileAttachment[]
   review?: ReviewMessageData
+  browserFeedback?: BrowserFeedbackData
   agentManagerContext?: string
   contextDirectory?: string
 }
@@ -48,6 +46,7 @@ export interface ResumeSessionRequest {
 export interface AbortRequest {
   type: "abort"
   sessionID: string
+  scope?: "session" | "tree"
 }
 
 export interface RequestBackgroundJobsMessage {
@@ -122,6 +121,20 @@ export interface RequestSessionModelUsageMessage {
   type: "requestSessionModelUsage"
   sessionID: string
   requestID: string
+}
+
+export interface RequestGitRemoteUrlMessage {
+  type: "requestGitRemoteUrl"
+}
+
+export interface LoginRequest {
+  type: "login"
+}
+export interface LogoutRequest {
+  type: "logout"
+}
+export interface RefreshProfileRequest {
+  type: "refreshProfile"
 }
 
 export interface OpenExternalRequest {
@@ -509,6 +522,10 @@ export interface TestNotificationMessage {
   sound: string
 }
 
+export interface TestOSNotificationMessage {
+  type: "testOSNotification"
+}
+
 export interface ResetAllSettingsRequest {
   type: "resetAllSettings"
 }
@@ -614,6 +631,7 @@ export interface CloseSessionRequest {
 /** Persist a non-worktree session to agent-manager.json (worktreeId = null). */
 export interface PersistSessionRequest {
   type: "agentManager.persistSession"
+  projectId?: string
   sessionId: string
   draftID?: string
 }
@@ -738,6 +756,11 @@ export interface OpenWorktreeRequest {
 export interface AgentManagerCopyToClipboardRequest {
   type: "agentManager.copyToClipboard"
   text: string
+}
+
+export interface AgentManagerSetIntroDismissedRequest {
+  type: "agentManager.setIntroDismissed"
+  dismissed: boolean
 }
 
 // Copy text to the system clipboard via the extension host
@@ -885,6 +908,15 @@ export interface SetSidebarCollapsedRequest {
   collapsed: boolean
 }
 
+export interface RequestCaffeinationMessage {
+  type: "agentManager.requestCaffeination"
+}
+
+export interface SetCaffeinationRequest {
+  type: "agentManager.setCaffeination"
+  enabled: boolean
+}
+
 // Persist review diff style preference
 export interface SetReviewDiffStyleRequest {
   type: "agentManager.setReviewDiffStyle"
@@ -982,6 +1014,15 @@ export interface CommentActionMessage {
   threadId: string
 }
 
+export interface CommentReactionMessage {
+  type: "agentManager.commentReaction"
+  projectId?: string
+  worktreeId: string
+  commentId: string
+  reaction: PRReactionContent
+  add: boolean
+}
+
 export interface ApplyWorktreeDiffMessage {
   type: "agentManager.applyWorktreeDiff"
   projectId?: string
@@ -1032,6 +1073,13 @@ export interface OpenDiffVirtualRequest {
   type: "openDiffVirtual"
   diff: PermissionFileDiff
   initialDiffStyle: "unified" | "split"
+}
+
+export interface OpenPRCommentRequest {
+  type: "openPRComment"
+  comment: PRReviewCommentData
+  content: string
+  sessionID?: string
 }
 
 export interface DiffViewerSendCommentsRequest {
@@ -1133,6 +1181,28 @@ export interface SidebarOpenSessionsMessage {
 export interface AgentManagerVisibleSessionMessage {
   type: "agentManager.visibleSession"
   sessionID: string | null
+}
+
+export interface AgentManagerBrowserRequestMessage {
+  type:
+    | "agentManager.browser.open"
+    | "agentManager.browser.refresh"
+    | "agentManager.browser.close"
+    | "agentManager.browser.state"
+    | "agentManager.browser.inspect"
+    | "agentManager.browser.input"
+    | "agentManager.browser.devtools"
+  sessionId: string
+  projectId?: string
+  url?: string
+  requestId?: string
+  x?: number
+  y?: number
+  width?: number
+  height?: number
+  hover?: boolean
+  click?: boolean
+  theme?: "dark" | "light"
 }
 
 export interface RequestAutoApproveStateMessage {
@@ -1331,7 +1401,9 @@ export interface MoveSectionRequest {
 }
 
 export type WebviewMessage =
+  | import("./agent-manager").BaseUpdateRequest
   | { type: "sessionActivity"; state: Activity }
+  | { type: "acknowledgeSession"; sessionID: string; eventID: string }
   | DocumentRequestMessage
   | DocumentOpenFileMessage
   | DocumentCloseMessage
@@ -1340,6 +1412,8 @@ export type WebviewMessage =
   | ResumeSessionRequest
   | AbortRequest
   | RequestBackgroundJobsMessage
+  | RequestSessionBoardMessage
+  | ResetSessionBoardMessage
   | CancelBackgroundJobMessage
   | PromoteBackgroundJobMessage
   | RevertSessionRequest
@@ -1414,6 +1488,7 @@ export type WebviewMessage =
   | OpenSettingsTabRequest
   | RequestNotificationSettingsMessage
   | TestNotificationMessage
+  | TestOSNotificationMessage
   | ResetAllSettingsRequest
   | SettingsTabChangedMessage
   | SyncSessionRequest
@@ -1450,6 +1525,7 @@ export type WebviewMessage =
   | ShowWorktreeTerminalRequest
   | OpenWorktreeRequest
   | AgentManagerCopyToClipboardRequest
+  | AgentManagerSetIntroDismissedRequest
   | CopyToClipboardRequest
   | ShowExistingLocalTerminalRequest
   | AgentManagerOpenFileRequest
@@ -1459,6 +1535,8 @@ export type WebviewMessage =
   | SetWorktreeOrderRequest
   | SetSessionsCollapsedRequest
   | SetSidebarCollapsedRequest
+  | RequestCaffeinationMessage
+  | SetCaffeinationRequest
   | SetReviewDiffStyleRequest
   | SetReviewMarkdownRenderRequest
   | PersistVariantRequest
@@ -1475,18 +1553,15 @@ export type WebviewMessage =
   | RefreshPRMessage
   | OpenPRMessage
   | CommentActionMessage
-  // legacy-migration start
+  | CommentReactionMessage
   | RequestMigrationDataMessage
   | StartMigrationMessage
-  | SkipLegacyMigrationMessage
-  | ClearLegacyDataMessage
-  | FinalizeLegacyMigrationMessage
-  // legacy-migration end
   | ApplyWorktreeDiffMessage
   | RevertWorktreeFileMessage
   | EnhancePromptRequest
   | OpenChangesRequest
   | OpenDiffVirtualRequest
+  | OpenPRCommentRequest
   | DiffViewerSendCommentsRequest
   | DiffViewerSetDiffStyleRequest
   | DiffViewerSetMarkdownRenderRequest
@@ -1505,6 +1580,7 @@ export type WebviewMessage =
   | AgentManagerOpenSessionsMessage
   | SidebarOpenSessionsMessage
   | AgentManagerVisibleSessionMessage
+  | AgentManagerBrowserRequestMessage
   | RequestAutoApproveStateMessage
   | ToggleAutoApproveMessage
   | RequestSandboxStatusMessage

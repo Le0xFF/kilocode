@@ -55,11 +55,13 @@ describe("sendMessage dismisses pending tool requests", () => {
   })
 
   it("dismisses suggestions before sending", () => {
-    expect(body).toContain("dismissSuggestion")
+    expect(body).toContain("dismiss(sid)")
+    expect(extractFunctionBody(source, "dismiss")).toContain("dismissSuggestion")
   })
 
   it("rejects questions before sending", () => {
-    expect(body).toContain("dismissQuestion")
+    expect(body).toContain("dismiss(sid)")
+    expect(extractFunctionBody(source, "dismiss")).toContain("dismissQuestion")
   })
 })
 
@@ -72,18 +74,20 @@ describe("sendCommand dismisses pending tool requests", () => {
   })
 
   it("dismisses suggestions before sending", () => {
-    expect(body).toContain("dismissSuggestion")
+    expect(body).toContain("dismiss(sid)")
+    expect(extractFunctionBody(source, "dismiss")).toContain("dismissSuggestion")
   })
 
   it("rejects questions before sending", () => {
-    expect(body).toContain("dismissQuestion")
+    expect(body).toContain("dismiss(sid)")
+    expect(extractFunctionBody(source, "dismiss")).toContain("dismissQuestion")
   })
 
   it("applies model, agent, and variant overrides when provided by a command", () => {
     expect(body).toContain("if (overrides?.agent)")
     expect(body).toContain("selectAgent(overrides.agent, scope)")
     expect(body).toContain("if (overrides?.model)")
-    expect(body).toContain("selectModel(parsed.providerID, parsed.modelID, scope)")
+    expect(body).toContain("selectModel(effectiveSelection.providerID, effectiveSelection.modelID, scope)")
     expect(body).toContain("if (overrides?.variant)")
     expect(body).toContain("selectVariant(overrides.variant, scope)")
   })
@@ -298,28 +302,36 @@ describe("sendMessage / sendCommand draft id contract", () => {
     expect(body).toMatch(/const effectiveDraftID = !sid && !draftID \? crypto\.randomUUID\(\) : draftID/)
   })
 
-  it("sendMessage seeds the pending agent before resolving the draft-scoped agent", () => {
+  it("sendMessage seeds the pending agent before resolving draft-scoped settings", () => {
     // Fresh draft IDs are created after ModeSwitcher stored the selected mode in
     // pendingAgentSelection(). The draft scope must inherit that pending agent
-    // before promptAgent(scope) runs, otherwise the first send pairs the selected
+    // before submission(scope) runs, otherwise the first send pairs the selected
     // model with the default agent's system prompt.
     const body = extractFunctionBody(source, "sendMessage")
     expect(body).toMatch(
-      /if \(!sid && !draftID && effectiveDraftID\) agentDrafts\.seed\(effectiveDraftID\)[\s\S]*const agent = promptAgent\(scope\)/,
+      /if \(!sid && !draftID && effectiveDraftID\) agentDrafts\.seed\(effectiveDraftID\)[\s\S]*const settings = submission\(scope, selection\)/,
     )
   })
 
-  it("sendCommand seeds the pending agent before resolving the draft-scoped agent", () => {
+  it("sendCommand seeds the pending agent before resolving draft-scoped settings", () => {
     const body = extractFunctionBody(source, "sendCommand")
     expect(body).toMatch(
-      /if \(!sid && !draftID && effectiveDraftID\) agentDrafts\.seed\(effectiveDraftID\)[\s\S]*const agent = promptAgent\(scope\)/,
+      /if \(!sid && !draftID && effectiveDraftID\) agentDrafts\.seed\(effectiveDraftID\)[\s\S]*submission\(scope, effectiveSelection\)/,
     )
   })
 
-  it("sendMessage and sendCommand post the agent returned by promptAgent", () => {
-    expect(extractFunctionBody(source, "sendMessage")).toContain("const agent = promptAgent(scope)")
-    expect(extractFunctionBody(source, "sendCommand")).toContain("const agent = promptAgent(scope)")
-    expect(extractFunctionBody(source, "promptAgent")).toContain("return resolvePromptAgent({")
+  it("sendMessage and sendCommand post the settings returned by submission", () => {
+    expect(extractFunctionBody(source, "sendMessage")).toContain("const settings = submission(scope, selection)")
+    expect(extractFunctionBody(source, "sendCommand")).toContain(
+      "const { model, ...settings } = submission(scope, effectiveSelection)",
+    )
+    expect(extractFunctionBody(source, "submission")).toContain("agent: resolvePromptAgent({")
+  })
+
+  it("does not resolve submission defaults for model-free Goal controls", () => {
+    const body = extractFunctionBody(source, "sendCommand")
+    expect(body).toMatch(/if \(!effectiveSelection\) return\s+const \{ model, \.\.\.settings \} = submission/)
+    expect(body).not.toContain("effectiveSelection ?? undefined")
   })
 
   it("createSession and clearCurrentSession do not pin the provisional default agent", () => {
@@ -396,8 +408,9 @@ describe("PromptInput send origin contract", () => {
   })
 
   it("passes the captured origin to message and command sends", () => {
-    expect(source).toMatch(/session\.sendMessage\([\s\S]*origin \?\? null\)/)
-    expect(source).toMatch(/session\.sendCommand\([\s\S]*origin \?\? null\)/)
+    expect(source).toMatch(/session\.sendMessage\([\s\S]*origin \?\? null[\s\S]*browserData[\s\S]*\)/)
+    const command = source.slice(source.indexOf("session.sendCommand("))
+    expect(command).toMatch(/origin \?\? null[\s\S]*\{[\s\S]*agent: matched\.agent/)
   })
 
   it("records sent prompts before a pending session key change can return", () => {
@@ -405,11 +418,13 @@ describe("PromptInput send origin contract", () => {
     const end = source.indexOf("\n  return (", start)
     const body = source.slice(start, end)
     const send = Math.max(body.indexOf("session.sendMessage("), body.indexOf("session.sendCommand("))
-    const append = body.lastIndexOf("history.append(draft)")
+    const clear = body.indexOf("clearDraft(key, draft)")
+    const append = body.lastIndexOf("history.append(value)")
     const guard = body.indexOf("if (draftKey() !== key) return")
 
     expect(send).toBeGreaterThan(-1)
-    expect(append).toBeGreaterThan(send)
+    expect(clear).toBeGreaterThan(send)
+    expect(append).toBeGreaterThan(clear)
     expect(append).toBeLessThan(guard)
     expect(body.indexOf('setText("")', guard)).toBeGreaterThan(guard)
   })
@@ -504,6 +519,47 @@ describe("Optimistic parts preservation and smooth status contract", () => {
     expect(match).not.toBeNull()
     expect(match![1]).toContain("activeUserMessageID(msgs, statusInfo()")
     expect(match![1]).toContain('language.t("ui.sessionTurn.status.thinking")')
+  })
+})
+
+describe("browser element reference contract", () => {
+  const source = readFile(PROMPT_FILE)
+
+  it("keeps selected browser elements as visible attachments instead of inserting them into the draft", () => {
+    expect(source).toContain('data-component="browser-references"')
+    expect(source).toMatch(/const reference = message\.browser[\s\S]*?textareaRef\?\.focus\(\)[\s\S]*?return/)
+  })
+
+  it("includes browser reference content only when the user sends the prompt", () => {
+    expect(source).toContain("browserFeedbackData(browsers())")
+    expect(source).toContain("formatBrowserFeedback(browserData.references)")
+    expect(source).toContain('const message = [review, browserText, draft].filter(Boolean).join("\\n\\n")')
+    expect(source).toContain("references.delete(key)")
+  })
+
+  it("uses the tested failed-send parser before restoring text and references", () => {
+    expect(source).toContain("const restored = failedPrompt(failed)")
+    expect(source).toContain("const draft = restored.text")
+    expect(source).toContain("const browser = restored.browsers")
+    expect(source).not.toContain("partFeedback({ review: failed.review")
+  })
+
+  it("restores browser attachments for the correct session and allows attachment-only sends", () => {
+    expect(source).toContain("setBrowsers(references.get(key) ?? [])")
+    expect(source).toContain("if (reference.sessionId !== sid()) return")
+    expect(source).toContain("mergeBrowserReferences(browsers(), reference)")
+    expect(source).toContain("browsers().length > 0")
+  })
+})
+
+describe("sent browser feedback rendering contract", () => {
+  const message = readFile(path.join(ROOT, "webview-ui/src/components/chat/VscodeUserMessage.tsx"))
+
+  it("renders validated browser metadata as cards and exposes only the instruction body", () => {
+    expect(message).toContain("partFeedback")
+    expect(message).toContain("BrowserReferences")
+    expect(message).toContain("feedback()?.body")
+    expect(message).not.toContain("item.content")
   })
 })
 

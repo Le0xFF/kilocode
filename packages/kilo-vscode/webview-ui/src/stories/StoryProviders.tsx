@@ -106,7 +106,12 @@ const MockProviderProvider: ParentComponent<{ training?: boolean }> = (props) =>
     providers: () => MOCK_PROVIDERS as any,
     connected: () => ["lmstudio"],
     defaults: () => ({}),
+
     defaultSelection: () => ({ providerID: "lmstudio", modelID: "anthropic/claude-sonnet-4-6" }),
+    organizationId: () => null,
+    ready: () => true,
+    defaultSelection: () => ({ providerID: "kilo", modelID: "anthropic/claude-sonnet-4-6" }),
+
     models,
     findModel: (sel: any) => _findModel(models(), sel),
     authMethods: () => ({}),
@@ -248,8 +253,8 @@ export function mockSessionValue(overrides?: {
     currentVariant: () => undefined,
     variantForAgent: () => undefined,
     selectVariant: noop,
-    sendMessage: noop,
-    sendCommand: noop,
+    sendMessage: () => true,
+    sendCommand: () => true,
     abort: noop,
     compact: noop,
     respondToPermission: noop,
@@ -263,6 +268,11 @@ export function mockSessionValue(overrides?: {
     loadSessions: noop,
     loadOlderMessages: () => false,
     selectSession: noop,
+    // MessageList reads both on mount: `scrollBottomID` must be an accessor
+    // because it is passed to `on(...)`. Omitting it throws and takes down
+    // every chat story in the visual regression suite.
+    scrollBottomID: () => undefined,
+    consumeScrollBottom: () => false,
     deleteSession: noop,
     renameSession: noop,
     syncSession: noop,

@@ -1,7 +1,7 @@
 /**
  * Kilo TUI Commands
  *
- * Provides the /indexing command for configuring codebase indexing.
+ * Provides the /indexing command for configuring codebase indexing, plus the upstream /about command.
  */
 
 import { createMemo } from "solid-js"
@@ -9,6 +9,7 @@ import { useBindings } from "@tui/keymap"
 import { useSync } from "@tui/context/sync"
 import { useDialog } from "@tui/ui/dialog"
 import { DialogIndexing } from "./components/dialog-indexing.js"
+import { showAboutDialog } from "./cli/cmd/tui/component/dialog-about.js" // kilocode_change - upstream About dialog adopted offline
 import { indexingEnabled } from "./indexing-feature"
 
 // These types are OpenCode-internal and imported at runtime
@@ -43,6 +44,18 @@ export function registerKiloCommands(useSDK: () => UseSDK) {
             },
           ]
         : []),
+      // kilocode_change start - upstream /about command (offline-safe: version/env/diagnostics only)
+      {
+        name: "kilo.about",
+        title: "About",
+        desc: "Show version, environment, and diagnostic info",
+        category: "Kilo",
+        slashName: "about",
+        run: () => {
+          showAboutDialog(dialog)
+        },
+      },
+      // kilocode_change end
     ].map((command) => ({
       namespace: "palette",
       ...command,

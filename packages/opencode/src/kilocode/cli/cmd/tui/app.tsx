@@ -5,8 +5,14 @@
  * via thin integration points so the upstream diff stays minimal.
  */
 
+
 import { createEffect, createMemo, on } from "solid-js"
 import { useRenderer } from "@opentui/solid"
+import { createEffect, createMemo, on, onCleanup } from "solid-js"
+import { useKeyboard, useRenderer } from "@opentui/solid"
+import { resolveRenderLib, TextAttributes } from "@opentui/core"
+import { KiloTerminalActivity } from "./terminal-activity"
+
 import * as Clipboard from "@tui/clipboard"
 import { useBindings } from "@tui/keymap"
 import { useSDK } from "@tui/context/sdk"
@@ -71,6 +77,40 @@ export function useSessionEffects(deps: {
   const renderer = useRenderer()
   const session = createMemo(() => (deps.route.data.type === "session" ? deps.route.data.sessionID : undefined))
   const meta = { prev: "" }
+
+
+  KiloTerminalActivity.use({
+    enabled: process.env.KILO_TERMINAL_ACTIVITY,
+    session,
+    data: deps.sync.data,
+    subscribe: (handler) =>
+      deps.sdk.event.on("event", (event) => {
+        if (event.payload.type !== "sync") handler(event.payload)
+      }),
+    write: (data) => resolveRenderLib().writeOut(renderer.rendererPtr, data),
+  })
+  function send() {
+    const id = session()
+    const ids = id ? [id] : []
+    deps.sdk.client.session.viewed({ viewer: { id: viewerId, active }, attached: ids, visible: ids }).catch(() => {})
+  }
+  createEffect(() => send())
+  const onFocus = () => {
+    active = true
+    send()
+  }
+  const onBlur = () => {
+    active = false
+  }
+  renderer.on("focus", onFocus)
+  renderer.on("blur", onBlur)
+  // The server prepends `server.connected` to every SSE (re)connect; a restarted
+  // backend has an empty viewer map, so resend the snapshot immediately instead
+  // of waiting for the 60s check-in.
+  const offConnected = deps.sdk.event.on("event", (event) => {
+    if (event.payload.type === "server.connected") send()
+  })
+  const timer = setInterval(send, 60_000)
 
   createEffect(() => {
     const sessionID = session()

@@ -293,6 +293,7 @@ export const Info = Schema.Struct({
       native_notebook_tools: Schema.optional(Schema.Boolean).annotate({
         description: "Enable native tools for reading, editing, and executing VS Code notebooks",
       }),
+
       // kilocode_change start - local media providers (image) reference a providerID/modelID pair
       image_generation_provider: Schema.optional(
         Schema.Struct({
@@ -302,9 +303,20 @@ export const Info = Schema.Struct({
       ).annotate({
         description: "Local OpenAI-compatible provider and model used for image generation",
       }),
+
+      task_model_selection: Schema.optional(Schema.Boolean).annotate({
+        description: "Allow task subagents to select a model, provider, and reasoning effort",
+      }),
+      speech_to_text_model: Schema.optional(Schema.String).annotate({
+        description: "Speech-to-text transcription model ID to use for voice input",
+
+      }),
       // kilocode_change end
       openTelemetry: Schema.Boolean.pipe(Schema.optional, Schema.withDecodingDefault(Effect.succeed(true))).annotate({
         description: "Enable telemetry. Set to false to opt-out.",
+      }),
+      shared_agent_board: Schema.optional(Schema.Boolean).annotate({
+        description: "Share discoveries between the main agent and subagents within one session",
       }),
       // kilocode_change end
       primary_tools: Schema.optional(Schema.mutable(Schema.Array(Schema.String))).annotate({

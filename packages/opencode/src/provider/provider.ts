@@ -35,6 +35,14 @@ import {
   patchModelsDevModel as patchKiloModel,
   patchConfigModel as patchKiloConfigModel,
   customProviderVariants,
+
+  patchCustomLoaderResult,
+  patchKiloProviderPrivacy,
+  patchKiloProviderAuth,
+  publicKiloProvider,
+  kiloCustomLoaders,
+  kiloSmallModelPriority,
+
   buildTimeoutSignal,
   requestTimeout,
   wrapFirstByte,
@@ -282,7 +290,7 @@ export function toPublicInfo(provider: Info | undefined): Info {
   return JSON.parse(
     JSON.stringify(
       {
-        ...provider,
+        ...publicKiloProvider(provider), // kilocode_change
         models: Object.fromEntries(Object.entries(provider.models).filter(([, model]) => Schema.is(Model)(model))),
       },
       (_, value) => {
@@ -800,7 +808,10 @@ const layer = Layer.effect(
           mergeProvider(providerID, patch)
         }
 
-        for (const [id, fn] of Object.entries(custom(dep))) {
+        // kilocode_change start - resolve env once for patchCustomLoaderResult (azure env fallback)
+        const kiloEnv = yield* env.all()
+        // kilocode_change end
+        for (const [id, fn] of Object.entries({ ...custom(dep), ...kiloCustomLoaders(dep) })) { // kilocode_change - kilo provider loader kept from upstream
           const providerID = ProviderV2.ID.make(id)
           if (disabled.has(providerID)) continue
           const data = database[providerID]
@@ -808,6 +819,7 @@ const layer = Layer.effect(
             continue
           }
           const result = yield* fn(data)
+          if (result) patchCustomLoaderResult(id, result, kiloEnv) // kilocode_change
           if (result && (result.autoload || providers[providerID])) {
             if (result.getModel) modelLoaders[providerID] = result.getModel
             if (result.vars) varsLoaders[providerID] = result.vars
@@ -832,6 +844,23 @@ const layer = Layer.effect(
           if (provider.options) partial.options = provider.options
           mergeProvider(providerID, partial)
         }
+
+        patchKiloProviderPrivacy(providers[ProviderV2.ID.make("kilo")], cfg) // kilocode_change
+        patchKiloProviderAuth(providers[ProviderV2.ID.make("kilo")], cfg, auths["kilo"]) // kilocode_change
+        const gitlab = ProviderV2.ID.make("gitlab")
+        if (discoveryLoaders[gitlab] && providers[gitlab] && isProviderAllowed(gitlab)) {
+          // kilocode_change start - keep discovery failures visible instead of swallowing them
+          const discovered = yield* Effect.tryPromise(() => discoveryLoaders[gitlab]()).pipe(
+            Effect.catch((err) =>
+              Effect.logWarning("gitlab model discovery failed", { err }).pipe(Effect.as({} as Record<string, Model>)),
+            ),
+          )
+          for (const [modelID, model] of Object.entries(discovered)) {
+            if (!providers[gitlab].models[modelID]) providers[gitlab].models[modelID] = model
+          }
+          // kilocode_change end
+        }
+
 
         for (const [id, provider] of Object.entries(providers)) {
           const providerID = ProviderV2.ID.make(id)

@@ -144,6 +144,8 @@ describe("kilo help <command>", () => {
   })
 })
 
+
+
 describe("edge cases", () => {
   test("output contains no ANSI escape sequences", async () => {
     const output = await generateHelp({ all: true, format: "md", commands })

@@ -39,6 +39,7 @@ import { Snapshot } from "@/snapshot" // kilocode_change
 import { SessionNetwork } from "./network" // kilocode_change
 import { KiloSessionMessageOrder } from "@/kilocode/session/message-order" // kilocode_change
 import * as TextStream from "@/kilocode/text-stream" // kilocode_change
+import { BoardNotice } from "@/kilocode/board/notice" // kilocode_change
 import { Effect, Schema } from "effect"
 
 /** Error shape thrown by Bun's fetch() when gzip/br decompression fails mid-stream */
@@ -416,6 +417,9 @@ export const toModelMessagesEffect = Effect.fnUntraced(function* (
             const outputText = part.state.time.compacted
               ? "[Old tool result content cleared]"
               : truncateToolOutput(part.state.output, options?.toolOutputMaxChars)
+            // kilocode_change start
+            const text = BoardNotice.output(outputText, part.state.time.compacted ? undefined : part.state.metadata)
+            // kilocode_change end
             // kilocode_change start — do not replay send_file delivery attachments to the model;
             // they are mobile delivery artifacts (up to 4 MiB base64), not model context.
             const attachments =
@@ -436,10 +440,10 @@ export const toModelMessagesEffect = Effect.fnUntraced(function* (
             const output =
               finalAttachments.length > 0
                 ? {
-                    text: outputText,
+                    text, // kilocode_change
                     attachments: finalAttachments,
                   }
-                : outputText
+                : text // kilocode_change
 
             assistantMessage.parts.push({
               type: ("tool-" + part.tool) as `tool-${string}`,

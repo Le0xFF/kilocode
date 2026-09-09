@@ -51,7 +51,7 @@ function planExitInfo(part: SDKPart): { plan: string } | undefined {
   return { plan }
 }
 
-function PlanExitCard(props: { part: ToolPart }) {
+function PlanExitCard(props: { part: ToolPart; sessionID: string }) {
   const language = useLanguage()
   const server = useServer()
   const data = useData()
@@ -69,7 +69,7 @@ function PlanExitCard(props: { part: ToolPart }) {
     e.preventDefault()
     const i = info()
     if (!i || !data.openFile) return
-    data.openFile(i.plan)
+    data.openFile(i.plan, undefined, undefined, props.sessionID)
   }
   return (
     <Show when={info()}>
@@ -360,7 +360,7 @@ export const AssistantMessage: Component<AssistantMessageProps> = (props) => {
                             </Show>
                           }
                         >
-                          {(tp) => <PlanExitCard part={tp()} />}
+                          {(tp) => <PlanExitCard part={tp()} sessionID={props.message.sessionID} />}
                         </Show>
                       }
                     >

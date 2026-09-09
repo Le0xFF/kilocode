@@ -5,6 +5,7 @@ const crypto = require("crypto")
 const core = require("@babel/core")
 const solid = require("babel-preset-solid")
 const ts = require("@babel/preset-typescript")
+const playwright = require("./script/playwright-runtime")
 
 const production = process.argv.includes("--production")
 const watch = process.argv.includes("--watch")
@@ -252,9 +253,9 @@ function getExtensionConfig() {
     bundle: true,
     format: "cjs",
     // Identifier minification is disabled for the Node.js extension bundle because esbuild
-    // renames re-exports and internal Symbols to the same short identifier in CJS mode,
-    // causing "J_ is not a function (J_ is a Symbol)" at runtime. Syntax and whitespace
-    // minification are kept; only identifier mangling is off.
+    // renames @aws-sdk/credential-providers re-exports and internal Symbols to the same
+    // short identifier in CJS mode, causing "J_ is not a function (J_ is a Symbol)" at
+    // runtime. Syntax and whitespace minification are kept; only identifier mangling is off.
     minifyIdentifiers: false,
     minifySyntax: production,
     minifyWhitespace: production,
@@ -264,7 +265,7 @@ function getExtensionConfig() {
     outfile: "dist/extension.js",
     external: ["vscode"],
     logLevel: "silent",
-    plugins: watch ? [esbuildProblemMatcherPlugin] : [],
+    plugins: [playwright, ...(watch ? [esbuildProblemMatcherPlugin] : [])],
   }
 }
 
@@ -272,6 +273,8 @@ function getWebviewsConfig() {
   return {
     entryPoints: {
       "agent-manager": "webview-ui/agent-manager/index.tsx",
+      kiloclaw: "webview-ui/kiloclaw/index.tsx",
+      marketplace: "webview-ui/marketplace/index.tsx",
       "diff-viewer": "webview-ui/diff-viewer/index.tsx",
       documents: "webview-ui/documents/index.tsx",
       "diff-virtual": "webview-ui/diff-virtual/index.tsx",
@@ -332,7 +335,21 @@ function getMarkdownShikiWorkerConfig() {
   }
 }
 
+function notices() {
+  const deps = {
+    "playwright-core": ["LICENSE", "NOTICE", "ThirdPartyNotices.txt"],
+    "chromium-bidi": ["LICENSE"],
+  }
+  for (const [name, files] of Object.entries(deps)) {
+    const root = path.dirname(require.resolve(`${name}/package.json`))
+    const dir = path.join(__dirname, "dist", "licenses", name)
+    fs.mkdirSync(dir, { recursive: true })
+    for (const file of files) fs.copyFileSync(path.join(root, file), path.join(dir, file))
+  }
+}
+
 async function main() {
+  notices()
   const extensionConfig = getExtensionConfig()
   const webviewsConfig = getWebviewsConfig()
   const shikiWorkerConfig = getShikiWorkerConfig()

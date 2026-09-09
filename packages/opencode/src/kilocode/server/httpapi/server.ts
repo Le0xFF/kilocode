@@ -18,10 +18,13 @@ import { configConsoleHandlers } from "./handlers/config-console"
 import { enhancePromptHandlers } from "./handlers/enhance-prompt"
 import { indexingHandlers } from "./handlers/indexing"
 import { instanceReloadHandlers } from "./handlers/instance-reload"
+
 import { interactiveTerminalHandlers } from "./handlers/interactive-terminal"
+
 import { kilocodeHandlers } from "./handlers/kilocode"
 import { mediaLocalHandlers } from "./handlers/media-local"
 import { memoryHandlers } from "./handlers/memory"
+import { migrateHandlers } from "./handlers/migrate"
 import { networkHandlers } from "./handlers/network"
 // kilocode_change - RemoteApi removed: no call sites after Remote Control removal
 import { sandboxHandlers } from "./handlers/sandbox"
@@ -38,10 +41,13 @@ export const provide = Layer.provide([
   enhancePromptHandlers,
   indexingHandlers,
   instanceReloadHandlers,
+
   interactiveTerminalHandlers,
+
   kilocodeHandlers,
   mediaLocalHandlers,
   memoryHandlers,
+  migrateHandlers,
   networkHandlers,
   // kilocode_change - RemoteApi removed: no call sites after Remote Control removal
   sandboxHandlers,

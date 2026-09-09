@@ -15,6 +15,10 @@ import { Effect, Schema } from "effect"
 import { mapValues, omit, pickBy } from "remeda"
 import { reasoningSummary } from "./reasoning-summary"
 import type { Provider } from "@/provider/provider"
+import { DEFAULT_HEADERS } from "@/kilocode/const" // kilocode_change - offline: headers const lives in the pruned gateway-free module
+import type { Auth } from "@/auth"
+import type { Config } from "@/config/config"
+import { organization, token } from "./catalog"
 
 /** Default timeout (ms) for provider HTTP requests (connection phase). */
 export const REQUEST_TIMEOUT_MS = 300_000 // 5 minutes
@@ -140,9 +144,88 @@ type CustomLoaderResult = {
 
 type CustomLoader = (provider: any) => Effect.Effect<CustomLoaderResult>
 
+export function patchKiloProviderPrivacy(provider: { options?: Record<string, any> } | undefined, config: any) {
+  if (!provider || config.hide_prompt_training_models !== true) return
+  provider.options = { ...provider.options, dataCollection: "deny" }
+}
+
+export function patchKiloProviderAuth(
+  provider: Provider.Info | undefined,
+  config: Config.Info,
+  info: Auth.Info | undefined,
+) {
+  if (!provider) return
+  const options = config.provider?.kilo?.options
+  const key = token(options, info)
+  const org = organization(options, info)
+  if (key !== undefined) provider.options.kilocodeToken = key
+  if (org !== undefined) provider.options.kilocodeOrganizationId = org
+}
+
+export function publicKiloProvider(provider: Provider.Info): Provider.Info {
+  if (provider.id !== "kilo") return provider
+  return { ...provider, key: undefined, options: omit(provider.options, ["apiKey", "kilocodeToken"]) }
+}
+
 export function kiloCustomLoaders(dep: CustomDep): Record<string, CustomLoader> {
   void dep // kilocode_change - signature kept stable for the provider.ts injection point
   return {} // kilocode_change - offline surface: no built-in online loaders remain (opencode Zen loader removed with the catalog cut)
+}
+
+// ---------------------------------------------------------------------------
+// Post-processing for custom loader results
+// Patches options/headers for providers whose upstream loaders we don't fully
+// replace but where specific values differ (headers, branding, env vars).
+// ---------------------------------------------------------------------------
+
+export function patchCustomLoaderResult(
+  providerID: string,
+  result: { options?: Record<string, any> },
+  env: Record<string, string | undefined>,
+) {
+  if (!result.options) return
+
+  switch (providerID) {
+    case "openrouter":
+    case "vercel":
+    case "zenmux":
+      result.options.headers = { ...result.options.headers, ...DEFAULT_HEADERS }
+      break
+    case "cerebras":
+      result.options.headers = {
+        ...result.options.headers,
+        "X-Cerebras-3rd-Party-Integration": "kilo",
+      }
+      break
+    case "azure": {
+      // Extend env var lookup for Azure baseURL / resource name
+      const url = result.options.baseURL ?? env["AZURE_OPENAI_ENDPOINT"]
+      const resource = (() => {
+        const name = result.options.resourceName
+        if (typeof name === "string" && name.trim() !== "") return name
+        return env["AZURE_RESOURCE_NAME"] ?? env["AZURE_OPENAI_RESOURCE_NAME"]
+      })()
+      if (url) {
+        result.options.baseURL = url
+        delete result.options.resourceName
+      } else if (resource) {
+        result.options.resourceName = resource
+        delete result.options.baseURL
+      }
+      break
+    }
+    // gitlab User-Agent and cloudflare error message are patched inline
+    // in provider.ts with single-line kilocode_change markers
+  }
+}
+
+// ---------------------------------------------------------------------------
+// getSmallModel helpers
+// ---------------------------------------------------------------------------
+
+export function kiloSmallModelPriority(providerID: string): string[] | undefined {
+  if (providerID.startsWith("kilo")) return ["kilo-auto/small"]
+  return undefined
 }
 
 // ---------------------------------------------------------------------------

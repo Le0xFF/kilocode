@@ -1,4 +1,3 @@
-// kilocode_change - new file
 import { Permission } from "@/permission"
 import { NamedError } from "@opencode-ai/core/util/error"
 import { Glob } from "@opencode-ai/core/util/glob"
@@ -18,8 +17,9 @@ import PROMPT_ORCHESTRATOR from "../../agent/prompt/orchestrator.txt"
 import PROMPT_ASK from "../../agent/prompt/ask.txt"
 import PROMPT_EXPLORE from "../../agent/prompt/explore.txt"
 
-export const bash: Record<string, "allow" | "ask" | "deny"> = {
-  "*": "ask",
+const mermaidClients = new Set(["vscode", "jetbrains"])
+
+const readable: Record<string, "allow"> = {
   "cat *": "allow",
   "head *": "allow",
   "tail *": "allow",
@@ -48,6 +48,11 @@ export const bash: Record<string, "allow" | "ask" | "deny"> = {
   "cut *": "allow",
   "tr *": "allow",
   "jq *": "allow",
+}
+
+export const bash: Record<string, "allow" | "ask" | "deny"> = {
+  "*": "ask",
+  ...readable,
   "touch *": "allow",
   "mkdir *": "allow",
   "cp *": "allow",
@@ -62,34 +67,7 @@ export const bash: Record<string, "allow" | "ask" | "deny"> = {
 
 export const readOnlyBash: Record<string, "allow" | "ask" | "deny"> = {
   "*": "deny",
-  "cat *": "allow",
-  "head *": "allow",
-  "tail *": "allow",
-  "less *": "allow",
-  "ls *": "allow",
-  "tree *": "allow",
-  "pwd *": "allow",
-  "echo *": "allow",
-  "wc *": "allow",
-  "which *": "allow",
-  "type *": "allow",
-  "file *": "allow",
-  "diff *": "allow",
-  "du *": "allow",
-  "df *": "allow",
-  "date *": "allow",
-  "uname *": "allow",
-  "whoami *": "allow",
-  "printenv *": "allow",
-  "man *": "allow",
-  "grep *": "allow",
-  "rg *": "allow",
-  "ag *": "allow",
-  "sort *": "allow",
-  "uniq *": "allow",
-  "cut *": "allow",
-  "tr *": "allow",
-  "jq *": "allow",
+  ...readable,
   "git *": "deny",
   "git log *": "allow",
   "git show *": "allow",
@@ -153,7 +131,11 @@ const exploreBash: Record<string, "allow" | "ask" | "deny"> = {
   "find *": "deny",
 }
 
-function askGuard(mcp: Record<string, "allow" | "ask" | "deny"> = {}) {
+function board(enabled: boolean): Record<string, "allow"> {
+  return enabled ? { board_read: "allow", board_post: "allow" } : {}
+}
+
+function askGuard(mcp: Record<string, "allow" | "ask" | "deny"> = {}, enabled = false) {
   return Permission.fromConfig({
     "*": "deny",
     bash: readOnlyBash,
@@ -174,6 +156,7 @@ function askGuard(mcp: Record<string, "allow" | "ask" | "deny"> = {}) {
       [Truncate.GLOB]: "allow",
     },
     ...mcp,
+    ...board(enabled),
     // After the MCP rules: a server named `agent`/`notebook` emits `agent_*`/`notebook_*`,
     // which wildcard-match these tools and would otherwise reopen them.
     ...guardedDenies,
@@ -197,10 +180,7 @@ function editRestrictions(rules: Permission.Ruleset) {
 }
 
 function restrictions(user: Permission.Ruleset) {
-  return [
-    ...user.filter((rule) => rule.action === "deny" && rule.permission !== "edit"),
-    ...editRestrictions(user),
-  ]
+  return [...user.filter((rule) => rule.action === "deny" && rule.permission !== "edit"), ...editRestrictions(user)]
 }
 
 function askEditGuard() {
@@ -222,7 +202,6 @@ export const guarded = [
   "write",
   "agent_manager",
   "repo_clone",
-  "interactive_terminal",
 ]
 
 // Derived from `guarded` so the two cannot drift. `bash` and `task` carry their own rules
@@ -297,11 +276,18 @@ function planEditGuard(worktree: string) {
 
 export function hardenPlan(
   key: string,
-  item: { permission: Permission.Ruleset },
+  item: { native?: boolean; permission: Permission.Ruleset },
   worktree: string,
   ...explicit: Permission.Ruleset[]
 ) {
-  if (key !== "plan" && key !== "architect") return
+  // Plan-mode edit restrictions are a ceiling for the built-in plan agent only.
+  // Custom agents named `architect` are governed by their own permission config;
+  // the previous name check appended the guard after their rules, so last-match-
+  // wins made their edit allows unreachable with no opt-out (#13581). A custom
+  // `agent.plan` config reuses the built-in object, so `native` stays true and
+  // the ceiling still applies there.
+  if (key !== "plan") return
+  if (item.native !== true) return
   const edit = explicit.map(editRestrictions)
   item.permission = Permission.merge(item.permission, planEditGuard(worktree), ...edit)
 }
@@ -320,13 +306,14 @@ export function hardenExplore(
   )
 }
 
-function planGuard(worktree: string, mcp: Record<string, "allow" | "ask" | "deny"> = {}) {
+function planGuard(worktree: string, mcp: Record<string, "allow" | "ask" | "deny"> = {}, enabled = false) {
   return Permission.fromConfig({
     "*": "deny",
     question: "allow",
     suggest: "allow",
     skill: "allow",
     plan_exit: "allow",
+    open_plan: "allow",
     task: {
       "*": "allow",
       general: "deny",
@@ -345,6 +332,7 @@ function planGuard(worktree: string, mcp: Record<string, "allow" | "ask" | "deny
     
     edit: planEditRules(worktree),
     ...mcp,
+    ...board(enabled),
     ...guardedDenies,
   })
 }
@@ -369,10 +357,12 @@ export function prepare(cfg: Config.Info): KiloData {
   const mcpRules = getMcpRules(cfg)
   const defaultsPatch = Permission.fromConfig({
     bash,
+    ...board(cfg.experimental?.shared_agent_board === true),
     recall: "ask",
     ...(Flag.KILO_CLIENT === "vscode" && cfg.experimental?.native_notebook_tools === true
       ? { notebook_read: "ask" as const, notebook_edit: "ask" as const, notebook_execute: "ask" as const }
       : {}),
+    ...(Flag.KILO_CLIENT === "vscode" ? { browser_open: "ask" as const } : {}),
     kilo_memory_recall: "ask",
     kilo_memory_save: "ask",
   })
@@ -387,6 +377,7 @@ export function cacheKey(cfg: Config.Info) {
     mode: cfg.mode,
     permission: cfg.permission,
     native_notebook_tools: cfg.experimental?.native_notebook_tools,
+    shared_agent_board: cfg.experimental?.shared_agent_board,
     references: cfg.references,
     reference: cfg.reference,
   })
@@ -491,6 +482,7 @@ export function patchAgents(
   worktree: string,
   whitelistedDirs: string[],
 ) {
+  const enabled = cfg.experimental?.shared_agent_board === true
   // Rename "build" → "code" for backward compatibility
   if (agents.build) {
     agents.code = {
@@ -508,7 +500,7 @@ export function patchAgents(
 
   // Patch plan mode
   if (agents.plan) {
-    const guard = planGuard(worktree, kilo.mcpRules)
+    const guard = planGuard(worktree, kilo.mcpRules, enabled)
     agents.plan = {
       ...agents.plan,
       description: "Plan mode. Can only edit plan files; all other filesystem mutations are denied.",
@@ -527,6 +519,7 @@ export function patchAgents(
   if (agents.explore) {
     agents.explore = {
       ...agents.explore,
+      description: `${agents.explore.description} Bash is limited to an allowlist of read-only commands. For required scripts, tests, or binary-analysis commands outside that allowlist, select an available agent whose permissions allow them while preserving the requested no-change scope.`,
       permission: Permission.merge(
         defaults,
         Permission.fromConfig({
@@ -538,6 +531,7 @@ export function patchAgents(
           webfetch: "allow",
 
           read: "allow",
+          ...board(enabled),
           external_directory: {
             // Mirror upstream explore's shape: the outer "*": "deny" above wins
             // over defaults' external_directory rules via findLast, so re-apply
@@ -567,7 +561,7 @@ export function patchAgents(
       defaults,
       Permission.fromConfig({
         question: "allow",
-        suggest: "allow", // kilocode_change
+        suggest: "allow",
         plan_enter: "allow",
         semantic_search: "allow",
       }),
@@ -593,12 +587,19 @@ export function patchAgents(
         list: "allow",
         question: "allow",
         skill: "allow",
-        suggest: "allow", // kilocode_change
+        suggest: "allow",
         task: "allow",
         todoread: "allow",
         todowrite: "allow",
         webfetch: "allow",
-        
+
+
+        websearch: "allow",
+        ...board(enabled),
+        external_directory: {
+          [Truncate.GLOB]: "allow",
+        },
+
       }),
       user,
       // Enforce bash deny after user so user config cannot re-enable shell
@@ -612,11 +613,16 @@ export function patchAgents(
   }
 
   // Add ask agent
-  const guard = askGuard(kilo.mcpRules)
+  const guard = askGuard(kilo.mcpRules, enabled)
   agents.ask = {
     name: "ask",
     description: "Get answers and explanations without making changes to the codebase.",
-    prompt: PROMPT_ASK,
+    prompt: mermaidClients.has(Flag.KILO_CLIENT)
+      ? PROMPT_ASK
+      : PROMPT_ASK.replace(
+          "- Use Mermaid diagrams when they help clarify your response",
+          "- Use plain-text or ASCII diagrams when they help clarify your response. The CLI cannot render Mermaid diagrams. Only provide Mermaid source when the user explicitly requests it",
+        ),
     options: {},
     permission: Permission.merge(
       defaults,
@@ -746,9 +752,8 @@ async function removeConfigAgent(name: string, sources: KilocodeConfigSources.So
     const opts = { formattingOptions: { insertSpaces: true, tabSize: 2 } }
     const next = applyEdits(text, modify(text, ["agent", name], undefined, opts))
     const parsed = parseJsonc(next)
-    const final = parsed.default_agent === name
-      ? applyEdits(next, modify(next, ["default_agent"], undefined, opts))
-      : next
+    const final =
+      parsed.default_agent === name ? applyEdits(next, modify(next, ["default_agent"], undefined, opts)) : next
     await Bun.write(file, final)
     found = true
   }
