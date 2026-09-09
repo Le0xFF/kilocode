@@ -5,7 +5,7 @@ import { AgentBuilderPaths } from "../../../src/kilocode/server/httpapi/groups/a
 import { BackgroundProcessPaths } from "../../../src/kilocode/server/httpapi/groups/background-process"
 import { BranchNamePaths } from "../../../src/kilocode/server/httpapi/groups/branch-name"
 import { ConfigConsolePaths } from "../../../src/kilocode/server/httpapi/groups/config-console"
-import { IndexingPaths, KiloEmbeddingModel } from "../../../src/kilocode/server/httpapi/groups/indexing"
+import { IndexingPaths } from "../../../src/kilocode/server/httpapi/groups/indexing"
 import { KilocodePaths } from "../../../src/kilocode/server/httpapi/groups/kilocode"
 import { MemoryPaths } from "../../../src/kilocode/server/httpapi/groups/memory"
 import { NetworkPaths } from "../../../src/kilocode/server/httpapi/groups/network"
@@ -86,25 +86,6 @@ describe("Kilo PublicApi OpenAPI contract", () => {
     expect(spec.paths["/pty/{ptyID}/connect"]?.get).toBeDefined()
   })
 
-  test("constrains embedding model metadata", () => {
-    const accepts = (dimension: number, scoreThreshold: number) =>
-      Result.isSuccess(
-        EffectSchema.decodeUnknownResult(KiloEmbeddingModel)({
-          id: "provider/model",
-          name: "Model",
-          dimension,
-          scoreThreshold,
-        }),
-      )
-
-    expect(accepts(1, 0)).toBe(true)
-    expect(accepts(1024, 1)).toBe(true)
-    expect(accepts(0, 0.5)).toBe(false)
-    expect(accepts(1.5, 0.5)).toBe(false)
-    expect(accepts(1024, -0.1)).toBe(false)
-    expect(accepts(1024, 1.1)).toBe(false)
-  })
-
   test("constrains agent builder route ids", () => {
     const spec = OpenApi.fromApi(PublicApi)
     const save = AgentBuilderPaths.save.replace(":id", "{id}")
@@ -144,7 +125,6 @@ describe("Kilo PublicApi OpenAPI contract", () => {
       { method: "get", path: ExperimentalPaths.worktreeDiff },
       { method: "get", path: ExperimentalPaths.worktreeDiffSummary },
       { method: "get", path: ExperimentalPaths.worktreeDiffFile },
-      { method: "post", path: SessionPaths.viewed },
       { method: "get", path: ConfigConsolePaths.overlay },
       { method: "patch", path: ConfigConsolePaths.overlay },
       { method: "get", path: IndexingPaths.status },

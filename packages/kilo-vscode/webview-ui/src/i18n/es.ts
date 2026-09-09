@@ -727,9 +727,6 @@ export const dict = {
   "settings.sandboxing.writablePaths.title": "Rutas de escritura adicionales",
   "settings.sandboxing.writablePaths.description":
     "Rutas del sistema de archivos adicionales donde el sandbox permite escritura (por ej., /tmp, /var/log). Se combinan con las rutas de escritura predeterminadas cuando el sandbox está activo.",
-  "settings.experimental.multiProject.title": "Agent Manager Multi-Proyecto",
-  "settings.experimental.multiProject.description":
-    "Habilitar la gestión de sesiones y worktrees en múltiples repositorios en Agent Manager. El repositorio del workspace actual es siempre el proyecto predeterminado.",
   "settings.experimental.mcpTimeout.title": "Tiempo de espera MCP (ms)",
   "settings.experimental.mcpTimeout.description": "Tiempo de espera para solicitudes del servidor MCP en milisegundos",
   "settings.experimental.toolToggles": "Interruptores de herramientas",
@@ -995,17 +992,11 @@ export const dict = {
   "common.review": "Revisar",
 
   // legacy-migration start
-  "settings.legacyMigration.link": "Migrar desde la versión heredada",
-  "settings.aboutKiloCode.legacyMigration.title": "Migración heredada",
-  "settings.aboutKiloCode.legacyMigration.description":
-    "Migra la configuración de una instalación anterior de Kilo Code, incluyendo las claves API de proveedores y el modelo predeterminado.",
   "settings.aboutKiloCode.rooImport.description":
     "Importa el historial de conversaciones de una instalación de Roo Code.",
   "settings.aboutKiloCode.rooImport.button": "Importar sesiones desde Roo Code",
 
   // Screen 1 — What's New
-  "migration.whatsNew.title": "Novedades en Kilo Code",
-  "migration.whatsNew.subtitle": "Hemos reconstruido la extensión sobre una base más rápida y eficiente.",
   "migration.whatsNew.features.performance.title": "Rendimiento de agente más rápido",
   "migration.whatsNew.features.performance.detail":
     "Las llamadas a herramientas en paralelo y los subagentes permiten que tu agente aborde más a la vez — así pasas menos tiempo esperando y más tiempo entregando.",
@@ -1027,28 +1018,12 @@ export const dict = {
     "Encontramos configuraciones de tu instalación anterior. Esto es lo que podemos transferir.",
   "migration.migrate.selectLabel": "Selecciona qué migrar",
   "migration.migrate.chatHistory": "Sesiones de chat e historial",
-  "migration.migrate.button": "Migrar configuración",
-  "migration.migrate.skip": "Omitir",
-  "migration.migrate.keysDetected": "{{count}} claves detectadas",
-  "migration.migrate.serversConfigured": "{{count}} servidor(es) configurado(s)",
-  "migration.migrate.modesFound": "{{count}} modo(s) encontrado(s)",
   "migration.migrate.sessionsDetected": "{{count}} sesiones detectadas",
-  "migration.migrate.nothingToMigrate": "No se encontró nada para migrar en la configuración heredada.",
 
   // Migrate — item labels (reused from old select keys)
-  "migration.select.providers": "Claves API de proveedores",
-  "migration.select.mcpServers": "Servidores MCP",
-  "migration.select.customModes": "Modos personalizados / Agentes",
-  "migration.select.defaultModel": "Modelo predeterminado",
-  "migration.select.autoApproval": "Aprobación automática",
-  "migration.select.language": "Idioma de la interfaz",
-  "migration.select.autocomplete": "Configuración de autocompletado",
 
   // Migrate — completion
   "migration.complete.summary": "{{success}} de {{total}} elementos migrados con éxito.",
-  "migration.complete.cleanup": "Eliminar datos de la configuración heredada",
-  "migration.complete.cleanupDescription":
-    "Esto elimina la configuración antigua del almacenamiento de VS Code. No podrás volver a ejecutar esta migración.",
   "migration.complete.done": "Hecho",
   "migration.error.continue": "Continuar",
   "migration.sessionSummary.title": "Resumen:",
@@ -1147,4 +1122,55 @@ export const dict = {
   "chat.search.invalidRegex": "Expresión regular no válida",
   "chat.search.noResults": "Sin resultados",
   "chat.search.searchingHistory": "Buscando en mensajes anteriores…",
-}
+
+  // kilocode_change - step 6: keys added from upstream delta (EN fallback)
+  "speechToText.tooltip.start": "Start voice input with Kilo Gateway",
+  "speechToText.tooltip.shortcut":
+    "Tap to start or stop recording. Hold while speaking, then release to transcribe and submit.",
+  "speechToText.tooltip.starting": "Starting microphone... Wait to speak.",
+  "speechToText.tooltip.stop": "Recording. Click to stop.",
+  "speechToText.tooltip.transcribing": "Transcribing... Click to cancel.",
+  "speechToText.tooltip.error": "Speech input failed. Click to clear.",
+  "speechToText.error.title": "Speech input failed",
+  "speechToText.error.loginRequired": "Sign in to Kilo to use speech input.",
+  "speechToText.error.emptyTranscript": "No speech was detected.",
+  "settings.notifications.os.title": "Enable OS Notifications",
+  "settings.notifications.os.description":
+    "Show native OS notification alerts when Kilo completes a task or needs your input while VS Code is not active.",
+  "settings.notifications.testOS": "Test",
+  "settings.notifications.testOS.testing": "Sending test notification…",
+  "settings.notifications.testOS.success": "Test notification sent.",
+  "settings.notifications.testOS.error": "Test notification failed",
+  "settings.notifications.workbench.title": "Enable VS Code Notifications",
+  "settings.notifications.workbench.description":
+    "Show VS Code notifications when Kilo completes a task or needs your input",
+  "settings.experimental.sharedAgentBoard.title": "Kilo Swarm",
+  "settings.experimental.sharedAgentBoard.description":
+    "Share a board between a main session and its task subagents, including nested subagents. Use it for parallel solution attempts or complementary work, not every task.",
+  "settings.experimental.taskModelSelection.title": "Task Subagent Model Selection",
+  "settings.experimental.taskModelSelection.description":
+    "Allow task subagents to use an explicitly selected model, provider, and reasoning effort.",
+  "prompt.goal.set": "Set goal",
+  "prompt.goal.start": "Start goal",
+  "prompt.action.send.recording": "Transcribe and send",
+  "session.goal.label": "Goal",
+  "session.goal.active": "Active",
+  "session.goal.complete": "Complete (model-reported)",
+  "session.goal.blocked": "Blocked",
+  "session.goal.restart": "Restart goal (uses model credits)",
+  "session.goal.paused": "Paused",
+  "session.goal.pause": "Pause",
+  "session.goal.resume": "Resume",
+  "session.goal.clear": "Clear goal",
+  "task.swarm.title": "Board",
+  "task.swarm.refresh": "Refresh",
+  "task.swarm.reset": "Reset board",
+  "task.swarm.resetTitle": "Reset this board?",
+  "task.swarm.resetDescription":
+    "Clear visible messages? Conversations and running tasks stay unchanged. Agents can post new messages.",
+  "task.swarm.loading": "Loading board...",
+  "task.swarm.failed": "Could not load or reset the board. Try refreshing it.",
+  "task.backgroundAgents.openAll": "Open all background agents",
+  "task.backgroundAgents.stopAll": "Stop all ({{count}})",
+  "migration.roo.button": "Import Sessions",
+  "migration.roo.empty": "No Roo Code sessions found."}

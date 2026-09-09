@@ -17,6 +17,13 @@ export function resolveModelSelection(input: {
   const pending = input.ready === false || (input.ready !== undefined && input.organizationId === undefined)
   const validate = (selection: ModelSelection | null | undefined) => {
     if (!selection || (pending && selection.providerID === "kilo")) return null
+    // kilocode_change - offline: an explicit user choice must survive a catalog that does not list its provider yet
+    if (selection.providerID !== "kilo") {
+      const provider = input.providers[selection.providerID]
+      if (!provider || !input.connected.includes(selection.providerID)) return null
+      if (!provider.models[selection.modelID]) return null
+      return selection
+    }
     return isModelValid(input.providers, input.connected, selection) ? selection : null
   }
   const preference =

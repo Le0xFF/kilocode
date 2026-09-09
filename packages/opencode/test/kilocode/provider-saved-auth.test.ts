@@ -5,7 +5,7 @@ import { ProviderV2 } from "@opencode-ai/core/provider"
 import { ModelV2 } from "@opencode-ai/core/model"
 import type { Auth } from "../../src/auth"
 import { Config } from "../../src/config/config"
-import { ModelsDev } from "../../src/provider/models"
+import { ModelsDev } from "@opencode-ai/core/models-dev"
 import { Provider } from "../../src/provider/provider"
 import { TestConfig } from "../fixture/config"
 import { testInstanceStoreLayer } from "../fixture/fixture"
@@ -293,7 +293,7 @@ for (const scenario of scenarios) {
       }
       yield* Effect.gen(function* () {
         const provider = yield* Provider.Service
-        const item = yield* provider.getProvider(ProviderV2.ID.kilo)
+        const item = yield* provider.getProvider(ProviderV2.ID.make("kilo"))
         expect(item.options.kilocodeToken).toBe(scenario.token)
         expect(item.options.kilocodeOrganizationId).toBe(scenario.org)
         expect(item.options.fetch).toBe(fetch)
@@ -304,7 +304,7 @@ for (const scenario of scenarios) {
         expect(output.options.kilocodeToken).toBeUndefined()
         expect(output.options.headers).toEqual({ "x-custom": "preserved" })
         expect(item.options.kilocodeToken).toBe(scenario.token)
-        const model = yield* provider.getModel(ProviderV2.ID.kilo, ModelV2.ID.make("test-model"))
+        const model = yield* provider.getModel(ProviderV2.ID.make("kilo"), ModelV2.ID.make("test-model"))
         const language = yield* provider.getLanguage(model)
         const error = yield* Effect.tryPromise(() =>
           language.doGenerate({ prompt: [{ role: "user", content: [{ type: "text", text: "test" }] }] }),

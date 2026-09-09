@@ -273,8 +273,7 @@ function getWebviewsConfig() {
   return {
     entryPoints: {
       "agent-manager": "webview-ui/agent-manager/index.tsx",
-      kiloclaw: "webview-ui/kiloclaw/index.tsx",
-      marketplace: "webview-ui/marketplace/index.tsx",
+      // kilocode_change - offline: kiloclaw and marketplace webviews are cut with the gateway surface
       "diff-viewer": "webview-ui/diff-viewer/index.tsx",
       documents: "webview-ui/documents/index.tsx",
       "diff-virtual": "webview-ui/diff-virtual/index.tsx",

@@ -710,9 +710,6 @@ export const dict = {
   "settings.sandboxing.writablePaths.title": "추가 쓰기 가능 경로",
   "settings.sandboxing.writablePaths.description":
     "샌드박스에서 쓰기를 허용하는 추가 파일시스템 경로(예: /tmp, /var/log). 샌드박스가 활성화되면 기본 쓰기 가능 경로와 병합됩니다.",
-  "settings.experimental.multiProject.title": "멀티 프로젝트 Agent Manager",
-  "settings.experimental.multiProject.description":
-    "Agent Manager에서 여러 저장소에 걸친 세션과 워크트리 관리를 활성화합니다. 현재 워크스페이스 저장소는 항상 기본 프로젝트입니다.",
   "settings.experimental.mcpTimeout.title": "MCP 타임아웃 (ms)",
   "settings.experimental.mcpTimeout.description": "MCP 서버 요청의 타임아웃 시간 (밀리초)",
   "settings.experimental.toolToggles": "도구 토글",
@@ -962,16 +959,10 @@ export const dict = {
   "common.review": "검토",
 
   // legacy-migration start
-  "settings.legacyMigration.link": "레거시 버전에서 마이그레이션",
-  "settings.aboutKiloCode.legacyMigration.title": "레거시 마이그레이션",
-  "settings.aboutKiloCode.legacyMigration.description":
-    "공급자 API 키 및 기본 모델을 포함하여 이전 Kilo Code 설치에서 설정을 마이그레이션합니다.",
   "settings.aboutKiloCode.rooImport.description": "Roo Code 설치에서 대화 기록을 가져옵니다.",
   "settings.aboutKiloCode.rooImport.button": "Roo Code에서 세션 가져오기",
 
   // Screen 1 — What's New
-  "migration.whatsNew.title": "Kilo Code의 새로운 기능",
-  "migration.whatsNew.subtitle": "더 빠르고 효율적인 기반 위에 확장 프로그램을 재구축했습니다.",
   "migration.whatsNew.features.performance.title": "더 빠른 에이전트 성능",
   "migration.whatsNew.features.performance.detail":
     "병렬 도구 호출과 하위 에이전트를 통해 에이전트가 더 많은 작업을 동시에 처리할 수 있습니다 — 대기 시간은 줄이고 작업 효율은 높입니다.",
@@ -992,27 +983,11 @@ export const dict = {
   "migration.migrate.subtitle": "이전 설치에서 설정을 찾았습니다. 가져올 수 있는 항목은 다음과 같습니다.",
   "migration.migrate.selectLabel": "마이그레이션할 항목 선택",
   "migration.migrate.chatHistory": "채팅 세션 및 기록",
-  "migration.migrate.button": "설정 마이그레이션",
-  "migration.migrate.skip": "건너뛰기",
-  "migration.migrate.keysDetected": "{{count}}개의 키 감지됨",
-  "migration.migrate.serversConfigured": "{{count}}개의 서버 구성됨",
-  "migration.migrate.modesFound": "{{count}}개의 모드 발견됨",
-  "migration.migrate.nothingToMigrate": "레거시 설정에서 마이그레이션할 항목을 찾지 못했습니다.",
 
   // Migrate — item labels (reused from old select keys)
-  "migration.select.providers": "공급자 API 키",
-  "migration.select.mcpServers": "MCP 서버",
-  "migration.select.customModes": "사용자 지정 모드 / 에이전트",
-  "migration.select.defaultModel": "기본 모델",
-  "migration.select.autoApproval": "자동 승인",
-  "migration.select.language": "UI 언어",
-  "migration.select.autocomplete": "자동 완성 설정",
 
   // Migrate — completion
   "migration.complete.summary": "{{total}}개 중 {{success}}개 항목이 성공적으로 마이그레이션되었습니다.",
-  "migration.complete.cleanup": "레거시 설정 데이터 제거",
-  "migration.complete.cleanupDescription":
-    "이 작업은 VS Code 저장소에서 이전 설정을 제거합니다. 이 마이그레이션을 다시 실행할 수 없게 됩니다.",
   "migration.complete.done": "완료",
   "migration.migrate.sessionsDetected": "{{count}}개의 세션이 감지되었습니다",
   "migration.error.continue": "계속",
@@ -1113,4 +1088,55 @@ export const dict = {
   "chat.search.invalidRegex": "정규식이 잘못되었습니다",
   "chat.search.noResults": "검색 결과 없음",
   "chat.search.searchingHistory": "이전 메시지를 검색하는 중…",
-}
+
+  // kilocode_change - step 6: keys added from upstream delta (EN fallback)
+  "speechToText.tooltip.start": "Start voice input with Kilo Gateway",
+  "speechToText.tooltip.shortcut":
+    "Tap to start or stop recording. Hold while speaking, then release to transcribe and submit.",
+  "speechToText.tooltip.starting": "Starting microphone... Wait to speak.",
+  "speechToText.tooltip.stop": "Recording. Click to stop.",
+  "speechToText.tooltip.transcribing": "Transcribing... Click to cancel.",
+  "speechToText.tooltip.error": "Speech input failed. Click to clear.",
+  "speechToText.error.title": "Speech input failed",
+  "speechToText.error.loginRequired": "Sign in to Kilo to use speech input.",
+  "speechToText.error.emptyTranscript": "No speech was detected.",
+  "settings.notifications.os.title": "Enable OS Notifications",
+  "settings.notifications.os.description":
+    "Show native OS notification alerts when Kilo completes a task or needs your input while VS Code is not active.",
+  "settings.notifications.testOS": "Test",
+  "settings.notifications.testOS.testing": "Sending test notification…",
+  "settings.notifications.testOS.success": "Test notification sent.",
+  "settings.notifications.testOS.error": "Test notification failed",
+  "settings.notifications.workbench.title": "Enable VS Code Notifications",
+  "settings.notifications.workbench.description":
+    "Show VS Code notifications when Kilo completes a task or needs your input",
+  "settings.experimental.sharedAgentBoard.title": "Kilo Swarm",
+  "settings.experimental.sharedAgentBoard.description":
+    "Share a board between a main session and its task subagents, including nested subagents. Use it for parallel solution attempts or complementary work, not every task.",
+  "settings.experimental.taskModelSelection.title": "Task Subagent Model Selection",
+  "settings.experimental.taskModelSelection.description":
+    "Allow task subagents to use an explicitly selected model, provider, and reasoning effort.",
+  "prompt.goal.set": "Set goal",
+  "prompt.goal.start": "Start goal",
+  "prompt.action.send.recording": "Transcribe and send",
+  "session.goal.label": "Goal",
+  "session.goal.active": "Active",
+  "session.goal.complete": "Complete (model-reported)",
+  "session.goal.blocked": "Blocked",
+  "session.goal.restart": "Restart goal (uses model credits)",
+  "session.goal.paused": "Paused",
+  "session.goal.pause": "Pause",
+  "session.goal.resume": "Resume",
+  "session.goal.clear": "Clear goal",
+  "task.swarm.title": "Board",
+  "task.swarm.refresh": "Refresh",
+  "task.swarm.reset": "Reset board",
+  "task.swarm.resetTitle": "Reset this board?",
+  "task.swarm.resetDescription":
+    "Clear visible messages? Conversations and running tasks stay unchanged. Agents can post new messages.",
+  "task.swarm.loading": "Loading board...",
+  "task.swarm.failed": "Could not load or reset the board. Try refreshing it.",
+  "task.backgroundAgents.openAll": "Open all background agents",
+  "task.backgroundAgents.stopAll": "Stop all ({{count}})",
+  "migration.roo.button": "Import Sessions",
+  "migration.roo.empty": "No Roo Code sessions found."}

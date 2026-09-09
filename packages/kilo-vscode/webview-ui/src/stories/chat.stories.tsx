@@ -1495,7 +1495,7 @@ export const SidebarTopBarDefault: Story = {
 export const WelcomeWithSwitcherAndNotification: Story = {
   name: "Welcome — account switcher + notification",
   render: () => (
-    <StoryProviders sessionID={SESSION_ID} status="idle" noPadding notifications={[MOCK_NOTIFICATION]}>
+    <StoryProviders sessionID={SESSION_ID} status="idle" noPadding>
       <ServerContext.Provider value={mockServer as any}>
         <div style={{ width: "100%", height: "600px", display: "flex", "flex-direction": "column" }}>
           <ChatView />
@@ -1517,6 +1517,7 @@ const swarm: SessionBoard = {
       type: "INFO",
       body: "Check empty input and Unicode identifiers.",
     },
+    {
       id: "board_second",
       timestamp: 1788431900000,
       from: "ses_parser",
@@ -1524,6 +1525,8 @@ const swarm: SessionBoard = {
       to: "ALL",
       type: "RESULT",
       body: "The parser accepts both cases. The focused checks pass.",
+    },
+    {
       id: "board_third",
       timestamp: 1788432000000,
       from: "ses_serializer",
@@ -1531,8 +1534,11 @@ const swarm: SessionBoard = {
       to: "main",
       type: "ASK",
       body: "Should serialization preserve whitespace?",
+    },
   ],
   hasMore: false,
+}
+
 function SwarmScene(props: { board?: SessionBoard; open?: boolean }) {
   const api = getVSCodeAPI()
   const [scene, setScene] = createSignal({
@@ -1576,8 +1582,10 @@ function SwarmScene(props: { board?: SessionBoard; open?: boolean }) {
       if (!button) return
       observer.disconnect()
       button.click()
+    })
     observer.observe(document.body, { childList: true, subtree: true })
     onCleanup(() => observer.disconnect())
+  })
   const session = {
     ...mockSessionValue({ id: SESSION_ID }),
     messages: () => [
@@ -1591,19 +1599,38 @@ function SwarmScene(props: { board?: SessionBoard; open?: boolean }) {
       createdAt: new Date(1788431800000).toISOString(),
       updatedAt: new Date(1788432000000).toISOString(),
     }),
+  }
   return (
     <SessionContext.Provider value={session as unknown as SessionContextValue}>
       <TaskHeader readonly={scene().readonly} projectId={scene().projectId} />
     </SessionContext.Provider>
   )
+}
+
 export const BoardClosed: Story = {
   name: "Board, header button",
+  render: () => (
     <StoryProviders sessionID={SESSION_ID} config={{ experimental: { shared_agent_board: true } }} noPadding>
       <SwarmScene board={swarm} />
+    </StoryProviders>
+  ),
+}
+
 export const BoardEmpty: Story = {
   name: "Board, hidden when empty",
+  render: () => (
+    <StoryProviders sessionID={SESSION_ID} config={{ experimental: { shared_agent_board: true } }} noPadding>
       <SwarmScene board={{ ...swarm, messages: [] }} />
+    </StoryProviders>
+  ),
+}
+
 export const BoardOpen: Story = {
   name: "Board, messages",
+  render: () => (
+    <StoryProviders sessionID={SESSION_ID} config={{ experimental: { shared_agent_board: true } }} noPadding>
       <SwarmScene board={swarm} open />
+    </StoryProviders>
+  ),
+}
 

@@ -91,8 +91,6 @@ import { createSessionVariants } from "./session-variants"
 
 import { parseModelString } from "../../../src/shared/provider-model"
 import { reviewMetadata, type ReviewMessageData } from "../../../src/shared/review-comments"
-import { KILO_AUTO, KILO_PROVIDER_ID, parseModelString } from "../../../src/shared/provider-model"
-import { type ReviewMessageData } from "../../../src/shared/review-comments"
 import type { BrowserFeedbackData } from "../../../src/shared/browser-feedback"
 
 import { activeUserMessageID, removeQueuedMessage, visibleMessages as filterVisibleMessages } from "./session-queue"
@@ -436,7 +434,8 @@ export const SessionProvider: ParentComponent = (props) => {
       defaults: provider.defaults(),
       getModeModel,
       getGlobalModel,
-      fallback: KILO_AUTO,
+      // kilocode_change - no Kilo gateway auto model in the offline surface
+      fallback: null,
     }
   }
 
@@ -2028,29 +2027,7 @@ export const SessionProvider: ParentComponent = (props) => {
     const selection = providerID && modelID ? { providerID, modelID } : selected(draftID ?? sid)
     if (!available(selection)) return false
     recordModelUsage(selection.providerID, selection.modelID)
-    const preview = sid?.startsWith("cloud:")
-      ? sid.slice("cloud:".length)
-      : origin === undefined
-        ? cloudPreviewId()
-        : null
-    if (preview) {
-      const scope = draftID ?? sid
-      const settings = submission(scope, selection)
-      vscode.postMessage({
-        type: "importAndSend",
-        text,
-        messageID,
-        providerID: settings.model?.providerID,
-        modelID: settings.model?.modelID,
-        agent: settings.agent,
-        variant: settings.variant,
-        files,
-        review,
-        browserFeedback,
-      })
-      return true
-    }
-
+    // kilocode_change - cloud session previews removed with the offline surface
 
     dismiss(sid)
 
@@ -2143,25 +2120,8 @@ export const SessionProvider: ParentComponent = (props) => {
     for (const q of scopedQuestions(sid)) {
       dismissQuestion(q.id)
     }
-    // Cloud previews need import-then-command; post importAndSend with command metadata
-    const preview = sid?.startsWith("cloud:")
-      ? sid.slice("cloud:".length)
-      : origin === undefined
-        ? cloudPreviewId()
-        : null
-    if (preview) {
-      vscode.postMessage({
-        type: "importAndSend",
-        text: `/${command} ${args}`.trim(),
-        messageID,
-        ...settings,
-        files,
-        command,
-        commandArgs: args,
-      })
-      return true
+    // kilocode_change - cloud session previews removed with the offline surface
     if (command !== "goal") dismiss(sid)
-
 
     if (scope) {
       if (command !== "goal") {
@@ -2405,7 +2365,6 @@ export const SessionProvider: ParentComponent = (props) => {
   let deferredFetch: { id: string; focus: boolean } | undefined
 
 
-  function selectSession(id: string, options: { focus?: boolean } = {}) {
   function selectSession(id: string, options: { focus?: boolean; scrollToBottom?: boolean } = {}) {
     if (id.startsWith("cloud:")) {
       console.warn("[Kilo New] Cannot select cloud preview session via selectSession")

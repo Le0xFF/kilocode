@@ -17,7 +17,6 @@ import { confirmCaffeination } from "./services/caffeination/confirm"
 import { createCaffeinationDriver } from "./services/caffeination/inhibitor"
 import { BrowserBroker } from "./services/browser-automation"
 import { TelemetryEventName, TelemetryProxy } from "./services/telemetry"
-import { AttentionService } from "./services/attention"
 
 import { registerCommitMessageService } from "./services/commit-message"
 import { registerCodeActions, registerTerminalActions, KiloCodeActionProvider } from "./services/code-actions"
@@ -79,10 +78,8 @@ export async function activate(context: vscode.ExtensionContext) {
 
   // Create remote status service (one status bar item for all webviews)
 
-  // Create browser automation service (manages Playwright MCP registration)
-  browserAutomationService.syncWithSettings()
-  // Re-register browser automation MCP server on CLI backend reconnect.
-
+  // Create browser automation broker (manages Playwright MCP registration)
+  // kilocode_change - offline: broker is lazy; no settings sync / reconnect re-registration needed
   const unsubscribeStateChange = connectionService.onStateChange((state) => {
     if (state === "connected") {
       const config = connectionService.getServerConfig()
@@ -94,9 +91,6 @@ export async function activate(context: vscode.ExtensionContext) {
         // opted out for the rest of the session.
         telemetry.setEnabled(vscode.env.isTelemetryEnabled)
       }
-    } else {
-      browserAutomationService.reregisterIfEnabled()
-
     }
   })
 
@@ -490,16 +484,7 @@ export async function activate(context: vscode.ExtensionContext) {
       provider.postMessage({ type: "triggerTask", text: `Generate a terminal command: ${input}` })
     }),
     vscode.commands.registerCommand("kilo-code.new.openInTab", () => {
-      return openKiloInNewTab(context, tabPanels, attach)
-      return openKiloInNewTab(
-        context,
-        connectionService,
-        agentManagerProvider,
-        tabPanels,
-        diffVirtualProvider,
-        autoApprove,
-      )
-
+      return openKiloInNewTab(context, tabPanels, attach, diffVirtualProvider, autoApprove)
     }),
     vscode.commands.registerCommand(
       "kilo-code.new.showChanges",

@@ -48,6 +48,7 @@ import { Installation } from "@/installation"
 import { MemoryService } from "@kilocode/kilo-memory/effect/service" // kilocode_change
 // kilocode_change - session sharing feature removed; no ShareNext/SessionShare nodes in the app runtime
 import { Npm } from "@opencode-ai/core/npm"
+import { Env } from "@/env" // kilocode_change - generate command runs Server.openapi() under AppRuntime, which yields Config (depends on Env)
 import { memoMap } from "@opencode-ai/core/effect/memo-map"
 import { BackgroundJob } from "@/background/job"
 import { RuntimeFlags } from "@/effect/runtime-flags"
@@ -86,6 +87,7 @@ export const AppLayer = AppNodeBuilderV1.build(
     FSUtil.node,
     Database.node,
     Auth.node,
+    Env.node, // kilocode_change - required by Config.node (kilo-gateway group removed; no other provider in the graph)
     Config.node,
     Git.node,
     Storage.node,

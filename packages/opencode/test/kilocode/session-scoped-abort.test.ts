@@ -7,7 +7,7 @@ import { LayerNode } from "@opencode-ai/core/effect/layer-node"
 import { SessionProjector } from "@opencode-ai/core/session/projector"
 import { MemoryService } from "@kilocode/kilo-memory/effect/service"
 import { BackgroundJob } from "@/background/job"
-import { KiloSessions } from "@/kilo-sessions/kilo-sessions"
+// kilocode_change - offline: kilo-sessions surface removed; its test layer is dropped
 import { KiloSessionControl } from "@/kilocode/session/control"
 import { KiloSessionContinuation } from "@/kilocode/session/continuation"
 import { KiloSessionPromptQueue } from "@/kilocode/session/prompt-queue"
@@ -33,7 +33,6 @@ const it = testEffect(
       LayerNode.make({ service: TestLLMServer, layer: TestLLMServer.layer, deps: [] }),
       LayerNode.make({ service: MemoryService.Service, layer: MemoryService.layer, deps: [] }),
     ]),
-    [[KiloSessions.node, KiloSessions.testLayer]],
   ),
 )
 

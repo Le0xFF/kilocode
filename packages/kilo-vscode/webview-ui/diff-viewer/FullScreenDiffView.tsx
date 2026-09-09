@@ -15,30 +15,7 @@ import { Spinner } from "@kilocode/kilo-ui/spinner"
 import { ResizeHandle } from "@kilocode/kilo-ui/resize-handle"
 import { TooltipKeybind } from "@kilocode/kilo-ui/tooltip"
 import { useLanguage } from "../src/context/language"
-
-import { useVSCode } from "../src/context/vscode"
-import { useServer } from "../src/context/server"
-import { useProvider } from "../src/context/provider"
-import { useConfig } from "../src/context/config"
-
 import { FileTree } from "./FileTree"
-
-import { treeOrder } from "./file-tree-utils"
-import { getDirectory, getFilename, lineCount, sanitizeReviewComments, type ReviewComment } from "./review-comments"
-import {
-  buildFileAnnotations,
-  buildReviewAnnotation,
-  clearReviewComposer,
-  createReviewComposer,
-  reviewComposerDraft,
-  reviewComposerEdit,
-  sendReviewComments,
-  labels,
-  type AnnotationMeta,
-  type ReviewComposer,
-  type ReviewDraft,
-} from "./review-annotations"
-
 import {
   LONG_DIFF_MARKER_FILE_COUNT,
   allOpenFiles,
@@ -77,52 +54,6 @@ interface FullScreenDiffViewProps extends ReviewViewProps {
 
 export const FullScreenDiffView: Component<FullScreenDiffViewProps> = (props) => {
   const { t } = useLanguage()
-
-  const noticeText = () => {
-    const n = props.notice
-    if (!n) return ""
-    return t(DIFF_NOTICE_KEYS[n] ?? n)
-  }
-  const vscode = useVSCode()
-  const server = useServer()
-  const provider = useProvider()
-  const { config } = useConfig()
-  const isMac = typeof navigator !== "undefined" && /Mac|iPhone|iPad/.test(navigator.userAgent)
-  const sendAllKeybind = () =>
-    isMac ? t("agentManager.review.sendAllShortcut.mac") : t("agentManager.review.sendAllShortcut.other")
-  const localComposer = createReviewComposer()
-  const composer = () => props.composer ?? localComposer
-  const [manualOpen, setManualOpen] = createSignal<Record<string, string[]>>({})
-  const [knownFiles, setKnownFiles] = createSignal<Record<string, string[]>>({})
-  const open = createMemo(() => {
-    const key = props.sessionKey ?? ""
-    const diffs = props.diffs
-    if (diffs.length === 0) return []
-    const manual = manualOpen()[key]
-    if (manual) return sanitizeOpenFiles(diffs, manual)
-    return initialOpenFiles(diffs)
-  })
-  createEffect(
-    on(
-      () => [props.sessionKey, props.diffs] as const,
-      ([key, diffs]) => {
-        if (diffs.length === 0) return
-        const id = key ?? ""
-        const manual = manualOpen()[id]
-        const result = reconcileOpenFiles(diffs, manual, knownFiles()[id] ?? [])
-        setKnownFiles((prev) => ({ ...prev, [id]: result.known }))
-        if (!manual || !result.open) return
-        if (result.open.length === manual.length && result.open.every((file, index) => file === manual[index])) return
-        setManualOpen((prev) => ({ ...prev, [id]: result.open! }))
-      },
-    ),
-  )
-  const setOpen = (files: string[] | ((prev: string[]) => string[])) => {
-    const key = props.sessionKey ?? ""
-    const current = open()
-    const next = typeof files === "function" ? files(current) : files
-    setManualOpen((prev) => ({ ...prev, [key]: sanitizeOpenFiles(props.diffs, next) }))
-  }
   const noticeText = () => notice(t, props.notice)
   const sendAllKeybind = () => reviewSendAllKeybind(t)
   let rootRef: HTMLDivElement | undefined
@@ -148,7 +79,6 @@ export const FullScreenDiffView: Component<FullScreenDiffViewProps> = (props) =>
     sendAllClick,
   } = createReviewView(props, () => rootRef)
 
-
   const [manualActiveFile, setManualActiveFile] = createSignal<Record<string, string | null>>({})
   const activeFile = createMemo(() => {
     const key = props.sessionKey ?? ""
@@ -162,10 +92,6 @@ export const FullScreenDiffView: Component<FullScreenDiffViewProps> = (props) =>
     const key = props.sessionKey ?? ""
     setManualActiveFile((prev) => ({ ...prev, [key]: file }))
   }
-
-
-  const [draft, setDraft] = createSignal<ReviewDraft | null>(reviewComposerDraft(composer()))
-  const [editing, setEditing] = createSignal<string | null>(reviewComposerEdit(composer()))
 
   const [treeWidth, setTreeWidth] = createSignal(240)
   let initialFileKey: string | undefined
@@ -183,218 +109,6 @@ export const FullScreenDiffView: Component<FullScreenDiffViewProps> = (props) =>
       },
     ),
   )
-
-  createEffect(
-    on(
-      () => props.sessionKey,
-      () => {
-        setDraft(null)
-        draftMeta = null
-        setEditing(null)
-        editMeta = null
-        clearReviewComposer(composer())
-      },
-      { defer: true },
-    ),
-  )
-
-  const request = createDiffRequests({
-    key: () => props.sessionKey,
-    diffs: () => props.diffs,
-    open,
-    loading: () => props.loadingFiles,
-    send: () => props.onRequestDiff,
-    eager: false,
-  })
-
-  // --- CRUD ---
-
-  const addComment = (file: string, side: AnnotationSide, line: number, text: string, selectedText: string) => {
-    preserveScroll(() => {
-      const id = `c-${++nextId}-${Date.now()}`
-      updateComments((prev) => [...prev, { id, file, side, line, comment: text, selectedText }])
-      setDraft(null)
-      draftMeta = null
-      composer().draft = null
-    })
-    focusRoot()
-  }
-
-  const sendComment = (file: string, side: AnnotationSide, line: number, text: string, selectedText: string) => {
-    const comment = { id: `c-${++nextId}-${Date.now()}`, file, side, line, comment: text, selectedText }
-    sendReviewComments([comment], props.activeTerminalId)
-    preserveScroll(() => {
-      setDraft(null)
-      draftMeta = null
-      composer().draft = null
-    })
-    props.onSendClick?.()
-    focusRoot()
-  }
-
-  const updateComment = (id: string, text: string) => {
-    preserveScroll(() => {
-      updateComments((prev) => prev.map((c) => (c.id === id ? { ...c, comment: text } : c)))
-      setEditing(null)
-      editMeta = null
-      composer().edit = null
-    })
-    focusRoot()
-  }
-
-  const deleteComment = (id: string) => {
-    preserveScroll(() => {
-      updateComments((prev) => prev.filter((c) => c.id !== id))
-      if (editing() === id) {
-        setEditing(null)
-        editMeta = null
-        composer().edit = null
-      }
-    })
-    focusRoot()
-  }
-
-  const setEditState = (id: string | null) => {
-    if (editing() !== id) {
-      editMeta = null
-      composer().edit = null
-    }
-    preserveScroll(() => setEditing(id))
-    if (id === null) focusRoot()
-  }
-
-  const handleRootMouseDown = (e: MouseEvent) => {
-    if (keepNativeFocus(e.target)) return
-    focusRoot()
-  }
-
-  createEffect(
-    on(
-      () => [props.diffs, comments()] as const,
-      ([diffs, current]) => {
-        const valid = sanitizeReviewComments(current, diffs)
-        if (valid.length !== current.length) {
-          setComments(valid)
-        }
-
-        const edit = editing()
-        if (edit && !valid.some((comment) => comment.id === edit)) {
-          setEditing(null)
-          editMeta = null
-          composer().edit = null
-        }
-
-        const currentDraft = draft()
-        if (!currentDraft) return
-        const diff = diffs.find((item) => item.file === currentDraft.file)
-        if (!diff) {
-          setDraft(null)
-          draftMeta = null
-          composer().draft = null
-          return
-        }
-        const content = currentDraft.side === "deletions" ? diff.before : diff.after
-        const max = lineCount(content)
-        if (currentDraft.line < 1 || currentDraft.line > max) {
-          setDraft(null)
-          draftMeta = null
-          composer().draft = null
-          return
-        }
-        if (currentDraft.endLine !== undefined && currentDraft.endLine > max) {
-          setDraft(null)
-          draftMeta = null
-          composer().draft = null
-        }
-      },
-    ),
-  )
-
-  // --- Per-file memoized annotations ---
-
-  const commentsByFile = createMemo(() => {
-    const map = new Map<string, ReviewComment[]>()
-    for (const c of comments()) {
-      const arr = map.get(c.file) ?? []
-      arr.push(c)
-      map.set(c.file, arr)
-    }
-    return map
-  })
-  const pinned = createMemo(() => {
-    const files = new Set<string>()
-    const current = draft()
-    if (current) files.add(current.file)
-    const edit = editing()
-    if (edit) {
-      const comment = comments().find((item) => item.id === edit)
-      if (comment) files.add(comment.file)
-    }
-    return rows().flatMap((diff, index) => (files.has(diff.file) ? [index] : []))
-  })
-
-  const annotationsForFile = (file: string): DiffLineAnnotation<AnnotationMeta>[] => {
-    const result = buildFileAnnotations(file, commentsByFile().get(file) ?? [], editing(), draft(), draftMeta, editMeta)
-    draftMeta = result.draftMeta
-    editMeta = result.editMeta
-    composer().draft = draft() ? draftMeta : null
-    composer().edit = editing() ? editMeta : null
-    return result.annotations
-  }
-
-  const buildAnnotation = (annotation: DiffLineAnnotation<AnnotationMeta>): HTMLElement | undefined => {
-    return buildReviewAnnotation(annotation, {
-      diffs: props.diffs,
-      editing: editing(),
-      setEditing: setEditState,
-      addComment,
-      sendComment,
-      updateComment,
-      deleteComment,
-      cancelDraft,
-      labels: labels(t),
-      activeTerminalId: props.activeTerminalId,
-    })
-  }
-
-  const handleGutterClick = (file: string, range: SelectedLineRange) => {
-    if (props.canComment === false) return
-    if (draft()) return
-    const side: AnnotationSide = range.side === "deletions" ? "deletions" : "additions"
-    preserveScroll(() => {
-      const next = { file, side, line: range.start, endLine: range.end }
-      draftMeta = { type: "draft", comment: null, ...next }
-      composer().draft = draftMeta
-      setDraft(next)
-    })
-  }
-
-  const sendAllToChat = () => {
-    const all = comments()
-    if (all.length === 0) return
-    sendReviewComments(all, props.activeTerminalId)
-    preserveScroll(() => setComments([]))
-    props.onSendAll?.()
-  }
-
-  const sendAllClick = () => {
-    props.onSendClick?.()
-    sendAllToChat()
-  }
-
-  const handleKeyDown = (e: KeyboardEvent) => {
-    if (e.key !== "Enter") return
-    if (!(e.metaKey || e.ctrlKey)) return
-    const target = e.target
-    if (keepNativeFocus(target)) return
-    if (props.canComment === false) return
-    if (comments().length === 0) return
-    e.preventDefault()
-    e.stopPropagation()
-    sendAllToChat()
-  }
-
-
   const handleFileSelect = (path: string) => {
     const diff = props.diffs.find((item) => item.file === path)
     if (diff) request(diff)

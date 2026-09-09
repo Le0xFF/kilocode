@@ -40,6 +40,8 @@ import { useGhostText } from "../../hooks/useGhostText"
 import { useSpeechToText } from "../speech-to-text/useSpeechToText"
 import { useSpeechToTextModels } from "../../context/speech-to-text-models"
 import { createSpeechShortcut } from "../speech-to-text/shortcut"
+import { SpeechToTextButton } from "../speech-to-text/SpeechToTextButton"
+import { canUseSpeechToText, selectedSpeechToTextModel } from "../speech-to-text/availability"
 
 import { useImageAttachments, type ImageAttachment } from "../../hooks/useImageAttachments"
 import { convertToMentionPath, insertPathMentions } from "../../utils/path-mentions"
@@ -53,6 +55,7 @@ import {
   fileName,
   dirName,
   buildHighlightSegments,
+  atEnd,
   insertSpacedText,
   isPromptBusy,
   isPathMention,
@@ -457,6 +460,10 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
     requestSandbox()
   })
 
+  const ghost = useGhostText(vscode, text, () => server.isConnected())
+  const speech = useSpeechToText(vscode, language)
+  const speechModels = useSpeechToTextModels()
+
   const replaceReviewComments = (next: ReviewCommentEntry[]) => {
     setReviewComments(next)
     if (next.length === 0) {
@@ -661,12 +668,6 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
       globalConfig(),
     )
 
-  const isDisabled = () => !server.isConnected() || locked()
-  const hasInput = () => text().trim().length > 0 || imageAttach.images().length > 0 || reviewComments().length > 0
-  const sendReady = () => !isDisabled() && !terminal.pending() && !git.pending() && !props.blocked?.()
-  const canContinue = () => !hasInput() && session.canResume()
-  const canSend = () => sendReady() && (hasInput() || canContinue())
-  const canSendContinue = () => sendReady() && canContinue()
   const isDisabled = () => !server.isConnected() || locked() || goal.pending()
   const canUseSpeech = () => canUseSpeechToText(config(), provider.authStates())
   const speechModel = () => selectedSpeechToTextModel(config(), speechModels.models())
@@ -691,7 +692,6 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
     return language.t("prompt.action.send")
   }
 
-  const showStop = () => isBusy() && !hasInput()
   const showStop = () =>
     !goal.active() &&
     (isBusy() || session.currentSession()?.goal?.active) &&
@@ -719,7 +719,7 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
   }
 
   const canEdit = () =>
-    server.isConnected() && !hasInput() && !enhancing() && !terminal.pending() && !git.pending()
+    server.isConnected() && !hasInput() && !enhancing() && !speech.active() && !terminal.pending() && !git.pending()
   createEffect(() => props.onEditReady?.(canEdit()))
 
   const edit = async (request: NonNullable<PromptInputProps["edit"]>) => {
@@ -1135,6 +1135,8 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
 
     if (!goal.active()) slash.onInput(val, target.selectionStart ?? val.length)
     mention.onInput(val, target.selectionStart ?? val.length)
+    ghost.setMentionOpen(slash.show() || mention.showMention())
+    ghost.scheduleRequest(val, textareaRef)
   }
 
   const escape = (e: KeyboardEvent) => {
@@ -1181,11 +1183,13 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
     if (mention.handleArrowKey(e, textareaRef)) return
 
     if (slash.onKeyDown(e, textareaRef, setText, adjustHeight)) {
+      ghost.setMentionOpen(slash.show())
       queueMicrotask(scrollToActiveSlashItem)
       return
     }
 
     if (mention.onKeyDown(e, textareaRef, setText, adjustHeight)) {
+      ghost.setMentionOpen(mention.showMention())
       queueMicrotask(scrollToActiveItem)
       return
     }
@@ -1232,8 +1236,16 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
     }
     if (e.key === "Tab" && !e.shiftKey && ghost.text()) {
       if (!isAtEnd()) return
+      e.preventDefault()
       acceptSuggestion()
+      return
+    }
     if (e.key === "ArrowRight" && ghost.text()) {
+      if (!isAtEnd()) return
+      e.preventDefault()
+      acceptSuggestion()
+      return
+    }
     if (escape(e)) return
 
     if (isEnterKeyCommitNotIme(e) && !e.shiftKey) {
@@ -1285,6 +1297,8 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
   }
   const startSpeech = () => {
     speech.start({ model: speechModel(), insert: insertSpeechText })
+  }
+
   const transcribeAndSend = () => {
     const key = draftKey()
     const id = sid()
@@ -1304,6 +1318,8 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
         browsers() === browser &&
         imageAttach.images() === images,
     })
+  }
+
   const shortcut = createSpeechShortcut({
     speech,
     disabled: () => !canUseSpeech() || isDisabled(),
@@ -1321,12 +1337,21 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
     e.preventDefault()
     e.stopPropagation()
     return true
+  }
   const speechUp = (e: KeyboardEvent): boolean => {
     if (!shortcut.up(e)) return false
+    e.preventDefault()
+    e.stopPropagation()
+    return true
+  }
   onCleanup(shortcut.reset)
 
   const handleSendClick = () => {
-    void handleSend()
+    if (speech.state() !== "recording" || !canSend()) {
+      void handleSend()
+      return
+    }
+    transcribeAndSend()
   }
 
   const runMemory = (memory: NonNullable<ReturnType<typeof parseMemoryCommand>>) => {
@@ -1346,7 +1371,7 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
       adjustHeight()
       return false
     }
-    if (isDisabled() || terminal.pending() || git.pending() || props.blocked?.()) return false
+    if (isDisabled() || speech.active() || terminal.pending() || git.pending() || props.blocked?.()) return false
     const status = projectMemory.status()
     if (
       memory.kind === "operation" &&
@@ -1464,7 +1489,7 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
       return
     }
     const data = review ? { version: 1 as const, comments: pending } : undefined
-    if ((!message && imgs.length === 0) || !sendReady()) return
+    if ((!message && imgs.length === 0) || !sendReady() || speech.active()) return
 
     const mentionFiles = mention.parseFileAttachments(draft)
     const imgFiles = imgs.map((img) => ({ mime: img.mime, url: img.dataUrl, filename: img.filename }))
@@ -1802,6 +1827,9 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
                 </Show>
               )}
             </Index>
+            <Show when={ghost.text()}>
+              <span class="prompt-input-ghost-text">{ghost.text()}</span>
+            </Show>
             {/* A <div> with white-space: pre-wrap collapses a trailing newline,
                 but a <textarea> renders it as a real empty line. This <br> is
                 added in that case so the overlay and textarea heights match. */}
@@ -1816,8 +1844,6 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
             placeholder={placeholder()}
             value={text()}
             onInput={handleInput}
-
-            onKeyDown={handleKeyDown}
             onKeyDown={(e) => {
               if (speechDown(e)) return
               const key = e.key.toLowerCase()
@@ -1831,14 +1857,17 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
               syncGhost()
             }}
             onPaste={handlePaste}
-            onClick={() => {}}
+            onClick={syncGhost}
             onFocus={() => {
+              syncGhost()
               props.onFocusChange?.(true)
             }}
             onBlur={() => {
+              syncGhost()
               props.onFocusChange?.(false)
             }}
             onSelect={() => {
+              syncGhost()
               if (textareaRef) mention.snapSelection(textareaRef)
             }}
             onScroll={syncHighlightScroll}
@@ -1928,6 +1957,9 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
               <WandSparkles size={16} class={enhancing() ? "enhance-spinner" : ""} />
             </Button>
           </Tooltip>
+          <Show when={canUseSpeech()}>
+            <SpeechToTextButton speech={speech} disabled={isDisabled()} start={startSpeech} label={language.t} />
+          </Show>
           <Show
             when={showStop()}
             fallback={

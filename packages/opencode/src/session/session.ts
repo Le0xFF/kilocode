@@ -120,8 +120,6 @@ export function fromRow(row: SessionRow): Info {
     },
 
     // kilocode_change - session sharing feature removed; the inert share_url column is read (above) but no longer surfaced on Info
-    metadata: row.metadata ?? undefined,
-    share,
     metadata: GoalState.project(row.id, row.metadata), // kilocode_change
 
     revert,

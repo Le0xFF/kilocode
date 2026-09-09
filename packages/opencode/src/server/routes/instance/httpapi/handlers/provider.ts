@@ -102,24 +102,12 @@ export const providerHandlers = HttpApiBuilder.group(InstanceHttpApi, "provider"
         providers,
         (item, id) => Object.keys(item.models).length > 0 || id in connected || failedSet.has(id),
       )
-      const defaults = Provider.defaultModelIDs(pickBy(validProviders, (item) => Object.keys(item.models).length > 0))
-      if (connected[ProviderV2.ID.kilo] && defaults[ProviderV2.ID.kilo]) {
-        const model = yield* Effect.promise(() =>
-          recommend(
-            validProviders.kilo.models,
-            config.provider?.kilo?.options,
-            Option.getOrUndefined(info),
-            Option.isSome(info),
-          ),
-        )
-        if (model) defaults[ProviderV2.ID.kilo] = ModelV2.ID.make(model)
-      }
       return {
         all: Object.values(validProviders).map((item) => ({
           ...Provider.toPublicInfo(item),
           metadata: providerMetadata(item.id),
         })), // kilocode_change
-        default: defaults,
+        default: Provider.defaultModelIDs(pickBy(validProviders, (item) => Object.keys(item.models).length > 0)),
         connected: Object.keys(connected),
         failed: [...failedSet],
       }

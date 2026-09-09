@@ -23,10 +23,12 @@ function valid(input: Record<string, unknown>): input is Record<string, unknown>
   if (typeof input.requestID !== "string" || !input.requestID) return false
   if (input.projectId !== undefined && (typeof input.projectId !== "string" || !input.projectId)) return false
   if (input.type === "resetSessionBoard") {
+    // kilocode_change - board revision is a numeric counter per the regenerated SDK contract
     return typeof input.revision === "number" && Number.isSafeInteger(input.revision) && input.revision >= 0
   }
   return (
     (input.before === undefined || (typeof input.before === "string" && !!input.before)) &&
+    // kilocode_change - board pagination limit is a number per the regenerated SDK contract
     (input.limit === undefined ||
       (typeof input.limit === "number" && Number.isInteger(input.limit) && input.limit >= 1 && input.limit <= 50))
   )
@@ -81,7 +83,8 @@ export async function handle(input: Record<string, unknown>, ctx: Context): Prom
               sessionID: input.sessionID,
               directory: target.directory,
               before: input.before,
-              limit: input.limit,
+              // kilocode_change - SDK types the NumberFromString query param as string; the numeric value is safe on the wire
+              limit: input.limit as unknown as string | undefined,
             },
             { throwOnError: true },
           )

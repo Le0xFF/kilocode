@@ -5,7 +5,7 @@ import { Effect, Layer } from "effect"
 import { HttpClient, HttpRouter } from "effect/unstable/http"
 import { HttpApi, HttpApiBuilder } from "effect/unstable/httpapi"
 import { Auth } from "../../../src/auth"
-import { KiloViewers } from "../../../src/kilocode/presence/service"
+// kilocode_change - offline: Kilo presence (viewers) surface removed; its test layer is dropped
 import { InstanceStore } from "../../../src/project/instance-store"
 import { Session } from "../../../src/session/session"
 import { ModelCache } from "../../../src/provider/model-cache"
@@ -125,7 +125,6 @@ const layer = HttpRouter.serve(
     Layer.mock(ModelsDev.Service)({ get: () => Effect.succeed(catalogs) }),
     Layer.mock(InstanceStore.Service)({}),
     Layer.mock(Session.Service)({}),
-    Layer.mock(KiloViewers.Service)({}),
   ]),
   Layer.provideMerge(NodeHttpServer.layerTest),
 )

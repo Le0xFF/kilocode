@@ -17,7 +17,7 @@ The root `package.json` lists workspaces **explicitly** (no `packages/*` glob) s
 
 ## Sync flow (the ONLY sync path)
 
-The only upstream is `origin/main` = https://github.com/Kilo-Org/kilocode/. There is no `upstream` remote and there never will be again. The fork-sync toolchain (including the `check-opencode-annotations` script) was removed with it, so the annotation check documented in `AGENTS.md` is stale and cannot be run from this checkout; `kilocode_change` markers are still honored by manual merge resolution.
+The only upstream is `origin/main` = https://github.com/Kilo-Org/kilocode/. There is no `upstream` remote and there never will be again. The fork-sync toolchain (including the `check-opencode-annotations` script) was removed with it, so the annotation check documented in `AGENTS.md` is stale and cannot be run from this checkout; `kilocode_change` markers are still honored by manual merge resolution. The full procedure — pre-conditions, exact commands, dry-run via `git merge-tree`, conflict matrix, invariants I1–I10 verification, rollback, and completion criteria — is documented in `docs/upstream-sync.md` (operational checklist: `.kilo/skills/upstream-sync/SKILL.md`). During each sync, `script/check-kilocode-duplication.ts` + its allowlist (`kilocode-duplication-allowlist.json`) come from the upstream merge and must be carried over into this checkout together with the wiring in root `package.json`.
 
 ```
 git switch main      # 1. go to main
@@ -122,6 +122,12 @@ Residui di superficie online accettati, tutti inert o gated da azione esplicita;
 Done in this branch (no longer future work):
 
 - Full offline operation of the extension (no network at install/build/runtime) is complete. Closed across four commits: `1673a9fbf1` (remove online Kilo services for a fully offline extension), `cfacab50d3` (hard-cut out-of-surface providers from GET /provider to eliminate Kilo Gateway from the model picker), `969f948140` (close remaining online residuals for a fully offline extension), and `5d613a008b` (close out the offline surface — remove LSP, sharing, auto-update and probe residuals). The residual-online matrix above lists only user-gated paths; nothing is auto-enabled by the process.
+
+### Sync 2026-09-09 → upstream v7.5.16
+
+- Upstream integrated to **v7.5.16** (`origin/main` @ commit `08f696e4b3`) via merge commit `b6b934e301` ("Merge branch 'main' into leocode"); backup tag `pre-sync-20260909`.
+- Board/Swarm (Kilo Swarm shared agent boards + pure-DDL DB migrations) **adopted**; browser-automation panel **adopted** as an experimental feature, off by default. Residual-online matrix above and invariants I1–I10 re-verified green; typecheck/lint/unit suite/CI guards/offline smoke all pass; compile produced `dist/{extension,webview,agent-manager}.js`.
+- Extension version aligned to **7.5.16** (root + `packages/opencode` already bumped by the merge); see `packages/kilo-vscode/CHANGELOG.md` → `## 7.5.16` → "Offline fork (leocode)".
 
 ## Online-services removal (this branch, step 13)
 

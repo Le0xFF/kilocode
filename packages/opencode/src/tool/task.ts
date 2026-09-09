@@ -16,6 +16,7 @@ import { EventV2Bridge } from "@/event-v2-bridge" // kilocode_change
 import { KiloTask } from "../kilocode/tool/task" // kilocode_change
 import { KiloTaskBackgroundProcess } from "../kilocode/tool/task-background-process" // kilocode_change
 import { KiloCostPropagation } from "../kilocode/session/cost-propagation" // kilocode_change
+import { KiloSessionProcessor } from "../kilocode/session/processor" // kilocode_change
 import { KiloSession } from "../kilocode/session" // kilocode_change
 import { resumeHint } from "../kilocode/task-resume" // kilocode_change
 import { errorMessage } from "@/util/error" // kilocode_change

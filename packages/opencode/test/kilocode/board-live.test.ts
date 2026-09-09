@@ -7,13 +7,12 @@ import { Database } from "@opencode-ai/core/database/database"
 import { CrossSpawnSpawner } from "@opencode-ai/core/cross-spawn-spawner"
 import { MemoryService } from "@kilocode/kilo-memory/effect/service"
 import { BackgroundJob } from "../../src/background/job"
-import { LSP } from "../../src/lsp/lsp"
+// kilocode_change - offline: LSP and kilo-sessions surfaces removed; their test layers are dropped
 import { MCP } from "../../src/mcp"
 import { Plugin } from "../../src/plugin"
 import { Session } from "../../src/session/session"
 import { SessionPrompt } from "../../src/session/prompt"
 import { SessionSummary } from "../../src/session/summary"
-import { KiloSessions } from "../../src/kilo-sessions/kilo-sessions"
 import { BoardStore } from "../../src/kilocode/board/store"
 import { BoardNotice } from "../../src/kilocode/board/notice"
 import { BoardContext } from "../../src/kilocode/board/context"
@@ -61,26 +60,6 @@ const mcp = Layer.succeed(
   }),
 )
 
-const lsp = Layer.succeed(
-  LSP.Service,
-  LSP.Service.of({
-    init: () => Effect.void,
-    status: () => Effect.succeed([]),
-    hasClients: () => Effect.succeed(false),
-    touchFile: () => Effect.void,
-    diagnostics: () => Effect.succeed({}),
-    hover: () => Effect.succeed(undefined),
-    definition: () => Effect.succeed([]),
-    references: () => Effect.succeed([]),
-    implementation: () => Effect.succeed([]),
-    documentSymbol: () => Effect.succeed([]),
-    workspaceSymbol: () => Effect.succeed([]),
-    prepareCallHierarchy: () => Effect.succeed([]),
-    incomingCalls: () => Effect.succeed([]),
-    outgoingCalls: () => Effect.succeed([]),
-  }),
-)
-
 const memory = LayerNode.make({ service: MemoryService.Service, layer: MemoryService.layer, deps: [] })
 const server = LayerNode.make({ service: TestLLMServer, layer: TestLLMServer.layer, deps: [] })
 const root = LayerNode.group([
@@ -98,9 +77,7 @@ const it = testEffect(
   LayerNode.compile(root, [
     [SessionSummary.node, summary],
     [Plugin.node, plugin],
-    [LSP.node, lsp],
     [MCP.node, mcp],
-    [KiloSessions.node, KiloSessions.testLayer],
   ]),
 )
 

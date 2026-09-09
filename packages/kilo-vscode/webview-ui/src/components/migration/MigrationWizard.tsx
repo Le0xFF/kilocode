@@ -85,7 +85,68 @@ const WarningSvg = (): JSX.Element => (
   </svg>
 )
 
+// Inline SVG icons for the What's New feature cards
+const BoltIcon = (): JSX.Element => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+  </svg>
+)
+
+const MonitorIcon = (): JSX.Element => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <rect x="2" y="3" width="20" height="14" rx="2" />
+    <line x1="8" y1="21" x2="16" y2="21" />
+    <line x1="12" y1="17" x2="12" y2="21" />
+  </svg>
+)
+
+const UsersIcon = (): JSX.Element => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+    <circle cx="9" cy="7" r="4" />
+    <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+  </svg>
+)
+
+const ServerIcon = (): JSX.Element => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <rect x="2" y="12" width="20" height="8" rx="2" />
+    <path d="M6 12V8a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v4" />
+    <line x1="12" y1="16" x2="12" y2="16.01" />
+  </svg>
+)
+
 type MigratePhase = "selecting" | "migrating" | "error" | "done"
+type Screen = "whats-new" | "migrate"
 
 interface ProgressEntry {
   item: string
@@ -106,6 +167,8 @@ const MigrationWizard: Component<MigrationWizardProps> = (props) => {
   const language = useLanguage()
   const source = props.source ?? "roo"
   const operationId = props.operationId ?? crypto.randomUUID()
+  // kilocode_change - offline: the What's New intro screen is hidden by default; the migration migrate-screen is the active one
+  const [screen, setScreen] = createSignal<Screen>("migrate")
   const [phase, setPhase] = createSignal<MigratePhase>("selecting")
   const [sessions, setSessions] = createSignal<MigrationSessionInfo[]>([])
   const [selected, setSelected] = createSignal(false)
@@ -250,12 +313,14 @@ const MigrationWizard: Component<MigrationWizardProps> = (props) => {
   return (
     <div class="migration-wizard">
       <div class="migration-wizard__container">
-        <div class="migration-wizard__screen--active">
-          <div class="migration-wizard__header">
-            <KiloLogo />
-            <h1>{language.t("settings.aboutKiloCode.rooImport.button")}</h1>
-            <p>{language.t("settings.aboutKiloCode.rooImport.description")}</p>
-          </div>
+        <Show when={screen() === "whats-new"}>
+          {/* kilocode_change - offline: the What's New intro screen is hidden by default, so its section is not rendered at all */}
+          <div class="migration-wizard__screen--active">
+            <div class="migration-wizard__header">
+              <KiloLogo />
+              <h1>{language.t("settings.aboutKiloCode.rooImport.button")}</h1>
+              <p>{language.t("settings.aboutKiloCode.rooImport.description")}</p>
+            </div>
 
 
           <div class="migration-wizard__features">
@@ -330,13 +395,14 @@ const MigrationWizard: Component<MigrationWizardProps> = (props) => {
               <button
                 type="button"
                 class="migration-wizard__btn migration-wizard__btn--primary"
-                onClick={() => setScreen("migrate")}
+                onClick={() => props.onComplete()}
               >
                 {language.t("migration.whatsNew.continue")}
               </button>
             </div>
           </div>
-        </div>
+          </div>
+        </Show>
 
         {/* ---- Screen 2: Migrate Settings ---- */}
         <div class={screen() === "migrate" ? "migration-wizard__screen--active" : "migration-wizard__screen--hidden"}>
@@ -346,7 +412,6 @@ const MigrationWizard: Component<MigrationWizardProps> = (props) => {
             <p>{language.t("migration.migrate.subtitle")}</p>
           </div>
 
-          <Show when={hasNothingToShow()}>
           <Show when={sessions().length === 0}>
 
             <div class="migration-wizard__card">

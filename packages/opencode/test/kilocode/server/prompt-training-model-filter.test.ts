@@ -142,7 +142,6 @@ for (const scenario of [
           tmpdir({
             config: {
               formatter: false,
-              lsp: false,
               enabled_providers: ["kilo", "external"],
               hide_prompt_training_models: true,
               provider: {
@@ -262,7 +261,6 @@ it.live(
         tmpdir({
           config: {
             formatter: false,
-            lsp: false,
             enabled_providers: ["kilo"],
             hide_prompt_training_models: true,
             provider: { kilo: { options: { baseURL } } },

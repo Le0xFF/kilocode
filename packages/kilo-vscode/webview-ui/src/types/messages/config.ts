@@ -58,6 +58,8 @@ export interface ExperimentalConfig {
   image_generation?: boolean
   shared_agent_board?: boolean
   image_generation_model?: string
+  // kilocode_change - speech-to-text model selection (kept local media surface)
+  speech_to_text_model?: string
 
   image_generation_provider?: ExperimentalMediaProvider
   task_model_selection?: boolean

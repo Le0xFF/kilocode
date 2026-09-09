@@ -110,7 +110,6 @@ const MockProviderProvider: ParentComponent<{ training?: boolean }> = (props) =>
     defaultSelection: () => ({ providerID: "lmstudio", modelID: "anthropic/claude-sonnet-4-6" }),
     organizationId: () => null,
     ready: () => true,
-    defaultSelection: () => ({ providerID: "kilo", modelID: "anthropic/claude-sonnet-4-6" }),
 
     models,
     findModel: (sel: any) => _findModel(models(), sel),

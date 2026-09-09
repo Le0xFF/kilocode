@@ -75,6 +75,10 @@
 - Updated dependencies [[`3141112`](https://github.com/Kilo-Org/kilocode/commit/3141112eb71351a4e2c97dd0b67ec20b75d070b2)]:
   - @kilocode/kilo-ui@7.5.16
 
+### Offline fork (leocode)
+
+This build is the **offline `leocode` fork** of Kilo Code, synced to upstream v7.5.16. It runs fully offline against your local OpenAI-compatible providers only — there is no Kilo Gateway, marketplace, cloud sessions, or KiloClaw. Newly adopted from upstream in this sync: Agent Manager Update-from-base, GitHub PR review threads / comments / reactions, background agents, an experimental browser-automation panel (off by default), shared agent boards, improved `@`-menu ranking, the TUI about dialog, and session transcript import.
+
 ## 7.5.15
 
 ## 7.5.14

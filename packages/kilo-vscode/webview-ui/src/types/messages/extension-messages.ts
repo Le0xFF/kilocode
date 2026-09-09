@@ -43,6 +43,7 @@ export interface BackgroundJobInfo {
   }
 }
 import type { QuestionRequest, SuggestionRequest, TodoItem } from "./questions"
+import type { SpeechToTextModelDef } from "../../../../src/speech-to-text/models"
 import type { ModelSelection, ModelUsageMap, Provider, ProviderAuthState } from "./providers"
 import type { AgentInfo, SkillInfo, SlashCommandInfo } from "./agents"
 import type {
@@ -442,6 +443,35 @@ export interface ChatSettingsLoadedMessage {
 export interface ImageModelsLoadedMessage {
   type: "imageModelsLoaded"
   models: Array<{ id: string; name: string; description?: string }>
+}
+
+// kilocode_change - speech-to-text messages (kept local media surface)
+export interface SpeechToTextModelsLoadedMessage {
+  type: "speechToTextModelsLoaded"
+  models: SpeechToTextModelDef[]
+}
+
+export interface SpeechToTextResultMessage {
+  type: "speechToTextResult"
+  text: string
+  requestId: string
+}
+
+export interface SpeechToTextStartedMessage {
+  type: "speechToTextStarted"
+  requestId: string
+}
+
+export interface SpeechToTextCancelledMessage {
+  type: "speechToTextCancelled"
+  requestId: string
+}
+
+export interface SpeechToTextErrorMessage {
+  type: "speechToTextError"
+  error: string
+  code?: string
+  requestId: string
 }
 
 export interface ProvidersLoadedMessage {
@@ -1569,3 +1599,9 @@ export type ExtensionMessage =
   | MemoryOperationResultMessage
   | BackgroundJobsLoadedMessage
   | SessionBoardLoadedMessage
+  // kilocode_change - speech-to-text messages (kept local media surface)
+  | SpeechToTextModelsLoadedMessage
+  | SpeechToTextResultMessage
+  | SpeechToTextStartedMessage
+  | SpeechToTextCancelledMessage
+  | SpeechToTextErrorMessage

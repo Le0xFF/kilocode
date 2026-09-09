@@ -105,11 +105,14 @@ import {
 import { fetchAndSendPendingSuggestions } from "./kilo-provider/handlers/suggestion"
 import { nativeTitle } from "./kilo-provider/native-tab-title"
 
-import { parseReview, reviewMetadata, type ReviewMessageData } from "./shared/review-comments"
+import { parseReview, reviewMetadata, type PRReviewCommentData, type ReviewMessageData } from "./shared/review-comments"
+import { feedbackMetadata, parseFeedback, type BrowserFeedbackData } from "./shared/browser-feedback"
 import { isActivity, type Activity } from "../webview-ui/src/utils/session-activity"
 import { completesWithoutStatus, goalControl } from "./kilo-provider/command-completion"
 
 import { KiloProviderMemory } from "./kilo-provider/memory"
+import { fetchSpeechToTextModels } from "./speech-to-text/catalog"
+import { SPEECH_TO_TEXT_MODELS } from "./speech-to-text/models"
 
 import {
   buildActionContext,
@@ -353,11 +356,9 @@ export class KiloProvider implements vscode.WebviewViewProvider {
   private pending = 0
   private configWarningsShown = false
 
-  private pendingReviewComments: { comments: unknown[]; autoSend: boolean }[] = []
-  /** Cached notificationsLoaded payload */
-  private cachedNotificationsMessage: NotificationsMessage | null = null
+  // kilocode_change - cachedNotificationsMessage removed with remote notifications (offline)
   /** Cached provider usage payload for profile view remounts and temporary disconnects. */
-  private cachedProviderUsageMessage: { type: "providerUsageLoaded"; data: ProviderUsage } | null = null
+  private cachedProviderUsageMessage: { type: "providerUsageLoaded" } | null = null
   private providerUsageGeneration = 0
   private pendingKiloModel: { modelID?: string; agent?: string } | null = null
   private pendingReviewComments: { comments: unknown[]; autoSend: boolean; sessionID?: string }[] = []
@@ -1044,15 +1045,8 @@ export class KiloProvider implements vscode.WebviewViewProvider {
           openAgentManager: () => vscode.commands.executeCommand("kilo-code.new.agentManagerOpen"),
           openAdvancedWorktree: () => vscode.commands.executeCommand("kilo-code.new.agentManager.advancedWorktree"),
 
-          openChanges: (sessionId?: string, turnId?: string) =>
-            vscode.commands.executeCommand("kilo-code.new.showChanges", {
-              sessionId,
-              turnId,
-              directory: sessionId ? this.sessionGitDirectories.get(sessionId) : undefined,
-            }),
+          // kilocode_change - keep method-based openChanges; drop the redundant command variant + profileButton (offline)
           openChanges: (sessionId?: string, turnId?: string) => this.openChanges(sessionId, turnId),
-          openProfile: () => vscode.commands.executeCommand("kilo-code.new.profileButtonClicked"),
-
           currentSessionId: this.currentSession?.id,
           createWorktree: async (baseBranch, branchName) => {
             await this.createWorktreeHandler?.(baseBranch, branchName)
@@ -1069,7 +1063,7 @@ export class KiloProvider implements vscode.WebviewViewProvider {
       if (this.handleChildSyncMessage(message)) return
       if (await this.handleMemoryMessage(message)) return
 
-      if (this.handleLegacyMigrationMessage(message)) return
+      if (this.handleMigrationMessage(message)) return
       if (await this.handleProfileDataMessage(message)) return
       if (this.handleMigrationMessage(message)) return
       if (this.handleNotificationSettingsMessage(message)) return
@@ -1365,9 +1359,7 @@ export class KiloProvider implements vscode.WebviewViewProvider {
           break
 
         case "requestNotifications":
-          this.fetchAndSendNotifications().catch((e) =>
-            console.error("[Kilo New] fetchAndSendNotifications failed:", e),
-          )
+          // kilocode_change - remote notifications removed with the offline surface
           break
         case "requestGitRemoteUrl":
           void this.getGitRemoteUrl().then((url) => {
@@ -1375,7 +1367,8 @@ export class KiloProvider implements vscode.WebviewViewProvider {
           })
           break
         case "dismissNotification":
-          await this.handleDismissNotification(message.notificationId)
+          // kilocode_change - remote notifications removed with the offline surface
+          break
 
         case "resetAllSettings":
           await this.handleResetAllSettings()
@@ -1462,10 +1455,7 @@ export class KiloProvider implements vscode.WebviewViewProvider {
     )
   }
   private async handleProfileDataMessage(message: TypedWebviewMessage): Promise<boolean> {
-    if (message.type === "refreshProfile") {
-      await handleRefreshProfile(this.authCtx)
-      return true
-    }
+    // kilocode_change - profile refresh removed with the offline surface (auth module deleted)
     if (message.type === "requestProviderUsage") {
       await this.fetchAndSendProviderUsage()
       return true
@@ -2504,7 +2494,7 @@ export class KiloProvider implements vscode.WebviewViewProvider {
           return
         }
         try {
-          const { response, authMethods, authStates, storedKeys, organizationId, ready } = await fetchProviderData(
+          const { response, authMethods, authStates, storedKeys } = await fetchProviderData(
             client,
             this.getWorkspaceDirectory(),
           )
@@ -2520,8 +2510,7 @@ export class KiloProvider implements vscode.WebviewViewProvider {
             providers: indexProvidersById(response.all),
             connected: response.connected,
             defaults: response.default,
-            organizationId,
-            ready,
+            // kilocode_change - organizationId/ready removed with the offline surface (no gateway)
             defaultSelection: computeDefaultSelection(
               this.cachedConfigMessage as { config?: { model?: string } } | null,
               settings.get<string>("providerID", ""),
@@ -2872,7 +2861,7 @@ export class KiloProvider implements vscode.WebviewViewProvider {
 
 
   private async fetchAndSendSpeechToTextModels(): Promise<void> {
-    const result = await fetchSpeechToTextModels(this.connectionService, this.getWorkspaceDirectory())
+    const result = await fetchSpeechToTextModels()
     if (!result.ok) {
       this.postMessage({ type: "speechToTextModelsLoaded" as const, models: [...SPEECH_TO_TEXT_MODELS] })
       return
@@ -4336,5 +4325,1121 @@ export class KiloProvider implements vscode.WebviewViewProvider {
       pruneQuestionDirectories: (active: Set<string>, dirs: Set<string>) =>
         this.connectionService.pruneQuestionDirectories(active, dirs),
     }
+  }
+
+  // kilocode_change - cloud-session + auth/profile handlers removed with the offline surface (modules deleted)
+
+  private invalidateProviderUsage(): void {
+    this.providerUsageGeneration++
+    this.cachedProviderUsageMessage = null
+    this.postMessage({ type: "providerUsageLoaded", reset: true })
+  }
+
+  /**
+   * Handle a generic setting update from the webview.
+   */
+  private async handleUpdateSetting(key: string, value: unknown): Promise<void> {
+    if (key === "maxCost") {
+      const normalized = this.setMaxCost(value)
+      await vscode.workspace
+        .getConfiguration("kilo-code.new")
+        .update("maxCost", normalized, vscode.ConfigurationTarget.Global)
+      for (const sid of this.trackedSessionIds) {
+        const oldLimit = this.activeAlerts.get(sid)
+        if (oldLimit !== undefined) {
+          this.activeAlerts.delete(sid)
+          this.postMessage({ type: "sessionCostAlertResolved", sessionID: sid, limit: oldLimit })
+        }
+        this.costs.rearm(sid)
+        this.requestCostAlert(sid, this.costs.sessionCost(sid))
+      }
+      return
+    }
+    const { section, leaf } = buildSettingPath(key)
+    // kilocode_change - autocomplete settings removed with the offline surface
+    if (section === "indexing" && !validIndexingSetting(leaf, value)) return
+    if (section === "chat" && !validChatSetting(leaf, value)) return
+    const config = vscode.workspace.getConfiguration(`kilo-code.new${section ? `.${section}` : ""}`)
+    // Normalize a webview-side clear to `undefined` so VS Code removes the
+    // key from settings.json rather than persisting a literal `null`. This
+    // lets the runtime fall back to the resolved default.
+    const next = value === null ? undefined : value
+    await config.update(leaf, next, vscode.ConfigurationTarget.Global)
+    if (isWorkStyleSetting(key)) this.sendWorkStyle()
+  }
+
+  /**
+   * Reset all "kilo-code.new.*" extension settings to their defaults by reading
+   * contributes.configuration from the extension's package.json at runtime.
+   * Only resets settings under the "kilo-code.new." namespace to avoid touching
+   * settings from the previous version of the extension which shares the same
+   * extension ID and "kilo-code.*" namespace.
+   */
+  private async handleResetAllSettings(): Promise<void> {
+    const confirmed = await vscode.window.showWarningMessage(
+      "Reset all Kilo Code extension settings to defaults?",
+      { modal: true },
+      "Reset",
+    )
+    if (confirmed !== "Reset") return
+
+    const prefix = "kilo-code.new."
+    const ext = vscode.extensions.getExtension("kilocode.kilo-code")
+    const properties = ext?.packageJSON?.contributes?.configuration?.properties as Record<string, unknown> | undefined
+    if (!properties) return
+
+    for (const key of Object.keys(properties)) {
+      if (!key.startsWith(prefix)) continue
+      const parts = key.split(".")
+      const section = parts.slice(0, -1).join(".")
+      const leaf = parts[parts.length - 1]!
+      const config = vscode.workspace.getConfiguration(section)
+      await config.update(leaf, undefined, vscode.ConfigurationTarget.Global)
+    }
+
+    // Clear globalState items that are not part of the configuration
+    await this.extensionContext?.globalState.update("variantSelections", undefined)
+    await this.extensionContext?.globalState.update("recentModels", undefined)
+    await this.extensionContext?.globalState.update("modelUsage", undefined)
+    await this.extensionContext?.globalState.update("kilo.dismissedNotificationIds", undefined)
+    await this.extensionContext?.globalState.update("kilo.agentMigrationBannerDismissed", undefined)
+    await this.extensionContext?.globalState.update("kilo.marketplace.dismissedSuggestions", undefined)
+
+    // kilocode_change - autocomplete + remote notifications removed with the offline surface
+    await this.sendIndexingSettings()
+    this.sendBrowserSettings()
+    this.sendNotificationSettings()
+    this.sendTimelineSetting()
+    this.postMessage(buildThroughputSettingMessage())
+    this.postMessage(buildAutoApprovalReasonSettingMessage())
+    this.sendWorkStyle()
+    await ModelState.reset(this.client, (msg) => this.postMessage(msg))
+
+    // Re-send globalState items to the webview
+    this.postMessage({ type: "variantsLoaded", variants: {} })
+    this.postMessage({ type: "recentsLoaded", recents: [] })
+    this.postMessage({ type: "modelUsageLoaded", usage: {} })
+
+    // kilocode_change - remote notifications removed with the offline surface
+
+    vscode.window.showInformationMessage("Kilo Code settings have been reset to defaults.")
+  }
+
+  /**
+   * Read the current browser automation settings and push them to the webview.
+   */
+  private sendBrowserSettings(): void {
+    const config = vscode.workspace.getConfiguration("kilo-code.new.browserAutomation")
+    this.postMessage({
+      type: "browserSettingsLoaded",
+      settings: {
+        useSystemChrome: config.get<boolean>("useSystemChrome", true),
+      },
+    })
+  }
+
+  /**
+   * Read the current Claude Code compatibility setting and push it to the webview.
+   */
+  private sendClaudeCompatSetting(): void {
+    const enabled = vscode.workspace.getConfiguration("kilo-code.new").get<boolean>("claudeCodeCompat", false)
+    this.postMessage({
+      type: "claudeCompatSettingLoaded",
+      enabled: enabled ?? false,
+    })
+  }
+
+  /** Re-fetch all server-side state after an auth change. */
+  private async reloadAfterAuthChange(): Promise<void> {
+    this.invalidateProviderUsage()
+    this.invalidateProviders()
+    await Promise.all([
+      this.fetchAndSendProviders(),
+      this.fetchAndSendConfig().then(() =>
+        Promise.all([
+          this.fetchAndSendAgents(),
+          this.fetchAndSendSkills(),
+          this.fetchAndSendCommands(),
+          this.fetchAndSendIndexingStatus(),
+          // kilocode_change - remote notifications removed with the offline surface
+        ]),
+      ),
+    ])
+  }
+
+  /** Reload config, skills, agents, and commands from disk by rebooting the instance. */
+  private async handleReload(): Promise<void> {
+    if (!this.client) {
+      console.warn("[Kilo New] handleReload: no client connection")
+      return
+    }
+    const dir = this.getWorkspaceDirectory(this.currentSession?.id)
+    try {
+      await this.client.instance.reload({ directory: dir }, { throwOnError: true })
+    } catch (err) {
+      // wrapClientError exposes the HTTP status via `cause`, not `response`.
+      const cause = err instanceof Error ? err.cause : undefined
+      const status =
+        cause && typeof cause === "object" && "status" in cause ? (cause as { status?: number }).status : undefined
+      if (status === 409) {
+        vscode.window.showWarningMessage(
+          "Cannot reload while a session is running. Wait for it to finish or abort it first.",
+        )
+        return
+      }
+      console.error("[Kilo New] handleReload: reload endpoint failed:", err)
+      const detail = err instanceof Error && err.message ? err.message : "See extension logs for details."
+      vscode.window.showErrorMessage(`Reload failed. ${detail}`)
+      return
+    }
+    this.clearCommandsCache()
+    if (!sameDirectory(dir, this.getWorkspaceDirectory())) {
+      await this.reloadAfterAuthChange()
+    }
+  }
+
+  /** Public reload entry point for VS Code commands. */
+  async reload(): Promise<void> {
+    return this.handleReload()
+  }
+
+  private mapSyncEventToWebviewMessage(event: LegacySyncEvent) {
+    switch (event.type) {
+      case "message.updated": {
+        const info = event.properties.info
+        return {
+          type: "messageCreated" as const,
+          message: {
+            ...info,
+            createdAt: new Date(info.time.created).toISOString(),
+          },
+        }
+      }
+      case "message.removed":
+        return {
+          type: "messageRemoved" as const,
+          sessionID: event.properties.sessionID,
+          messageID: event.properties.messageID,
+        }
+      case "message.part.updated":
+        return {
+          type: "partUpdated" as const,
+          sessionID: event.properties.sessionID,
+          messageID: event.properties.part.messageID,
+          part: event.properties.part,
+        }
+      case "message.part.removed":
+        return {
+          type: "partRemoved" as const,
+          sessionID: event.properties.sessionID,
+          messageID: event.properties.messageID,
+          partID: event.properties.partID,
+        }
+      case "session.created":
+        return {
+          type: "sessionCreated" as const,
+          session: this.sessionToWebview(event.properties.info),
+        }
+      case "session.updated":
+        return {
+          type: "sessionUpdated" as const,
+          session: this.sessionToWebview(event.properties.info),
+        }
+      case "session.deleted":
+        return {
+          type: "sessionDeleted" as const,
+          sessionID: event.properties.sessionID,
+        }
+    }
+  }
+
+  private resolveEventSessionId(event: ProviderEvent): string | undefined {
+    switch (event.type) {
+      case "session.created":
+      case "session.updated":
+      case "session.deleted":
+        return event.properties.sessionID
+      case "message.updated":
+        this.connectionService.recordMessageSessionId(event.properties.info.id, event.properties.sessionID)
+        return event.properties.sessionID
+      case "message.removed":
+      case "message.part.updated":
+      case "message.part.removed":
+        return event.properties.sessionID
+      default:
+        return this.connectionService.resolveEventSessionId(event)
+    }
+  }
+
+  private postModelUsageChanged(event: ProviderEvent, sessionID: string | undefined): boolean {
+    if (!sessionID || this.trackedSessionIds.has(sessionID)) return false
+    if (event.type === "session.created") {
+      const parent = event.properties.info.parentID
+      if (!parent || !this.modelUsageSessionIds.has(parent)) return false
+      this.modelUsageSessionIds.add(sessionID)
+      this.postMessage({ type: "sessionModelUsageChanged", sessionID })
+      return true
+    }
+    if (!this.modelUsageSessionIds.has(sessionID)) return false
+    if (event.type === "message.part.updated") {
+      const part = event.properties.part as {
+        type?: string
+        tool?: string
+        metadata?: { sessionId?: string }
+        state?: { metadata?: { sessionId?: string } }
+      }
+      const child = childID(part)
+      if (child && !this.modelUsageSessionIds.has(child)) {
+        this.modelUsageSessionIds.add(child)
+        this.postMessage({ type: "sessionModelUsageChanged", sessionID: child })
+        return true
+      }
+    }
+    const changed =
+      event.type === "message.removed" ||
+      event.type === "message.part.removed" ||
+      event.type === "session.deleted" ||
+      (event.type === "message.part.updated" && event.properties.part.type === "step-finish")
+    if (!changed) return false
+    if (event.type === "session.deleted") this.modelUsageSessionIds.delete(sessionID)
+    this.postMessage({ type: "sessionModelUsageChanged", sessionID })
+    return true
+  }
+
+  /**
+   * Handle SSE events from the CLI backend.
+   * Filters events by project ID and tracked session IDs so each webview only sees its own sessions.
+   */
+  private handleEvent(event: ProviderEvent, directory?: string): void {
+    if (event.type === "indexing.status") {
+      const target = this.indexingScope
+      if (directory && !sameDirectory(directory, target.directory)) return
+      this.indexingStatusRequest++
+      const message = {
+        type: "indexingStatusLoaded",
+        status: event.properties.status,
+        projectId: target.projectId,
+      }
+      this.cachedIndexingStatusMessage = message
+      this.postMessage(message)
+      return
+    }
+
+    // kilocode_change - kilo-sessions remote status removed with the offline surface
+
+    if (event.type === "memory.status" || event.type === "memory.updated" || event.type === "memory.error") {
+      const props = event.properties as { sessionID?: unknown; detail?: unknown; reason?: unknown }
+      const eventSessionID = typeof props.sessionID === "string" ? props.sessionID : undefined
+      const active = this.currentSession?.id
+      const local =
+        !directory || sameDirectory(directory, this.getProjectDirectory(active) ?? this.getWorkspaceDirectory(active))
+      const trackedById = Boolean(eventSessionID && this.trackedSessionIds.has(eventSessionID))
+      // Directory-scoped events (enable/disable/rebuild/configure/purge) carry no
+      // sessionID, so also match any tracked session sharing the event directory —
+      // e.g. a non-active Agent Manager tab on the same worktree.
+      const trackedByDir = directory
+        ? [...this.sessionDirectories.entries()]
+            .filter(([sid, dir]) => this.trackedSessionIds.has(sid) && sameDirectory(directory, dir))
+            .map(([sid]) => sid)
+        : []
+      const tracked = trackedById || trackedByDir.length > 0
+      if (!local && !tracked) return
+      if (trackedById && eventSessionID && directory) this.trackDirectory(eventSessionID, directory)
+      const targets = new Set<string | undefined>()
+      if (trackedById && eventSessionID) targets.add(eventSessionID)
+      for (const sid of trackedByDir) targets.add(sid)
+      if (local && active) targets.add(active)
+      if (targets.size === 0 && local) targets.add(undefined)
+      const transient = event.type === "memory.error" && props.reason === MEMORY_TRANSIENT
+      const detail = transient
+        ? undefined
+        : props.detail && typeof props.detail === "object"
+          ? props.detail
+          : event.type === "memory.error" && typeof props.reason === "string"
+            ? { type: "error", message: props.reason, reason: props.reason }
+            : undefined
+      for (const sessionID of targets) {
+        if (detail) {
+          this.postMessage({
+            type: "memoryEvent",
+            sessionID,
+            detail,
+          })
+        }
+        void this.memory.fetch(sessionID)
+      }
+      return
+    }
+
+    // Drop session events from other projects before any tracking logic.
+    // This must come first: the trackedSessionIds guard below would otherwise
+    // let a foreign session through if it was accidentally tracked.
+    if (
+      directory &&
+      directory !== "global" &&
+      !this.isCurrentProjectDirectory(directory) &&
+      !this.terminal(event, directory)
+    )
+      return
+    if (
+      this.projectID &&
+      (!this.opts.projectQualifier || !directory) &&
+      (event.type === "session.created" || event.type === "session.updated") &&
+      event.properties.info.projectID !== undefined &&
+      event.properties.info.projectID !== null &&
+      event.properties.info.projectID !== this.projectID
+    ) {
+      return
+    }
+
+    if (event.type === "mcp.browser.open.failed") {
+      McpOAuth.openMcpOAuthUrlOnce(event.properties.url)
+      return
+    }
+
+    if (event.type === "message.updated") {
+      this.confirmations.confirm(event.properties.info.id)
+    }
+
+    // session.status events pass the onEventFiltered pre-filter for all providers (see line 842),
+    // so this runs on every KiloProvider instance — including the Settings panel which has no
+    // tracked sessions. Update sessionStatusMap and forward to webview before the
+    // trackedSessionIds guard so the Settings panel's allStatusMap stays current for the
+    // busy-session warning on Save.
+    if (event.type === "session.status") {
+      const sid = event.properties.sessionID
+      if (this.removedSessionIds.has(sid)) return
+      const status = event.properties.status
+      this.mark(sid, directory)
+      this.aborts.observe(sid, status.type, directory)
+      this.publish(sid, status)
+      return
+    }
+
+    // Extract sessionID from the event
+    if (event.type === "session.created" && this.adoptPendingFollowup(event.properties.info)) {
+      return
+    }
+
+    const sessionID = this.resolveEventSessionId(event)
+
+    // Events without sessionID (server.connected, server.heartbeat, indexing.status) → always forward
+    // Events with sessionID → only forward if this webview tracks that session
+    // message.part.* events are always session-scoped; drop if session unknown.
+    if (!sessionID && isSessionScopedPartEvent(event.type)) return
+    if (this.postModelUsageChanged(event, sessionID)) return
+    if (event.type !== "session.deleted" && sessionID && !this.trackedSessionIds.has(sessionID)) return
+
+    if (event.type === "message.part.updated") this.refreshGitStatusFromPart(event, sessionID)
+
+    if (event.type === "session.updated" && typeof event.properties.info.cost === "number") {
+      const cost = this.costs.setSessionCost(event.properties.sessionID, event.properties.info.cost)
+      this.requestCostAlert(event.properties.sessionID, cost)
+    }
+
+    if (event.type === "session.updated") {
+      // Full bus snapshots duplicate sync patches with the same event ID but no sequence metadata.
+      if (!isLegacySyncEvent(event)) return
+      const sid = event.properties.sessionID
+      const revision = this.revisions.get(sid)
+      const versioned = event.seq > 0 || (revision?.seq ?? 0) > 0
+      if (revision && (versioned ? event.seq <= revision.seq : event.id <= revision.id)) return
+      this.revisions.set(sid, { id: event.id, seq: event.seq })
+    }
+
+    // Refresh provider and agent lists when the server signals a state disposal
+    if (event.type === "global.disposed") {
+      void this.reloadAfterAuthChange()
+      return
+    }
+
+    if (event.type === "server.instance.disposed") {
+      const props = event.properties as Record<string, unknown> | null
+      const dir = typeof props?.directory === "string" ? props.directory : undefined
+      if (dir) for (const sid of this.aborts.dispose(dir)) this.sessionStatusMap.set(sid, "idle")
+      if (dir && !sameDirectory(dir, this.getWorkspaceDirectory())) return
+      void this.reloadAfterAuthChange()
+      return
+    }
+
+    // Config was updated without a full dispose (e.g. permission-only save).
+    // Fetch and push the updated config + refresh agents and providers so the
+    // Settings panel and mode/model pickers reflect the change.
+    if (event.type === "global.config.updated") {
+      void Promise.all([this.fetchAndSendConfigUpdated(), this.fetchAndSendAgents(), this.fetchAndSendProviders()])
+      return
+    }
+
+    // Forward relevant events to webview
+    // Side effects that must happen before the webview message is sent
+    if (event.type === "message.updated") {
+      const info = event.properties.info
+      const value = info.role === "assistant" ? info.cost : undefined
+      const cost = this.updateMessageCost(event.properties.sessionID, info.id, info.role, value)
+      if (cost !== undefined) this.requestCostAlert(event.properties.sessionID, cost)
+    }
+    if (event.type === "message.removed") {
+      this.removeMessageCost(event.properties.messageID)
+    }
+    if (event.type === "session.created" && !this.currentSession) {
+      this.setCurrentSession(event.properties.info)
+      this.contextSessionID = event.properties.info.id
+      this.trackedSessionIds.add(event.properties.info.id)
+    }
+    if (event.type === "session.updated" && this.currentSession?.id === event.properties.sessionID) {
+      this.setCurrentSession(event.properties.info)
+      this.contextSessionID = event.properties.sessionID
+    }
+    if (event.type === "session.deleted") {
+      const sid = event.properties.sessionID
+      this.trackedSessionIds.delete(sid)
+      this.modelUsageSessionIds.delete(sid)
+      this.sessionDirectories.delete(sid)
+      this.connectionService.pruneSession(sid)
+      this.costs.onSessionDeleted(sid)
+    }
+
+    // Auto-adopt child sessions as soon as the task tool part reveals their ID.
+    // This means the child's permission/question events are tracked immediately —
+    // before the webview renderer has a chance to call syncSession — eliminating
+    // the race where the child blocks on a prompt that the UI never sees.
+    if (event.type === "message.part.updated") {
+      const part = event.properties.part as {
+        type?: string
+        tool?: string
+        metadata?: { sessionId?: string }
+        state?: { metadata?: { sessionId?: string } }
+        sessionID?: string
+      }
+      const childId = childID(part)
+      if (childId && !this.trackedSessionIds.has(childId)) {
+        console.log("[Kilo New] KiloProvider: 🔗 Auto-adopting child session from task tool", { childId })
+        void this.handleSyncSession(childId, part.sessionID ?? sessionID)
+      }
+    }
+
+    // Drop the per-session caches for deleted sessions so a late
+    // handleLoadMessages response (or any other guarded read) can't resurrect
+    // transcript state for a session the webview just cleaned up. The
+    // prefilter lets session.deleted through without re-tracking, and the
+    // handleEvent guard does the same — this is the matching prune.
+    if (event.type === "session.deleted" && sessionID) {
+      this.pruneDeletedSession(sessionID)
+    }
+
+    if (!isLegacySyncEvent(event)) {
+      const props = event.properties
+      handleNetworkEvent(
+        event.type,
+        {
+          id: "id" in props && typeof props.id === "string" ? props.id : undefined,
+          sessionID: "sessionID" in props && typeof props.sessionID === "string" ? props.sessionID : undefined,
+          requestID: "requestID" in props && typeof props.requestID === "string" ? props.requestID : undefined,
+        },
+        this.client,
+        (s) => this.getWorkspaceDirectory(s),
+      )
+    }
+
+    const msg = isLegacySyncEvent(event)
+      ? this.mapSyncEventToWebviewMessage(event)
+      : mapSSEEventToWebviewMessage(event, sessionID)
+    if (!msg) return
+    if (msg.type === "partUpdated") {
+      this.streams.push({ ...msg, part: this.slimPart(msg.part) })
+      return
+    }
+    const next = msg.type === "messageCreated" ? { ...msg, message: this.slimInfo(msg.message) } : msg
+    if (next.type === "sandboxStatus") {
+      if (!sameDirectory(next.directory, this.getWorkspaceDirectory(next.sessionID))) return
+      this.postMessage({ ...next, revision: ++this.sandboxRevision })
+      return
+    }
+    this.streams.flush(sessionID)
+    this.postMessage(next)
+    const sid = event.type === "session.turn.close" ? event.properties.sessionID : sessionID
+    if (!sid) return
+    const status = this.sessionStatusMap.get(sid)
+    if (!status || status === "idle") return
+    if (
+      event.type === "session.turn.close" ||
+      (event.type === "message.updated" &&
+        event.properties.info.role === "assistant" &&
+        event.properties.info.finish === "stop" &&
+        event.properties.info.time.completed !== undefined)
+    ) {
+      this.sync(sid, directory ?? this.getWorkspaceDirectory(sid))
+    }
+  }
+
+  /** Wait until the webview has sent "webviewReady". Resolves immediately when already ready. */
+  public waitForReady(): Promise<void> {
+    if (this.isWebviewReady && this.webview) return Promise.resolve()
+    const deferred = Promise.withResolvers<void>()
+    this.readyResolvers.push(deferred.resolve)
+    return deferred.promise
+  }
+  /** Post a message to the webview. Public so toolbar button commands can send messages. */
+  public postMessage(message: unknown): void {
+    if (!this.webview) {
+      const type =
+        typeof message === "object" &&
+        message !== null &&
+        "type" in message &&
+        typeof (message as { type?: unknown }).type === "string"
+          ? (message as { type: string }).type
+          : "<unknown>"
+      console.warn("[Kilo New] KiloProvider: ⚠️ postMessage dropped (no webview)", { type })
+      return
+    }
+
+    void this.webview.postMessage(message).then(undefined, (error) => {
+      console.error("[Kilo New] KiloProvider: ❌ postMessage failed", error)
+    })
+  }
+
+  private flushPendingKiloModel(): void {
+    if (!this.webview || !this.isWebviewReady || !this.client || !this.pendingKiloModel) return
+
+    const pending = this.pendingKiloModel
+    this.pendingKiloModel = null
+    this.postMessage({ type: "selectKiloModel", ...pending })
+  }
+
+  public async appendReviewComments(comments: unknown[], autoSend = false, sessionID?: string): Promise<void> {
+    this.pendingReviewComments.push({ comments, autoSend, ...(sessionID ? { sessionID } : {}) })
+
+    if (!this.webview) {
+      await vscode.commands.executeCommand(`${KiloProvider.viewType}.focus`)
+    }
+
+    this.flushPendingReviewComments()
+  }
+
+  public async showMemory(sessionID?: string): Promise<void> {
+    await this.memory.show(sessionID ?? this.currentSession?.id)
+  }
+
+  public async toggleMemory(sessionID?: string): Promise<void> {
+    try {
+      const operation = await this.memory.toggle(sessionID ?? this.currentSession?.id)
+      if (operation) {
+        void vscode.window.showInformationMessage(`Project memory ${operation === "enable" ? "enabled" : "disabled"}.`)
+      }
+    } catch (error) {
+      console.error("[Kilo New] KiloProvider: Failed to toggle memory:", error)
+      void vscode.window.showErrorMessage(getErrorMessage(error) || "Failed to toggle memory")
+    }
+  }
+
+  private flushPendingReviewComments(): void {
+    if (!this.webview || !this.isWebviewReady || this.pendingReviewComments.length === 0) return
+
+    const pending = this.pendingReviewComments
+    this.pendingReviewComments = []
+
+    for (const entry of pending) {
+      this.postMessage({ type: "appendReviewComments", ...entry })
+    }
+  }
+
+  /**
+   * Get the git remote URL for the current workspace using VS Code's built-in Git API.
+   * Returns undefined if not in a git repo or no remotes are configured.
+   */
+  private async getGitRemoteUrl(): Promise<string | undefined> {
+    try {
+      const extension = vscode.extensions.getExtension("vscode.git")
+      if (!extension) return undefined
+      const api = extension.isActive ? extension.exports?.getAPI(1) : (await extension.activate())?.getAPI(1)
+      if (!api) return undefined
+      const repo = api.repositories?.[0]
+      if (!repo) return undefined
+      const remote = repo.state?.remotes?.find((r: { name: string }) => r.name === "origin")
+      return remote?.fetchUrl ?? remote?.pushUrl
+    } catch (error) {
+      console.warn("[Kilo New] KiloProvider: Failed to get git remote URL:", error)
+      return undefined
+    }
+  }
+
+  /**
+   * Gather VS Code editor context to send alongside messages to the CLI backend.
+   */
+  /**
+   * Return the set of relative paths for all open text-editor tabs within the
+   * given directory, filtered through .kilocodeignore.
+   */
+  private async getOpenTabPaths(dir: string): Promise<Set<string>> {
+    const controller = await this.getIgnoreController(dir)
+    const result = new Set<string>()
+    for (const group of vscode.window.tabGroups.all) {
+      for (const tab of group.tabs) {
+        const uri =
+          tab.input instanceof vscode.TabInputText || tab.input instanceof vscode.TabInputNotebook
+            ? tab.input.uri
+            : undefined
+        if (uri?.scheme !== "file") continue
+
+        const rel = path.relative(dir, uri.fsPath)
+        if (!rel.startsWith("..") && !path.isAbsolute(rel) && controller.validateAccess(uri.fsPath)) {
+          result.add(rel.replaceAll("\\", "/"))
+        }
+      }
+    }
+    return result
+  }
+
+  /**
+   * Get or create a FileIgnoreController for the current workspace directory.
+   * Reinitializes if the workspace directory has changed.
+   */
+  private async getIgnoreController(workspaceDir: string): Promise<FileIgnoreController> {
+    if (this.ignoreController && this.ignoreControllerDir === workspaceDir) {
+      return this.ignoreController
+    }
+    const controller = new FileIgnoreController(workspaceDir)
+    await controller.initialize()
+    this.ignoreController = controller
+    this.ignoreControllerDir = workspaceDir
+    return controller
+  }
+
+  private async gatherEditorContext(dir?: string): Promise<EditorContext> {
+    const workspaceDir = dir ?? this.getWorkspaceDirectory()
+    const controller = await this.getIgnoreController(workspaceDir)
+
+    const toRelative = (fsPath: string): string | undefined => {
+      if (!workspaceDir) {
+        return undefined
+      }
+      const relative = path.relative(workspaceDir, fsPath)
+      if (relative.startsWith("..") || path.isAbsolute(relative)) {
+        return undefined
+      }
+      return relative
+    }
+
+    // Visible files (capped to avoid bloating context, filtered through .kilocodeignore)
+    const visibleFiles = [
+      ...new Set(
+        [
+          ...vscode.window.visibleTextEditors.map((editor) => notebookUri(editor.document.uri)),
+          ...vscode.window.visibleNotebookEditors.map((editor) => editor.notebook.uri),
+        ]
+          .filter((uri): uri is vscode.Uri => uri?.scheme === "file")
+          .map((uri) => toRelative(uri.fsPath))
+          .filter(
+            (file): file is string => file !== undefined && controller.validateAccess(path.resolve(workspaceDir, file)),
+          ),
+      ),
+    ].slice(0, 200)
+
+    // Open tabs — text and notebook files only; exclude diffs and custom editors
+    const openTabs = [...(await this.getOpenTabPaths(workspaceDir))].slice(0, 20)
+
+    // Active file (also filtered through .kilocodeignore)
+    const activeEditor = vscode.window.activeTextEditor
+    const activeUri = activeEditor
+      ? notebookUri(activeEditor.document.uri)
+      : vscode.window.activeNotebookEditor?.notebook.uri
+    const activeRel = activeUri ? toRelative(activeUri.fsPath) : undefined
+    const activeFile = activeRel && activeUri && controller.validateAccess(activeUri.fsPath) ? activeRel : undefined
+
+    // Shell
+    const shell = vscode.env.shell || undefined
+
+    return {
+      ...(visibleFiles.length > 0 ? { visibleFiles } : {}),
+      ...(openTabs.length > 0 ? { openTabs } : {}),
+      ...(activeFile ? { activeFile } : {}),
+      ...(shell ? { shell } : {}),
+    }
+  }
+
+  private getWorkspaceDirectory(sessionId?: string): string {
+    const routed = this.routeSessionDirectory(sessionId ?? undefined)
+    // Ambiguous ids degrade to the legacy resolution instead of throwing: this
+    // runs eagerly per webview message, where a throw would drop the message.
+    if (routed === null)
+      console.warn(`[Kilo New] KiloProvider: session ${sessionId} is ambiguous across projects, using workspace root`)
+    if (routed) return routed
+    return resolveWorkspaceDirectory({
+      sessionID: sessionId,
+      sessionDirectories: this.sessionDirectories,
+      workspaceDirectory: this.getRootDirectory(),
+    })
+  }
+
+  private getSessionDirectory(sessionId: string, session?: Session): string {
+    const routed = this.routeSessionDirectory(sessionId)
+    if (routed === null)
+      console.warn(
+        `[Kilo New] KiloProvider: session ${sessionId} is ambiguous across projects, using tracked directory`,
+      )
+    if (routed) return routed
+    return this.sessionDirectories.get(sessionId) ?? session?.directory ?? this.getRootDirectory()
+  }
+
+  /**
+   * Resolve a session directory through the Agent Manager route service.
+   *
+   * Returns the exact directory when the route service knows the id and it is
+   * unambiguous (or a project qualifier disambiguates it). Returns `undefined`
+   * when no route service is configured or the id is unknown — callers then
+   * fall through to the legacy sessionDirectories/workspace-root path, which
+   * preserves non-Agent-Manager behavior. Returns `null` when the id is
+   * ambiguous and cannot be qualified: callers must NOT fall back to an
+   * arbitrary root in that case, because doing so would silently target the
+   * wrong project.
+   */
+  private routeSessionDirectory(sessionId: string | undefined): string | null | undefined {
+    const routes = this.opts.routeService
+    if (!routes || !sessionId) return undefined
+    const exact = routes.trySessionDirectory(sessionId)
+    if (exact) return exact
+    if (routes.isSessionAmbiguous(sessionId)) {
+      const qualifier = this.opts.projectQualifier?.()
+      if (qualifier) {
+        const ref: SessionRef = { projectId: qualifier.projectId, sessionId }
+        const dir = routes.trySessionDirectoryFor(ref)
+        if (dir) return dir
+      }
+      return null
+    }
+    return undefined
+  }
+
+  private isCurrentProjectDirectory(directory: string): boolean {
+    if (!this.opts.projectQualifier?.()) return true
+    const dirs = [this.getRootDirectory(), ...(this.opts.worktreeDirectories?.() ?? [])]
+    return dirs.some((dir) => sameDirectory(dir, directory))
+  }
+
+  private owned(sessionID: string, directory?: string): boolean {
+    if (!directory || directory === "global" || this.syncedChildSessions.has(sessionID)) return false
+    const owner = this.owners.get(sessionID)
+    return owner !== undefined && sameDirectory(owner.dir, directory)
+  }
+
+  private terminal(event: ProviderEvent, directory?: string): boolean {
+    if (event.type === "session.status") {
+      const type = event.properties.status.type
+      if (type === "idle" || type === "offline") return this.owned(event.properties.sessionID, directory)
+    }
+    if (event.type === "session.deleted") return this.owned(event.properties.sessionID, directory)
+    return false
+  }
+
+  private isCurrentProjectSession(sessionID: string): boolean {
+    if (!this.opts.projectQualifier || !this.opts.routeService) return true
+    if (this.isSessionRouteAmbiguous(sessionID)) return false
+    const directory = this.opts.routeService.trySessionDirectory(sessionID)
+    return !directory || this.isCurrentProjectDirectory(directory)
+  }
+
+  private refreshGitStatusFromPart(
+    event: Extract<ProviderEvent, { type: "message.part.updated" }>,
+    sessionID?: string,
+  ) {
+    void this.refreshGitStatusFromParts([event.properties.part], sessionID)
+  }
+
+  private async refreshGitStatusFromParts(parts: unknown[], sessionID?: string, recover = false): Promise<boolean> {
+    const base = this.getWorkspaceDirectory(sessionID)
+    const edits = editPaths(parts, base)
+    if (!recover && edits.length === 0) return false
+
+    const cached = sessionID ? this.sessionGitDirectories.get(sessionID) : undefined
+    if (cached) {
+      await this.refreshGitStatus(cached, sessionID)
+      return true
+    }
+
+    const root = await this.resolveGitRoot(base)
+    if (root) {
+      await this.refreshGitStatus(root, sessionID)
+      return true
+    }
+
+    const file = edits.find((item) => this.isCurrentProjectGitDirectory(item, sessionID))
+    if (!file) return false
+    await this.refreshGitStatus(path.dirname(file), sessionID)
+    return sessionID ? this.sessionGitDirectories.has(sessionID) : true
+  }
+
+  private async recoverSessionGitStatus(parts: unknown[], sessionID: string, cursor?: string): Promise<void> {
+    if (await this.refreshGitStatusFromParts(parts, sessionID, true)) return
+    if (!cursor || !this.client || !this.trackedSessionIds.has(sessionID)) return
+    if (this.sessionGitRecoveries.has(sessionID)) return
+    this.sessionGitRecoveries.add(sessionID)
+
+    const directory = this.getWorkspaceDirectory(sessionID)
+    const history = await retry(() =>
+      this.client!.session.messages({ sessionID, directory, limit: 0 }, { throwOnError: true }),
+    ).catch((error: unknown) => {
+      console.warn("[Kilo New] KiloProvider: Failed to recover session Git directory:", error)
+      return undefined
+    })
+    if (!history) {
+      this.sessionGitRecoveries.delete(sessionID)
+      return
+    }
+    if (!this.trackedSessionIds.has(sessionID)) return
+    await this.refreshGitStatusFromParts(
+      history.data.flatMap((message) => message.parts),
+      sessionID,
+    )
+  }
+
+  private isCurrentProjectGitDirectory(directory: string, sessionID?: string): boolean {
+    const roots = this.opts.projectQualifier?.()
+      ? [this.getRootDirectory(), ...(this.opts.worktreeDirectories?.() ?? [])]
+      : [this.getWorkspaceDirectory(sessionID)]
+    return roots.some((root) => {
+      const rel = path.relative(canonicalizePath(root), canonicalizePath(directory))
+      return rel === "" || (!path.isAbsolute(rel) && rel !== ".." && !rel.startsWith(`..${path.sep}`))
+    })
+  }
+
+  public async refreshGitStatus(directory = this.getWorkspaceDirectory(), sessionID?: string): Promise<void> {
+    const client = this.client
+    if (!client) return
+    const active = !sessionID || sessionID === this.contextSessionID
+    const revision = active ? ++this.gitStatusRevision : undefined
+    const repo = await hasGit(client, directory)
+    const root = await this.resolveGitRoot(directory)
+    const found = repo || root !== undefined
+    const target = root ?? directory
+    if (found && sessionID && !this.sessionGitDirectories.has(sessionID)) {
+      this.sessionGitDirectories.set(sessionID, target)
+    }
+    if (sessionID && sessionID !== this.contextSessionID) return
+    if (revision === undefined || revision !== this.gitStatusRevision) return
+    const changed = !this.cachedGitDirectory || !sameDirectory(this.cachedGitDirectory, target)
+    if (changed) {
+      this.cachedStats = null
+      this.statsPoller?.stop()
+      this.statsPoller = null
+      this.statsGitOps?.dispose()
+      this.statsGitOps = null
+    }
+    this.cachedGitDirectory = target
+    this.cachedGitRepo = found
+    this.postMessage({ type: "gitStatus", repo: found })
+    if (found) {
+      if (!this.statsPoller) this.startStatsPolling()
+      return
+    }
+    this.statsPoller?.stop()
+    this.statsGitOps?.dispose()
+    this.statsPoller = null
+    this.statsGitOps = null
+  }
+
+  private async resolveGitRoot(directory: string): Promise<string | undefined> {
+    const git = this.statsGitOps ?? new GitOps({ log: () => {} })
+    const root = await git.root(directory)
+    if (!this.statsGitOps) git.dispose()
+    return root
+  }
+
+  private getContextDirectory(): string {
+    return resolveContextDirectory({
+      currentSessionID: this.currentSession?.id,
+      contextSessionID: this.contextSessionID,
+      sessionDirectories: this.sessionDirectories,
+      workspaceDirectory: this.getRootDirectory(),
+    })
+  }
+
+  private getRootDirectory(): string {
+    const override = this.opts.rootDirectory?.()
+    if (override) return override
+    const workspaceFolders = vscode.workspace.workspaceFolders
+    if (workspaceFolders && workspaceFolders.length > 0) {
+      return workspaceFolders[0]!.uri.fsPath
+    }
+    return process.cwd()
+  }
+
+  private trackDirectory(sessionId: string, dir: string) {
+    // Agent Manager Local sessions must retain their explicit project root.
+    // Removing same-root entries would silently retarget them after switching
+    // the panel's active project.
+    this.sessionDirectories.set(sessionId, dir)
+  }
+
+  private noteFollowup(answers: string[][], sessionID?: string) {
+    const dir = this.getWorkspaceDirectory(sessionID)
+    this.pendingFollowup = recordFollowup({ answers, dir, now: Date.now() }) ?? null
+  }
+
+  private matchesPendingFollowup(session: Session) {
+    return matchFollowup({
+      pending: this.pendingFollowup,
+      dir: session.directory,
+      now: Date.now(),
+      parentID: session.parentID,
+    })
+  }
+
+  private adoptPendingFollowup(session: Session) {
+    const now = Date.now()
+    const match = this.matchesPendingFollowup(session)
+    if (!match) {
+      if (
+        this.pendingFollowup &&
+        !matchFollowup({ pending: this.pendingFollowup, dir: this.pendingFollowup.dir, now })
+      ) {
+        this.pendingFollowup = null
+      }
+      return false
+    }
+
+    this.pendingFollowup = null
+    this.trackDirectory(session.id, session.directory)
+    for (const cb of this.followupListeners) cb(session, session.directory)
+    this.registerSession(session, true)
+    void this.handleLoadMessages(session.id)
+    return true
+  }
+
+  private getProjectDirectory(sessionId?: string): string | undefined {
+    return resolveProjectDirectory(this.projectDirectory, () => this.getWorkspaceDirectory(sessionId))
+  }
+
+  private _getHtmlForWebview(webview: vscode.Webview, sidebar = false): string {
+    return buildWebviewHtml(webview, {
+      // The rail follows the physical workbench edge. RTL text direction must not move it between chat and code.
+      sidebar: sidebar
+        ? vscode.workspace.getConfiguration("workbench").get("sideBar.location") === "right"
+          ? "right"
+          : "left"
+        : undefined,
+      scriptUri: webview.asWebviewUri(vscode.Uri.joinPath(this.extensionUri, "dist", "webview.js")),
+      styleUri: webview.asWebviewUri(vscode.Uri.joinPath(this.extensionUri, "dist", "webview.css")),
+      iconsBaseUri: webview.asWebviewUri(vscode.Uri.joinPath(this.extensionUri, "assets", "icons")),
+      workerUri: webview.asWebviewUri(vscode.Uri.joinPath(this.extensionUri, "dist", "shiki-worker.js")),
+      title: "Kilo Code",
+      port: this.connectionService.getServerInfo()?.port,
+      extraStyles: `.container { height: 100vh; }`,
+      // Dedicated single-purpose panels (Settings, Profile, Sub-Agent Viewer)
+      // never show the bar. Sidebar and "Open in Tab" only need it in Cursor —
+      // VS Code's native toolbar (restored in package.json) works everywhere.
+      topBar: this.opts.hideTopBar !== true && isCursorHost(),
+      topBarSurface: this.opts.topBarSurface === "tab" ? "tab_title" : "sidebar_title",
+      agentManagerSettings: this.opts.agentManagerSettings !== undefined,
+    })
+  }
+
+  private get migrationCtx(): MigrationContext {
+    const self = this
+    return {
+      client: this.client,
+      extensionContext: this.extensionContext,
+      postMessage: (msg) => this.postMessage(msg),
+      migrationCache: self.migrationCache,
+      get migrationCheckInFlight() {
+        return self.migrationCheckInFlight
+      },
+      set migrationCheckInFlight(val) {
+        self.migrationCheckInFlight = val
+      },
+      refreshSessions: () => this.refreshSessions(),
+      broadcastComplete: () => this.connectionService.notifyMigrationComplete(),
+    }
+  }
+
+  // ── Worktree stats polling (sidebar diff badge) ──────────────────
+  private setStatsVisible(visible: boolean): void {
+    this.statsVisible = visible
+    this.statsPoller?.setEnabled(visible)
+    this.statsPoller?.setVisible(visible)
+  }
+
+  private startStatsPolling(): void {
+    if (this.opts.disableStatsPolling) return
+    this.statsPoller?.stop()
+    this.statsGitOps?.dispose()
+    const git = new GitOps({ log: () => {} })
+    this.statsGitOps = git
+    this.statsPoller = new GitStatsPoller({
+      getWorktrees: () => [],
+      getWorkspaceRoot: () => this.cachedGitDirectory ?? this.getWorkspaceDirectory(this.currentSession?.id),
+      git,
+      onStats: () => {},
+      onLocalStats: (stats: LocalStats) => {
+        const msg = {
+          type: "worktreeStatsLoaded" as const,
+          files: stats.files,
+          additions: stats.additions,
+          deletions: stats.deletions,
+        }
+        this.cachedStats = msg
+        this.postMessage(msg)
+      },
+      log: () => {},
+      hiddenIntervalMs: 60000,
+    })
+    this.setStatsVisible(this.statsVisible)
+  }
+
+  /**
+   * Dispose of the provider and clean up subscriptions.
+   * Does NOT kill the server — that's the connection service's job.
+   */
+  dispose(): void {
+    if (this.opts.focusContext) {
+      void vscode.commands.executeCommand("setContext", this.opts.focusContext, false)
+    }
+    this.setFocusTarget("other")
+    // kilocode_change - remote-status/profile/autocomplete disposal removed with the offline surface
+    this.streams.focus(undefined)
+    this.connectionService.unregisterVisible(this.instanceId)
+    this.connectionService.unregisterAttached(this.instanceId)
+    this.setStatsVisible(false)
+    this.statsGitOps?.dispose()
+    this.unsubscribeEvent?.()
+    this.unsubscribeState?.()
+    this.unsubscribeNotificationDismiss?.()
+    this.unsubscribeLanguageChange?.()
+    this.unsubscribeFavoritesChange?.()
+    this.unsubscribeModelSelectorExpanded?.()
+    this.unsubscribeClearPendingPrompts?.()
+    this.unsubscribeDirectoryProvider?.()
+    this.unsubscribeSandboxPreference?.()
+    this.unsubscribeAcknowledged?.()
+    this.viewStateDisposable?.dispose()
+    this.visibilityDisposable?.dispose()
+    this.webviewMessageDisposable?.dispose()
+    this.indexingConfigDisposable?.dispose()
+    this.chatConfigDisposable?.dispose()
+    this.throughputConfigDisposable?.dispose()
+    this.autoApprovalReasonConfigDisposable?.dispose()
+    this.autoApproveBridge?.dispose()
+    this.visibleTaskStreams.clear()
+    this.streams.dispose()
+    this.isWebviewReady = false
+    this.webview = null
+    // Release any waitForReady() awaiters so their callers don't hang after disposal.
+    this.readyResolvers.splice(0).forEach((r) => r())
+    this.promptRecoveryQueued = false
+    clearNetworkWaits(this.trackedSessionIds)
+    this.trackedSessionIds.clear()
+    this.removedSessionIds.clear()
+    this.openSessionIds.clear()
+    this.syncedChildSessions.clear()
+    this.inspectorSessionIds.clear()
+    this.draftSessions.clear()
+    this.sessionDirectories.clear()
+    this.owners.clear()
+    this.anacondaDesktop.dispose()
+    this.aborts.clear()
+    this.requests.clear()
+    this.epochs.clear()
+    this.sessionStatusMap.clear()
+    this.ignoreController?.dispose()
+    disposeGitChangesTarget()
   }
 }

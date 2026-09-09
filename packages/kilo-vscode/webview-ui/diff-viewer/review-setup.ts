@@ -2,7 +2,6 @@ import type { UiI18nParams } from "@kilocode/kilo-ui/context"
 import { useConfig } from "../src/context/config"
 import { canUseSpeechToText, selectedSpeechToTextModel } from "../src/components/speech-to-text/availability"
 import { useProvider } from "../src/context/provider"
-import { useServer } from "../src/context/server"
 import { useSpeechToText, type SpeechToText } from "../src/components/speech-to-text/useSpeechToText"
 import { useSpeechToTextModels } from "../src/context/speech-to-text-models"
 import { useVSCode } from "../src/context/vscode"
@@ -29,10 +28,9 @@ export function createReviewSpeech(t: T): {
   model: () => string
 } {
   const vscode = useVSCode()
-  const server = useServer()
   const provider = useProvider()
   const { config } = useConfig()
-  const speech = useSpeechToText(vscode, server, { t })
+  const speech = useSpeechToText(vscode, { t })
   const models = useSpeechToTextModels()
   return {
     speech,

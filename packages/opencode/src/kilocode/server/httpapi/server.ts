@@ -19,7 +19,7 @@ import { enhancePromptHandlers } from "./handlers/enhance-prompt"
 import { indexingHandlers } from "./handlers/indexing"
 import { instanceReloadHandlers } from "./handlers/instance-reload"
 
-import { interactiveTerminalHandlers } from "./handlers/interactive-terminal"
+// kilocode_change - interactiveTerminalHandlers removed: upstream deleted the nonfunctional tool (b5cf426158); we keep-deleted with it
 
 import { kilocodeHandlers } from "./handlers/kilocode"
 import { mediaLocalHandlers } from "./handlers/media-local"
@@ -42,7 +42,7 @@ export const provide = Layer.provide([
   indexingHandlers,
   instanceReloadHandlers,
 
-  interactiveTerminalHandlers,
+  // kilocode_change - interactiveTerminalHandlers removed: upstream deleted the nonfunctional tool (b5cf426158); we keep-deleted with it
 
   kilocodeHandlers,
   mediaLocalHandlers,

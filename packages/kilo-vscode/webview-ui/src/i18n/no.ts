@@ -683,9 +683,6 @@ export const dict = {
   "settings.sandboxing.writablePaths.title": "Ytterligere skrivbare baner",
   "settings.sandboxing.writablePaths.description":
     "Ytterligere filsystembaner som sandkassen tillater skriving til (f.eks. /tmp, /var/log). Disse flettes med de standardskrivbare banene når sandkassen er aktiv.",
-  "settings.experimental.multiProject.title": "Multi-prosjekt Agent Manager",
-  "settings.experimental.multiProject.description":
-    "Aktiver administrering av økter og worktrees på tvers av flere repositories i Agent Manager. Det nåværende workspace-repositoryet er alltid standardprosjektet.",
   "settings.experimental.mcpTimeout.title": "MCP-tidsavbrudd (ms)",
   "settings.experimental.mcpTimeout.description": "Tidsavbrudd for MCP-serverforespørsler i millisekunder",
   "settings.experimental.toolToggles": "Verktøybrytere",
@@ -980,16 +977,10 @@ export const dict = {
   "common.review": "Gjennomgå",
 
   // legacy-migration start
-  "settings.legacyMigration.link": "Migrer fra eldre versjon",
-  "settings.aboutKiloCode.legacyMigration.title": "Migrering fra eldre versjon",
-  "settings.aboutKiloCode.legacyMigration.description":
-    "Migrer innstillinger fra en tidligere installasjon av Kilo Code, inkludert API-nøkler for leverandører og standardmodell.",
   "settings.aboutKiloCode.rooImport.description": "Importer samtalehistorikk fra en installasjon av Roo Code.",
   "settings.aboutKiloCode.rooImport.button": "Importer økter fra Roo Code",
 
   // Screen 1 — What's New
-  "migration.whatsNew.title": "Hva er nytt i Kilo Code",
-  "migration.whatsNew.subtitle": "Vi har bygget utvidelsen på nytt med et raskere og mer effektivt grunnlag.",
   "migration.whatsNew.features.performance.title": "Raskere agentytelse",
   "migration.whatsNew.features.performance.detail":
     "Parallelle verktøykall og underagenter lar agenten din håndtere mer samtidig — slik at du bruker mindre tid på å vente og mer tid på å levere.",
@@ -1010,27 +1001,11 @@ export const dict = {
   "migration.migrate.subtitle": "Vi fant innstillinger fra din tidligere installasjon. Her er hva vi kan ta med over.",
   "migration.migrate.selectLabel": "Velg hva som skal migreres",
   "migration.migrate.chatHistory": "Chatøkter og historikk",
-  "migration.migrate.button": "Migrer innstillinger",
-  "migration.migrate.skip": "Hopp over",
-  "migration.migrate.keysDetected": "{{count}} nøkler oppdaget",
-  "migration.migrate.serversConfigured": "{{count}} server(e) konfigurert",
-  "migration.migrate.modesFound": "{{count}} modus(er) funnet",
-  "migration.migrate.nothingToMigrate": "Ingenting å migrere ble funnet i de eldre innstillingene.",
 
   // Migrate — item labels (reused from old select keys)
-  "migration.select.providers": "API-nøkler for leverandører",
-  "migration.select.mcpServers": "MCP-servere",
-  "migration.select.customModes": "Egendefinerte moduser / Agenter",
-  "migration.select.defaultModel": "Standardmodell",
-  "migration.select.autoApproval": "Automatisk godkjenning",
-  "migration.select.language": "UI-språk",
-  "migration.select.autocomplete": "Innstillinger for autofullføring",
 
   // Migrate — completion
   "migration.complete.summary": "{{success}} av {{total}} elementer ble migrert.",
-  "migration.complete.cleanup": "Fjern eldre innstillingsdata",
-  "migration.complete.cleanupDescription":
-    "Dette fjerner de gamle innstillingene fra VS Code-lagringen. Du vil ikke kunne kjøre denne migreringen på nytt.",
   "migration.complete.done": "Ferdig",
   "migration.migrate.sessionsDetected": "{{count}} økter oppdaget",
   "migration.error.continue": "Fortsett",
@@ -1128,4 +1103,55 @@ export const dict = {
   "chat.search.invalidRegex": "Ugyldig regulært uttrykk",
   "chat.search.noResults": "Ingen resultater",
   "chat.search.searchingHistory": "Søker i tidligere meldinger…",
-} satisfies Partial<Record<Keys, string>>
+
+  // kilocode_change - step 6: keys added from upstream delta (EN fallback)
+  "speechToText.tooltip.start": "Start voice input with Kilo Gateway",
+  "speechToText.tooltip.shortcut":
+    "Tap to start or stop recording. Hold while speaking, then release to transcribe and submit.",
+  "speechToText.tooltip.starting": "Starting microphone... Wait to speak.",
+  "speechToText.tooltip.stop": "Recording. Click to stop.",
+  "speechToText.tooltip.transcribing": "Transcribing... Click to cancel.",
+  "speechToText.tooltip.error": "Speech input failed. Click to clear.",
+  "speechToText.error.title": "Speech input failed",
+  "speechToText.error.loginRequired": "Sign in to Kilo to use speech input.",
+  "speechToText.error.emptyTranscript": "No speech was detected.",
+  "settings.notifications.os.title": "Enable OS Notifications",
+  "settings.notifications.os.description":
+    "Show native OS notification alerts when Kilo completes a task or needs your input while VS Code is not active.",
+  "settings.notifications.testOS": "Test",
+  "settings.notifications.testOS.testing": "Sending test notification…",
+  "settings.notifications.testOS.success": "Test notification sent.",
+  "settings.notifications.testOS.error": "Test notification failed",
+  "settings.notifications.workbench.title": "Enable VS Code Notifications",
+  "settings.notifications.workbench.description":
+    "Show VS Code notifications when Kilo completes a task or needs your input",
+  "settings.experimental.sharedAgentBoard.title": "Kilo Swarm",
+  "settings.experimental.sharedAgentBoard.description":
+    "Share a board between a main session and its task subagents, including nested subagents. Use it for parallel solution attempts or complementary work, not every task.",
+  "settings.experimental.taskModelSelection.title": "Task Subagent Model Selection",
+  "settings.experimental.taskModelSelection.description":
+    "Allow task subagents to use an explicitly selected model, provider, and reasoning effort.",
+  "prompt.goal.set": "Set goal",
+  "prompt.goal.start": "Start goal",
+  "prompt.action.send.recording": "Transcribe and send",
+  "session.goal.label": "Goal",
+  "session.goal.active": "Active",
+  "session.goal.complete": "Complete (model-reported)",
+  "session.goal.blocked": "Blocked",
+  "session.goal.restart": "Restart goal (uses model credits)",
+  "session.goal.paused": "Paused",
+  "session.goal.pause": "Pause",
+  "session.goal.resume": "Resume",
+  "session.goal.clear": "Clear goal",
+  "task.swarm.title": "Board",
+  "task.swarm.refresh": "Refresh",
+  "task.swarm.reset": "Reset board",
+  "task.swarm.resetTitle": "Reset this board?",
+  "task.swarm.resetDescription":
+    "Clear visible messages? Conversations and running tasks stay unchanged. Agents can post new messages.",
+  "task.swarm.loading": "Loading board...",
+  "task.swarm.failed": "Could not load or reset the board. Try refreshing it.",
+  "task.backgroundAgents.openAll": "Open all background agents",
+  "task.backgroundAgents.stopAll": "Stop all ({{count}})",
+  "migration.roo.button": "Import Sessions",
+  "migration.roo.empty": "No Roo Code sessions found."} satisfies Partial<Record<Keys, string>>
