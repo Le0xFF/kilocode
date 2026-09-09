@@ -56,6 +56,7 @@ export async function fetchProviderData(client: KiloClient, dir: string) {
           .catch(() => ({}))
       : Promise.resolve({})
 
+
   const [{ data: response }, authMethods] = await Promise.all([
     client.provider.list({ directory: dir }, { throwOnError: true }),
     authRequest,
@@ -79,6 +80,7 @@ export async function fetchProviderData(client: KiloClient, dir: string) {
     delete next.key
     return next as (typeof response.all)[number]
   })
+
   return { response: { ...response, all }, authMethods, authStates, storedKeys }
 }
 

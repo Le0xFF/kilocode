@@ -2,6 +2,7 @@
 import { Config } from "@/config/config"
 import * as Core from "@opencode-ai/core/models-dev"
 import { Context, Effect, Layer } from "effect"
+
 import { LayerNode } from "@opencode-ai/core/effect/layer-node"
 import { AppNodeBuilder } from "@opencode-ai/core/effect/app-node-builder" // kilocode_change
 
@@ -43,4 +44,3 @@ export const node = LayerNode.make({
   deps: [Core.node, Config.node], // kilocode_change - apertis model-cache fetch removed with the offline catalog cut
 })
 
-export * as ModelsDev from "./models"

@@ -9,10 +9,11 @@ function createModel(opts: {
   input?: number
   cost?: Provider.Model["cost"]
   npm?: string
+  providerID?: string
 }): Provider.Model {
   return {
     id: "test-model",
-    providerID: "test",
+    providerID: opts.providerID ?? "test",
     name: "Test",
     limit: {
       context: opts.context,
@@ -83,6 +84,8 @@ describe("KiloSession.providerCost — raw AI SDK usage escape hatch", () => {
     expect(result.cost).toBe(fallback)
   })
 })
+
+
 
 describe("KiloSession.providerCost — fallback", () => {
   test("falls back to calculated cost when no provider cost is reported", () => {

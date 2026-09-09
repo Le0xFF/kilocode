@@ -56,8 +56,12 @@ export interface ExperimentalMediaProvider {
 export interface ExperimentalConfig {
   batch_tool?: boolean
   image_generation?: boolean
+  shared_agent_board?: boolean
   image_generation_model?: string
+
   image_generation_provider?: ExperimentalMediaProvider
+  task_model_selection?: boolean
+
   native_notebook_tools?: boolean
   primary_tools?: string[]
   continue_loop_on_deny?: boolean
@@ -114,9 +118,7 @@ export interface IndexingConfig {
 export type IndexingStatus = SdkIndexingStatus
 
 export interface BrowserSettings {
-  enabled: boolean
   useSystemChrome: boolean
-  headless: boolean
 }
 
 export type TerminalCommandDisplay = "expanded" | "collapsed"

@@ -22,6 +22,7 @@ type Ctx = {
   activity: (state: unknown) => void
   modelUsage: (message: ModelUsageMessage) => Promise<void>
   backgroundJobs: (sessionID: string, requestID: string) => Promise<void>
+  board: (message: Record<string, unknown>) => Promise<boolean>
   cancelBackgroundJob: (jobID: string, sessionID: string, requestID: string) => Promise<void>
   promoteBackgroundJob: (jobID: string, sessionID: string) => Promise<void>
 }
@@ -30,6 +31,7 @@ async function routeBackgroundMessage(
   message: { type: string; sessionID?: unknown; jobID?: unknown; requestID?: unknown },
   ctx: Ctx,
 ): Promise<boolean | undefined> {
+  if (message.type === "requestSessionBoard" || message.type === "resetSessionBoard") return ctx.board(message)
   if (message.type === "requestBackgroundJobs") {
     if (typeof message.sessionID === "string" && typeof message.requestID === "string") {
       await ctx.backgroundJobs(message.sessionID, message.requestID)

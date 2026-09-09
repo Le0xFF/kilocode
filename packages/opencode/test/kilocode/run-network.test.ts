@@ -1,4 +1,9 @@
-import { afterEach, describe, expect, mock, test } from "bun:test"
+import { afterEach, describe, expect, mock, spyOn, test } from "bun:test"
+import * as SDK from "@kilocode/sdk/v2"
+import { RunCommand } from "@/cli/cmd/run"
+import { KiloRunDrain } from "@/kilocode/cli/run-drain"
+
+const actual = { ...SDK }
 
 type Event = {
   type: string
@@ -90,13 +95,14 @@ function args() {
   }
 }
 
-const timer = globalThis.setTimeout
+const exitCode = process.exitCode
 const tty = Object.getOwnPropertyDescriptor(process.stdin, "isTTY")
-const text = Bun.stdin.text
+const stream = Bun.stdin.stream
 
-afterEach(() => {
-  globalThis.setTimeout = timer
-  Bun.stdin.text = text
+afterEach(async () => {
+  await mock.module("@kilocode/sdk/v2", () => actual)
+  process.exitCode = exitCode ?? 0
+  Bun.stdin.stream = stream
   if (tty) {
     Object.defineProperty(process.stdin, "isTTY", tty)
     return
@@ -104,18 +110,35 @@ afterEach(() => {
   delete (process.stdin as { isTTY?: boolean }).isTTY
 })
 
-function instant() {
-  globalThis.setTimeout = ((cb: TimerHandler) => {
-    if (typeof cb === "function") {
-      queueMicrotask(() => cb())
-    }
-    return 0 as unknown as ReturnType<typeof setTimeout>
-  }) as unknown as typeof setTimeout
-}
-
-async function run(sdk: Record<string, unknown>, overrides: Record<string, unknown> = {}, terminal = true) {
-  mock.module("@kilocode/sdk/v2", () => ({
-    createKiloClient: () => sdk,
+async function run(
+  sdk: Record<string, unknown>,
+  q: ReturnType<typeof feed<Event>>,
+  overrides: Record<string, unknown> = {},
+  terminal = true,
+) {
+  sdk.event = {
+    subscribe: async () => {
+      q.push({ type: "server.connected", properties: {} })
+      return { stream: q.stream() }
+    },
+  }
+  sdk.kilocode = {
+    drainSession: async (input: { sessionID: string; token: string }) => {
+      q.push({ type: "session.drained", properties: input })
+      q.end()
+      return { data: true }
+    },
+  }
+  await mock.module("@kilocode/sdk/v2", () => ({
+    createKiloClient: (config: { fetch?: () => Promise<Response> }) => {
+      config.fetch = async () =>
+        Response.json({
+          paths: {
+            "/kilocode/session/{sessionID}/drain": { post: { operationId: "kilocode.drainSession" } },
+          },
+        })
+      return sdk
+    },
   }))
 
   Object.defineProperty(process.stdin, "isTTY", {
@@ -123,14 +146,20 @@ async function run(sdk: Record<string, unknown>, overrides: Record<string, unkno
     value: terminal,
   })
 
-  const key = JSON.stringify({ time: Date.now(), rand: Math.random() })
-  const { RunCommand } = await import(`../../src/cli/cmd/run?${key}`)
-  return RunCommand.handler({ ...args(), ...overrides } as never)
+  const create = KiloRunDrain.create
+  const clock = spyOn(KiloRunDrain, "create").mockImplementation((id) => ({
+    ...create(id),
+    pause: async () => undefined,
+  }))
+  try {
+    return await RunCommand.handler({ ...args(), ...overrides } as never)
+  } finally {
+    clock.mockRestore()
+  }
 }
 
 describe("cli run network retries", () => {
   test("rejects after repeated offline resumes without busy", async () => {
-    instant()
     const q = feed<Event>()
     const calls: string[] = []
     const gate = Promise.withResolvers<void>()
@@ -140,9 +169,6 @@ describe("cli run network retries", () => {
       config: {
         get: async () => ({ data: { share: "manual" } }),
       },
-      event: {
-        subscribe: async () => ({ stream: q.stream() }),
-      },
       network: {
         reply: async (input: { requestID: string }) => {
           calls.push(input.requestID)
@@ -151,7 +177,6 @@ describe("cli run network retries", () => {
         reject: async (input: { requestID: string }) => {
           state.reject = input.requestID
           q.push(idle())
-          q.end()
           gate.resolve()
         },
       },
@@ -167,14 +192,13 @@ describe("cli run network retries", () => {
       },
     }
 
-    await run(sdk)
+    await run(sdk, q)
 
     expect(calls).toStrictEqual(["req_1", "req_2", "req_3"])
     expect(state.reject).toBe("req_4")
   })
 
   test("resets retry budget only after the session is busy again", async () => {
-    instant()
     const q = feed<Event>()
     const calls: string[] = []
     const gate = Promise.withResolvers<void>()
@@ -183,9 +207,6 @@ describe("cli run network retries", () => {
     const sdk = {
       config: {
         get: async () => ({ data: { share: "manual" } }),
-      },
-      event: {
-        subscribe: async () => ({ stream: q.stream() }),
       },
       network: {
         reply: async (input: { requestID: string }) => {
@@ -200,13 +221,11 @@ describe("cli run network retries", () => {
             return
           }
           q.push(idle())
-          q.end()
           gate.resolve()
         },
         reject: async (input: { requestID: string }) => {
           state.reject = input.requestID
           q.push(idle())
-          q.end()
           gate.resolve()
         },
       },
@@ -222,7 +241,7 @@ describe("cli run network retries", () => {
       },
     }
 
-    await run(sdk)
+    await run(sdk, q)
 
     expect(calls).toStrictEqual(["req_1", "req_2", "req_3", "req_4"])
     expect(state.reject).toBeUndefined()
@@ -231,7 +250,8 @@ describe("cli run network retries", () => {
   test("built-in compaction uses the session model without reading stdin", async () => {
     const q = feed<Event>()
     const calls: unknown[] = []
-    Bun.stdin.text = async () => {
+    // kilocode_change - run-stdin.ts reads piped stdin through Bun.stdin.stream()
+    Bun.stdin.stream = () => {
       throw new Error("stdin should not be read")
     }
 
@@ -241,9 +261,6 @@ describe("cli run network retries", () => {
       },
       config: {
         get: async () => ({ data: { share: "manual" } }),
-      },
-      event: {
-        subscribe: async () => ({ stream: q.stream() }),
       },
       session: {
         get: async (input: { sessionID: string }) => ({
@@ -256,13 +273,12 @@ describe("cli run network retries", () => {
         summarize: async (input: unknown) => {
           calls.push(input)
           q.push(idle())
-          q.end()
           return { data: true }
         },
       },
     }
 
-    await run(sdk, { command: "compact", message: [] }, false)
+    await run(sdk, q, { command: "compact", message: [] }, false)
 
     expect(calls).toEqual([
       {
@@ -277,7 +293,8 @@ describe("cli run network retries", () => {
   test("custom compact commands retain piped arguments without a session", async () => {
     const q = feed<Event>()
     const calls: unknown[] = []
-    Bun.stdin.text = async () => "from stdin"
+    // kilocode_change - run-stdin.ts reads piped stdin through Bun.stdin.stream()
+    Bun.stdin.stream = () => new Response("from stdin").body!
 
     const sdk = {
       command: {
@@ -285,9 +302,6 @@ describe("cli run network retries", () => {
       },
       config: {
         get: async () => ({ data: { share: "manual" } }),
-      },
-      event: {
-        subscribe: async () => ({ stream: q.stream() }),
       },
       session: {
         create: async () => ({
@@ -299,7 +313,6 @@ describe("cli run network retries", () => {
             type: "session.status",
             properties: { sessionID: "ses_created", status: { type: "idle" } },
           })
-          q.end()
           return { data: undefined }
         },
         summarize: async () => {
@@ -308,7 +321,7 @@ describe("cli run network retries", () => {
       },
     }
 
-    await run(sdk, { command: "compact", continue: false, session: undefined, message: ["argument"] }, false)
+    await run(sdk, q, { command: "compact", continue: false, session: undefined, message: ["argument"] }, false)
 
     expect(calls).toEqual([
       {

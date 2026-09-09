@@ -247,14 +247,11 @@ yield* Effect.logInfo("native runtime unavailable; falling back to ai-sdk", {
             l.info("repairing tool call", { tool: failed.toolCall.toolName, repaired: lower }) // kilocode_change
             return { ...failed.toolCall, toolName: lower }
           }
-          return {
-            ...failed.toolCall,
-            input: JSON.stringify({
-              tool: failed.toolCall.toolName,
-              error: failed.error.message,
-            }),
-            toolName: "invalid",
-          }
+          // kilocode_change start - surface the original tool-name error instead of a
+          // repaired call to the hidden "invalid" tool, which activeTools excludes and
+          // therefore fails with a confusing "unavailable tool 'invalid'" error
+          return null
+          // kilocode_change end
         },
         temperature: prepared.params.temperature,
         topP: prepared.params.topP,

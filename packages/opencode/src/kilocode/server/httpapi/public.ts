@@ -6,6 +6,8 @@ type Schema = {
   default?: unknown
   enum?: string[]
   items?: Schema
+  minimum?: number
+  maximum?: number
   properties?: Record<string, Schema>
   type?: string
 }
@@ -45,6 +47,8 @@ export function matchLegacyKiloOpenApi(input: Record<string, unknown>) {
   )
   if (rules) rules.schema = { const: "project", default: "project", type: "string" }
 
+
+
   const provider = spec.components?.schemas?.Config?.properties?.provider
   if (provider?.additionalProperties && typeof provider.additionalProperties === "object")
     provider.additionalProperties = nullable(provider.additionalProperties)
@@ -52,9 +56,9 @@ export function matchLegacyKiloOpenApi(input: Record<string, unknown>) {
   const pty = spec.components?.schemas?.Pty?.properties
   if (pty?.sessionID) pty.sessionID = nullable(pty.sessionID)
 
-  const out = spec.paths?.["/session/{sessionID}/branch-name"]?.post?.responses?.["200"]?.content?.[
-    "application/json"
-  ]?.schema?.properties
+  const out =
+    spec.paths?.["/session/{sessionID}/branch-name"]?.post?.responses?.["200"]?.content?.["application/json"]?.schema
+      ?.properties
   if (out?.branch) out.branch = nullable(out.branch)
 
   const update = spec.paths?.["/pty/{ptyID}"]?.put?.requestBody?.content?.["application/json"]?.schema

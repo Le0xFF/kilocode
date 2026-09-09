@@ -82,7 +82,7 @@ for (const path of [
   }))
 }
 
-/** Same mock body as the kilo-sessions module mock used by setup.ts's drain task. */
+/** Install a drain task for this test. The real setup.ts registers one at module scope; clear any leftover first so assertions stay isolated. */
 function registerDrain() {
   KiloShutdown.register(async () => {
     drainCalls += 1

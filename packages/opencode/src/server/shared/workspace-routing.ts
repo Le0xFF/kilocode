@@ -21,6 +21,7 @@ export function getWorkspaceRouteSessionID(url: URL) {
   if (url.pathname === "/session/status") return null
 
   const id =
+    url.pathname.match(/^\/kilocode\/session\/([^/]+)\/(?:drain|board(?:\/reset)?)$/)?.[1] ?? // kilocode_change
     url.pathname.match(/^\/session\/([^/]+)(?:\/|$)/)?.[1] ??
     url.pathname.match(/^\/experimental\/session\/([^/]+)\/background$/)?.[1]
   if (!id) return null

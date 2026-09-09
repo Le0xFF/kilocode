@@ -2,6 +2,8 @@
 import { Context, Effect, Layer } from "effect"
 // kilocode_change - apertis removed: the cache no longer performs HTTP model fetches (HttpClient dropped)
 import { Config } from "../config/config"
+
+
 import * as Log from "@opencode-ai/core/util/log"
 import { LayerNode } from "@opencode-ai/core/effect/layer-node"
 import { AppNodeBuilder } from "@opencode-ai/core/effect/app-node-builder" // kilocode_change
@@ -33,18 +35,22 @@ export const layer = Layer.effect(Service, Effect.gen(function* () {
     return [...failures.keys()]
   })
 
+
   const clear = Effect.fn("ModelCache.clear")(function* (providerID: string) {
     failures.delete(providerID)
     const item = (yield* cfg.get()).provider?.[providerID]
     if (item?.models) {
       log.info("cache cleared", { providerID })
       return
+
     }
     log.debug("no cache to clear", { providerID })
   })
 
+
   return Service.of({ getFailure, failedProviders, clear })
 }),
+
 )
 // kilocode_change end
 

@@ -35,9 +35,14 @@ import { ConfigConsoleApi } from "@/kilocode/server/httpapi/groups/config-consol
 import { EnhancePromptApi } from "@/kilocode/server/httpapi/groups/enhance-prompt"
 import { IndexingApi } from "@/kilocode/server/httpapi/groups/indexing"
 import { InstanceReloadApi } from "@/kilocode/server/httpapi/groups/instance-reload"
+
 import { InteractiveTerminalApi } from "@/kilocode/server/httpapi/groups/interactive-terminal"
+
 import { KilocodeApi } from "@/kilocode/server/httpapi/groups/kilocode"
+
 import { MediaLocalApi } from "@/kilocode/media-local/group" // kilocode_change
+import { MigrateApi } from "@/kilocode/server/httpapi/groups/migrate"
+
 import { NetworkApi } from "@/kilocode/server/httpapi/groups/network"
 // kilocode_change - RemoteApi removed: no call sites after Remote Control removal
 import { SandboxApi } from "@/kilocode/server/httpapi/groups/sandbox"
@@ -104,9 +109,14 @@ export const InstanceHttpApi = HttpApi.make("opencode-instance")
   .addHttpApi(EnhancePromptApi)
   .addHttpApi(IndexingApi)
   .addHttpApi(InstanceReloadApi)
+
   .addHttpApi(InteractiveTerminalApi)
+
   .addHttpApi(KilocodeApi)
+
   .addHttpApi(MediaLocalApi) // kilocode_change
+  .addHttpApi(MigrateApi)
+
   .addHttpApi(NetworkApi)
   // kilocode_change - RemoteApi removed: no call sites after Remote Control removal
   .addHttpApi(SandboxApi)
