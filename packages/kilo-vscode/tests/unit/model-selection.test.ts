@@ -1,7 +1,6 @@
 import { describe, expect, it } from "bun:test"
 import { resolveModelSelection } from "../../webview-ui/src/context/model-selection"
 
-import { parseModelString } from "../../src/shared/provider-model"
 import { KILO_AUTO, parseModelString } from "../../src/shared/provider-model"
 
 import type { ModelSelection, Provider } from "../../webview-ui/src/types/messages"
@@ -90,7 +89,6 @@ describe("resolveModelSelection", () => {
 
 
   it("keeps the explicit fallback even when its provider is missing from the catalog", () => {
-  it("rejects a fallback missing from the loaded catalog", () => {
 
     const result = resolveModelSelection({
       providers: { anthropic: providers.anthropic },
@@ -99,8 +97,6 @@ describe("resolveModelSelection", () => {
     })
 
     expect(result).toEqual(FALLBACK)
-    expect(result).toBeNull()
-
   })
 
   it("does not treat an empty catalog as unvalidated preferences", () => {

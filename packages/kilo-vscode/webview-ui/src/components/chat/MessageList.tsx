@@ -1252,15 +1252,6 @@ export const MessageList: Component<MessageListProps> = (props) => {
         </div>
       </Show>
 
-      <Show when={isEmpty()}>
-        <div class="welcome-header" data-slot="welcome-header">
-          <AccountSwitcher class="account-switcher-welcome" />
-          <Show when={!props.introduction || props.readonly}>
-            <KiloNotifications sessionID={props.sessionID} />
-          </Show>
-        </div>
-      </Show>
-
       <div
         ref={setScrollRef}
         onScroll={handleScroll}

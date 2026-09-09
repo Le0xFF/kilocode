@@ -31,7 +31,11 @@ const active = new Set([
   "check-forbidden-strings.yml",
   "check-kilo-generated-artifacts.yml",
   "check-md-table-padding.yml",
+  // kilocode_change - upstream re-added these two workflows in the v7.5.6→v7.5.13 delta;
+  // accepted into CI (annotation guard + offline smoke test) after review.
+  "check-opencode-annotations.yml",
   "codeql.yml",
+  "smoke-test.yml",
   "test-vscode.yml",
   "test.yml",
   "typecheck.yml",

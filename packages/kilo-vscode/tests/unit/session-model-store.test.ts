@@ -7,6 +7,7 @@ import {
   getSessionModel,
   getSelected,
 } from "../../webview-ui/src/context/session-model-store"
+import { KILO_AUTO } from "../../src/shared/provider-model"
 import type { ModelSelection, Provider } from "../../webview-ui/src/types/messages"
 
 function makeProvider(id: string, models: string[]): Provider {

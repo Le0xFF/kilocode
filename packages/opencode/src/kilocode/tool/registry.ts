@@ -6,8 +6,7 @@ import { BackgroundProcessTool } from "./background-process"
 import { BoardReadTool, BoardPostTool } from "./board"
 import { BrowserOpenTool } from "./browser-open"
 import { ChartTool } from "./chart"
-
-import { GenerateImageTool } from "./generate-image"
+// kilocode_change - offline: generate-image tool removed (gateway-backed); image generation goes via media-local routes
 
 import { NotebookEditTool, NotebookExecuteTool, NotebookReadTool } from "./notebook-host"
 import { MemoryRecallTool } from "./memory-recall"
@@ -81,61 +80,18 @@ export namespace KiloToolRegistry {
       const browser = Flag.KILO_CLIENT === "vscode" ? yield* BrowserOpenTool : undefined
       const chart = yield* ChartTool
 
-      if (!notebook)
-        return {
-          recall,
-          managerModels,
-          memory,
-          save,
-          manager,
-          process,
-          browser,
-          chart,
-          ...board,
-        }
-      const image = yield* GenerateImageTool
-      const openPlan = yield* OpenPlanTool
       const board = yield* Effect.all({
         boardRead: BoardReadTool,
         boardPost: BoardPostTool,
         goalReport: GoalReportTool,
       })
-      if (!notebook)
-        return {
-          recall,
-          managerModels,
-          memory,
-          save,
-          manager,
-          process,
-          browser,
-          chart,
-          image,
-          openPlan,
-          ...board,
-        }
-
+      if (!notebook) return { recall, managerModels, memory, save, manager, process, browser, chart, ...board }
       const tools = yield* Effect.all({
         notebookRead: NotebookReadTool,
         notebookEdit: NotebookEditTool,
         notebookExecute: NotebookExecuteTool,
       }).pipe(Effect.provideService(Notebook.Service, notebook))
-
-      return {
-        recall,
-        managerModels,
-        memory,
-        save,
-        manager,
-        process,
-        browser,
-        chart,
-        image,
-        openPlan,
-        ...board,
-        ...tools,
-      }
-
+      return { recall, managerModels, memory, save, manager, process, browser, chart, ...board, ...tools }
     })
   }
 
@@ -152,8 +108,7 @@ export namespace KiloToolRegistry {
       browser?: Tool.Info
       chart: Tool.Info
 
-      image: Tool.Info
-      openPlan?: Tool.Info
+      // kilocode_change - offline: image (generate-image removed) and openPlan are not wired in the shared registry
       boardRead?: Tool.Info
       goalReport?: Tool.Info
       boardPost?: Tool.Info
@@ -175,13 +130,13 @@ export namespace KiloToolRegistry {
         process: Tool.init(tools.process),
         chart: Tool.init(tools.chart),
       })
-      const openPlan = tools.openPlan ? yield* Tool.init(tools.openPlan) : undefined
       const report = tools.goalReport ? { goalReport: yield* Tool.init(tools.goalReport) } : {}
       const board =
         tools.boardRead && tools.boardPost
           ? yield* Effect.all({ boardRead: Tool.init(tools.boardRead), boardPost: Tool.init(tools.boardPost) })
           : {}
       const browser = tools.browser ? yield* Tool.init(tools.browser) : undefined
+      // kilocode_change - offline: image and openPlan are not wired in the shared registry; only notebook+board+semantic survive
       const notebooks =
         tools.notebookRead && tools.notebookEdit && tools.notebookExecute
           ? yield* Effect.all({
@@ -192,7 +147,6 @@ export namespace KiloToolRegistry {
           : {}
       const semantic = yield* semanticTool(deps, loaders)
 
-      return { ...base, ...notebooks, semantic }
       return {
         ...base,
         ...board,
@@ -200,7 +154,6 @@ export namespace KiloToolRegistry {
         browser,
         ...notebooks,
         semantic,
-        openPlan,
       }
 
     })
@@ -265,8 +218,7 @@ export namespace KiloToolRegistry {
       browser?: Tool.Def
       chart: Tool.Def
 
-      image: Tool.Def
-      openPlan?: Tool.Def
+      // kilocode_change - offline: image (generate-image removed) and openPlan are not wired in the shared registry
       boardRead?: Tool.Def
       goalReport?: Tool.Def
       boardPost?: Tool.Def
@@ -287,7 +239,7 @@ export namespace KiloToolRegistry {
     return [
 
       ...(tools.goalReport ? [tools.goalReport] : []),
-      ...(cfg.experimental?.image_generation === true ? [tools.image] : []),
+      // kilocode_change - offline: image_generation (generate-image removed) and openPlan are not wired; boards stay gated on shared_agent_board
       ...(cfg.experimental?.shared_agent_board === true && tools.boardRead && tools.boardPost
         ? [tools.boardRead, tools.boardPost]
         : []),
@@ -310,8 +262,6 @@ export namespace KiloToolRegistry {
       tools.notebookExecute
         ? [tools.notebookRead, tools.notebookEdit, tools.notebookExecute]
         : []),
-
-      ...(Flag.KILO_CLIENT === "vscode" && tools.openPlan ? [tools.openPlan] : []),
 
     ]
   }

@@ -394,6 +394,32 @@ export interface RequestFileSearchMessage {
   sessionID?: string
 }
 
+// kilocode_change - speech-to-text request messages (kept local media surface)
+export interface SpeechToTextPrewarmMessage {
+  type: "speechToTextPrewarm"
+}
+
+export interface SpeechToTextStartMessage {
+  type: "speechToTextStart"
+  requestId: string
+  model: string
+  language?: string
+}
+
+export interface SpeechToTextStopMessage {
+  type: "speechToTextStop"
+  requestId: string
+}
+
+export interface SpeechToTextCancelMessage {
+  type: "speechToTextCancel"
+  requestId: string
+}
+
+export interface RequestSpeechToTextModelsMessage {
+  type: "requestSpeechToTextModels"
+}
+
 export interface RequestSessionSearchMessage {
   type: "requestSessionSearch"
   requestId: string
@@ -1623,6 +1649,12 @@ export type WebviewMessage =
   | AgentManagerTerminalDestinationSelectedRequest
   | AgentManagerTerminalResizeRequest
   | RequestImageModelsMessage
+  // kilocode_change - speech-to-text request messages (kept local media surface)
+  | SpeechToTextPrewarmMessage
+  | SpeechToTextStartMessage
+  | SpeechToTextStopMessage
+  | SpeechToTextCancelMessage
+  | RequestSpeechToTextModelsMessage
 
 // ============================================
 // VS Code API type

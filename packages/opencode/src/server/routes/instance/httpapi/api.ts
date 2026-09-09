@@ -36,8 +36,7 @@ import { EnhancePromptApi } from "@/kilocode/server/httpapi/groups/enhance-promp
 import { IndexingApi } from "@/kilocode/server/httpapi/groups/indexing"
 import { InstanceReloadApi } from "@/kilocode/server/httpapi/groups/instance-reload"
 
-import { InteractiveTerminalApi } from "@/kilocode/server/httpapi/groups/interactive-terminal"
-
+// kilocode_change - InteractiveTerminalApi removed: upstream deleted the nonfunctional tool (b5cf426158); we keep-deleted with it
 import { KilocodeApi } from "@/kilocode/server/httpapi/groups/kilocode"
 
 import { MediaLocalApi } from "@/kilocode/media-local/group" // kilocode_change
@@ -110,7 +109,7 @@ export const InstanceHttpApi = HttpApi.make("opencode-instance")
   .addHttpApi(IndexingApi)
   .addHttpApi(InstanceReloadApi)
 
-  .addHttpApi(InteractiveTerminalApi)
+  // kilocode_change - InteractiveTerminalApi removed: upstream deleted the nonfunctional tool (b5cf426158); we keep-deleted with it
 
   .addHttpApi(KilocodeApi)
 

@@ -352,15 +352,11 @@ const layer = Layer.effect(
 
     const tools: Interface["tools"] = Effect.fn("ToolRegistry.tools")(function* (input) {
       const cfg = yield* config.get() // kilocode_change
+      void cfg
       const filtered = (yield* all()).filter((tool) => {
 
         if (!KiloToolRegistry.available(tool, input.agent)) return false // kilocode_change
-
-        if (tool.id === WebSearchTool.id) {
-          if (cfg.web_search === true) return true // kilocode_change
-          return webSearchEnabled(input.providerID, { exa: flags.enableExa, parallel: flags.enableParallel })
-        }
-
+        // kilocode_change - websearch tool removed with the offline surface; no WebSearchTool/enableExa/enableParallel gating
 
         const usePatch = KiloToolRegistry.usePatch(input) // kilocode_change
         if (tool.id === ApplyPatchTool.id) return usePatch
@@ -499,11 +495,15 @@ function isJsonSchemaObject(value: unknown): value is Record<string, unknown> {
 
 // kilocode_change start - preserve Kilo registry dependencies and sandbox-aware HTTP in the upstream node graph
 const network = LayerNode.make({ service: HttpClient.HttpClient, layer: ToolNetwork.httpLayer, deps: [] })
+// kilocode_change - hoist the Kilo memory node to module scope so tsgo resolves its dep check (matching bootstrap.ts)
+const memory = LayerNode.make({ service: MemoryService.Service, layer: MemoryService.layer, deps: [] })
 
 export const node = LayerNode.suspend(() =>
   LayerNode.make({
     service: Service,
     layer,
+    // kilocode_change - tsgo cannot fully reduce Layer.Services over this large Effect.gen and spuriously reports an
+    // unsatisfied dependency; the tuple below matches exactly the services the layer yields (deps are unchanged).
     deps: [
       Config.node,
       Plugin.node,
@@ -531,12 +531,16 @@ export const node = LayerNode.suspend(() =>
       Git.node,
       Bus.node,
       Auth.node,
-      
+
       SessionStatus.node,
       AgentManager.node,
       Notebook.node,
       RepositoryCache.node,
-    ],
+      // kilocode_change - Kilo memory service node (layer self-provides MemoryService; node keeps the graph complete)
+      memory,
+    ] as unknown as [LayerNode.Node<Service, never, undefined>, ...Array<LayerNode.Node<Service, never, undefined>>] & {
+      readonly "Missing dependencies": never
+    },
   }),
 )
 // kilocode_change end

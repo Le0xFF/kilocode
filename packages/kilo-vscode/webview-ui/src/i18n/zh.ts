@@ -688,9 +688,6 @@ export const dict = {
   "settings.sandboxing.writablePaths.title": "额外可写路径",
   "settings.sandboxing.writablePaths.description":
     "沙盒允许写入的额外文件系统路径（例如 /tmp、/var/log）。沙盒启用后，这些路径会与默认可写路径合并。",
-  "settings.experimental.multiProject.title": "多项目 Agent Manager",
-  "settings.experimental.multiProject.description":
-    "在 Agent Manager 中启用跨多个仓库的会话和工作树管理。当前工作区仓库始终是默认项目。",
   "settings.experimental.mcpTimeout.title": "MCP 超时（毫秒）",
   "settings.experimental.mcpTimeout.description": "MCP 服务器请求的超时时间（毫秒）",
   "settings.experimental.toolToggles": "工具开关",
@@ -925,16 +922,10 @@ export const dict = {
   "common.review": "审查",
 
   // legacy-migration start
-  "settings.legacyMigration.link": "从旧版迁移",
-  "settings.aboutKiloCode.legacyMigration.title": "旧版迁移",
-  "settings.aboutKiloCode.legacyMigration.description":
-    "从旧版 Kilo Code 安装迁移设置，包括提供商 API 密钥和默认模型。",
   "settings.aboutKiloCode.rooImport.description": "从 Roo Code 安装导入对话历史记录。",
   "settings.aboutKiloCode.rooImport.button": "从 Roo Code 导入会话",
 
   // Screen 1 — What's New
-  "migration.whatsNew.title": "Kilo Code 新功能",
-  "migration.whatsNew.subtitle": "我们在更快、更高效的基础上重新构建了扩展。",
   "migration.whatsNew.features.performance.title": "更快的智能体性能",
   "migration.whatsNew.features.performance.detail":
     "并行工具调用和子智能体让你的智能体可以同时处理更多任务——减少等待时间，更快交付成果。",
@@ -955,26 +946,11 @@ export const dict = {
   "migration.migrate.subtitle": "我们发现了你之前安装的设置。以下是可以迁移的内容。",
   "migration.migrate.selectLabel": "选择要迁移的内容",
   "migration.migrate.chatHistory": "聊天会话和历史记录",
-  "migration.migrate.button": "迁移设置",
-  "migration.migrate.skip": "跳过",
-  "migration.migrate.keysDetected": "检测到 {{count}} 个密钥",
-  "migration.migrate.serversConfigured": "已配置 {{count}} 个服务器",
-  "migration.migrate.modesFound": "发现 {{count}} 个模式",
-  "migration.migrate.nothingToMigrate": "在旧版设置中未找到要迁移的内容。",
 
   // Migrate — item labels (reused from old select keys)
-  "migration.select.providers": "提供商 API 密钥",
-  "migration.select.mcpServers": "MCP 服务器",
-  "migration.select.customModes": "自定义模式 / 代理",
-  "migration.select.defaultModel": "默认模型",
-  "migration.select.autoApproval": "自动审批",
-  "migration.select.language": "界面语言",
-  "migration.select.autocomplete": "自动补全设置",
 
   // Migrate — completion
   "migration.complete.summary": "成功迁移 {{success}}/{{total}} 项。",
-  "migration.complete.cleanup": "清除旧版设置数据",
-  "migration.complete.cleanupDescription": "此操作将从 VS Code 存储中删除旧版设置。您将无法再次运行此迁移。",
   "migration.complete.done": "完成",
   "migration.migrate.sessionsDetected": "检测到 {{count}} 个会话",
   "migration.error.continue": "继续",
@@ -1070,4 +1046,55 @@ export const dict = {
   "chat.search.invalidRegex": "正则表达式无效",
   "chat.search.noResults": "无结果",
   "chat.search.searchingHistory": "正在搜索更早的消息…",
-} satisfies Partial<Record<Keys, string>>
+
+  // kilocode_change - step 6: keys added from upstream delta (EN fallback)
+  "speechToText.tooltip.start": "Start voice input with Kilo Gateway",
+  "speechToText.tooltip.shortcut":
+    "Tap to start or stop recording. Hold while speaking, then release to transcribe and submit.",
+  "speechToText.tooltip.starting": "Starting microphone... Wait to speak.",
+  "speechToText.tooltip.stop": "Recording. Click to stop.",
+  "speechToText.tooltip.transcribing": "Transcribing... Click to cancel.",
+  "speechToText.tooltip.error": "Speech input failed. Click to clear.",
+  "speechToText.error.title": "Speech input failed",
+  "speechToText.error.loginRequired": "Sign in to Kilo to use speech input.",
+  "speechToText.error.emptyTranscript": "No speech was detected.",
+  "settings.notifications.os.title": "Enable OS Notifications",
+  "settings.notifications.os.description":
+    "Show native OS notification alerts when Kilo completes a task or needs your input while VS Code is not active.",
+  "settings.notifications.testOS": "Test",
+  "settings.notifications.testOS.testing": "Sending test notification…",
+  "settings.notifications.testOS.success": "Test notification sent.",
+  "settings.notifications.testOS.error": "Test notification failed",
+  "settings.notifications.workbench.title": "Enable VS Code Notifications",
+  "settings.notifications.workbench.description":
+    "Show VS Code notifications when Kilo completes a task or needs your input",
+  "settings.experimental.sharedAgentBoard.title": "Kilo Swarm",
+  "settings.experimental.sharedAgentBoard.description":
+    "Share a board between a main session and its task subagents, including nested subagents. Use it for parallel solution attempts or complementary work, not every task.",
+  "settings.experimental.taskModelSelection.title": "Task Subagent Model Selection",
+  "settings.experimental.taskModelSelection.description":
+    "Allow task subagents to use an explicitly selected model, provider, and reasoning effort.",
+  "prompt.goal.set": "Set goal",
+  "prompt.goal.start": "Start goal",
+  "prompt.action.send.recording": "Transcribe and send",
+  "session.goal.label": "Goal",
+  "session.goal.active": "Active",
+  "session.goal.complete": "Complete (model-reported)",
+  "session.goal.blocked": "Blocked",
+  "session.goal.restart": "Restart goal (uses model credits)",
+  "session.goal.paused": "Paused",
+  "session.goal.pause": "Pause",
+  "session.goal.resume": "Resume",
+  "session.goal.clear": "Clear goal",
+  "task.swarm.title": "Board",
+  "task.swarm.refresh": "Refresh",
+  "task.swarm.reset": "Reset board",
+  "task.swarm.resetTitle": "Reset this board?",
+  "task.swarm.resetDescription":
+    "Clear visible messages? Conversations and running tasks stay unchanged. Agents can post new messages.",
+  "task.swarm.loading": "Loading board...",
+  "task.swarm.failed": "Could not load or reset the board. Try refreshing it.",
+  "task.backgroundAgents.openAll": "Open all background agents",
+  "task.backgroundAgents.stopAll": "Stop all ({{count}})",
+  "migration.roo.button": "Import Sessions",
+  "migration.roo.empty": "No Roo Code sessions found."} satisfies Partial<Record<Keys, string>>

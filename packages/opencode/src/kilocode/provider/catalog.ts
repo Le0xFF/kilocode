@@ -55,5 +55,5 @@ export async function recommend(
   const endpoint = getKiloUrlFromToken(options?.baseURL || KILO_API_BASE, key ?? "")
   if (URL.parse(endpoint)?.origin !== URL.parse(KILO_API_BASE)?.origin) return fallback
   const model = await fetchDefaultModel(key, org, fallback)
-  return Object.hasOwn(models, model) ? model : fallback
+  return Object.hasOwn(models, model ?? "") ? model : fallback
 }

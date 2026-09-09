@@ -130,30 +130,3 @@ export async function handleStartMigration(
   }
 }
 
-
-export async function handleFinalizeLegacyMigration(ctx: MigrationContext): Promise<void> {
-  if (!ctx.extensionContext) return
-  await MigrationService.setMigrationStatus(
-    ctx.extensionContext as Parameters<typeof MigrationService.setMigrationStatus>[0],
-    ctx.lastMigrationHadErrors ? "completed_with_errors" : "completed",
-  )
-  ctx.broadcastComplete()
-  ctx.refreshSessions()
-}
-
-/** Record that the user skipped migration and broadcast to all instances. */
-export async function handleSkipLegacyMigration(ctx: MigrationContext): Promise<void> {
-  if (!ctx.extensionContext) return
-  await MigrationService.setMigrationStatus(
-    ctx.extensionContext as Parameters<typeof MigrationService.setMigrationStatus>[0],
-    "skipped",
-  )
-  ctx.broadcastComplete()
-}
-
-/** Clear legacy data from SecretStorage and globalState after user opts in. */
-export async function handleClearLegacyData(ctx: MigrationContext): Promise<void> {
-  if (!ctx.extensionContext) return
-  await MigrationService.clearLegacyData(ctx.extensionContext as Parameters<typeof MigrationService.clearLegacyData>[0])
-}
-

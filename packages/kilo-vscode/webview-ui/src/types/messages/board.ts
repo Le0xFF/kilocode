@@ -8,6 +8,7 @@ export interface RequestSessionBoardMessage {
   requestID: string
   projectId?: string
   before?: string
+  // kilocode_change - board pagination limit is a number per the regenerated SDK contract
   limit?: number
 }
 
@@ -16,6 +17,7 @@ export interface ResetSessionBoardMessage {
   sessionID: string
   requestID: string
   projectId?: string
+  // kilocode_change - board revision is a numeric counter per the regenerated SDK contract
   revision: number
 }
 

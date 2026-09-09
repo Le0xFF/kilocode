@@ -10,7 +10,7 @@ import { SessionID } from "@/session/schema"
 import * as ToolJsonSchema from "@/tool/json-schema"
 import { Tool } from "@/tool/tool"
 import { Effect, Schema } from "effect"
-import { selectModel } from "./model-selection"
+import { matchesQuery } from "./model-search"
 import DESCRIPTION from "./agent-manager.txt"
 
 const Task = Schema.Struct({
@@ -208,6 +208,7 @@ const WireParams = Schema.Struct({
 
 type Input = Schema.Schema.Type<typeof Task>
 type Selected = { task?: AgentManagerTask; error?: string }
+type Candidate = { providerID: string; model: Provider.Info["models"][string] }
 type Source = { model: NonNullable<AgentManagerTask["model"]>; variant?: string }
 
 function abort(signal: AbortSignal) {
@@ -277,7 +278,7 @@ function rank(providerID: string, preferred: string | undefined): number {
 
 function select(
   task: Input,
-  providers: Record<string, Provider.Info>,
+  all: Candidate[],
   preferred: string | undefined,
   source: Source | undefined,
   index: number,
@@ -290,9 +291,63 @@ function select(
   if (!task.model?.trim() && !task.variant?.trim()) {
     return { task: task.prompt?.trim() && source ? { ...base, ...source } : base }
   }
-  const selected = selectModel(task, providers, source, preferred)
-  if ("error" in selected) return { error: `Task ${index + 1} ${selected.error}` }
-  return { task: { ...base, ...selected } }
+  const value = task.model?.trim()
+  const provider = task.provider?.trim()
+  const variant = task.variant?.trim()
+  if (!value) {
+    if (!variant) return { error: `Task ${index + 1} requires a model or an available current model.` }
+    const active = all.find(
+      (item) => item.providerID === source?.model.providerID && item.model.id === source?.model.modelID,
+    )
+    if (!active) return { error: `Task ${index + 1} variant override requires an available current model.` }
+    if (!active.model.variants || !Object.hasOwn(active.model.variants, variant)) {
+      return {
+        error: `Task ${index + 1} variant "${variant}" is not available for ${active.model.name}. Available variants: ${Object.keys(active.model.variants ?? {}).join(", ") || "none"}`,
+      }
+    }
+    return { task: { ...base, model: source!.model, variant } }
+  }
+  const scope = provider ? all.filter((item) => item.providerID === provider) : all
+  if (provider && scope.length === 0) {
+    return { error: `Task ${index + 1} provider is not available for model selection: ${provider}. Requested model: ${value}.` }
+  }
+  const { pool, names } = lookup(scope, value)
+  if (pool.length === 0) {
+    const close = suggest(scope, value)
+    const hint = close.length ? ` Closest matches: ${close.join(", ")}.` : ""
+    return {
+      error:
+        (provider
+          ? `Task ${index + 1} model is not available from provider "${provider}": ${value}.`
+          : `Task ${index + 1} model is not available: ${value}.`) + hint + " Use agent_manager_models to search models.",
+    }
+  }
+  if (names.length > 1) {
+    return {
+      error: `Task ${index + 1} model "${value}" is ambiguous and matches several models: ${names.slice(0, 5).join(", ")}. Use a more specific name.`,
+    }
+  }
+  const eligible = variant
+    ? pool.filter((item) => item.model.variants && Object.hasOwn(item.model.variants, variant))
+    : pool
+  if (variant && eligible.length === 0) {
+    const available = [...new Set(pool.flatMap((item) => Object.keys(item.model.variants ?? {})))]
+    return {
+      error: `Task ${index + 1} variant "${variant}" is not available for ${names.at(0)}. Available variants: ${available.join(", ") || "none"}`,
+    }
+  }
+  const chosen = [...eligible]
+    .sort(
+      (a, b) =>
+        rank(a.providerID, preferred) - rank(b.providerID, preferred) ||
+        a.providerID.localeCompare(b.providerID) ||
+        a.model.id.localeCompare(b.model.id),
+    )
+    .at(0)
+  if (!chosen) return { error: `Task ${index + 1} model is not available: ${value}. Use agent_manager_models to search models.` }
+  return {
+    task: { ...base, model: { providerID: chosen.model.providerID, modelID: chosen.model.id }, ...(variant ? { variant } : {}) },
+  }
 }
 
 export const AgentManagerTool = Tool.define<
@@ -485,7 +540,8 @@ export const AgentManagerTool = Tool.define<
                 Effect.catch(() => Effect.succeed(undefined)),
               )))
             : undefined
-          const selected = params.tasks.map((task, index) => select(task, providers ?? {}, preferred, source, index))
+          const all = need && providers ? candidates(providers) : []
+          const selected = params.tasks.map((task, index) => select(task, all, preferred, source, index))
           const errors = selected.flatMap((item) => (item.error ? [item.error] : []))
           if (errors.length > 0) {
             return {

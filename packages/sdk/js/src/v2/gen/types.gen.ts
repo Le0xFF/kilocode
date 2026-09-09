@@ -68,7 +68,6 @@ export type Event =
   | EventQuestionV2Replied1
   | EventQuestionV2Rejected1
   | EventTodoUpdated1
-  | EventLspUpdated1
   | EventPermissionAsked1
   | EventPermissionReplied1
   | EventTuiPromptAppend1
@@ -108,16 +107,14 @@ export type Event =
   | EventBackgroundProcessUpdated
   | EventBackgroundProcessDeleted
   | EventSandboxStatusChanged
-  | EventSuggestionShown
-  | EventSuggestionAccepted
-  | EventSuggestionDismissed
   | EventKilocodeAgentManagerStart
   | EventKilocodeAgentManagerRequested
   | EventKilocodeAgentManagerCancelled
   | EventKilocodeNotebookRequested
   | EventKilocodeNotebookCancelled
-  | EventKiloSessionsRemoteStatusChanged
-  | EventLspClientDiagnostics
+  | EventSuggestionShown
+  | EventSuggestionAccepted
+  | EventSuggestionDismissed
   | EventMemoryStatus1
   | EventMemoryUpdated1
   | EventMemoryError1
@@ -186,7 +183,6 @@ export type Event =
   | EventQuestionV2Replied
   | EventQuestionV2Rejected
   | EventTodoUpdated
-  | EventLspUpdated
   | EventPermissionAsked
   | EventPermissionReplied
   | EventTuiPromptAppend
@@ -299,28 +295,6 @@ export type BackgroundProcessInfo = {
     started: number
     updated: number
     ended?: number
-  }
-}
-
-export type SuggestionRequest = {
-  id: string
-  sessionID: string
-  text: string
-  actions: Array<{
-    /**
-     * Button or option label (1-5 words)
-     */
-    label: string
-    description?: string
-    /**
-     * Synthetic user prompt to inject when this action is accepted
-     */
-    prompt: string
-  }>
-  blocking?: boolean
-  tool?: {
-    messageID: string
-    callID: string
   }
 }
 
@@ -444,6 +418,28 @@ export type NotebookExecuteRequest = {
 
 export type NotebookRequest = NotebookReadRequest | NotebookEditRequest | NotebookExecuteRequest
 
+export type SuggestionRequest = {
+  id: string
+  sessionID: string
+  text: string
+  actions: Array<{
+    /**
+     * Button or option label (1-5 words)
+     */
+    label: string
+    description?: string
+    /**
+     * Synthetic user prompt to inject when this action is accepted
+     */
+    prompt: string
+  }>
+  blocking?: boolean
+  tool?: {
+    messageID: string
+    callID: string
+  }
+}
+
 export type IndexingStatusState = "Disabled" | "In Progress" | "Complete" | "Error" | "Standby"
 
 export type IndexingStatus = {
@@ -502,9 +498,6 @@ export type Session = {
       read: number
       write: number
     }
-  }
-  share?: {
-    url: string
   }
   title: string
   agent?: string
@@ -1024,7 +1017,6 @@ export type EventTuiCommandExecute = {
     command:
       | "session.list"
       | "session.new"
-      | "session.share"
       | "session.interrupt"
       | "session.compact"
       | "session.page.up"
@@ -1151,16 +1143,14 @@ export type GlobalEvent = {
     | EventBackgroundProcessUpdated
     | EventBackgroundProcessDeleted
     | EventSandboxStatusChanged
-    | EventSuggestionShown
-    | EventSuggestionAccepted
-    | EventSuggestionDismissed
     | EventKilocodeAgentManagerStart
     | EventKilocodeAgentManagerRequested
     | EventKilocodeAgentManagerCancelled
     | EventKilocodeNotebookRequested
     | EventKilocodeNotebookCancelled
-    | EventKiloSessionsRemoteStatusChanged
-    | EventLspClientDiagnostics
+    | EventSuggestionShown
+    | EventSuggestionAccepted
+    | EventSuggestionDismissed
     | EventMemoryStatus
     | EventMemoryUpdated
     | EventMemoryError
@@ -1229,7 +1219,6 @@ export type GlobalEvent = {
     | EventQuestionV2Replied
     | EventQuestionV2Rejected
     | EventTodoUpdated
-    | EventLspUpdated
     | EventPermissionAsked
     | EventPermissionReplied
     | EventTuiPromptAppend
@@ -1895,13 +1884,6 @@ export type GlobalEvent = {
       }
     | {
         id: string
-        type: "lsp.updated"
-        properties: {
-          [key: string]: unknown
-        }
-      }
-    | {
-        id: string
         type: "permission.asked"
         properties: {
           id: string
@@ -1941,7 +1923,6 @@ export type GlobalEvent = {
           command:
             | "session.list"
             | "session.new"
-            | "session.share"
             | "session.interrupt"
             | "session.compact"
             | "session.page.up"
@@ -2214,7 +2195,6 @@ export type ServerConfig = {
 export type IndexingConfig = {
   enabled?: boolean
   provider?:
-    | "kilo"
     | "openai"
     | "ollama"
     | "openai-compatible"
@@ -2227,11 +2207,6 @@ export type IndexingConfig = {
   model?: string | null
   dimension?: number | null
   vectorStore?: "lancedb" | "qdrant"
-  kilo?: {
-    apiKey?: string
-    baseUrl?: string
-    organizationId?: string
-  }
   openai?: {
     apiKey?: string
   }
@@ -2299,8 +2274,6 @@ export type PermissionConfig =
       todowrite?: PermissionActionConfig
       question?: PermissionActionConfig
       webfetch?: PermissionActionConfig
-      websearch?: PermissionActionConfig
-      lsp?: PermissionRuleConfig
       doom_loop?: PermissionActionConfig
       skill?: PermissionRuleConfig
       agent_manager?: PermissionRuleConfig
@@ -2369,7 +2342,8 @@ export type ProviderConfig = {
       family?: string
       prompt?: "codex" | "gemini" | "beast" | "anthropic" | "trinity" | "anthropic_without_todo" | "ling" | "gpt55"
       isFree?: boolean
-      ai_sdk_provider?: "anthropic" | "openai" | "openai-compatible" | "openrouter"
+      ai_sdk_provider?: "anthropic" | "openai" | "openai-compatible"
+      mayTrainOnYourPrompts?: boolean
       release_date?: string
       attachment?: boolean
       reasoning?: boolean
@@ -2525,12 +2499,6 @@ export type Config = {
         },
       ]
   >
-  share?: "manual" | "auto" | "disabled"
-  autoshare?: boolean
-  /**
-   * Automatically update to the latest version. Set to true to auto-update, false to disable, or 'notify' to show update notifications
-   */
-  autoupdate?: boolean | "notify"
   disabled_providers?: Array<string>
   enabled_providers?: Array<string>
   remote_control?: boolean
@@ -2624,35 +2592,12 @@ export type Config = {
           extensions?: Array<string>
         }
       }
-  /**
-   * Enable or configure LSP servers. Omit or set to false to disable, true to enable built-ins, or an object to enable built-ins with overrides.
-   */
-  lsp?:
-    | boolean
-    | {
-        [key: string]:
-          | {
-              disabled: true
-            }
-          | {
-              command: Array<string>
-              extensions?: Array<string>
-              disabled?: boolean
-              env?: {
-                [key: string]: string
-              }
-              initialization?: {
-                [key: string]: unknown
-              }
-            }
-      }
   instructions?: Array<string>
   layout?: LayoutConfig
   permission?: PermissionConfig
   tools?: {
     [key: string]: boolean
   }
-  web_search?: boolean
   attachment?: AttachmentConfig
   enterprise?: {
     url?: string
@@ -2681,6 +2626,10 @@ export type Config = {
     image_generation?: boolean
     image_generation_model?: string
     native_notebook_tools?: boolean
+    image_generation_provider?: {
+      provider?: string
+      model?: string
+    }
     task_model_selection?: boolean
     speech_to_text_model?: string
     openTelemetry?: boolean
@@ -2788,7 +2737,7 @@ export type Model = {
   autoRouting?: {
     models: Array<string>
   }
-  ai_sdk_provider?: "anthropic" | "openai" | "openai-compatible" | "openrouter"
+  ai_sdk_provider?: "anthropic" | "openai" | "openai-compatible"
 }
 
 export type Provider = {
@@ -2813,16 +2762,6 @@ export type Provider = {
 
 export type ExperimentalCapabilities = {
   backgroundSubagents: boolean
-}
-
-export type ConsoleState = {
-  consoleManagedProviders: Array<string>
-  activeOrgName?: string
-  switchableOrgCount: number
-}
-
-export type EffectHttpApiErrorInternalServerError = {
-  _tag: "InternalServerError"
 }
 
 export type ToolListItem = {
@@ -2927,9 +2866,6 @@ export type GlobalSession = {
       write: number
     }
   }
-  share?: {
-    url: string
-  }
   title: string
   agent?: string
   model?: {
@@ -2965,15 +2901,6 @@ export type McpResource = {
   description?: string
   mimeType?: string
   client: string
-}
-
-export type Symbol = {
-  name: string
-  kind: number
-  location: {
-    uri: string
-    range: Range
-  }
 }
 
 export type FileNode = {
@@ -3085,13 +3012,6 @@ export type Agent = {
     [key: string]: unknown
   }
   steps?: number
-}
-
-export type LspStatus = {
-  id: string
-  name: string
-  root: string
-  status: "connected" | "error"
 }
 
 export type FormatterStatus = {
@@ -3283,9 +3203,6 @@ export type Session1 = {
       write: number
     }
   }
-  share?: {
-    url: string
-  }
   title: string
   agent?: string
   model?: {
@@ -3336,9 +3253,6 @@ export type Session2 = {
       read: number
       write: number
     }
-  }
-  share?: {
-    url: string
   }
   title: string
   agent?: string
@@ -3398,9 +3312,6 @@ export type Session3 = {
       write: number
     }
   }
-  share?: {
-    url: string
-  }
   title: string
   agent?: string
   model?: {
@@ -3452,9 +3363,6 @@ export type Session4 = {
       write: number
     }
   }
-  share?: {
-    url: string
-  }
   title: string
   agent?: string
   model?: {
@@ -3505,117 +3413,6 @@ export type Session5 = {
       read: number
       write: number
     }
-  }
-  share?: {
-    url: string
-  }
-  title: string
-  agent?: string
-  model?: {
-    id: string
-    providerID: string
-    variant?: string
-  }
-  version: string
-  metadata?: {
-    [key: string]: unknown
-  }
-  time: {
-    created: number
-    updated: number
-    compacting?: number
-    archived?: number
-  }
-  permission?: PermissionRuleset
-  revert?: {
-    messageID: string
-    partID?: string
-    snapshot?: string
-    diff?: string
-    workspace?: "restored" | "snapshots-disabled" | "unavailable"
-  }
-}
-
-export type Session6 = {
-  id: string
-  slug: string
-  projectID: string
-  workspaceID?: string
-  directory: string
-  path?: string
-  parentID?: string
-  summary?: {
-    additions: number
-    deletions: number
-    files: number
-    diffs?: Array<SnapshotSummaryFileDiff>
-  }
-  cost?: number
-  tokens?: {
-    input: number
-    output: number
-    reasoning: number
-    cache: {
-      read: number
-      write: number
-    }
-  }
-  share?: {
-    url: string
-  }
-  title: string
-  agent?: string
-  model?: {
-    id: string
-    providerID: string
-    variant?: string
-  }
-  version: string
-  metadata?: {
-    [key: string]: unknown
-  }
-  time: {
-    created: number
-    updated: number
-    compacting?: number
-    archived?: number
-  }
-  permission?: PermissionRuleset
-  revert?: {
-    messageID: string
-    partID?: string
-    snapshot?: string
-    diff?: string
-    workspace?: "restored" | "snapshots-disabled" | "unavailable"
-  }
-}
-
-export type Session7 = {
-  id: string
-  slug: string
-  projectID: string
-  workspaceID?: string
-  directory: string
-  path?: string
-  parentID?: string
-  summary?: {
-    additions: number
-    deletions: number
-    files: number
-    diffs?: Array<SnapshotSummaryFileDiff>
-  }
-  cost?: number
-  tokens?: {
-    input: number
-    output: number
-    reasoning: number
-    cache: {
-      read: number
-      write: number
-    }
-  }
-  share?: {
-    url: string
   }
   title: string
   agent?: string
@@ -3699,7 +3496,7 @@ export type SessionBusyError = {
   message: string
 }
 
-export type Session8 = {
+export type Session6 = {
   id: string
   slug: string
   projectID: string
@@ -3722,9 +3519,6 @@ export type Session8 = {
       read: number
       write: number
     }
-  }
-  share?: {
-    url: string
   }
   title: string
   agent?: string
@@ -3753,7 +3547,7 @@ export type Session8 = {
   }
 }
 
-export type Session9 = {
+export type Session7 = {
   id: string
   slug: string
   projectID: string
@@ -3776,9 +3570,6 @@ export type Session9 = {
       read: number
       write: number
     }
-  }
-  share?: {
-    url: string
   }
   title: string
   agent?: string
@@ -3820,7 +3611,6 @@ export type EventTuiCommandExecute2 = {
     command:
       | "session.list"
       | "session.new"
-      | "session.share"
       | "session.interrupt"
       | "session.compact"
       | "session.page.up"
@@ -4084,36 +3874,10 @@ export type TuiKeybindListResponse = {
   keybinds: Array<TuiKeybindInfo>
 }
 
-export type KiloEmbeddingModelCatalog = {
-  defaultModel: string
-  models: Array<{
-    id: string
-    name: string
-    dimension: number
-    scoreThreshold: number
-    note?: string
-  }>
-  aliases: {
-    [key: string]: string
-  }
-}
-
 export type ConflictError = {
   _tag: "ConflictError"
   message: string
   resource?: string
-}
-
-export type EffectHttpApiErrorUnauthorized = {
-  _tag: "Unauthorized"
-}
-
-export type EffectHttpApiErrorServiceUnavailable = {
-  _tag: "ServiceUnavailable"
-}
-
-export type CloudSessionImportError = {
-  error: string
 }
 
 export type BoardMessage = {
@@ -4201,6 +3965,10 @@ export type ProviderUsageSnapshot = {
 export type ProviderUsage = {
   items: Array<ProviderUsageSnapshot>
   generatedAt: string
+}
+
+export type EffectHttpApiErrorServiceUnavailable = {
+  _tag: "ServiceUnavailable"
 }
 
 export type NotebookOutput = {
@@ -4467,6 +4235,10 @@ export type AnacondaDesktopConflictError = {
 
 export type AnacondaDesktopOperationError = {
   operation: "open" | "sync"
+  message: string
+}
+
+export type MediaLocalFailedError = {
   message: string
 }
 
@@ -4818,7 +4590,6 @@ export type V2Event =
   | QuestionV2Replied
   | QuestionV2Rejected
   | TodoUpdated
-  | LspUpdated
   | PermissionAsked
   | PermissionReplied
   | TuiPromptAppend
@@ -4987,42 +4758,6 @@ export type EventSandboxStatusChanged = {
   }
 }
 
-export type EventSuggestionShown = {
-  id: string
-  type: "suggestion.shown"
-  properties: SuggestionRequest
-}
-
-export type EventSuggestionAccepted = {
-  id: string
-  type: "suggestion.accepted"
-  properties: {
-    sessionID: string
-    requestID: string
-    index: number
-    action: {
-      /**
-       * Button or option label (1-5 words)
-       */
-      label: string
-      description?: string
-      /**
-       * Synthetic user prompt to inject when this action is accepted
-       */
-      prompt: string
-    }
-  }
-}
-
-export type EventSuggestionDismissed = {
-  id: string
-  type: "suggestion.dismissed"
-  properties: {
-    sessionID: string
-    requestID: string
-  }
-}
-
 export type EventKilocodeAgentManagerStart = {
   id: string
   type: "kilocode.agent_manager.start"
@@ -5078,21 +4813,39 @@ export type EventKilocodeNotebookCancelled = {
   }
 }
 
-export type EventKiloSessionsRemoteStatusChanged = {
+export type EventSuggestionShown = {
   id: string
-  type: "kilo-sessions.remote-status-changed"
+  type: "suggestion.shown"
+  properties: SuggestionRequest
+}
+
+export type EventSuggestionAccepted = {
+  id: string
+  type: "suggestion.accepted"
   properties: {
-    enabled: boolean
-    connected: boolean
+    sessionID: string
+    requestID: string
+    index: number
+    action: {
+      /**
+       * Button or option label (1-5 words)
+       */
+      label: string
+      description?: string
+      /**
+       * Synthetic user prompt to inject when this action is accepted
+       */
+      prompt: string
+    }
   }
 }
 
-export type EventLspClientDiagnostics = {
+export type EventSuggestionDismissed = {
   id: string
-  type: "lsp.client.diagnostics"
+  type: "suggestion.dismissed"
   properties: {
-    serverID: string
-    path: string
+    sessionID: string
+    requestID: string
   }
 }
 
@@ -6044,14 +5797,6 @@ export type EventTodoUpdated = {
   properties: {
     sessionID: string
     todos: Array<Todo>
-  }
-}
-
-export type EventLspUpdated = {
-  id: string
-  type: "lsp.updated"
-  properties: {
-    [key: string]: unknown
   }
 }
 
@@ -8816,23 +8561,6 @@ export type TodoUpdated = {
   }
 }
 
-export type LspUpdated = {
-  id: string
-  metadata?: {
-    [key: string]: unknown
-  }
-  type: "lsp.updated"
-  durable?: {
-    aggregateID: string
-    seq: number
-    version: number
-  }
-  location?: LocationRef
-  data: {
-    [key: string]: unknown
-  }
-}
-
 export type PermissionAsked = {
   id: string
   metadata?: {
@@ -8913,7 +8641,6 @@ export type TuiCommandExecute = {
     command:
       | "session.list"
       | "session.new"
-      | "session.share"
       | "session.interrupt"
       | "session.compact"
       | "session.page.up"
@@ -10060,14 +9787,6 @@ export type EventTodoUpdated1 = {
   }
 }
 
-export type EventLspUpdated1 = {
-  id: string
-  type: "lsp.updated"
-  properties: {
-    [key: string]: unknown
-  }
-}
-
 export type EventPermissionAsked1 = {
   id: string
   type: "permission.asked"
@@ -10112,7 +9831,6 @@ export type EventTuiCommandExecute1 = {
     command:
       | "session.list"
       | "session.new"
-      | "session.share"
       | "session.interrupt"
       | "session.compact"
       | "session.page.up"
@@ -10775,41 +10493,6 @@ export type GlobalDisposeResponses = {
 
 export type GlobalDisposeResponse = GlobalDisposeResponses[keyof GlobalDisposeResponses]
 
-export type GlobalUpgradeData = {
-  body?: {
-    target?: string
-  }
-  path?: never
-  query?: never
-  url: "/global/upgrade"
-}
-
-export type GlobalUpgradeErrors = {
-  /**
-   * BadRequest | InvalidRequestError
-   */
-  400: EffectHttpApiErrorBadRequest | InvalidRequestError
-}
-
-export type GlobalUpgradeError = GlobalUpgradeErrors[keyof GlobalUpgradeErrors]
-
-export type GlobalUpgradeResponses = {
-  /**
-   * Upgrade result
-   */
-  200:
-    | {
-        success: true
-        version: string
-      }
-    | {
-        success: false
-        error: string
-      }
-}
-
-export type GlobalUpgradeResponse = GlobalUpgradeResponses[keyof GlobalUpgradeResponses]
-
 export type EventSubscribeData = {
   body?: never
   path?: never
@@ -10979,104 +10662,6 @@ export type ExperimentalCapabilitiesGetResponses = {
 
 export type ExperimentalCapabilitiesGetResponse =
   ExperimentalCapabilitiesGetResponses[keyof ExperimentalCapabilitiesGetResponses]
-
-export type ExperimentalConsoleGetData = {
-  body?: never
-  path?: never
-  query?: {
-    directory?: string
-    workspace?: string
-  }
-  url: "/experimental/console"
-}
-
-export type ExperimentalConsoleGetErrors = {
-  /**
-   * Bad request
-   */
-  400: BadRequestError
-  /**
-   * InternalServerError
-   */
-  500: EffectHttpApiErrorInternalServerError
-}
-
-export type ExperimentalConsoleGetError = ExperimentalConsoleGetErrors[keyof ExperimentalConsoleGetErrors]
-
-export type ExperimentalConsoleGetResponses = {
-  /**
-   * Active Console provider metadata
-   */
-  200: ConsoleState
-}
-
-export type ExperimentalConsoleGetResponse = ExperimentalConsoleGetResponses[keyof ExperimentalConsoleGetResponses]
-
-export type ExperimentalConsoleListOrgsData = {
-  body?: never
-  path?: never
-  query?: {
-    directory?: string
-    workspace?: string
-  }
-  url: "/experimental/console/orgs"
-}
-
-export type ExperimentalConsoleListOrgsErrors = {
-  /**
-   * Bad request
-   */
-  400: BadRequestError
-  /**
-   * InternalServerError
-   */
-  500: EffectHttpApiErrorInternalServerError
-}
-
-export type ExperimentalConsoleListOrgsError =
-  ExperimentalConsoleListOrgsErrors[keyof ExperimentalConsoleListOrgsErrors]
-
-export type ExperimentalConsoleListOrgsResponses = {
-  /**
-   * Switchable Console orgs
-   */
-  200: {
-    orgs: Array<{
-      accountID: string
-      accountEmail: string
-      accountUrl: string
-      orgID: string
-      orgName: string
-      active: boolean
-    }>
-  }
-}
-
-export type ExperimentalConsoleListOrgsResponse =
-  ExperimentalConsoleListOrgsResponses[keyof ExperimentalConsoleListOrgsResponses]
-
-export type ExperimentalConsoleSwitchOrgData = {
-  body?: {
-    accountID: string
-    orgID: string
-  }
-  path?: never
-  query?: {
-    directory?: string
-    workspace?: string
-  }
-  url: "/experimental/console/switch"
-}
-
-export type ExperimentalConsoleSwitchOrgResponses = {
-  /**
-   * Switch success
-   */
-  200: boolean
-}
-
-export type ExperimentalConsoleSwitchOrgResponse =
-  ExperimentalConsoleSwitchOrgResponses[keyof ExperimentalConsoleSwitchOrgResponses]
 
 export type ToolListData = {
   body?: never
@@ -11537,7 +11122,7 @@ export type FindSymbolsResponses = {
   /**
    * Symbols
    */
-  200: Array<Symbol>
+  200: Array<unknown>
 }
 
 export type FindSymbolsResponse = FindSymbolsResponses[keyof FindSymbolsResponses]
@@ -11919,34 +11504,6 @@ export type AppSkillsResponses = {
 }
 
 export type AppSkillsResponse = AppSkillsResponses[keyof AppSkillsResponses]
-
-export type LspStatusData = {
-  body?: never
-  path?: never
-  query?: {
-    directory?: string
-    workspace?: string
-  }
-  url: "/lsp"
-}
-
-export type LspStatusErrors = {
-  /**
-   * Bad request
-   */
-  400: BadRequestError
-}
-
-export type LspStatusError = LspStatusErrors[keyof LspStatusErrors]
-
-export type LspStatusResponses = {
-  /**
-   * LSP server status
-   */
-  200: Array<LspStatus>
-}
-
-export type LspStatusResponse = LspStatusResponses[keyof LspStatusResponses]
 
 export type FormatterStatusData = {
   body?: never
@@ -13756,82 +13313,6 @@ export type SessionInitResponses = {
 
 export type SessionInitResponse = SessionInitResponses[keyof SessionInitResponses]
 
-export type SessionUnshareData = {
-  body?: never
-  path: {
-    sessionID: string
-  }
-  query?: {
-    directory?: string
-    workspace?: string
-  }
-  url: "/session/{sessionID}/share"
-}
-
-export type SessionUnshareErrors = {
-  /**
-   * Bad request
-   */
-  400: BadRequestError
-  /**
-   * NotFoundError
-   */
-  404: NotFoundError
-  /**
-   * InternalServerError
-   */
-  500: EffectHttpApiErrorInternalServerError
-}
-
-export type SessionUnshareError = SessionUnshareErrors[keyof SessionUnshareErrors]
-
-export type SessionUnshareResponses = {
-  /**
-   * Successfully unshared session
-   */
-  200: Session7
-}
-
-export type SessionUnshareResponse = SessionUnshareResponses[keyof SessionUnshareResponses]
-
-export type SessionShareData = {
-  body?: never
-  path: {
-    sessionID: string
-  }
-  query?: {
-    directory?: string
-    workspace?: string
-  }
-  url: "/session/{sessionID}/share"
-}
-
-export type SessionShareErrors = {
-  /**
-   * Bad request
-   */
-  400: BadRequestError
-  /**
-   * NotFoundError
-   */
-  404: NotFoundError
-  /**
-   * InternalServerError
-   */
-  500: EffectHttpApiErrorInternalServerError
-}
-
-export type SessionShareError = SessionShareErrors[keyof SessionShareErrors]
-
-export type SessionShareResponses = {
-  /**
-   * Successfully shared session
-   */
-  200: Session6
-}
-
-export type SessionShareResponse = SessionShareResponses[keyof SessionShareResponses]
-
 export type SessionSummarizeData = {
   body?: {
     providerID: string
@@ -14066,7 +13547,7 @@ export type SessionRevertResponses = {
   /**
    * Updated session
    */
-  200: Session8
+  200: Session6
 }
 
 export type SessionRevertResponse = SessionRevertResponses[keyof SessionRevertResponses]
@@ -14104,7 +13585,7 @@ export type SessionUnrevertResponses = {
   /**
    * Updated session
    */
-  200: Session9
+  200: Session7
 }
 
 export type SessionUnrevertResponse = SessionUnrevertResponses[keyof SessionUnrevertResponses]
@@ -14217,41 +13698,6 @@ export type PartUpdateResponses = {
 }
 
 export type PartUpdateResponse = PartUpdateResponses[keyof PartUpdateResponses]
-
-export type SessionViewedData = {
-  body?: {
-    viewer: {
-      id: string
-      active: boolean
-    }
-    attached: Array<string>
-    visible: Array<string>
-  }
-  path?: never
-  query?: {
-    directory?: string
-    workspace?: string
-  }
-  url: "/session/viewed"
-}
-
-export type SessionViewedErrors = {
-  /**
-   * BadRequest | InvalidRequestError
-   */
-  400: EffectHttpApiErrorBadRequest | InvalidRequestError
-}
-
-export type SessionViewedError = SessionViewedErrors[keyof SessionViewedErrors]
-
-export type SessionViewedResponses = {
-  /**
-   * Viewed sessions updated
-   */
-  200: boolean
-}
-
-export type SessionViewedResponse = SessionViewedResponses[keyof SessionViewedResponses]
 
 export type SyncStartData = {
   body?: never
@@ -15852,9 +15298,9 @@ export type IndexingModelsError = IndexingModelsErrors[keyof IndexingModelsError
 
 export type IndexingModelsResponses = {
   /**
-   * Kilo embedding model catalog
+   * Configured embedding model ids
    */
-  200: KiloEmbeddingModelCatalog
+  200: Array<string>
 }
 
 export type IndexingModelsResponse = IndexingModelsResponses[keyof IndexingModelsResponses]
@@ -15920,644 +15366,6 @@ export type InstanceReloadResponses = {
 }
 
 export type InstanceReloadResponse = InstanceReloadResponses[keyof InstanceReloadResponses]
-
-export type KiloProfileData = {
-  body?: never
-  path?: never
-  query?: {
-    directory?: string
-    workspace?: string
-  }
-  url: "/kilo/profile"
-}
-
-export type KiloProfileErrors = {
-  /**
-   * BadRequest | InvalidRequestError
-   */
-  400: EffectHttpApiErrorBadRequest | InvalidRequestError
-}
-
-export type KiloProfileError = KiloProfileErrors[keyof KiloProfileErrors]
-
-export type KiloProfileResponses = {
-  /**
-   * Profile data
-   */
-  200: {
-    profile: {
-      email: string
-      name?: string
-      organizations?: Array<{
-        id: string
-        name: string
-        role: string
-      }>
-      selectedOrganizationId?: string
-      hasPersonalAccount?: boolean
-    }
-    balance: {
-      balance: number
-    } | null
-    kiloPass: {
-      currentPeriodBaseCreditsUsd: number
-      currentPeriodUsageUsd: number
-      currentPeriodBonusCreditsUsd: number
-      nextBillingAt?: string | null
-    } | null
-    currentOrgId: string | null
-  }
-}
-
-export type KiloProfileResponse = KiloProfileResponses[keyof KiloProfileResponses]
-
-export type KiloAuthStatusData = {
-  body?: never
-  path?: never
-  query?: {
-    directory?: string
-    workspace?: string
-  }
-  url: "/kilo/auth-status"
-}
-
-export type KiloAuthStatusErrors = {
-  /**
-   * BadRequest | InvalidRequestError
-   */
-  400: EffectHttpApiErrorBadRequest | InvalidRequestError
-}
-
-export type KiloAuthStatusError = KiloAuthStatusErrors[keyof KiloAuthStatusErrors]
-
-export type KiloAuthStatusResponses = {
-  /**
-   * Kilo authentication status
-   */
-  200: {
-    authenticated: boolean
-    type?: "api" | "oauth"
-    organizationId?: string
-  }
-}
-
-export type KiloAuthStatusResponse = KiloAuthStatusResponses[keyof KiloAuthStatusResponses]
-
-export type KiloModesData = {
-  body?: never
-  path?: never
-  query?: {
-    directory?: string
-    workspace?: string
-  }
-  url: "/kilo/modes"
-}
-
-export type KiloModesErrors = {
-  /**
-   * Bad request
-   */
-  400: BadRequestError
-}
-
-export type KiloModesError = KiloModesErrors[keyof KiloModesErrors]
-
-export type KiloModesResponses = {
-  /**
-   * Organization modes list
-   */
-  200: {
-    modes: Array<{
-      id: string
-      organization_id: string
-      name: string
-      slug: string
-      created_by: string
-      created_at: string
-      updated_at: string
-      config: {
-        roleDefinition?: string
-        whenToUse?: string
-        description?: string
-        customInstructions?: string
-        groups?: Array<
-          | string
-          | [
-              string,
-              {
-                fileRegex?: string | null
-                description?: string | null
-              },
-            ]
-        >
-      }
-    }>
-  }
-}
-
-export type KiloModesResponse = KiloModesResponses[keyof KiloModesResponses]
-
-export type KiloFimData = {
-  body?: {
-    prefix: string
-    suffix: string
-    provider?: string
-    model?: string
-    maxTokens?: number
-    temperature?: number
-  }
-  path?: never
-  query?: {
-    directory?: string
-    workspace?: string
-  }
-  url: "/kilo/fim"
-}
-
-export type KiloFimErrors = {
-  /**
-   * BadRequest | InvalidRequestError
-   */
-  400: EffectHttpApiErrorBadRequest | InvalidRequestError
-}
-
-export type KiloFimError = KiloFimErrors[keyof KiloFimErrors]
-
-export type KiloFimResponses = {
-  /**
-   * Streaming FIM completion response
-   */
-  200: {
-    choices?: Array<{
-      delta?: {
-        content?: string
-      }
-      text?: string
-    }>
-    usage?: {
-      prompt_tokens?: number
-      completion_tokens?: number
-    }
-    cost?: number
-  }
-}
-
-export type KiloFimResponse = KiloFimResponses[keyof KiloFimResponses]
-
-export type KiloEditData = {
-  body?: {
-    provider?: string
-    model?: string
-    maxTokens?: number
-    currentFilePath: string
-    currentFileContent: string
-    cursorLine: number
-    cursorCharacter: number
-    editableRegionStartLine: number
-    editableRegionEndLine: number
-    recentlyViewedSnippets: Array<{
-      filepath: string
-      content: string
-    }>
-    editDiffHistory: Array<string>
-  }
-  path?: never
-  query?: {
-    directory?: string
-    workspace?: string
-  }
-  url: "/kilo/edit"
-}
-
-export type KiloEditErrors = {
-  /**
-   * BadRequest | InvalidRequestError
-   */
-  400: EffectHttpApiErrorBadRequest | InvalidRequestError
-}
-
-export type KiloEditError = KiloEditErrors[keyof KiloEditErrors]
-
-export type KiloEditResponses = {
-  /**
-   * Next Edit completion
-   */
-  200: {
-    content: string
-    usage?: {
-      prompt_tokens?: number
-      completion_tokens?: number
-    }
-  }
-}
-
-export type KiloEditResponse = KiloEditResponses[keyof KiloEditResponses]
-
-export type KiloAudioTranscriptionsData = {
-  body?: {
-    model: string
-    input_audio: {
-      data: string
-      format: string
-    }
-    language?: string
-    prompt?: string
-    temperature?: number
-  }
-  path?: never
-  query?: {
-    directory?: string
-    workspace?: string
-  }
-  url: "/kilo/audio/transcriptions"
-}
-
-export type KiloAudioTranscriptionsErrors = {
-  /**
-   * BadRequest | InvalidRequestError
-   */
-  400: EffectHttpApiErrorBadRequest | InvalidRequestError
-}
-
-export type KiloAudioTranscriptionsError = KiloAudioTranscriptionsErrors[keyof KiloAudioTranscriptionsErrors]
-
-export type KiloAudioTranscriptionsResponses = {
-  /**
-   * Transcription response
-   */
-  200: {
-    text: string
-    usage?: unknown
-  }
-}
-
-export type KiloAudioTranscriptionsResponse = KiloAudioTranscriptionsResponses[keyof KiloAudioTranscriptionsResponses]
-
-export type KiloModelsImagesData = {
-  body?: never
-  path?: never
-  query?: {
-    directory?: string
-    workspace?: string
-  }
-  url: "/kilo/models/images"
-}
-
-export type KiloModelsImagesErrors = {
-  /**
-   * BadRequest | InvalidRequestError
-   */
-  400: EffectHttpApiErrorBadRequest | InvalidRequestError
-}
-
-export type KiloModelsImagesError = KiloModelsImagesErrors[keyof KiloModelsImagesErrors]
-
-export type KiloModelsImagesResponses = {
-  /**
-   * Image-capable model list
-   */
-  200: Array<{
-    id: string
-    name: string
-    description?: string
-  }>
-}
-
-export type KiloModelsImagesResponse = KiloModelsImagesResponses[keyof KiloModelsImagesResponses]
-
-export type KiloModelsTranscriptionsData = {
-  body?: never
-  path?: never
-  query?: {
-    directory?: string
-    workspace?: string
-  }
-  url: "/kilo/models/transcriptions"
-}
-
-export type KiloModelsTranscriptionsErrors = {
-  /**
-   * BadRequest | InvalidRequestError
-   */
-  400: EffectHttpApiErrorBadRequest | InvalidRequestError
-}
-
-export type KiloModelsTranscriptionsError = KiloModelsTranscriptionsErrors[keyof KiloModelsTranscriptionsErrors]
-
-export type KiloModelsTranscriptionsResponses = {
-  /**
-   * Speech-to-text model list
-   */
-  200: Array<{
-    id: string
-    name: string
-  }>
-}
-
-export type KiloModelsTranscriptionsResponse =
-  KiloModelsTranscriptionsResponses[keyof KiloModelsTranscriptionsResponses]
-
-export type KiloNotificationsData = {
-  body?: never
-  path?: never
-  query?: {
-    directory?: string
-    workspace?: string
-  }
-  url: "/kilo/notifications"
-}
-
-export type KiloNotificationsErrors = {
-  /**
-   * BadRequest | InvalidRequestError
-   */
-  400: EffectHttpApiErrorBadRequest | InvalidRequestError
-}
-
-export type KiloNotificationsError = KiloNotificationsErrors[keyof KiloNotificationsErrors]
-
-export type KiloNotificationsResponses = {
-  /**
-   * Notifications list
-   */
-  200: Array<{
-    id: string
-    title: string
-    message: string
-    action?: {
-      actionText: string
-      actionURL: string
-    }
-    showIn?: Array<string>
-    suggestModelId?: string
-  }>
-}
-
-export type KiloNotificationsResponse = KiloNotificationsResponses[keyof KiloNotificationsResponses]
-
-export type KiloOrganizationSetData = {
-  body?: {
-    organizationId: string | null
-  }
-  path?: never
-  query?: {
-    directory?: string
-    workspace?: string
-  }
-  url: "/kilo/organization"
-}
-
-export type KiloOrganizationSetErrors = {
-  /**
-   * BadRequest | InvalidRequestError
-   */
-  400: EffectHttpApiErrorBadRequest | InvalidRequestError
-}
-
-export type KiloOrganizationSetError = KiloOrganizationSetErrors[keyof KiloOrganizationSetErrors]
-
-export type KiloOrganizationSetResponses = {
-  /**
-   * Organization updated successfully
-   */
-  200: boolean
-}
-
-export type KiloOrganizationSetResponse = KiloOrganizationSetResponses[keyof KiloOrganizationSetResponses]
-
-export type KiloClawStatusData = {
-  body?: never
-  path?: never
-  query?: {
-    directory?: string
-    workspace?: string
-  }
-  url: "/kilo/claw/status"
-}
-
-export type KiloClawStatusErrors = {
-  /**
-   * Bad request
-   */
-  400: BadRequestError
-  /**
-   * ServiceUnavailable
-   */
-  503: EffectHttpApiErrorServiceUnavailable
-}
-
-export type KiloClawStatusError = KiloClawStatusErrors[keyof KiloClawStatusErrors]
-
-export type KiloClawStatusResponses = {
-  /**
-   * Instance status
-   */
-  200: {
-    status:
-      | "provisioned"
-      | "starting"
-      | "restarting"
-      | "recovering"
-      | "running"
-      | "stopped"
-      | "destroying"
-      | "restoring"
-      | null
-    sandboxId?: string
-    flyRegion?: string
-    machineSize?: {
-      cpus: number
-      memory_mb: number
-    }
-    openclawVersion?: string | null
-    lastStartedAt?: string | null
-    lastStoppedAt?: string | null
-    channelCount?: number
-    secretCount?: number
-    userId?: string
-    botName?: string | null
-  }
-}
-
-export type KiloClawStatusResponse = KiloClawStatusResponses[keyof KiloClawStatusResponses]
-
-export type KiloClawChatCredentialsData = {
-  body?: never
-  path?: never
-  query?: {
-    directory?: string
-    workspace?: string
-  }
-  url: "/kilo/claw/chat-credentials"
-}
-
-export type KiloClawChatCredentialsErrors = {
-  /**
-   * Bad request
-   */
-  400: BadRequestError
-}
-
-export type KiloClawChatCredentialsError = KiloClawChatCredentialsErrors[keyof KiloClawChatCredentialsErrors]
-
-export type KiloClawChatCredentialsResponses = {
-  /**
-   * Kilo Chat credentials or null
-   */
-  200: {
-    token: string
-    expiresAt: string
-    kiloChatUrl: string
-    eventServiceUrl: string
-  } | null
-}
-
-export type KiloClawChatCredentialsResponse = KiloClawChatCredentialsResponses[keyof KiloClawChatCredentialsResponses]
-
-export type KiloCloudSessionsData = {
-  body?: never
-  path?: never
-  query?: {
-    directory?: string
-    workspace?: string
-    cursor?: string
-    limit?: number
-    gitUrl?: string
-  }
-  url: "/kilo/cloud-sessions"
-}
-
-export type KiloCloudSessionsErrors = {
-  /**
-   * BadRequest | InvalidRequestError
-   */
-  400: EffectHttpApiErrorBadRequest | InvalidRequestError
-}
-
-export type KiloCloudSessionsError = KiloCloudSessionsErrors[keyof KiloCloudSessionsErrors]
-
-export type KiloCloudSessionsResponses = {
-  /**
-   * Cloud sessions list
-   */
-  200: {
-    cliSessions: Array<{
-      session_id: string
-      title: string | null
-      created_at: string
-      updated_at: string
-      version: number
-    }>
-    nextCursor: string | null
-  }
-}
-
-export type KiloCloudSessionsResponse = KiloCloudSessionsResponses[keyof KiloCloudSessionsResponses]
-
-export type KiloCloudSessionGetData = {
-  body?: never
-  path: {
-    id: string
-  }
-  query?: {
-    directory?: string
-    workspace?: string
-  }
-  url: "/kilo/cloud/session/{id}"
-}
-
-export type KiloCloudSessionGetErrors = {
-  /**
-   * Bad request
-   */
-  400: BadRequestError
-  /**
-   * Not found
-   */
-  404: NotFoundError
-}
-
-export type KiloCloudSessionGetError = KiloCloudSessionGetErrors[keyof KiloCloudSessionGetErrors]
-
-export type KiloCloudSessionGetResponses = {
-  /**
-   * Cloud session data
-   */
-  200: {
-    info: {
-      id: string
-      title: string
-      time: {
-        created: number
-        updated: number
-      }
-    }
-    messages: Array<{
-      info: {
-        id: string
-        sessionID: string
-        role: "user" | "assistant"
-        time: {
-          created: number
-          completed?: number
-        }
-      }
-      parts: Array<{
-        id: string
-        sessionID: string
-        messageID: string
-        type: string
-      }>
-    }>
-  }
-}
-
-export type KiloCloudSessionGetResponse = KiloCloudSessionGetResponses[keyof KiloCloudSessionGetResponses]
-
-export type KiloCloudSessionImportData = {
-  body?: {
-    sessionId: string
-  }
-  path?: never
-  query?: {
-    directory?: string
-    workspace?: string
-  }
-  url: "/kilo/cloud/session/import"
-}
-
-export type KiloCloudSessionImportErrors = {
-  /**
-   * BadRequest | InvalidRequestError
-   */
-  400: EffectHttpApiErrorBadRequest | InvalidRequestError
-  /**
-   * Not found
-   */
-  404: NotFoundError
-  /**
-   * CloudSessionImportError
-   */
-  500: CloudSessionImportError
-}
-
-export type KiloCloudSessionImportError = KiloCloudSessionImportErrors[keyof KiloCloudSessionImportErrors]
-
-export type KiloCloudSessionImportResponses = {
-  /**
-   * Imported session info
-   */
-  200: {
-    id: string
-    title: string
-    time: {
-      created: number
-      updated: number
-    }
-  }
-}
-
-export type KiloCloudSessionImportResponse = KiloCloudSessionImportResponses[keyof KiloCloudSessionImportResponses]
 
 export type KilocodeResumeSessionData = {
   body?: {
@@ -16641,7 +15449,7 @@ export type KilocodeSessionBoardData = {
     directory?: string
     workspace?: string
     before?: string
-    limit?: number
+    limit?: string
   }
   url: "/kilocode/session/{sessionID}/board"
 }
@@ -17457,6 +16265,75 @@ export type AnacondaDesktopSyncResponses = {
 
 export type AnacondaDesktopSyncResponse = AnacondaDesktopSyncResponses[keyof AnacondaDesktopSyncResponses]
 
+export type MediaLocalImgModelsData = {
+  body?: never
+  path?: never
+  query?: {
+    directory?: string
+    workspace?: string
+  }
+  url: "/media-local/img/models"
+}
+
+export type MediaLocalImgModelsErrors = {
+  /**
+   * BadRequest | InvalidRequestError
+   */
+  400: EffectHttpApiErrorBadRequest | InvalidRequestError
+}
+
+export type MediaLocalImgModelsError = MediaLocalImgModelsErrors[keyof MediaLocalImgModelsErrors]
+
+export type MediaLocalImgModelsResponses = {
+  /**
+   * Configured image generation models
+   */
+  200: Array<{
+    id: string
+    name: string
+  }>
+}
+
+export type MediaLocalImgModelsResponse = MediaLocalImgModelsResponses[keyof MediaLocalImgModelsResponses]
+
+export type MediaLocalImgGenerateData = {
+  body?: {
+    prompt: string
+    /**
+     * Model reference in providerID/modelID form
+     */
+    model: string
+    size?: string
+    n?: number | "NaN" | "Infinity" | "-Infinity" | "Infinity" | "-Infinity" | "NaN"
+  }
+  path?: never
+  query?: {
+    directory?: string
+    workspace?: string
+  }
+  url: "/media-local/img/generate"
+}
+
+export type MediaLocalImgGenerateErrors = {
+  /**
+   * BadRequest | InvalidRequestError
+   */
+  400: EffectHttpApiErrorBadRequest | InvalidRequestError
+  /**
+   * MediaLocalFailedError
+   */
+  502: MediaLocalFailedError
+}
+
+export type MediaLocalImgGenerateError = MediaLocalImgGenerateErrors[keyof MediaLocalImgGenerateErrors]
+
+export type MediaLocalImgGenerateResponses = {
+  /**
+   * Image generation response
+   */
+  200: unknown
+}
+
 export type KilocodeMigrateSessionsData = {
   body?: {
     cwd?: string
@@ -17627,99 +16504,6 @@ export type NetworkRejectResponses = {
 
 export type NetworkRejectResponse = NetworkRejectResponses[keyof NetworkRejectResponses]
 
-export type RemoteEnableData = {
-  body?: never
-  path?: never
-  query?: {
-    directory?: string
-    workspace?: string
-  }
-  url: "/remote/enable"
-}
-
-export type RemoteEnableErrors = {
-  /**
-   * Bad request
-   */
-  400: BadRequestError
-}
-
-export type RemoteEnableError = RemoteEnableErrors[keyof RemoteEnableErrors]
-
-export type RemoteEnableResponses = {
-  /**
-   * Remote connection enabled
-   */
-  200: {
-    enabled: boolean
-    connected: boolean
-  }
-}
-
-export type RemoteEnableResponse = RemoteEnableResponses[keyof RemoteEnableResponses]
-
-export type RemoteDisableData = {
-  body?: never
-  path?: never
-  query?: {
-    directory?: string
-    workspace?: string
-  }
-  url: "/remote/disable"
-}
-
-export type RemoteDisableErrors = {
-  /**
-   * Bad request
-   */
-  400: BadRequestError
-}
-
-export type RemoteDisableError = RemoteDisableErrors[keyof RemoteDisableErrors]
-
-export type RemoteDisableResponses = {
-  /**
-   * Remote connection disabled
-   */
-  200: {
-    enabled: boolean
-    connected: boolean
-  }
-}
-
-export type RemoteDisableResponse = RemoteDisableResponses[keyof RemoteDisableResponses]
-
-export type RemoteStatusData = {
-  body?: never
-  path?: never
-  query?: {
-    directory?: string
-    workspace?: string
-  }
-  url: "/remote/status"
-}
-
-export type RemoteStatusErrors = {
-  /**
-   * Bad request
-   */
-  400: BadRequestError
-}
-
-export type RemoteStatusError = RemoteStatusErrors[keyof RemoteStatusErrors]
-
-export type RemoteStatusResponses = {
-  /**
-   * Remote connection status
-   */
-  200: {
-    enabled: boolean
-    connected: boolean
-  }
-}
-
-export type RemoteStatusResponse = RemoteStatusResponses[keyof RemoteStatusResponses]
-
 export type SandboxSupportData = {
   body?: never
   path?: never
@@ -17886,7 +16670,6 @@ export type KilocodeSessionImportSessionData = {
     directory: string
     title: string
     version: string
-    shareURL?: string
     summary?: {
       additions: number
       deletions: number
@@ -18236,72 +17019,6 @@ export type SuggestionDismissResponses = {
 }
 
 export type SuggestionDismissResponse = SuggestionDismissResponses[keyof SuggestionDismissResponses]
-
-export type TelemetryCaptureData = {
-  body?: {
-    /**
-     * Event name
-     */
-    event: string
-    properties?: {
-      [key: string]: unknown
-    }
-  }
-  path?: never
-  query?: {
-    directory?: string
-    workspace?: string
-  }
-  url: "/telemetry/capture"
-}
-
-export type TelemetryCaptureErrors = {
-  /**
-   * BadRequest | InvalidRequestError
-   */
-  400: EffectHttpApiErrorBadRequest | InvalidRequestError
-}
-
-export type TelemetryCaptureError = TelemetryCaptureErrors[keyof TelemetryCaptureErrors]
-
-export type TelemetryCaptureResponses = {
-  /**
-   * Event captured
-   */
-  200: boolean
-}
-
-export type TelemetryCaptureResponse = TelemetryCaptureResponses[keyof TelemetryCaptureResponses]
-
-export type TelemetrySetEnabledData = {
-  body?: {
-    enabled: boolean
-  }
-  path?: never
-  query?: {
-    directory?: string
-    workspace?: string
-  }
-  url: "/telemetry/setEnabled"
-}
-
-export type TelemetrySetEnabledErrors = {
-  /**
-   * BadRequest | InvalidRequestError
-   */
-  400: EffectHttpApiErrorBadRequest | InvalidRequestError
-}
-
-export type TelemetrySetEnabledError = TelemetrySetEnabledErrors[keyof TelemetrySetEnabledErrors]
-
-export type TelemetrySetEnabledResponses = {
-  /**
-   * State updated
-   */
-  200: boolean
-}
-
-export type TelemetrySetEnabledResponse = TelemetrySetEnabledResponses[keyof TelemetrySetEnabledResponses]
 
 export type MemoryStatusData = {
   body?: never

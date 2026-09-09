@@ -37,8 +37,8 @@ import {
 } from "./MultiModelSelector"
 import { useLanguage } from "../src/context/language"
 import { useImageAttachments, type ImageAttachment } from "../src/hooks/useImageAttachments"
-
-import { convertToMentionPath } from "../src/utils/path-mentions"
+import { SpeechToTextButton } from "../src/components/speech-to-text/SpeechToTextButton"
+import { canUseSpeechToText, selectedSpeechToTextModel } from "../src/components/speech-to-text/availability"
 import { useSpeechToText } from "../src/components/speech-to-text/useSpeechToText"
 import { useSpeechToTextModels } from "../src/context/speech-to-text-models"
 import { createSpeechShortcut } from "../src/components/speech-to-text/shortcut"
@@ -114,6 +114,11 @@ export const NewWorktreeDialog: Component<{
   const track = (button: string, properties?: Record<string, string | number | boolean | undefined>) =>
     metrics.track(button, "configure_worktree_dialog", properties)
   const click = metrics.click
+
+  const speech = useSpeechToText(vscode, { t })
+  const speechModels = useSpeechToTextModels()
+  const canUseSpeech = () => canUseSpeechToText(config(), provider.authStates())
+  const speechModel = () => selectedSpeechToTextModel(config(), speechModels.models())
 
   const [tab, setTab] = createSignal<DialogTab>("new")
   const [project, setProject] = createSignal(props.projectId ?? props.activeProjectId)
@@ -387,7 +392,6 @@ export const NewWorktreeDialog: Component<{
     if (starting()) return false
 
     if (compareMode() && totalAllocations(modelAllocations()) === 0) return false
-    return true
     if (speech.active()) return false
     return selection.canSubmit(compareMode() ? modelAllocations() : undefined)
 
@@ -497,7 +501,41 @@ export const NewWorktreeDialog: Component<{
     box.style.height = `${Math.min(area.scrollHeight, 200) + chrome}px`
   }
 
-  const canEnhance = () => !starting() && !enhancing() && server.isConnected()
+  const canEnhance = () => !starting() && !enhancing() && !speech.active() && server.isConnected()
+
+  const insertSpeechText = (value: string) => {
+    const ref = textareaRef
+    const current = prompt()
+    const start = ref?.selectionStart ?? current.length
+    const end = ref?.selectionEnd ?? start
+    const result = insertSpacedText(current, value, start, end)
+
+    cancel()
+    setPrompt(result.text)
+    persistPrompt(result.text)
+    if (!ref) return
+    ref.value = result.text
+    ref.setSelectionRange(result.pos, result.pos)
+    ref.focus()
+    adjustHeight()
+  }
+
+  const startSpeech = () => {
+    speech.start({ model: speechModel(), insert: insertSpeechText })
+  }
+
+  const shortcut = createSpeechShortcut({
+    speech,
+    disabled: () => !canUseSpeech() || starting(),
+    start: startSpeech,
+    finish: (submit) => speech.stop(submit ? { done: handleSubmit } : undefined),
+  })
+  const speechUp = (e: KeyboardEvent) => {
+    if (!shortcut.up(e)) return
+    e.preventDefault()
+    e.stopPropagation()
+  }
+  onCleanup(shortcut.reset)
 
   const handleEnhance = () => {
     if (!canEnhance()) return
@@ -762,8 +800,9 @@ export const NewWorktreeDialog: Component<{
                       adjustHeight()
                       slash.onInput(val, e.currentTarget.selectionStart ?? val.length)
                     }}
-                    onKeyDown={onKey}
-                    onPaste={(e) => imageAttach.handlePaste(e)}
+onKeyDown={onKey}
+                     onKeyUp={speechUp}
+                     onPaste={(e) => imageAttach.handlePaste(e)}
                     rows={3}
                     dir="auto"
                   />
@@ -843,7 +882,10 @@ export const NewWorktreeDialog: Component<{
                       }))}
                     />
                   </Show>
-                  </div>
+                  <Show when={canUseSpeech()}>
+                    <SpeechToTextButton speech={speech} disabled={starting()} start={startSpeech} label={t} />
+                  </Show>
+                </div>
               </div>
             </div>
 

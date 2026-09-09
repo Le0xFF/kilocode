@@ -2,9 +2,7 @@ import type { Worktree, WorktreeStateManager } from "./WorktreeStateManager"
 import type { WorktreeManager, CreateWorktreeResult } from "./WorktreeManager"
 import { chooseBaseBranch } from "./base-branch"
 
-import { classifyWorktreeError } from "./git-import"
 import { classifyWorktreeError, type WorktreeSetupErrorCode } from "./git-import"
-import { PLATFORM } from "./constants"
 
 import type { AgentManagerOutMessage } from "./types"
 

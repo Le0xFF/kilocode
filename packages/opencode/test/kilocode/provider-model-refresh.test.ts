@@ -6,7 +6,7 @@ import path from "path"
 import { Flag } from "@opencode-ai/core/flag/flag"
 import { Global } from "@opencode-ai/core/global"
 import { Hash } from "@opencode-ai/core/util/hash" // kilocode_change - needed for the per-source cache filename
-import { ModelsDev } from "../../src/provider/models"
+import { ModelsDev } from "@opencode-ai/core/models-dev"
 import { Provider } from "../../src/provider/provider"
 import { ProviderV2 } from "@opencode-ai/core/provider"
 import { it } from "../lib/effect"

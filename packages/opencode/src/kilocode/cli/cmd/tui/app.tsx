@@ -8,8 +8,6 @@
 
 import { createEffect, createMemo, on } from "solid-js"
 import { useRenderer } from "@opentui/solid"
-import { createEffect, createMemo, on, onCleanup } from "solid-js"
-import { useKeyboard, useRenderer } from "@opentui/solid"
 import { resolveRenderLib, TextAttributes } from "@opentui/core"
 import { KiloTerminalActivity } from "./terminal-activity"
 
@@ -89,28 +87,6 @@ export function useSessionEffects(deps: {
       }),
     write: (data) => resolveRenderLib().writeOut(renderer.rendererPtr, data),
   })
-  function send() {
-    const id = session()
-    const ids = id ? [id] : []
-    deps.sdk.client.session.viewed({ viewer: { id: viewerId, active }, attached: ids, visible: ids }).catch(() => {})
-  }
-  createEffect(() => send())
-  const onFocus = () => {
-    active = true
-    send()
-  }
-  const onBlur = () => {
-    active = false
-  }
-  renderer.on("focus", onFocus)
-  renderer.on("blur", onBlur)
-  // The server prepends `server.connected` to every SSE (re)connect; a restarted
-  // backend has an empty viewer map, so resend the snapshot immediately instead
-  // of waiting for the 60s check-in.
-  const offConnected = deps.sdk.event.on("event", (event) => {
-    if (event.payload.type === "server.connected") send()
-  })
-  const timer = setInterval(send, 60_000)
 
   createEffect(() => {
     const sessionID = session()
