@@ -9,6 +9,7 @@
     "lint": "oxlint",
     "check:architecture": "bun run script/check-architecture.ts",
     "check:duplication": "bun run script/check-kilocode-duplication.ts",
+    "check:offline": "bun run script/check-offline-invariants.ts",
 
     "typecheck": "bun turbo typecheck",
     "postinstall": "bun run --cwd packages/core fix-node-pty && bun run script/setup-git.ts",

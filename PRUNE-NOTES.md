@@ -71,6 +71,7 @@ A controlled drill with synthetic changes on `turbo.json`, root `package.json`, 
 | `bun run package` | `packages/kilo-vscode` | produce the VSIX |
 | `bun run knip` | `packages/kilo-vscode` | unused-export/file guard |
 | `bun run script/check-{workflows,md-table-padding,forbidden-strings,kilo-generated-artifacts}.ts` | root | CI guards |
+| `bun run check:offline` (`script/check-offline-invariants.ts`) | root | asserts offline invariants I1–I10 (read-only, deterministic) |
 | `bun run script/generate.ts` | root | regenerate OpenAPI + SDK (after server API changes in a sync) |
 
 Not runnable from root: `bun test` (deliberately exits 1), old root scripts (`dev*`, `sso`, `random`, …) are gone.
@@ -128,6 +129,12 @@ Done in this branch (no longer future work):
 - Upstream integrated to **v7.5.16** (`origin/main` @ commit `08f696e4b3`) via merge commit `b6b934e301` ("Merge branch 'main' into leocode"); backup tag `pre-sync-20260909`.
 - Board/Swarm (Kilo Swarm shared agent boards + pure-DDL DB migrations) **adopted**; browser-automation panel **adopted** as an experimental feature, off by default. Residual-online matrix above and invariants I1–I10 re-verified green; typecheck/lint/unit suite/CI guards/offline smoke all pass; compile produced `dist/{extension,webview,agent-manager}.js`.
 - Extension version aligned to **7.5.16** (root + `packages/opencode` already bumped by the merge); see `packages/kilo-vscode/CHANGELOG.md` → `## 7.5.16` → "Offline fork (leocode)".
+
+### Sync 2026-09-11 → upstream v7.6.2
+
+- Upstream integrated from **v7.5.16** to **v7.6.2** (`origin/main` @ release v7.6.2) across five chronological batches (B1–B5). Net dependency added during the sync: **`lru-cache` ^11 in `kilo-vscode`** (the only one accepted; all other new deps of theirs tied to online features were rejected). Board/Swarm shared-agent board adopted **with default OFF** behind the experimental flag `KILO_EXPERIMENTAL_SHARED_AGENT_BOARD` / config key `shared_agent_board`.
+- Residual-online matrix above refreshed: the Swarm surface is now **gated/off** — the `KILO_SWARM` env flag and the `shared_agent_board` experimental setting are both OFF by default, so no cloud/board network path is reachable unless the user explicitly enables them. Invariants I1–I10 re-verified green via the new read-only guard `bun run check:offline` (`script/check-offline-invariants.ts`) plus the offline smoke; typecheck/lint/unit suite/CI guards pass.
+- Tooling closed out: dedicated `upstream-sync` subagent declared, root `AGENTS.md` de-staled, orphaned `check-opencode-annotations.yml` workflow removed (allowlist now 10 workflows), and the offline-invariant guard wired as `check:offline`. Visual-regression baselines are regenerated once at close-out (Step 9), not per batch.
 
 ## Online-services removal (this branch, step 13)
 
