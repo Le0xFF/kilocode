@@ -630,12 +630,14 @@ try {
   value.setCurrentSessionID("cloud:preview")
   assert.equal(value.sendMessage("cloud effective model"), true)
   const cloud = requests().at(-1)
-  assert(cloud?.type === "importAndSend")
+  // kilocode_change - offline: cloud session previews were removed, so a send to a
+  // cloud:* session posts a plain sendMessage/sendCommand instead of importAndSend.
+  assert(cloud?.type === "sendMessage")
   assert.equal(cloud.providerID, recommended.providerID)
   assert.equal(cloud.modelID, recommended.modelID)
   assert.equal(value.sendCommand("cloud", ""), true)
   const imported = requests().at(-1)
-  assert(imported?.type === "importAndSend")
+  assert(imported?.type === "sendCommand")
   assert.equal(imported.providerID, recommended.providerID)
   assert.equal(imported.modelID, recommended.modelID)
   await catalog("org-a", [])
@@ -1015,8 +1017,10 @@ try {
     await emit({ type: "terminalContextResult", requestId: request.requestId, content: "terminal output" })
     retained(text, count)
   }
-  await catalog("org-a", [recommended.modelID], recommended.modelID)
-  for (const sid of ["composer", "cloud:preview"]) {
+await catalog("org-a", [recommended.modelID], recommended.modelID)
+    // kilocode_change - offline: cloud session previews were removed, so only the local
+    // composer goal path is exercised here.
+    for (const sid of ["composer"]) {
     await seed("/goal", sid)
     submit(false)
     await settle()
@@ -1036,7 +1040,8 @@ try {
       await settle()
       assert.equal(requests().length, count + 1)
       const request = requests().at(-1)
-      assert(request?.type === (sid.startsWith("cloud:") ? "importAndSend" : "sendCommand"))
+      // kilocode_change - offline: goal sends always post sendCommand (no cloud import path).
+      assert(request?.type === "sendCommand")
       assert.equal(request.command, "goal")
       assert.equal(request.type === "sendCommand" ? request.arguments : request.commandArgs, `-- ${text}`)
       assert.equal(request.modelID, recommended.modelID)
@@ -1246,11 +1251,8 @@ try {
   }
   await emit({ type: "sessionUpdated", session: { ...info("root"), goal } })
   await emit({ type: "sessionStatus", sessionID: "root", status: "busy" })
-  await emit({ type: "questionRequest", question: { id: "goal-question", sessionID: "root", questions: [] } })
-  await emit({
-    type: "suggestionRequest",
-    suggestion: { id: "goal-suggestion", sessionID: "root", text: "Continue?", actions: [] },
-  })
+  // kilocode_change - offline: pending scoped prompts are dismissed on any send (including
+  // goals), so this segment no longer seeds a question/suggestion it expects to survive.
   const count = value.messages().length
   for (const phase of ["ready", "loading", "empty"]) {
     if (phase === "loading") await emit({ type: "providersLoading" })
@@ -1295,12 +1297,6 @@ try {
       const command = sent.at(-1)
       assert(command?.type === "sendCommand")
       assert.equal(posted.filter((message) => message.type === "sendCommand").length, 1)
-      assert.equal(
-        posted.some((message) =>
-          ["questionReply", "questionReject", "suggestionDismiss", "permissionResponse"].includes(message.type),
-        ),
-        false,
-      )
       assert.equal(command.sessionID, "root")
       assert.equal(command.arguments, args)
       if (control) {
@@ -1319,57 +1315,16 @@ try {
       assert.equal(value.submitting(), false)
       if (control) assert.equal(snapshot("root"), before)
       assert.equal(value.status(), "busy")
-      assert.equal(value.questions().length, 1)
-      assert.equal(value.suggestions().length, 1)
     }
-    for (const args of ["", "pause", "clear", "resume", "A new goal"]) {
-      const control = ["", "pause", "clear"].includes(args)
-      const before = snapshot("cloud:preview")
-      const start = sent.length
-      const messageID = `goal-cloud-${phase}-${args}`
-      const accepted = value.sendCommand(
-        "goal",
-        args,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        "cloud:preview",
-        { messageID },
-      )
-      if (!control && phase !== "ready") {
-        assert.equal(accepted, false)
-        assert.deepEqual(sent.slice(start), [])
-        continue
-      }
-      assert.equal(accepted, true)
-      const request = sent.at(-1)
-      assert(request?.type === "importAndSend")
-      assert.equal(request.cloudSessionId, "preview")
-      assert.equal(request.command, "goal")
-      assert.equal(request.commandArgs, args)
-      assert.equal(request.messageID, messageID)
-      if (control) {
-        assert.deepEqual(
-          sent.slice(start).map((message) => message.type),
-          ["importAndSend"],
-        )
-        assert.equal(request.providerID, undefined)
-        assert.equal(request.modelID, undefined)
-        assert.equal(request.agent, undefined)
-        assert.equal(request.variant, undefined)
-        assert.equal(snapshot("cloud:preview"), before)
-      }
-    }
+    // kilocode_change - offline: the cloud:* goal import path (importAndSend /
+    // cloudSessionId) was removed with the offline surface, so this segment is no
+    // longer exercised. The local "root" goal path above still covers goal sends.
   }
   await catalog("org-a", [recommended.modelID], recommended.modelID)
   await emit({ type: "sessionUpdated", session: { ...info("root"), goal: { ...goal, active: false } } })
   assert.equal(value.currentSession()?.goal?.active, false)
   await emit({ type: "sessionUpdated", session: { ...info("root"), goal: null } })
   assert.equal(value.currentSession()?.goal, null)
-  await emit({ type: "questionResolved", requestID: "goal-question" })
-  await emit({ type: "suggestionResolved", requestID: "goal-suggestion" })
   await emit({ type: "sessionStatus", sessionID: "root", status: "idle" })
   const idle = sent.length
   value.abort()
