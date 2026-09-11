@@ -140,6 +140,8 @@ export const dict = {
   "model.tag.dataCollected": "Podaci se mogu koristiti za obuku",
   "model.group.favorites": "Favoriti",
   "model.group.mostUsed": "Najčešće korišteni",
+  "model.group.auto": "Automodovi",
+  "model.group.recommended": "Preporučeni",
   "model.favorite.add": "Dodaj u favorite",
   "model.favorite.remove": "Ukloni iz favorita",
   "model.preview.label.released": "Objavljeno",

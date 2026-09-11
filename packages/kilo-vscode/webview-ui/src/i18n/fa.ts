@@ -140,6 +140,8 @@ export const dict = {
   "model.tag.dataCollected": "ممکن است داده‌ها برای آموزش استفاده شوند",
   "model.group.favorites": "موردعلاقه‌ها",
   "model.group.mostUsed": "پراستفاده‌ترین",
+  "model.group.auto": "مدل‌های خودکار",
+  "model.group.recommended": "پیشنهادی",
   "model.favorite.add": "افزودن به موردعلاقه‌ها",
   "model.favorite.remove": "حذف از موردعلاقه‌ها",
   "model.preview.label.released": "منتشر شده",

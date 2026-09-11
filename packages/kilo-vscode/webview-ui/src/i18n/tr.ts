@@ -139,6 +139,8 @@ export const dict = {
   "model.tag.dataCollected": "Veriler eğitim için kullanılabilir",
   "model.group.favorites": "Favoriler",
   "model.group.mostUsed": "En çok kullanılan",
+  "model.group.auto": "Otomatik modeller",
+  "model.group.recommended": "Önerilenler",
   "model.favorite.add": "Favorilere ekle",
   "model.favorite.remove": "Favorilerden çıkar",
   "model.preview.label.released": "Yayınlanma",

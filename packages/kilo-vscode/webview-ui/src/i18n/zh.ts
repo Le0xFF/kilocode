@@ -134,6 +134,8 @@ export const dict = {
   "model.tag.dataCollected": "数据可能会用于训练",
   "model.group.favorites": "收藏夹",
   "model.group.mostUsed": "最常用",
+  "model.group.auto": "自动模型",
+  "model.group.recommended": "推荐",
   "model.favorite.add": "添加到收藏夹",
   "model.favorite.remove": "从收藏夹中移除",
 

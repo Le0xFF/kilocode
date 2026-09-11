@@ -170,6 +170,6 @@
     "pacote@21.5.1": "patches/pacote@21.5.1.patch",
     "@modelcontextprotocol/sdk@1.29.0": "patches/@modelcontextprotocol%2Fsdk@1.29.0.patch"
   },
-  "version": "7.6.0",
+  "version": "7.6.2",
   "peerDependencies": {}
 }

@@ -142,6 +142,8 @@ export const dict = {
   "model.tag.dataCollected": "데이터가 학습에 사용될 수 있습니다",
   "model.group.favorites": "즐겨찾기",
   "model.group.mostUsed": "가장 많이 사용됨",
+  "model.group.auto": "자동 모델",
+  "model.group.recommended": "추천",
   "model.favorite.add": "즐겨찾기에 추가",
   "model.favorite.remove": "즐겨찾기에서 제거",
 

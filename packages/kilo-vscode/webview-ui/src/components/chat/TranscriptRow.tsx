@@ -29,6 +29,7 @@ interface TranscriptRowViewProps {
   /** For a multi-file apply_patch match, the specific file within that part. */
   activeSearchPartFile?: string
   readonly?: boolean
+  interactivePrompts?: boolean
   queuedDisabled?: boolean
   editDisabled?: boolean
 }
@@ -109,6 +110,7 @@ export const TranscriptRowView: Component<TranscriptRowViewProps> = (props) => {
               forceOpenFile={props.activeSearchPartFile}
               highlight={props.highlight}
               readonly={props.readonly}
+              interactivePrompts={props.interactivePrompts}
             />
           </div>
         )}

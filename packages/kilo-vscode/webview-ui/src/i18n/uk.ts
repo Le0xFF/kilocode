@@ -140,6 +140,8 @@ export const dict = {
   "model.tag.dataCollected": "Дані можуть використовуватися для навчання",
   "model.group.favorites": "Обране",
   "model.group.mostUsed": "Найчастіше використовувані",
+  "model.group.auto": "Автомоделі",
+  "model.group.recommended": "Рекомендовані",
   "model.favorite.add": "Додати до обраного",
   "model.favorite.remove": "Видалити з обраного",
   "model.preview.label.released": "Випущено",

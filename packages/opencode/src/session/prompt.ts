@@ -1761,6 +1761,7 @@ export const layer = Layer.effect(
                 Effect.provideService(Database.Service, database),
                 Effect.provideService(Agent.Service, agents),
                 Effect.provideService(Session.Service, sessions),
+                Effect.provideService(RuntimeFlags.Service, flags),
               )
             : undefined
           // kilocode_change end
