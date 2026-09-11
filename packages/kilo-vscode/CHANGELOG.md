@@ -2,6 +2,15 @@
 
 ## 7.6.2
 
+### Offline fork (leocode)
+
+This build is the **offline `leocode` fork** of Kilo Code, synced to upstream v7.6.2 (v7.5.16 → v7.6.2 in this cycle). It runs fully offline against your local OpenAI-compatible providers only — there is no Kilo Gateway, marketplace, cloud sessions, or KiloClaw.
+
+- Adopted from upstream: PR sidebar timeline + merge controls (approvals, review states, auto-merge split button), reviewer avatars and theme-colored agent identity glyphs, streaming render performance (frame-cadence text/reasoning, faster bash/todo/diff tool cards), inline `@model` references with a model picker, permission prompt race fixes, encrypted-reasoning settle, plan persistence on worktree switch, question dialog keybindings, multi-project revert, and attention-notification navigation into Agent Manager.
+- Kept gated/off for the offline build: the shared agent board UI stays off by default behind its experimental flag; the Claude Code migration wizard ships with its experimental flag off by default.
+- Rejected or neutralized for offline use: cloud gateway (auth/profile/balance), telemetry, KiloClaw, marketplace, cloud sessions, remote notifications, and models.dev fetching — the backend serves its catalog from the committed local snapshot instead.
+- Tooling: added a dedicated upstream-sync subagent, a `check:offline` guard asserting the offline invariants (I1–I10) after each sync, and refreshed the root `AGENTS.md`.
+
 ## 7.6.1
 
 ### Minor Changes
