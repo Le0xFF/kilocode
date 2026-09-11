@@ -31,9 +31,12 @@ const active = new Set([
   "check-forbidden-strings.yml",
   "check-kilo-generated-artifacts.yml",
   "check-md-table-padding.yml",
-  // kilocode_change - upstream re-added these two workflows in the v7.5.6→v7.5.13 delta;
-  // accepted into CI (annotation guard + offline smoke test) after review.
-  "check-opencode-annotations.yml",
+  // kilocode_change - check-opencode-annotations.yml was removed from this fork: it invoked
+  // upstream-only scripts (check-opencode-annotations.ts, check-opencode-promise-facades.ts,
+  // check-architecture.ts, check-model-tool-network.ts) that were pruned with the docs site and
+  // other non-offline packages. The fork does not run incomplete upstream guards; the remaining
+  // checks it performed are covered by check-forbidden-strings / check-kilo-generated-artifacts /
+  // check-md-table-padding / check-kilocode-duplication plus manual review of marker placement.
   "codeql.yml",
   "smoke-test.yml",
   "test-vscode.yml",

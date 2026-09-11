@@ -12,19 +12,15 @@ This repo has been pruned to contain only the Kilo VS Code extension (`packages/
 - **Dev**: `bun run dev` (runs from root) or `bun run --cwd packages/opencode --conditions=browser src/index.ts`
 - **Dev with params**: `bun dev -- help`
 - **Extension**: `bun run extension` (build + launch VS Code with the extension in dev mode). Pass `--no-build` to skip the build. When asked to run an isolated VS Code/Kilo environment, use the CLI scripts instead of interactive launch configs: `bun run extension:isolated` reuses `.kilo-dev/`, and `bun run extension:isolated:clean` clears `.kilo-dev/` first. Pass an optional workspace path after `--`, for example `bun run extension:isolated -- ../sample-project`.
-- **Typecheck**: `bun turbo typecheck` (uses `tsgo`, not `tsc`). Includes the JetBrains plugin and requires Java 21; do not run `java -version` as a routine preflight. Only check Java when a Gradle/Java command fails with a Java-version or missing-Java error. If missing, install via SDKMAN: `sdk install java 21-tem && sdk use java 21-tem`. If SDKMAN is not installed, see https://sdkman.io/install.
-- **Test**: `bun test` from `packages/kilo-vscode/` (NOT from root -- root blocks tests)
+- **Typecheck**: `bun turbo typecheck` (uses `tsgo`, not `tsc`).
+- **Test**: `bun run test:unit` from `packages/kilo-vscode/` — the anti-OOM runner (`script/run-unit-tests.ts`) instead of raw `bun test`. Never run root `bun test`; the root script prints `do not run tests from root` and exits with code 1. Use package-level tests instead.
 - **Single test**: `bun test ./test/path/to/file.test.ts` from `packages/kilo-vscode/`
 - **CLI build artifact size check**: after `bun run script/build.ts --single --skip-install` in `packages/opencode/`, use `du -h dist/*/*/bin/kilo` (scoped package output lives under `dist/@kilocode/`)
 - **SDK regen**: After changing server endpoints in `packages/opencode/src/server/`, run `./script/generate.ts` from root to regenerate `packages/sdk/js/`
 - **Knip** (unused exports): `bun run knip` from `packages/kilo-vscode/`. CI runs this — all exported types/functions must be imported somewhere. Remove or unexport unused exports before pushing.
-- **Source links**: After adding or changing URLs in `packages/kilo-vscode/`, `packages/kilo-vscode/webview-ui/`, or `packages/opencode/src/`, run `bun run script/extract-source-links.ts` from the repo root and commit the updated `packages/kilo-docs/source-links.md`. CI runs this check — the build fails if the file is stale.
 - **kilocode_change check**: `bun run check-kilocode-change` from `packages/kilo-vscode/`. CI runs this — `kilocode_change` is a marker for upstream merge conflicts and must not appear in `packages/kilo-vscode/` or `packages/kilo-ui/` (these are entirely Kilo Code additions). Remove the markers before pushing.
-- **opencode annotation check**: `bun run script/check-opencode-annotations.ts --worktree` from repo root when verifying local agent changes. CI runs `bun run script/check-opencode-annotations.ts` on PRs touching `packages/opencode/` — every Kilo-specific change in shared opencode files must be annotated with `kilocode_change` markers. Exempt paths (no markers needed): `packages/opencode/src/kilocode/`, `packages/opencode/test/kilocode/`, and any path containing `kilocode` in the name.
-- **kilocode_change check**: `bun run check-kilocode-change` from `packages/kilo-vscode/`. CI runs this — `kilocode_change` is a marker for merge conflicts in shared files and must not appear in `packages/kilo-vscode/` or `packages/kilo-ui/` (these are entirely Kilo Code additions). Remove the markers before pushing.
 
-- **Effect facade ratchet**: Do not add runtime-backed Promise facades to shared `packages/opencode/src` Effect services; use service dependencies, `AppRuntime`, or Kilo-owned boundaries. Run `bun run script/check-opencode-promise-facades.ts` when touching service adapters.
-- **workflow allowlist**: `bun run script/check-workflows.ts` from repo root. CI runs this as part of the annotations workflow — any `.yml` / `.yaml` file added to or removed from `.github/workflows/` must be reflected in the hardcoded list in `script/check-workflows.ts`. Prevents upstream-merged workflows from silently starting to run in our CI.
+- **workflow allowlist**: `bun run script/check-workflows.ts` from repo root. CI runs this — any `.yml` / `.yaml` file added to or removed from `.github/workflows/` must be reflected in the hardcoded list in `script/check-workflows.ts`. Prevents upstream-merged workflows from silently starting to run in our CI.
 - **Backend/SDK programmatic testing**: spawn the local backend with `bun dev serve` from `packages/opencode/` and drive it via `curl`; use this instead of `kilo serve` (prod binary) when testing backend fixes. // kilocode_change - TESTING.md is pruned in this fork
 
 ## Quality Checks
@@ -37,9 +33,10 @@ Before saying an implementation is ready, run the smallest relevant checks that 
 | CLI | From `packages/opencode/`: `bun run typecheck`, `bun test` or targeted `bun test ./path/to/file.test.ts` |
 | VS Code extension | From `packages/kilo-vscode/`: `bun run typecheck`, `bun run lint`, `bun run test:unit` or `bun run test` |
 | Extension build/package | From `packages/kilo-vscode/`: `bun run compile` or `bun run package` when touching build, packaging, SDK, or webview integration paths |
-| CI/local guards | Run affected guards documented above, such as `bun run knip`, `bun run check-kilocode-change`, `bun run script/check-opencode-annotations.ts --worktree`, or source link extraction |
-| CI/local guards | Run affected guards documented above, such as `bun run knip`, `bun run check-kilocode-change`, or source link extraction (`kilocode_change` marker placement is reviewed manually; the annotation script was removed) |
+| CI/local guards | Run affected guards documented above, such as `bun run knip`, `bun run check-kilocode-change`, or the root guards `bun run script/check-workflows.ts` and `bun run script/check-md-table-padding.ts` (`kilocode_change` marker placement is reviewed manually; the annotation script was removed from this fork) |
 | Duplication guard | From repo root: `bun run script/check-kilocode-duplication.ts` (guard + allowlist carried over from the upstream merge; runs alongside the other root guards during a sync) |
+
+Guards that exist in this fork (run from repo root): `check-workflows.ts`, `check-forbidden-strings.ts`, `check-kilocode-duplication.ts`, `check-kilo-generated-artifacts.ts`, `check-md-table-padding.ts`. Upstream-only scripts (`check-opencode-annotations.ts`, `check-opencode-promise-facades.ts`, `extract-source-links.ts`) were pruned with the docs site and do not exist here.
 
 
 Never run root `bun test`; the root script prints `do not run tests from root` and exits with code 1. Use package-level tests instead.
@@ -61,8 +58,6 @@ Extension-specific settings should live in the Kilo extension settings, not defa
 
 ## Package Instructions
 
-- When a task primarily touches `packages/kilo-jetbrains/`, read `packages/kilo-jetbrains/AGENTS.md` before planning or editing. It covers split-mode architecture, IntelliJ source lookup, threading fundamentals, UI guidelines, and session component architecture. // kilocode_change - keep: the pruned JetBrains package still documents the extension's sibling architecture
-
 ## Monorepo Structure
 
 Turborepo + Bun workspaces. The packages you'll work with most:
@@ -72,8 +67,6 @@ Turborepo + Bun workspaces. The packages you'll work with most:
 | `packages/opencode/` | `@kilocode/cli` | Core CLI -- agents, tools, sessions, server, TUI. This is where most work happens. |
 | `packages/sdk/js/` | `@kilocode/sdk` | Auto-generated TypeScript SDK (client for the server API). Do not edit `src/gen/` by hand. |
 | `packages/kilo-vscode/` | `kilo-code` | VS Code extension with sidebar chat + Agent Manager. See its own `AGENTS.md` for details. |
-| `packages/kilo-gateway/` | `@kilocode/kilo-gateway` | Kilo auth, provider routing, API integration |
-| `packages/kilo-telemetry/` | `@kilocode/kilo-telemetry` | PostHog analytics + OpenTelemetry |
 | `packages/kilo-i18n/` | `@kilocode/kilo-i18n` | Internationalization / translations |
 | `packages/kilo-ui/` | `@kilocode/kilo-ui` | SolidJS component library shared by the extension webview and docs screenshot stories |
 | `packages/util/` | `@opencode-ai/util` | Shared utilities (error, path, retry, slug, etc.) |
@@ -158,13 +151,11 @@ Padding makes every content change rewrite the entire table, which blows up diff
 
 ## Commit Conventions
 
-[Conventional Commits](https://www.conventionalcommits.org/) with scopes matching packages: `vscode`, `cli`, `agent-manager`, `sdk`, `ui`, `i18n`, `kilo-docs`, `gateway`, `telemetry`, `desktop`. Omit scope when spanning multiple packages.
+[Conventional Commits](https://www.conventionalcommits.org/) with scopes matching packages: `vscode`, `cli`, `agent-manager`, `sdk`, `ui`, `i18n`. Omit scope when spanning multiple packages.
 
 ## Changesets
 
-User-facing changes (features, fixes, breaking changes) require a changeset file for release notes. Prefer one concise changeset per PR, grouping related changes when possible. Run `bunx changeset add` or manually create `.changeset/<slug>.md`. Use `patch` for bug fixes, `minor` for new features, `major` for breaking changes. See `.changeset/README.md` for details.
-
-Changeset descriptions appear directly in release notes and are read by end users. Keep them concise and feature-oriented — describe **what changed from the user's perspective**, not implementation details. Write in imperative mood (e.g. "Support exporting conversations as markdown" not "Add a new export handler that serializes session messages to .md files").
+Not applicable in this fork — the `.changeset/` directory was removed when the release tooling was pruned. Release notes are handled outside this repo.
 
 ## Pull Requests
 
@@ -172,13 +163,13 @@ PR descriptions should explain **what** changed, **why** the change is needed, a
 
 ## GitHub Issues
 
-When creating or managing GitHub issues for the VS Code extension or JetBrains plugin via `gh`, load `.kilo/skills/gh-issues/SKILL.md`. It covers templates, project boards (`VS Code Extension`, `Jetbrains Plugin`), title conventions, and the `gh auth refresh -s project` recovery path.
+When creating or managing GitHub issues for the VS Code extension via `gh`, load `.kilo/skills/gh-issues/SKILL.md`. It covers templates, project boards (`VS Code Extension`), title conventions, and the `gh auth refresh -s project` recovery path.
 
 ## Fork Merge Process
 
-Kilo CLI is a fork of [opencode](https://github.com/anomalyco/opencode).
+Kilo CLI is a fork of [kilocode](https://github.com/Kilo-Org/kilocode).
 
-**Very important**: when planning or coding, update shared files with OpenCode as last resort! Everything is shared code from OpenCode, except folders that contain `kilo` in the name or have a parent directory that contains `kilo` in the name. Example of kilo specific folders: `packages/opencode/src/kilocode/` and `packages/kilo-docs/`. Always look for ways to implement your feature or fix in a way that minimizes changes to shared code.
+**Very important**: when planning or coding, update shared files with OpenCode as last resort! Everything is shared code from OpenCode, except folders that contain `kilo` in the name or have a parent directory that contains `kilo` in the name. Example of kilo specific folders: `packages/opencode/src/kilocode/`. Always look for ways to implement your feature or fix in a way that minimizes changes to shared code.
 Detailed procedure, conflict-resolution matrix, invariants I1–I10 verification, and rollback: see `docs/upstream-sync.md`. Operational checklist for agents: load `.kilo/skills/upstream-sync/SKILL.md`; dedicated subagent: `.kilo/agent/upstream-sync.md`. The `check:duplication` guard (`script/check-kilocode-duplication.ts` + its allowlist) comes from the upstream merge and must be carried over during sync.
 Sync procedure:
 
@@ -190,7 +181,6 @@ We regularly merge upstream changes from opencode. To minimize merge conflicts a
 1. **Prefer `kilocode` directories** - Place Kilo-specific code in dedicated directories whenever possible:
    - `packages/opencode/src/kilocode/` - Kilo-specific source code
    - `packages/opencode/test/kilocode/` - Kilo-specific tests
-   - `packages/kilo-gateway/` - The Kilo Gateway package
 
 2. **Minimize changes to shared files** - When you must modify files that exist in upstream opencode, keep changes as small and isolated as possible.
 
@@ -199,13 +189,11 @@ We regularly merge upstream changes from opencode. To minimize merge conflicts a
 
 4. **Avoid restructuring upstream code** - Don't refactor or reorganize code that comes from opencode unless absolutely necessary.
 
-5. **Mirror new config keys to the cloud schema** - When adding a `kilocode_change` key to `Config.Info` in `packages/opencode/src/config/config.ts`, also add the matching JSON Schema entry in `apps/web/src/app/config.json/extras.ts` in the [cloud repo](https://github.com/Kilo-Org/cloud). See [CLI Config Schema](packages/kilo-docs/pages/contributing/architecture/config-schema.md) for the step-by-step.
-
 The goal is to keep our diff from upstream as small as possible, making regular merges straightforward and reducing the risk of conflicts.
 
 ### Git conflict style
 
-`bun install` sets `merge.conflictStyle=zdiff3` repo-locally via `script/setup-git.ts` (wired into `postinstall`). Conflicts include the common ancestor between `|||||||` and `=======`, which is what `script/upstream/` and `mergiraf` rely on for structural resolution and what makes manual resolution on shared opencode files tractable. If you've overridden it in your user config, the repo-local setting takes precedence — don't override it back.
+`bun install` sets `merge.conflictStyle=zdiff3` repo-locally via `script/setup-git.ts` (wired into `postinstall`). Conflicts include the common ancestor between `|||||||` and `=======`, which makes manual resolution on shared opencode files tractable. If you've overridden it in your user config, the repo-local setting takes precedence — don't override it back.
 
 ### Kilocode Change Markers
 
