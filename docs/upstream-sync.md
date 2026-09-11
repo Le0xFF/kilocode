@@ -67,8 +67,8 @@ Ogni invariante va ri-verificata con grep dopo il merge (i path sono relativi a 
 | I6 | Workspace list **esplicita** a 22 voci nel root `package.json` (mai globs); 8 `patchedDependencies`; `test` rifiuta l'execution da root | `bun -e 'console.log(require("./package.json").workspaces.packages.length)'` deve stampare `22`; `grep -c '"packages/\*"' package.json` deve dare `0` |
 | I7 | Dir assenti: `kilo-gateway`, `kilo-telemetry` (+ jetbrains, docs, console, web-ui, sdk-next, session-ui, storybook, client, httpapi-codegen); zero import live di `@kilocode/kilo-gateway` in `*.ts` | `ls packages/kilo-gateway packages/kilo-telemetry` deve fallire; `grep -rln '@kilocode/kilo-gateway' packages --include='*.ts'` deve restituire solo commenti/stringhe, mai import operativi |
 | I8 | Superfici rimosse dall'estensione: `src/kiloclaw/**`, `RemoteStatusService.ts`, `MarketplacePanelProvider.ts`, `services/autocomplete/**` (gateway FIM), device-flow auth, cloud sessions, notifications | `ls packages/kilo-vscode/src/kiloclaw packages/kilo-vscode/src/RemoteStatusService.ts packages/kilo-vscode/src/MarketplacePanelProvider.ts packages/kilo-vscode/src/services/autocomplete` deve fallire (keep-deleted anche se upstream li modifica) |
-| I9 | Locale i18n: 4 alberi (kilo-i18n, webview src, agent-manager, ui) tagliati sulle chiavi online | `bun test tests/unit/i18n-unused-keys.test.ts` da `packages/kilo-vscode/`; audit delle chiavi nuove upstream referenziate dal codice integrato |
-| I10 | Guard CI: 9 workflow allowlistati in `script/check-workflows.ts`; guard duplication `script/check-kilocode-duplication.ts` + allowlist portati dal merge | `bun run script/check-workflows.ts` da root (exit 0); presenza di `script/check-kilocode-duplication.ts` e della sua allowlist post-merge |
+| I9 | Locale i18n: 4 alberi (kilo-i18n, webview src, agent-manager, ui) tagliati sulle chiavi online | `bun test tests/unit/i18n-unused-keys.test.ts` da `packages/kilo-vscode/`; audit delle chiavi nuove upstream referenziate dal codice integrato. Il guard `check-offline-invariants.ts` verifica l'insieme automatizzabile più forte (esistenza degli alberi + di ogni `en.ts` e della test); il taglio per-chiave resta delegato alla test stessa |
+| I10 | Guard CI: 10 workflow allowlistati in `script/check-workflows.ts`; guard duplication `script/check-kilocode-duplication.ts` + allowlist portati dal merge | `bun run script/check-workflows.ts` da root (exit 0); presenza di `script/check-kilocode-duplication.ts` e della sua allowlist post-merge |
 
 ### Tabella take-ours / take-theirs per categoria
 
@@ -127,8 +127,9 @@ Un sync è completo quando:
 
 - Gli step 0–8 del piano sono completati, ciascuno approvato dall'utente prima dello step successivo.
 - Ogni step termina con codebase compilabile, eccetto lo step merge (step 2) la cui riconciliazione è completata nello step 5 — dipendenza esplicita a due step prevista dal piano.
-- Le invarianti I1–I10 sono verificate una per una con evidenza (grep della matrice sopra + smoke).
+- Le invarianti I1–I10 sono verificate una per una: `bun run check:offline` (guard `script/check-offline-invariants.ts`, traduzione programmatica dei grep della matrice sopra) deve uscire a 0, più lo smoke offline. La matrice resta la fonte; il guard ne automatizza l'assertion post-merge.
 - `origin/main` è completamente integrata: `git rev-list --count leocode..origin/main` == 0.
 - Nessuna funzionalità online è riattivata: gateway/claw/marketplace/cloud/telemetry assenti da runtime e type surface.
-- Test unit, guard CI (`check-workflows`, `check-forbidden-strings`, `check-kilo-generated-artifacts`, `check-md-table-padding`, `check-opencode-promise-facades`, `check-kilocode-duplication`), `compile` e smoke offline sono verdi.
+- Test unit, guard CI (`check-workflows`, `check-forbidden-strings`, `check-kilo-generated-artifacts`, `check-md-table-padding`, `check-kilocode-duplication`, `check-offline-invariants`), `compile` e smoke offline sono verdi.
+- I baseline visual regression non si mergiano per batch: vengono rigenerati una sola volta alla fine del sync (step di close-out), prima del gate finale di packaging.
 - Documentazione coerente: questo file, la skill `.kilo/skills/upstream-sync/SKILL.md`, `AGENTS.md` (root), `PRUNE-NOTES.md`, `packages/kilo-vscode/CHANGELOG.md` aggiornati.
