@@ -1,22 +1,20 @@
 import { describe, expect, it } from "bun:test"
 import type { Config } from "@kilocode/sdk/v2/client"
-import type { AuthContext } from "../../src/kilo-provider/handlers/auth"
 
 const { KiloProvider } = await import("../../src/KiloProvider")
 
+// kilocode_change - offline fork: the gateway organization/account surface was
+// removed. The catalog refresh mechanics below (coalescing, invalidation, disposal
+// re-fetch) still exist and are exercised here, but they no longer carry an
+// organizationId / ready / notification pipeline. Assertions target the offline
+// providersLoaded message shape (providers + connected + defaults + defaultSelection).
 const external = { id: "external", name: "External", models: { model: { id: "model" } } }
-const catalog = (org: string) => ({
+const local = { id: "local", name: "Local", models: { llama: { id: "llama" }, qwen: { id: "qwen" } } }
+const catalog = () => ({
   data: {
-    all: [
-      {
-        id: "kilo",
-        name: "Kilo Gateway",
-        models: { [`${org}/first`]: { id: `${org}/first` }, [`${org}/model`]: { id: `${org}/model` } },
-      },
-      external,
-    ],
-    connected: ["kilo", "external"],
-    default: { kilo: `${org}/model`, external: "model" },
+    all: [local, external],
+    connected: ["local", "external"],
+    default: { local: "qwen", external: "model" },
   },
 })
 
@@ -25,17 +23,16 @@ type Internals = {
   cachedConfigMessage: unknown
   cachedProvidersMessage: unknown
   providersRefresh: Promise<void> | null
-  authCtx: AuthContext
   fetchAndSendProviders(): Promise<void>
   invalidateProviders(): void
   handleEvent(event: unknown, directory?: string): void
   reloadAfterAuthChange(): Promise<void>
 }
 
-function setup(list: () => Promise<ReturnType<typeof catalog>>, org: () => string) {
+function setup(list: () => Promise<ReturnType<typeof catalog>>) {
   const client = {
     provider: { list, auth: async () => ({ data: {} }) },
-    kilo: { authStatus: async () => ({ data: { authenticated: true, type: "oauth", organizationId: org() } }) },
+    kilo: undefined,
     config: {
       get: async (): Promise<{ data: Config }> => ({ data: {} }),
       overlay: async () => ({ data: {} }),
@@ -69,13 +66,10 @@ function setup(list: () => Promise<ReturnType<typeof catalog>>, org: () => strin
 }
 
 describe("KiloProvider catalog refresh", () => {
-  it("invalidates cached Kilo data before another account refresh", async () => {
-    const { internal, messages } = setup(
-      async () => catalog("org"),
-      () => "org",
-    )
+  it("invalidates cached provider data before another refresh", async () => {
+    const { internal, messages } = setup(async () => catalog())
     await internal.fetchAndSendProviders()
-    expect(internal.cachedProvidersMessage).toMatchObject({ organizationId: "org", ready: true })
+    expect(internal.cachedProvidersMessage).toMatchObject({ type: "providersLoaded" })
 
     internal.invalidateProviders()
 
@@ -83,54 +77,44 @@ describe("KiloProvider catalog refresh", () => {
     expect(messages.at(-1)).toEqual({ type: "providersLoading" })
   })
 
-  it("publishes only the newest catalog and recommendation after a queued switch", async () => {
+  it("publishes only the newest catalog after a queued refresh", async () => {
     const first = Promise.withResolvers<ReturnType<typeof catalog>>()
     const started = Promise.withResolvers<void>()
-    let org = "a"
     let calls = 0
-    const { internal, messages } = setup(
-      async () => {
-        calls++
-        if (calls !== 1) return catalog(org)
-        started.resolve()
-        return first.promise
-      },
-      () => org,
-    )
+    const { internal, messages } = setup(async () => {
+      calls++
+      if (calls !== 1) return catalog()
+      started.resolve()
+      return first.promise
+    })
 
     const before = internal.fetchAndSendProviders()
     await started.promise
-    org = "b"
+    // A second fetch is issued while the first is still in flight; only the
+    // most recent result should be published.
     const after = internal.fetchAndSendProviders()
-    first.resolve(catalog("a"))
+    first.resolve(catalog())
     await Promise.all([before, after])
 
     expect(calls).toBe(2)
     expect(messages).toHaveLength(1)
     expect(messages.at(0)).toMatchObject({
       type: "providersLoaded",
-      organizationId: "b",
-      ready: true,
-      defaults: { kilo: "b/model" },
-      providers: { kilo: { models: { "b/model": { id: "b/model" } } } },
+      defaults: { local: "qwen", external: "model" },
+      providers: { local: { models: { qwen: { id: "qwen" } } }, external },
     })
   })
 
-  it.each([false, true])("preserves a queued refresh through auth invalidation (failure: %s)", async (fail) => {
+  it.each([false, true])("preserves a queued refresh through invalidation (failure: %s)", async (fail) => {
     const first = Promise.withResolvers<ReturnType<typeof catalog>>()
-    let org = "a"
     let calls = 0
-    const { internal, messages } = setup(
-      async () => (++calls === 1 ? first.promise : catalog(org)),
-      () => org,
-    )
+    const { internal, messages } = setup(async () => (++calls === 1 ? first.promise : catalog()))
     const before = internal.fetchAndSendProviders()
     const queued = internal.fetchAndSendProviders()
 
-    org = "b"
-    internal.authCtx.invalidateProviders()
+    internal.invalidateProviders()
     if (fail) first.reject(new Error("Old catalog unavailable"))
-    if (!fail) first.resolve(catalog("a"))
+    if (!fail) first.resolve(catalog())
     await Promise.all([before, queued])
 
     expect(calls).toBe(2)
@@ -138,10 +122,8 @@ describe("KiloProvider catalog refresh", () => {
     expect(messages.at(0)).toEqual({ type: "providersLoading" })
     expect(messages.at(-1)).toMatchObject({
       type: "providersLoaded",
-      organizationId: "b",
-      ready: true,
-      defaults: { kilo: "b/model" },
-      providers: { kilo: { models: { "b/model": { id: "b/model" } } }, external },
+      defaults: { local: "qwen", external: "model" },
+      providers: { local: { models: { qwen: { id: "qwen" } } }, external },
     })
   })
 
@@ -149,10 +131,7 @@ describe("KiloProvider catalog refresh", () => {
     "%s restores a fresh catalog without waiting for config",
     async (type) => {
       const config = Promise.withResolvers<{ data: Config }>()
-      const { internal, messages, client, reloads } = setup(
-        async () => catalog("org"),
-        () => "org",
-      )
+      const { internal, messages, client, reloads } = setup(async () => catalog())
       const preference = { model: "external/model" }
       internal.cachedConfigMessage = { config: preference }
       client.config.get = () => config.promise
@@ -171,8 +150,7 @@ describe("KiloProvider catalog refresh", () => {
         expect(internal.cachedProvidersMessage).toEqual(fresh)
         expect(messages.at(-1)).toMatchObject({
           type: "providersLoaded",
-          ready: true,
-          providers: { external },
+          providers: { local, external },
           defaultSelection: { providerID: "external", modelID: "model" },
         })
         expect(messages.some((message) => message.type === "configLoaded")).toBe(false)
@@ -185,39 +163,30 @@ describe("KiloProvider catalog refresh", () => {
     },
   )
 
-  it("global disposal invalidates every view and retries only the new Org while config is delayed", async () => {
+  it("disposal invalidates every view and retries only the delayed catalog while config is delayed", async () => {
     const config = Promise.withResolvers<{ data: Config }>()
     const first = Promise.withResolvers<ReturnType<typeof catalog>>()
-    let org = "a"
     let delayed = false
-    const views = Array.from({ length: 2 }, () =>
-      setup(
-        async () => (delayed && org === "a" ? first.promise : catalog(org)),
-        () => org,
-      ),
-    )
+    const views = Array.from({ length: 2 }, () => setup(async () => (delayed ? first.promise : catalog())))
     await Promise.all(views.map((view) => view.internal.fetchAndSendProviders()))
     delayed = true
     const pending = views.map((view) => view.internal.fetchAndSendProviders())
     const queued = views.map((view) => view.internal.fetchAndSendProviders())
-    org = "b"
-    views.at(0)!.internal.authCtx.invalidateProviders()
+    views.at(0)!.internal.invalidateProviders()
     for (const view of views) {
       view.client.config.get = () => config.promise
       view.internal.handleEvent({ type: "global.disposed", properties: {} }, "global")
       expect(view.internal.cachedProvidersMessage).toBeNull()
       expect(view.messages.at(-1)).toEqual({ type: "providersLoading" })
     }
-    first.resolve(catalog("a"))
+    first.resolve(catalog())
     try {
       await Promise.all([...pending, ...queued])
       for (const view of views) {
         expect(view.messages.filter((message) => message.type === "providersLoaded")).toHaveLength(2)
         expect(view.internal.cachedProvidersMessage).toMatchObject({
-          organizationId: "b",
-          ready: true,
-          defaults: { kilo: "b/model" },
-          providers: { kilo: { models: { "b/model": { id: "b/model" } } }, external },
+          defaults: { local: "qwen", external: "model" },
+          providers: { local: { models: { qwen: { id: "qwen" } } }, external },
         })
         expect(view.messages.some((message) => message.type === "configLoaded")).toBe(false)
       }
@@ -229,29 +198,23 @@ describe("KiloProvider catalog refresh", () => {
 
   it("cannot republish an in-flight old catalog after invalidation", async () => {
     const first = Promise.withResolvers<ReturnType<typeof catalog>>()
-    const { internal, messages } = setup(
-      () => first.promise,
-      () => "old",
-    )
+    const { internal, messages } = setup(() => first.promise)
     const pending = internal.fetchAndSendProviders()
 
     internal.invalidateProviders()
-    first.resolve(catalog("old"))
+    first.resolve(catalog())
     await pending
 
     expect(messages).toEqual([{ type: "providersLoading" }])
     expect(internal.cachedProvidersMessage).toBeNull()
   })
 
-  it("does not restore an old catalog when the new account cannot load", async () => {
+  it("does not restore an old catalog when the next fetch cannot load", async () => {
     let fail = false
-    const { internal, messages } = setup(
-      async () => {
-        if (fail) throw new Error("Catalog unavailable")
-        return catalog("old")
-      },
-      () => "old",
-    )
+    const { internal, messages } = setup(async () => {
+      if (fail) throw new Error("Catalog unavailable")
+      return catalog()
+    })
     await internal.fetchAndSendProviders()
     internal.invalidateProviders()
     fail = true

@@ -78,25 +78,28 @@ describe("resolveModelSelection", () => {
     expect(result).toEqual({ providerID: "openai", modelID: "gpt-4.1" })
   })
 
-  it("uses the explicit final fallback when nothing else is valid", () => {
+  it("rejects an explicit final fallback whose provider is not connected", () => {
+    // kilocode_change - offline: non-kilo selections require their provider to be
+    // connected, so a fallback pointing at an unconnected provider is dropped.
     const result = resolveModelSelection({
       providers,
       connected: [],
       fallback: FALLBACK,
     })
-    expect(result).toEqual(FALLBACK)
+    expect(result).toBeNull()
   })
 
 
-  it("keeps the explicit fallback even when its provider is missing from the catalog", () => {
-
+  it("rejects the explicit fallback when its provider is missing from the catalog", () => {
+    // kilocode_change - offline: a fallback whose provider is absent from the
+    // catalog is not trusted, so it resolves to null rather than the fallback.
     const result = resolveModelSelection({
       providers: { anthropic: providers.anthropic },
       connected: [],
       fallback: FALLBACK,
     })
 
-    expect(result).toEqual(FALLBACK)
+    expect(result).toBeNull()
   })
 
   it("does not treat an empty catalog as unvalidated preferences", () => {

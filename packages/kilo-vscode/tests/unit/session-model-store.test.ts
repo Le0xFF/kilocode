@@ -299,14 +299,18 @@ describe("organization model store", () => {
     const updated = { ...store, ...applyModel(store, "code", KILO_AUTO, scope) }
     const before = structuredClone(updated)
     const restricted = { ...organization, providers: { kilo: makeProvider("kilo", [recommendation.modelID]) } }
-    expect(getSelected(updated, env(), scope, "code")).toEqual(KILO_AUTO)
+    // kilocode_change - offline fork: a personal catalog (env()) that contains no kilo
+    // provider cannot validate an explicit KILO_AUTO choice, so those reads fall back to
+    // the local default. Catalogs that still list the kilo provider (restricted) resolve
+    // it to the available recommendation instead.
+    expect(getSelected(updated, env(), scope, "code")).toEqual(FALLBACK)
     expect(getSelected(updated, restricted, scope, "code")).toEqual(recommendation)
     expect(getSessionModel(updated, restricted, "session-a", "code")).toEqual(recommendation)
-    expect(getSelected(updated, env(), scope, "code")).toEqual(KILO_AUTO)
-    expect(getSessionModel(updated, env(), "session-a", "code")).toEqual(KILO_AUTO)
+    expect(getSelected(updated, env(), scope, "code")).toEqual(FALLBACK)
+    expect(getSessionModel(updated, env(), "session-a", "code")).toEqual(FALLBACK)
     if (!scope) {
       expect(getAgentModel(updated, restricted, "code")).toEqual(recommendation)
-      expect(getAgentModel(updated, env(), "code")).toEqual(KILO_AUTO)
+      expect(getAgentModel(updated, env(), "code")).toEqual(FALLBACK)
     }
     expect(updated).toEqual(before)
   })
