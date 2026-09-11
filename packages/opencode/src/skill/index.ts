@@ -29,7 +29,10 @@ const AGENTS_EXTERNAL_DIR = ".agents"
 export const BUILTIN_LOCATION = "builtin"
 // kilocode_change end
 const EXTERNAL_SKILL_PATTERN = "skills/**/SKILL.md"
-const KILO_SKILL_PATTERN = "{skill,skills}/**/SKILL.md"
+// kilocode_change start - the literal brace form is rejected by some glob engines (it can collapse to a
+// bare `SKILL.md` that never matches nested skill files), so scan each directory name explicitly.
+const KILO_SKILL_PATTERNS = ["skill/**/SKILL.md", "skills/**/SKILL.md"]
+// kilocode_change end
 const SKILL_PATTERN = "**/SKILL.md"
 
 export const Info = Schema.Struct({
@@ -257,12 +260,15 @@ const discoverSkills = Effect.fnUntraced(function* (
     const local = primary.has(dir) || rel === "" || (!rel.startsWith("..") && !path.isAbsolute(rel))
     const trusted = dir === Flag.KILO_CONFIG_DIR || !local
     const sourceRoot = primary.has(dir) ? path.dirname(dir) : projectRoot
-    yield* scan(state, dir, KILO_SKILL_PATTERN, {
-      trusted,
-      root: trusted ? undefined : projectRoot,
-      sourceRoot: trusted ? undefined : sourceRoot,
-      projectRoot,
-    })
+    // kilocode_change start - scan both directory names separately (brace pattern is unreliable)
+    for (const pattern of KILO_SKILL_PATTERNS) {
+      yield* scan(state, dir, pattern, {
+        trusted,
+        root: trusted ? undefined : projectRoot,
+        sourceRoot: trusted ? undefined : sourceRoot,
+        projectRoot,
+      })
+    }
     // kilocode_change end
   }
 

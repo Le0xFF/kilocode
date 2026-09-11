@@ -179,7 +179,7 @@ When creating or managing GitHub issues for the VS Code extension or JetBrains p
 Kilo CLI is a fork of [opencode](https://github.com/anomalyco/opencode).
 
 **Very important**: when planning or coding, update shared files with OpenCode as last resort! Everything is shared code from OpenCode, except folders that contain `kilo` in the name or have a parent directory that contains `kilo` in the name. Example of kilo specific folders: `packages/opencode/src/kilocode/` and `packages/kilo-docs/`. Always look for ways to implement your feature or fix in a way that minimizes changes to shared code.
-Detailed procedure, conflict-resolution matrix, invariants I1–I10 verification, and rollback: see `docs/upstream-sync.md`. Operational checklist for agents: load `.kilo/skills/upstream-sync/SKILL.md`. The `check:duplication` guard (`script/check-kilocode-duplication.ts` + its allowlist) comes from the upstream merge and must be carried over during sync.
+Detailed procedure, conflict-resolution matrix, invariants I1–I10 verification, and rollback: see `docs/upstream-sync.md`. Operational checklist for agents: load `.kilo/skills/upstream-sync/SKILL.md`; dedicated subagent: `.kilo/agent/upstream-sync.md`. The `check:duplication` guard (`script/check-kilocode-duplication.ts` + its allowlist) comes from the upstream merge and must be carried over during sync.
 Sync procedure:
 
 

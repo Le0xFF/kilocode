@@ -599,4 +599,47 @@ description: A skill in the .kilo/skills directory.
       { git: true },
     ),
   )
+
+  it.live("discovers project skills from nested directories (.kilo/skills/<name>/SKILL.md)", () =>
+    provideTmpdirInstance(
+      (dir) =>
+        Effect.gen(function* () {
+          // Regression: the brace pattern `{skill,skills}/**/SKILL.md` silently matched nothing on some glob
+          // engines, so project config-dir skills were never loaded (e.g. upstream-sync in this repo).
+          yield* Effect.promise(() =>
+            Promise.all([
+              Bun.write(
+                path.join(dir, ".kilo", "skills", "project-nested-skill", "SKILL.md"),
+                `---
+name: project-nested-skill
+description: A skill nested under .kilo/skills.
+---
+
+# Project Nested Skill
+`,
+              ),
+              Bun.write(
+                path.join(dir, ".kilo", "skill", "project-single-skill", "SKILL.md"),
+                `---
+name: project-single-skill
+description: A skill nested under .kilo/skill.
+---
+
+# Project Single Skill
+`,
+              ),
+            ]),
+          )
+
+          const skill = yield* Skill.Service
+          const list = discovered(yield* skill.all())
+          const names = list.map((x) => x.name)
+          expect(names).toContain("project-nested-skill")
+          expect(names).toContain("project-single-skill")
+          const item = list.find((x) => x.name === "project-nested-skill")
+          expect(item!.location).toContain(path.join(".kilo", "skills", "project-nested-skill"))
+        }),
+      { git: true },
+    ),
+  )
 })
