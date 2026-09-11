@@ -634,15 +634,17 @@ export const SessionProvider: ParentComponent = (props) => {
       {
         providers: provider.providers(),
         connected: provider.connected(),
+        ready: provider.ready(),
+        organizationId: provider.organizationId(),
+        defaults: provider.defaults(),
         getModeModel,
         getGlobalModel,
+        // kilocode_change - offline: no Kilo gateway auto model fallback in the offline surface
         fallback: null,
       },
       agentName,
       userSetAgents()[agentName] === true,
     )
-    return getAgentModel(preferences(), environment(), agentName)
-
   }
 
   // Handle agentsLoaded immediately (not in onMount) so we never miss

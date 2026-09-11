@@ -52,6 +52,12 @@ export const anacondaDesktopDict = {
 
 export const dict = {
   ...anacondaDesktopDict,
+  "settings.experimental.multiProject.title": "Multi-Project Agent Manager",
+  "settings.experimental.multiProject.description": "Enable managing sessions and worktrees across multiple repositories in Agent Manager. The current workspace repository is always the default project.",
+  "settings.experimental.claudeMigration.title": "Claude Code Migration (Experimental)",
+  "settings.experimental.claudeMigration.description": "On the next backend start, import supported global CLAUDE.md instructions, simple skills, and disabled MCP definitions. This runs once with no automatic retry; global Claude instructions and skills are then handed off to Kilo. Claude files stay unchanged; keep them if you still use Claude Code.",
+  "settings.agentBehaviour.pushFixes.title": "Push Pull Request Fixes",
+  "settings.agentBehaviour.pushFixes.description": "When you send pull request CI failures or review comments to the agent, or update a worktree from its base, ask it to commit and push so the pull request updates. Permission prompts still apply. Turn off to keep commits manual.",
   "session.activity.waiting": "回答または承認を待っています。",
   "session.activity.error": "エラーまたは接続切断。",
   "session.activity.retry": "自動的に再試行中。",
