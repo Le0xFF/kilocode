@@ -88,7 +88,8 @@ async function cliInputs() {
   }
 
   // The CLI build embeds the console even though it is not a package dependency.
-  for (const dir of [opencodeDir, join(packagesDir, "kilo-console")]) {
+  // On pruned branches packages/kilo-console may be absent; only include it when present.
+  for (const dir of [opencodeDir, ...(existsSync(join(packagesDir, "kilo-console", "package.json")) ? [join(packagesDir, "kilo-console")] : [])]) {
     const pkg: Package = await Bun.file(join(dir, "package.json")).json()
     if (!pkg.name) throw new Error(`Workspace package at ${dir} has no name`)
     visit(pkg.name)
@@ -255,7 +256,9 @@ async function ensureBuiltBinary(): Promise<string> {
 
 const pkg = await Bun.file(join(repoDir, "package.json")).json()
     const bun = String(pkg.packageManager)
-    const env: Record<string, string> = process.env.MODELS_DEV_API_JSON ? {} : { MODELS_DEV_API_JSON: localModelsJson }
+    // The pinned bun runtime may have a restricted PATH without git, which breaks channel
+    // detection in the shared script package. Inherit the current PATH so git resolves.
+    const env: Record<string, string> = { ...process.env, ...(process.env.MODELS_DEV_API_JSON ? {} : { MODELS_DEV_API_JSON: localModelsJson }) }
     log("Building CLI binary...")
     try {
       await $`bunx ${bun} run build --single --skip-install`.cwd(opencodeDir).env(env)

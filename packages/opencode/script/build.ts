@@ -143,7 +143,7 @@ function smokeEnv(root: string) {
     XDG_STATE_HOME: path.join(root, "state"),
     KILO_DISABLE_MODELS_FETCH: "1",
     KILO_DISABLE_PROJECT_CONFIG: "1",
-    KILO_CONFIG_CONTENT: JSON.stringify({ enabled_providers: ["lmstudio"] }), // kilocode_change - local-snapshot provider; anthropic is no longer embedded offline
+    KILO_CONFIG_CONTENT: JSON.stringify({ enabled_providers: ["lmstudio"], provider: { lmstudio: { options: { apiKey: "lmstudio" } } } }), // kilocode_change - local-snapshot provider; anthropic is no longer embedded offline
     ANTHROPIC_API_KEY: "dummy", // kilocode_change - inert: no built-in online loader remains to read it
   }
 }
