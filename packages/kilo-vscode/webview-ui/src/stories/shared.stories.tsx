@@ -83,6 +83,12 @@ const ACCESSIBLE_MODELS: EnrichedModel[] = [
     },
     autoRouting: { models: ["openai/gpt-5.5", "anthropic/claude-opus-4.6"] },
   },
+  {
+    id: "kilo-auto/legacy",
+    name: "Kilo Auto Legacy",
+    providerID: "kilo",
+    providerName: "Kilo",
+  },
   { id: "omega", name: "Omega", providerID: "openai", providerName: "OpenAI", recommendedIndex: 2 },
   { id: "alpha", name: "Alpha", providerID: "openai", providerName: "OpenAI" },
   { id: "bravo", name: "Bravo", providerID: "openai", providerName: "OpenAI" },

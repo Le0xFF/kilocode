@@ -139,6 +139,8 @@ export const dict = {
   "model.tag.dataCollected": "Dane mogą być wykorzystywane do trenowania",
   "model.group.favorites": "Ulubione",
   "model.group.mostUsed": "Najczęściej używane",
+  "model.group.auto": "Modele auto",
+  "model.group.recommended": "Polecane",
   "model.favorite.add": "Dodaj do ulubionych",
   "model.favorite.remove": "Usuń z ulubionych",
   "model.preview.label.released": "Wydano",

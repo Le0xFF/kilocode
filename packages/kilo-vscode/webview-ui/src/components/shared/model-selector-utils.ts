@@ -21,6 +21,22 @@ export function hasByok(model: Pick<EnrichedModel, "hasUserByokAvailable">): boo
   return model.hasUserByokAvailable === true
 }
 
+// kilocode_change - offline: gateway auto models are absent (I3/I7); the helpers below keep the
+// upstream signatures so ModelSelector compiles, and simply never match local providers.
+export const KILO_AUTO_SMALL_IDS = new Set(["kilo-auto/small", "auto-small"])
+
+export function isAuto(_model: Pick<EnrichedModel, "providerID" | "id">): boolean {
+  return false
+}
+
+export function isSmall(_model: Pick<EnrichedModel, "providerID" | "id">): boolean {
+  return false
+}
+
+export function autoSummary(_model: Pick<EnrichedModel, "options">): string {
+  return "Routes requests automatically."
+}
+
 export function freeDataLabel(_free: string, data: string): string {
   return data
 }

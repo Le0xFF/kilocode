@@ -140,6 +140,8 @@ export const dict = {
   "model.tag.dataCollected": "Los datos pueden utilizarse para entrenamiento",
   "model.group.favorites": "Favoritos",
   "model.group.mostUsed": "Más usados",
+  "model.group.auto": "Modelos auto",
+  "model.group.recommended": "Recomendados",
   "model.favorite.add": "Añadir a favoritos",
   "model.favorite.remove": "Eliminar de favoritos",
 

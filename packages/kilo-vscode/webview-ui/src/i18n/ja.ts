@@ -139,6 +139,8 @@ export const dict = {
   "model.tag.dataCollected": "データがトレーニングに使用される場合があります",
   "model.group.favorites": "お気に入り",
   "model.group.mostUsed": "よく使うモデル",
+  "model.group.auto": "自動モデル",
+  "model.group.recommended": "推奨",
   "model.favorite.add": "お気に入りに追加",
   "model.favorite.remove": "お気に入りから削除",
 

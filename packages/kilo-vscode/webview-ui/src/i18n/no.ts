@@ -141,6 +141,8 @@ export const dict = {
   "model.tag.dataCollected": "Data kan brukes til trening",
   "model.group.favorites": "Favoritter",
   "model.group.mostUsed": "Mest brukt",
+  "model.group.auto": "Automodeller",
+  "model.group.recommended": "Anbefalt",
   "model.favorite.add": "Legg til i favoritter",
   "model.favorite.remove": "Fjern fra favoritter",
   "model.preview.label.released": "Utgitt",
