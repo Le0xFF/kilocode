@@ -38,6 +38,7 @@ import type { Provider } from "@/provider/provider"
 import { Snapshot } from "@/snapshot" // kilocode_change
 import { SessionNetwork } from "./network" // kilocode_change
 import { KiloSessionMessageOrder } from "@/kilocode/session/message-order" // kilocode_change
+import { KiloPartLifecycle } from "@/kilocode/session/part-lifecycle" // kilocode_change
 import * as TextStream from "@/kilocode/text-stream" // kilocode_change
 import { BoardNotice } from "@/kilocode/board/notice" // kilocode_change
 import { Effect, Schema } from "effect"
@@ -398,6 +399,7 @@ export const toModelMessagesEffect = Effect.fnUntraced(function* (
         return part.metadata?.anthropic?.signature != null
       })
       for (const part of msg.parts) {
+        if (KiloPartLifecycle.transient(part)) continue // kilocode_change - never replay transient UI parts
         // kilocode_change - !part.ignored keeps local UI warnings out of future prompts
         if (part.type === "text" && !part.ignored) {
           const text = part.text === "" && hasSignedReasoning ? " " : part.text

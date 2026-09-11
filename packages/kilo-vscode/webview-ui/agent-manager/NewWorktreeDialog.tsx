@@ -14,6 +14,7 @@ import type {
 import { Dialog } from "@kilocode/kilo-ui/dialog"
 import { showToast } from "@kilocode/kilo-ui/toast"
 import { Icon } from "@kilocode/kilo-ui/icon"
+import { IconButton } from "@kilocode/kilo-ui/icon-button"
 import { Button } from "@kilocode/kilo-ui/button"
 import { Spinner } from "@kilocode/kilo-ui/spinner"
 import { DeferredPopover } from "../src/components/shared/DeferredPopover"
@@ -46,7 +47,6 @@ import { convertToMentionPath, insertPathMentions } from "../src/utils/path-ment
 import { insertSpacedText } from "../src/components/chat/prompt-input-utils"
 
 import { useSlashCommand } from "../src/hooks/useSlashCommand"
-import { WandSparkles } from "@kilocode/kilo-ui/lucide"
 import { BranchSelect, BranchSelectPopover } from "../src/components/shared/BranchSelect"
 import { tracker } from "./telemetry"
 import { cycleAgent } from "../src/context/session-agent"
@@ -854,15 +854,15 @@ onKeyDown={onKey}
                 </div>
                 <div class="prompt-input-hint-actions">
                   <Tooltip value={t("prompt.action.enhance")} placement="top">
-                    <Button
+                    <IconButton
+                      icon="wand-sparkles"
                       variant="ghost"
                       size="small"
                       onClick={handleEnhance}
                       disabled={!canEnhance()}
+                      loading={enhancing()}
                       aria-label={t("prompt.action.enhance")}
-                    >
-                      <WandSparkles size={16} class={enhancing() ? "enhance-spinner" : ""} />
-                    </Button>
+                    />
                   </Tooltip>
                   <Show when={sandboxVisible()}>
                     <SandboxButtonBase

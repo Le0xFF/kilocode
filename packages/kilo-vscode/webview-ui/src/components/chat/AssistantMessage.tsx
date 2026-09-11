@@ -15,7 +15,9 @@ import {
   ToolRegistry,
   ToolApprovalProvider,
   resolveToolApproval,
+  useGrowIn,
 } from "@kilocode/kilo-ui/message-part"
+import type { MessageFeedbackControls } from "@kilocode/kilo-ui/message-part"
 import type {
   AssistantMessage as SDKAssistantMessage,
   Part as SDKPart,
@@ -103,6 +105,7 @@ interface AssistantMessageProps {
   message: SDKAssistantMessage
   parts?: SDKPart[]
   showAssistantCopyPartID?: string | null
+  feedback?: MessageFeedbackControls
   /** id of the part containing the current chat-search match, if any — forces
    * that part's collapsed tool/reasoning content open so the user can see
    * the highlighted match without manually expanding it first. */
@@ -273,6 +276,25 @@ export const AssistantMessage: Component<AssistantMessageProps> = (props) => {
             return part as unknown as ToolPart
           })
           const forceOpen = createMemo(() => !!props.forceOpenPartID && part.id === props.forceOpenPartID)
+          // Reasoning blocks are excluded: they animate their own height and
+          // their header and body bleed 6px past this wrapper, so the grow-in
+          // clip would trim their sides for the whole stream and then release
+          // them when the text stops growing, resizing the block at the end.
+          // Tool parts are excluded too: worktree and session switches remount
+          // them, so the wrapper would replay the reveal on an already-seen tool.
+          // Encrypted reasoning items only set time.end on their summaries once
+          // the whole item finishes, so a summary the stream already moved past
+          // would keep pulsing. Read the full store list: props.parts is a chunk.
+          const settled = createMemo(() => {
+            if (part.type !== "reasoning") return false
+            if (props.message.time.completed) return true
+            const all = (data.store.part?.[props.message.id] ?? props.parts ?? []) as SDKPart[]
+            const index = all.findIndex((item) => item.id === part.id)
+            return index >= 0 && index < all.length - 1
+          })
+          const live = part.type === "text" && !!part.time && !part.time.end
+          let el: HTMLDivElement | undefined
+          useGrowIn(() => el, live)
 
           // Lights up when this part is behind the hovered/focused task-timeline
           // bar, using that bar's own color so the two stay easy to correlate.
@@ -305,6 +327,7 @@ export const AssistantMessage: Component<AssistantMessageProps> = (props) => {
               }
             >
               <div
+                ref={el}
                 data-component="tool-part-wrapper"
                 data-part-type={part.type}
                 data-part-id={part.id}
@@ -336,7 +359,9 @@ export const AssistantMessage: Component<AssistantMessageProps> = (props) => {
                                       forceOpen={forceOpen()}
                                       forceOpenFile={forceOpen() ? props.forceOpenFile : undefined}
                                       reasoningAutoCollapse={display.reasoningAutoCollapse()}
-                                      throughput={throughputEl()}
+settled={settled()}
+                                       feedback={props.feedback}
+                                       throughput={throughputEl()}
                                       readonly={props.readonly}
                                       animate={
                                         part.type === "tool" &&

@@ -158,6 +158,7 @@ import {
   buildAutoApprovalReasonSettingMessage,
   watchAutoApprovalReasonConfig,
 } from "./kilo-provider/auto-approval-reason-settings"
+import { buildPushFixesSettingMessage, pushFixes, watchPushFixesConfig } from "./kilo-provider/push-fixes-settings"
 
 type ReviewCommentsHandler = (comments: unknown[], autoSend: boolean, sessionID?: string, directory?: string) => void
 
@@ -430,6 +431,7 @@ export class KiloProvider implements vscode.WebviewViewProvider {
   private chatConfigDisposable: vscode.Disposable | null = null
   private throughputConfigDisposable: vscode.Disposable | null = null
   private autoApprovalReasonConfigDisposable: vscode.Disposable | null = null
+  private pushFixesConfigDisposable: vscode.Disposable | null = null
   private viewStateDisposable: vscode.Disposable | null = null
   private visibilityDisposable: vscode.Disposable | null = null
   private autoApproveBridge: ReturnType<typeof createAutoApproveBridge> | null = null
@@ -747,22 +749,15 @@ export class KiloProvider implements vscode.WebviewViewProvider {
   }
 
   /** Register a session created externally and notify the webview. */
-  public registerSession(
-    session: Session,
-    activate = false,
-    project = this.opts.projectQualifier?.()?.projectId,
-  ): void {
+  public registerSession(session: Session, activate = false): void {
     this.removedSessionIds.delete(session.id)
-    if (project === this.opts.projectQualifier?.()?.projectId) {
-      this.stopCurrentSessionProcesses(session.id)
-      this.setCurrentSession(session)
-      this.contextSessionID = session.id
-    }
+    this.stopCurrentSessionProcesses(session.id)
+    this.setCurrentSession(session)
+    this.contextSessionID = session.id
     this.trackedSessionIds.add(session.id)
-    this.trackDirectory(session.id, session.directory)
     this.postMessage({
       type: "sessionCreated",
-      projectId: project,
+      projectId: this.opts.projectQualifier?.()?.projectId,
       session: this.sessionToWebview(session),
       ...(activate ? { activate: true } : {}),
     })
@@ -991,6 +986,8 @@ export class KiloProvider implements vscode.WebviewViewProvider {
     this.throughputConfigDisposable = watchThroughputConfig((msg) => this.postMessage(msg))
     this.autoApprovalReasonConfigDisposable?.dispose()
     this.autoApprovalReasonConfigDisposable = watchAutoApprovalReasonConfig((msg) => this.postMessage(msg))
+    this.pushFixesConfigDisposable?.dispose()
+    this.pushFixesConfigDisposable = watchPushFixesConfig((msg) => this.postMessage(msg))
     this.webviewMessageDisposable = webview.onDidReceiveMessage(async (message) => {
       if (this.acknowledge(message)) return
       const intercepted = await interceptMessage(message, {
@@ -1024,6 +1021,7 @@ export class KiloProvider implements vscode.WebviewViewProvider {
           board: (msg) => this.handleBoardMessage(msg),
           cancelBackgroundJob: (jobID, sessionID, requestID) => this.cancelBackgroundJob(jobID, sessionID, requestID),
           promoteBackgroundJob: (jobID, sessionID) => this.promoteBackgroundJob(jobID, sessionID),
+          caffeination: () => void vscode.commands.executeCommand("kilo-code.new.toggleCaffeination"),
         })
       ) {
         return
@@ -1873,26 +1871,23 @@ export class KiloProvider implements vscode.WebviewViewProvider {
 
     try {
       const workspaceDir = this.getContextDirectory()
-      const project = this.opts.projectQualifier?.()?.projectId
       const metadata = await sandboxSessionMetadata(this.connectionService.sandboxPreference, this.client, workspaceDir)
       const { data: session } = await this.client.session.create(
         { directory: workspaceDir, platform: this.opts.platform, metadata },
         { throwOnError: true },
       )
-      if (project === this.opts.projectQualifier?.()?.projectId) {
-        this.stopCurrentSessionProcesses(session.id)
-        this.setCurrentSession(session)
-        this.contextSessionID = session.id
-        this.focusSession(session.id)
-      }
+      this.stopCurrentSessionProcesses(session.id)
+      this.setCurrentSession(session)
+      this.contextSessionID = session.id
+      this.focusSession(session.id)
       this.trackDirectory(session.id, workspaceDir)
       this.trackedSessionIds.add(session.id)
 
       // Notify webview of the new session
       this.postMessage({
         type: "sessionCreated",
-        projectId: project,
-        session: this.sessionToWebview(session),
+        projectId: this.opts.projectQualifier?.()?.projectId,
+        session: this.sessionToWebview(this.currentSession!),
       })
     } catch (error) {
       console.error("[Kilo New] KiloProvider: Failed to create session:", error)
@@ -3493,7 +3488,6 @@ export class KiloProvider implements vscode.WebviewViewProvider {
   }
   private async resolveSession(sessionID?: string, draftID?: string, context?: string, contextDirectory?: string) {
     if (!this.client) return undefined
-    const project = this.opts.projectQualifier?.()?.projectId
 
     // Agent Manager: consult the shared route service for an exact directory
     // before the legacy sessionDirectories/workspace-root resolution. When a
@@ -3550,17 +3544,15 @@ export class KiloProvider implements vscode.WebviewViewProvider {
           await this.client!.session.delete({ sessionID: session.id, directory: dir }, { throwOnError: true })
           return undefined
         }
-        if (project === this.opts.projectQualifier?.()?.projectId) {
-          this.stopCurrentSessionProcesses(session.id)
-          this.setCurrentSession(session)
-          this.contextSessionID = session.id
-          this.focusSession(session.id)
-        }
+        this.stopCurrentSessionProcesses(session.id)
+        this.setCurrentSession(session)
+        this.contextSessionID = session.id
+        this.focusSession(session.id)
         this.trackDirectory(session.id, dir)
         this.trackedSessionIds.add(session.id)
         this.postMessage({
           type: "sessionCreated",
-          projectId: project,
+          projectId: this.opts.projectQualifier?.()?.projectId,
           session: this.sessionToWebview(session),
           draftID,
         })
@@ -3668,6 +3660,13 @@ export class KiloProvider implements vscode.WebviewViewProvider {
     return vscode.workspace.getConfiguration("kilo-code.new").get<string>("languageCommitMessage", "sync")
   }
 
+  private multiProjectSetting(): boolean {
+    return vscode.workspace.getConfiguration("kilo-code.new.experimental").get<boolean>("multiProject", false)
+  }
+
+  private claudeMigrationSetting(): boolean {
+    return vscode.workspace.getConfiguration("kilo-code.new.experimental").get<boolean>("claudeMigration", false)
+  }
   private browserAutomationSetting(): boolean {
     return vscode.workspace.getConfiguration("kilo-code.new.experimental").get<boolean>("browserAutomation", false)
   }
@@ -3749,9 +3748,12 @@ export class KiloProvider implements vscode.WebviewViewProvider {
     return {
       maxCost: this.maxCostSetting(),
       languageCommitMessage: this.commitMessageLanguageSetting(),
+      multiProject: this.multiProjectSetting(),
+      claudeMigration: this.claudeMigrationSetting(),
       browserAutomation: this.browserAutomationSetting(),
       "agentManager.autoBranchNaming": naming.get<boolean>("autoBranchNaming", true),
       "agentManager.branchPrefix": naming.get<string>("branchPrefix", ""),
+      "agentManager.pushFixes": pushFixes(),
     }
   }
 
@@ -4412,6 +4414,7 @@ export class KiloProvider implements vscode.WebviewViewProvider {
     this.sendTimelineSetting()
     this.postMessage(buildThroughputSettingMessage())
     this.postMessage(buildAutoApprovalReasonSettingMessage())
+    this.postMessage(buildPushFixesSettingMessage())
     this.sendWorkStyle()
     await ModelState.reset(this.client, (msg) => this.postMessage(msg))
 
@@ -5417,6 +5420,7 @@ export class KiloProvider implements vscode.WebviewViewProvider {
     this.chatConfigDisposable?.dispose()
     this.throughputConfigDisposable?.dispose()
     this.autoApprovalReasonConfigDisposable?.dispose()
+    this.pushFixesConfigDisposable?.dispose()
     this.autoApproveBridge?.dispose()
     this.visibleTaskStreams.clear()
     this.streams.dispose()

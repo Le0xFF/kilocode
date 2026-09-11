@@ -24,6 +24,8 @@ import { useIndexingWarnings } from "@/kilocode/cli/cmd/tui/indexing-warning"
 import { KiloTerminalTitle } from "./terminal-title"
 import type { KiloTitleIcon } from "./title-icon"
 import { Session as SessionApi } from "@/session/session"
+import { useCaffeination } from "./caffeination"
+import { useLinkInteractions } from "@tui/kilocode/link-interactions"
 
 // Re-export so upstream can render the route without importing directly
 export { KiloTerminalTitle } from "./terminal-title"
@@ -71,6 +73,7 @@ export function useSessionEffects(deps: {
   sdk: ReturnType<typeof useSDK>
   sync: ReturnType<typeof useSync>
 }) {
+  useLinkInteractions()
   const pty = process.env.KILO_PTY_ID
   const renderer = useRenderer()
   const session = createMemo(() => (deps.route.data.type === "session" ? deps.route.data.sessionID : undefined))
@@ -199,6 +202,7 @@ export function init() {
 
   // Register Kilo TUI commands (indexing, etc.)
   registerKiloCommands(useSDK)
+  useCaffeination()
 
   // Register auto-approve toggle
   useBindings(() => ({

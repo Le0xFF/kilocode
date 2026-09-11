@@ -4,6 +4,7 @@ import {
   resolveServerCwd,
   resolveIndexingEnv,
   resolveManagedServerEnv,
+  resolveClaudeMigrationEnv,
   toErrorMessage,
 } from "../../src/services/cli-backend/server-manager"
 import {
@@ -498,5 +499,12 @@ describe("server workspace helpers", () => {
     expect(out).not.toHaveProperty("all_proxy")
     expect(out).not.toHaveProperty("no_proxy")
     expect(out.PATH).toBe("/usr/bin")
+  })
+
+  it("uses the explicit migration environment value before the setting", () => {
+    expect(resolveClaudeMigrationEnv({}, false)).toBe("false")
+    expect(resolveClaudeMigrationEnv({}, true)).toBe("true")
+    expect(resolveClaudeMigrationEnv({ KILO_EXPERIMENTAL_CLAUDE_MIGRATION: "false" }, true)).toBe("false")
+    expect(resolveClaudeMigrationEnv({ KILO_EXPERIMENTAL_CLAUDE_MIGRATION: "" }, true)).toBe("")
   })
 })
