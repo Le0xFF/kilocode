@@ -326,7 +326,7 @@ const AgentBehaviourTab: Component = () => {
             last
           >
             <Switch
-              checked={config().shared_agent_board ?? true}
+              checked={config().shared_agent_board ?? false} // kilocode_change - offline fork: Kilo Swarm defaults to OFF
               onChange={(checked: boolean) => updateConfig({ shared_agent_board: checked })}
               hideLabel
             >

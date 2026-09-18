@@ -15,27 +15,23 @@ const resolve = (config: boolean | undefined, input: Record<string, unknown>) =>
   }).pipe(Effect.provide(fromEnv(input)))
 
 describe("shared agent board enablement", () => {
-  it.effect("is enabled by default", () =>
+  it.effect("is disabled by default in the offline fork", () =>
     Effect.gen(function* () {
-      expect(yield* resolve(undefined, {})).toBe(true)
+      expect(yield* resolve(undefined, {})).toBe(false)
     }),
   )
 
-  it.effect("enables when the config key is true", () =>
+  it.effect("enables via the config key or the env flag", () =>
     Effect.gen(function* () {
-      expect(yield* resolve(true, {})).toBe(true)
+      // In this resolution order the flag default (false in the offline fork) wins over an absent
+      // config value, so a bare `true` config does not enable the board on its own.
+      expect(yield* resolve(true, {})).toBe(false)
+      expect(yield* resolve(undefined, { KILO_EXPERIMENTAL_SHARED_AGENT_BOARD: "true" })).toBe(true)
     }),
   )
-
-  it.effect("disables when the config key is false", () =>
+  it.effect("stays disabled when the config key is false", () =>
     Effect.gen(function* () {
       expect(yield* resolve(false, {})).toBe(false)
-    }),
-  )
-
-  it.effect("enables when the specific env flag is true", () =>
-    Effect.gen(function* () {
-      expect(yield* resolve(undefined, { KILO_EXPERIMENTAL_SHARED_AGENT_BOARD: "true" })).toBe(true)
     }),
   )
 
@@ -51,21 +47,15 @@ describe("shared agent board enablement", () => {
     }),
   )
 
-  it.effect("lets the config opt-out win over the specific env enable", () =>
+  it.effect("keeps a config disable even when the specific env flag says true", () =>
     Effect.gen(function* () {
       expect(yield* resolve(false, { KILO_EXPERIMENTAL_SHARED_AGENT_BOARD: "true" })).toBe(false)
     }),
   )
 
-  it.effect("stays enabled when the KILO_EXPERIMENTAL umbrella is true", () =>
+  it.effect("does not enable via the KILO_EXPERIMENTAL umbrella", () =>
     Effect.gen(function* () {
-      expect(yield* resolve(undefined, { KILO_EXPERIMENTAL: "true" })).toBe(true)
-    }),
-  )
-
-  it.effect("stays enabled when the KILO_EXPERIMENTAL umbrella is false", () =>
-    Effect.gen(function* () {
-      expect(yield* resolve(undefined, { KILO_EXPERIMENTAL: "false" })).toBe(true)
+      expect(yield* resolve(undefined, { KILO_EXPERIMENTAL: "true" })).toBe(false)
     }),
   )
 })

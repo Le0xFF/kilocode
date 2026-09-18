@@ -46,8 +46,8 @@ export class Service extends ConfigService.Service<Service>()("@opencode/Runtime
   experimentalCodeMode: enabledByExperimental("KILO_EXPERIMENTAL_CODE_MODE"),
   experimentalEventSystem: enabledByExperimental("KILO_EXPERIMENTAL_EVENT_SYSTEM"),
   experimentalSessionSwitcher: enabledByExperimental("KILO_EXPERIMENTAL_SESSION_SWITCHER"), // kilocode_change
-  // kilocode_change start - enabled by default, with an opt-out kill switch
-  experimentalSharedAgentBoard: Config.boolean("KILO_EXPERIMENTAL_SHARED_AGENT_BOARD").pipe(Config.withDefault(true)),
+  // kilocode_change start - offline fork: Kilo Swarm defaults to OFF; users opt in via the flag or shared_agent_board
+  experimentalSharedAgentBoard: Config.boolean("KILO_EXPERIMENTAL_SHARED_AGENT_BOARD").pipe(Config.withDefault(false)),
   // kilocode_change end
   experimentalWorkspaces: enabledByExperimental("KILO_EXPERIMENTAL_WORKSPACES"),
   experimentalIconDiscovery: enabledByExperimental("KILO_EXPERIMENTAL_ICON_DISCOVERY"),

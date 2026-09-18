@@ -30,20 +30,20 @@ describe("RuntimeFlags", () => {
   )
   // kilocode_change end
 
-  // kilocode_change start - shared agent board defaults on with a kill switch
-  it.effect("enables the shared agent board by default", () =>
+  // kilocode_change start - offline fork: shared agent board defaults off, opt-in via the flag
+  it.effect("disables the shared agent board by default", () =>
     Effect.gen(function* () {
       const flags = yield* readFlags.pipe(Effect.provide(fromConfig({})))
 
-      expect(flags.experimentalSharedAgentBoard).toBe(true)
+      expect(flags.experimentalSharedAgentBoard).toBe(false)
     }),
   )
 
-  it.effect("allows disabling the shared agent board explicitly", () =>
+  it.effect("allows enabling the shared agent board explicitly", () =>
     Effect.gen(function* () {
-      const flags = yield* readFlags.pipe(Effect.provide(fromConfig({ KILO_EXPERIMENTAL_SHARED_AGENT_BOARD: "false" })))
+      const flags = yield* readFlags.pipe(Effect.provide(fromConfig({ KILO_EXPERIMENTAL_SHARED_AGENT_BOARD: "true" })))
 
-      expect(flags.experimentalSharedAgentBoard).toBe(false)
+      expect(flags.experimentalSharedAgentBoard).toBe(true)
     }),
   )
   // kilocode_change end
