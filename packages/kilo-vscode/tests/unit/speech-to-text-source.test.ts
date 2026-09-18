@@ -66,7 +66,8 @@ describe("speech-to-text custom source", () => {
   })
 
   it("reads the model catalog from an OpenAI-compatible source", async () => {
-    const result = await fetchSpeechToTextModels(offline, "", undefined, { baseUrl: base, apiKey: "secret" })
+    // kilocode_change - offline: the hosted catalog stub takes only a custom source (no backend params)
+    const result = await fetchSpeechToTextModels({ baseUrl: base, apiKey: "secret" })
 
     expect(seen.path).toBe("/v1/models")
     expect(seen.auth).toBe("Bearer secret")
