@@ -8,11 +8,11 @@ type VSCode = {
   onMessage: (handler: (message: ExtensionMessage) => void) => () => void
 }
 
+export type SpeechState = "idle" | "starting" | "recording" | "transcribing" | "error"
+
 type Lang = {
   t: (key: string) => string
 }
-
-export type SpeechState = "idle" | "starting" | "recording" | "transcribing" | "error"
 
 export type InsertTranscript = (text: string) => void
 
@@ -36,7 +36,17 @@ export type SpeechToText = {
   clear: () => void
 }
 
-export function useSpeechToText(vscode: VSCode, lang: Lang): SpeechToText {
+// Upstream v7.7.4 extended the hook with a server param (unused by the offline
+// webview, which drives STT through vscode message round-trips); the extra arg
+// is accepted and ignored so call sites keep their upstream arity.
+export function useSpeechToText(vscode: VSCode, _server?: unknown, lang?: Lang): SpeechToText
+export function useSpeechToText(vscode: VSCode, lang: Lang): SpeechToText
+export function useSpeechToText(
+  vscode: VSCode,
+  langOrServer: Lang | unknown,
+  maybeLang?: Lang,
+): SpeechToText {
+  const lang = typeof (langOrServer as Lang)?.t === "function" ? (langOrServer as Lang) : (maybeLang as Lang)
   const [state, setState] = createSignal<SpeechState>("idle")
   const [error, setError] = createSignal<string | undefined>()
   const active = () => state() === "starting" || state() === "recording" || state() === "transcribing"

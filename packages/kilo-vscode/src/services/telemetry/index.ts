@@ -19,6 +19,9 @@ export class TelemetryProxy {
 
   event(_name: TelemetryEventName, _props?: Record<string, unknown>): void {}
 
+  /** Capture a telemetry event (no-op in the offline fork). */
+  capture(_name: string, _props?: Record<string, unknown>): void {}
+
   shutdown(): void {
     TelemetryProxy.instance = null
   }

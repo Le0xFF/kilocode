@@ -114,7 +114,12 @@ const MockProviderProvider: ParentComponent<{ training?: boolean }> = (props) =>
     models,
     findModel: (sel: any) => _findModel(models(), sel),
     authMethods: () => ({}),
-    authStates: () => ({} as Record<string, ProviderAuthState>),
+    // kilocode_change - offline: the upstream `kiloAuth` story flag mocked an
+    // authenticated `kilo` gateway account (authStates { kilo: "oauth" }). The
+    // offline fork has no kilo account surface; STT availability keys off that
+    // auth state, so give the local mock provider an api key instead to keep
+    // speech-to-text stories in their enabled state.
+    authStates: () => ({ lmstudio: "api" }) as Record<string, ProviderAuthState>,
     isModelValid: () => true,
   }
   return <ProviderContext.Provider value={value}>{props.children}</ProviderContext.Provider>

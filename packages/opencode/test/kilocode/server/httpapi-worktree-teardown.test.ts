@@ -62,7 +62,7 @@ function setAuth(password: string) {
 
 describe("POST /kilocode/worktree/teardown", () => {
   test("requires auth, rejects paths outside the managed directory, and only disposes loaded instances", async () => {
-    await using tmp = await tmpdir({ git: true, config: { formatter: false, lsp: false } })
+    await using tmp = await tmpdir({ git: true, config: { formatter: false } })
     const worktree = path.join(tmp.path, ".kilo", "worktrees", "teardown")
     await mkdir(worktree, { recursive: true })
     const route = (directory: string) => `/kilocode/worktree/teardown?directory=${encodeURIComponent(directory)}`

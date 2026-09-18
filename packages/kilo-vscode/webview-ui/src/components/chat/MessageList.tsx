@@ -19,15 +19,20 @@ import {
   onCleanup,
 } from "solid-js"
 import { IconButton } from "@kilocode/kilo-ui/icon-button"
+import { Icon } from "@kilocode/kilo-ui/icon"
 import { Spinner } from "@kilocode/kilo-ui/spinner"
+import { relativizeProjectPath } from "@kilocode/kilo-ui/message-part"
 import { createAutoScroll } from "@kilocode/kilo-ui/hooks"
 import { useSession } from "../../context/session"
 import { useServer } from "../../context/server"
 import { useVSCode } from "../../context/vscode"
 import { useLanguage } from "../../context/language"
+import { useI18n } from "@kilocode/kilo-ui/context/i18n"
+import { useProvider } from "../../context/provider"
+import { useWorktreeMode } from "../../context/worktree-mode"
 import { WelcomeEmptyState } from "./WelcomeEmptyState"
 import { TranscriptRowView } from "./TranscriptRow"
-import { createRowHandoff } from "./transcript-row-handoff"
+import type { ErrorDisplayProps } from "./ErrorDisplay"
 import { RevertBanner } from "./RevertBanner"
 import { TurnOutcome } from "../shared/TurnOutcome"
 import { QuestionDock } from "./QuestionDock"
@@ -49,10 +54,16 @@ import {
   stableMessageTurns,
   type MessageTurn,
 } from "../../context/session-queue"
+import { childID } from "../../context/session-utils"
+import { taskResult } from "./task-tool-state"
+import { activeQuestionTab, tr } from "./question-dock-utils"
+import { useData } from "@kilocode/kilo-ui/context/data"
+import { getDirectory as getRawDirectory, getFilename } from "@opencode-ai/core/util/path"
 import {
   partitionRows,
   retainTurn,
   transcriptRows,
+  type TranscriptErrorRow,
   type TranscriptHold,
   type TranscriptRow,
 } from "../../context/transcript-rows"
@@ -62,9 +73,6 @@ import { onTimelineHighlight, type TimelineHighlight } from "../../utils/timelin
 import { useTranscriptSearch, type SearchMatch } from "../../context/transcript-search"
 import { applyTranscriptHighlights, clearTranscriptHighlights } from "./transcript-search-highlight"
 import {
-  isUnauthorizedPaidModelError,
-  isUnauthorizedPromotionLimitError,
-  parseAssistantError,
   parseProviderAuthError,
   unwrapError,
 } from "../../utils/errorUtils"
@@ -100,6 +108,18 @@ export const MessageList: Component<MessageListProps> = (props) => {
   const server = useServer()
   const vscode = useVSCode()
   const language = useLanguage()
+  const provider = useProvider()
+  const i18n = useI18n()
+  const data = useData()
+  // Only present inside Agent Manager (see worktree-mode.tsx). Agent Manager
+  // never calls registerExpandedTaskTool(), so its "task" cards always fall
+  // back to kilo-ui's default hideDetails renderer, which never shows a
+  // task's result text — indexing it there would produce a phantom match.
+  const inAgentManager = !!useWorktreeMode()
+
+  function getDirectory(path: string | undefined) {
+    return relativizeProjectPath(getRawDirectory(path), data.directory)
+  }
 
   const autoScroll = createAutoScroll({
     working: () => session.status() !== "idle",
@@ -185,7 +205,74 @@ export const MessageList: Component<MessageListProps> = (props) => {
 
   const search = useTranscriptSearch()
 
-  function rangeAt(ranges: SearchTextRange[], index: number): SearchTextRange | undefined {
+  interface RowTextRange {
+    start: number
+    end: number
+    partId: string
+    /** For a multi-file apply_patch chunk, the file this range belongs to. */
+    file?: string
+  }
+
+  /** A tool-text chunk, optionally attributed to a specific file within a
+   * multi-file tool part (currently only apply_patch's per-file chunks). */
+  type ToolChunk = string | { text: string; file: string }
+
+  // Returns the row's full searchable text plus, for every chunk that came
+  // from a specific part (tool call/reasoning/text/file), the character
+  // range it occupies within that text. Lets a match's character index be
+  // attributed back to the part it came from, so navigation can force that
+  // exact collapsed tool/reasoning block open instead of just scrolling to
+  // the row.
+  function rowText(row: TranscriptRow): { text: string; ranges: RowTextRange[] } {
+    if (row.type === "error") return { text: errorText(row.error), ranges: [] }
+    if (row.type === "diff") return { text: "", ranges: [] }
+    // User message text is rendered by UserMessageDisplay/HighlightedText
+    // (message-part.tsx), which never parses markdown at all — [label](url)
+    // always shows literally, brackets and all, unlike assistant text/
+    // reasoning/tool content which goes through the real Markdown renderer.
+    // Stripping link URLs there would wrongly collapse two genuinely
+    // visible occurrences (the literal label and the literal URL) into one.
+    const markdown = row.type !== "user"
+    const chunks: string[] = []
+    const ranges: RowTextRange[] = []
+    let pos = 0
+    const push = (text: string, partId: string, file?: string) => {
+      if (!text) return
+      if (chunks.length > 0) pos += 1 // account for the "\n" chunk joiner below
+      chunks.push(text)
+      ranges.push({ start: pos, end: pos + text.length, partId, file })
+      pos += text.length
+    }
+    for (const part of row.parts) {
+      switch (part.type) {
+        case "text":
+          if (!part.synthetic) push(markdown ? stripMarkdownLinkUrls(part.text) : part.text, part.id)
+          break
+        case "reasoning":
+          push(stripMarkdownLinkUrls(part.text), part.id)
+          break
+        case "tool":
+          // Bash output is rendered via escapeHtml + syntax highlighting
+          // (never through Markdown at all), and the generic/MCP fallback
+          // renderer wraps its output in a fenced code block before ever
+          // reaching Markdown — both show link-like `[x](y)` text literally.
+          // Stripping it here would search text that no longer matches the
+          // literal characters on screen, the same class of mismatch this
+          // rewrite fixes elsewhere.
+          for (const chunk of toolText(part)) {
+            if (typeof chunk === "string") push(chunk, part.id)
+            else push(chunk.text, part.id, chunk.file)
+          }
+          break
+        case "file":
+          if (part.filename) push(part.filename, part.id)
+          break
+      }
+    }
+    return { text: chunks.join("\n"), ranges }
+  }
+
+  function rangeAt(ranges: RowTextRange[], index: number): RowTextRange | undefined {
     return ranges.find((r) => index >= r.start && index < r.end)
   }
 
@@ -635,7 +722,7 @@ export const MessageList: Component<MessageListProps> = (props) => {
     const list = rows()
     const result: SearchMatch[] = []
     for (const row of list) {
-      const { text, ranges } = rowSearchText(row)
+      const { text, ranges } = rowText(row)
       p.lastIndex = 0
       let occurrence = 0
       let hit = p.exec(text)
@@ -646,7 +733,7 @@ export const MessageList: Component<MessageListProps> = (props) => {
           continue
         }
         const range = rangeAt(ranges, hit.index)
-        result.push({ key: row.key, occurrence, partId: range?.partId })
+        result.push({ key: row.key, occurrence, partId: range?.partId, partFile: range?.file })
         occurrence += 1
         hit = p.exec(text)
       }
@@ -714,9 +801,11 @@ export const MessageList: Component<MessageListProps> = (props) => {
   // highlighter must scan nothing in it at all — otherwise unindexed text (a
   // static button label, a sibling part that didn't match) could get
   // highlighted despite never being counted. An entry always exists for
-  // every row that has at least one match, and a match in a row with no
-  // resolvable part scope (e.g. a user message, whose parts carry no
-  // data-part-id marker) falls back to scanning the whole row.
+  // every row that has at least one match, even with an empty part-id set
+  // (a match that couldn't be attributed to a specific part, e.g. error/diff
+  // rows) — the highlighter treats "entry exists" as "this row has a real
+  // match" and falls back to scanning the whole row whenever the part-id
+  // lookup doesn't resolve to a mounted element.
   const matchedPartsByRow = createMemo(() => {
     const map = new Map<string, Set<string>>()
     for (const match of matches()) {
@@ -846,37 +935,10 @@ export const MessageList: Component<MessageListProps> = (props) => {
   // the growing assistant suffix whose measurements would produce visible jumps.
   const partition = createMemo(() => partitionRows(rows(), direct()))
   const tail = createMemo(() => partition().direct.map((row) => row.key))
-  const lookup = createMemo(() => new Map(rows().map((row) => [row.key, row])))
+  const lookup = createMemo(() => new Map(partition().direct.map((row) => [row.key, row])))
   const keys = createMemo(() => partition().virtual.map((row) => row.key))
-  // Virtua keys its items by identity. Row objects are rebuilt whenever turn
-  // meta changes (live flag at completion, copy anchor), which would remount
-  // every row of the turn at the 260px estimate and bounce the transcript.
-  // Feed it the stable keys and resolve the row reactively, like the tail.
   const indexes = createMemo(() => new Map(keys().map((key, index) => [key, index])))
   const fingerprint = createMemo(() => rowFingerprint(keys()))
-
-  // A row handed from the direct tail to Virtua (each new step of the same
-  // turn moves the previous assistant message) mounts at the 260px estimate
-  // until Virtua's ResizeObserver measures it. The auto-scroll pins to that
-  // shorter layout, the correction lands in the same ResizeObserver pass, and
-  // the follow-up pin is deferred to the next frame, so one frame paints with
-  // the transcript sitting below the bottom. Measure the handed rows in the
-  // same task and re-pin before anything is painted.
-  createEffect(
-    on(
-      () => ({ sid: session.currentSessionID(), keys: keys() }),
-      (now, prev) => {
-        if (!prev || prev.sid !== now.sid) return
-        if (now.keys.length <= prev.keys.length || now.keys.at(-1) === prev.keys.at(-1)) return
-        queueMicrotask(() => {
-          const handle = virtualizer()
-          if (!handle) return
-          handle.measure()
-          autoScroll.scrollToBottom()
-        })
-      },
-    ),
-  )
 
   const [pending, setPending] = createSignal<{ sid: string; key: string }>()
 
@@ -1189,32 +1251,6 @@ export const MessageList: Component<MessageListProps> = (props) => {
 
   onCleanup(() => save(session.currentSessionID()))
 
-  const handoff = createRowHandoff()
-  const Row: Component<{ id: string }> = (entry) => {
-    const key = entry.id
-    const initial: TranscriptRow = lookup().get(key)!
-    return handoff(`${initial.message.sessionID}:${key}`, () => {
-      // A removed row can outlive its map entry until the handoff cleanup.
-      const row = createMemo<TranscriptRow>((prev) => lookup().get(key) ?? prev, initial)
-      return (
-        <TranscriptRowView
-          row={row()}
-          index={indexes().get(key)}
-          onSelectSession={props.onSelectSession}
-          isSessionOpen={props.isSessionOpen}
-          onForkMessage={props.onForkMessage}
-          onEditMessage={props.onEditMessage}
-          queuedDisabled={props.queuedDisabled}
-          editDisabled={props.editDisabled}
-          highlight={highlight}
-          activeSearch={activeKey() === key}
-          readonly={props.readonly}
-          interactivePrompts={props.interactivePrompts}
-        />
-      ) as HTMLElement
-    })
-  }
-
   return (
     <div class="message-list-container" classList={{ "am-intro-layout": introduction() }}>
       <Show when={props.announce === false}>
@@ -1278,17 +1314,52 @@ export const MessageList: Component<MessageListProps> = (props) => {
                 <Show when={scrollEl() && partition().virtual.length > 0}>
                   <Virtualizer
                     ref={setVirtualizer}
-                    data={keys()}
+                    data={partition().virtual}
                     scrollRef={scrollEl()}
                     shift={session.messageMutation() === "prepend"}
                     cache={measurement()}
                     bufferSize={520}
                     itemSize={260}
                   >
-                    {(key) => <Row id={key} />}
+                    {(row, index) => (
+                      <TranscriptRowView
+                        row={row}
+                        index={index()}
+                        onSelectSession={props.onSelectSession}
+                        isSessionOpen={props.isSessionOpen}
+                        onForkMessage={props.onForkMessage}
+                        onEditMessage={props.onEditMessage}
+                        queuedDisabled={props.queuedDisabled}
+                        editDisabled={props.editDisabled}
+                        highlight={highlight}
+                        activeSearch={activeKey() === row.key}
+                        activeSearchPartID={activeKey() === row.key ? activeMatch()?.partId : undefined}
+                        activeSearchPartFile={activeKey() === row.key ? activeMatch()?.partFile : undefined}
+                        readonly={props.readonly}
+                        interactivePrompts={props.interactivePrompts}
+                      />
+                    )}
                   </Virtualizer>
                 </Show>
-                <For each={tail()}>{(key) => <Row id={key} />}</For>
+                <For each={tail()}>
+                  {(key) => (
+                    <TranscriptRowView
+                      row={lookup().get(key)!}
+                      onSelectSession={props.onSelectSession}
+                      isSessionOpen={props.isSessionOpen}
+                      onForkMessage={props.onForkMessage}
+                      onEditMessage={props.onEditMessage}
+                      queuedDisabled={props.queuedDisabled}
+                      editDisabled={props.editDisabled}
+                      highlight={highlight}
+                      activeSearch={activeKey() === key}
+                      activeSearchPartID={activeKey() === key ? activeMatch()?.partId : undefined}
+                      activeSearchPartFile={activeKey() === key ? activeMatch()?.partFile : undefined}
+                      readonly={props.readonly}
+                      interactivePrompts={props.interactivePrompts}
+                    />
+                  )}
+                </For>
               </div>
             </Show>
             <Show when={revert()}>
@@ -1304,6 +1375,8 @@ export const MessageList: Component<MessageListProps> = (props) => {
                   queuedDisabled={props.queuedDisabled}
                   editDisabled={props.editDisabled}
                   activeSearch={activeKey() === row.key}
+                  activeSearchPartID={activeKey() === row.key ? activeMatch()?.partId : undefined}
+                  activeSearchPartFile={activeKey() === row.key ? activeMatch()?.partFile : undefined}
                   readonly={props.readonly}
                   interactivePrompts={props.interactivePrompts}
                 />

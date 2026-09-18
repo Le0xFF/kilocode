@@ -13,6 +13,7 @@ import { ProjectRouteService } from "./project/route"
 import type { KiloConnectionService } from "../services/cli-backend"
 import { KiloProvider } from "../KiloProvider"
 import { PLATFORM, SNAPSHOT_INITIALIZATION } from "./constants"
+import { TelemetryProxy } from "../services/telemetry"
 import { DiffVirtualProvider } from "../DiffVirtualProvider"
 import { buildWebviewHtml } from "../utils"
 import { openFileInEditor, getWorkspaceRoot } from "../review-utils"
@@ -400,6 +401,10 @@ export class VscodeHost implements Host {
 
   copyToClipboard(text: string): void {
     void vscode.env.clipboard.writeText(text)
+  }
+
+  capture(event: string, properties?: Record<string, unknown>): void {
+    TelemetryProxy.getInstance().capture(event, properties)
   }
 
   openExternal(url: string): void {

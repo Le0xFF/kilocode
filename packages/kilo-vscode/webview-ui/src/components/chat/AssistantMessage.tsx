@@ -120,6 +120,13 @@ interface AssistantMessageProps {
   feedback?: MessageFeedbackControls
   /** Part behind the currently hovered/focused task-timeline bar, if any. */
   highlight?: () => TimelineHighlight | undefined
+  /** id of the part containing the current chat-search match, if any — forces
+   * that part's collapsed tool/reasoning content open so the user can see the
+   * highlighted match without manually expanding it first. */
+  forceOpenPartID?: string
+  /** For a multi-file apply_patch match, the specific file within that part —
+   * lets that one nested item open instead of every file in the patch. */
+  forceOpenFile?: string
   readonly?: boolean
   interactivePrompts?: boolean
 }
@@ -131,7 +138,7 @@ type ToolStateProps = {
   status?: string
 }
 
-function TodoToolCard(props: { part: ToolPart }) {
+function TodoToolCard(props: { part: ToolPart; forceOpen?: boolean }) {
   const render = ToolRegistry.render(props.part.tool)
   const state = () => props.part.state as ToolStateProps
   const language = useLanguage()
@@ -149,6 +156,7 @@ function TodoToolCard(props: { part: ToolPart }) {
             output={state()?.output}
             status={state()?.status}
             defaultOpen
+            forceOpen={props.forceOpen}
             reveal={false}
           />
         </ToolApprovalProvider>
@@ -157,7 +165,7 @@ function TodoToolCard(props: { part: ToolPart }) {
   )
 }
 
-function BashToolCard(props: { part: ToolPart; defaultOpen: boolean }) {
+function BashToolCard(props: { part: ToolPart; defaultOpen: boolean; forceOpen?: boolean }) {
   const render = ToolRegistry.render(props.part.tool)
   const state = () => props.part.state as ToolStateProps
   const language = useLanguage()
@@ -176,6 +184,7 @@ function BashToolCard(props: { part: ToolPart; defaultOpen: boolean }) {
             output={state()?.output}
             status={state()?.status}
             defaultOpen={props.defaultOpen}
+            forceOpen={props.forceOpen}
             animate
             reveal={state()?.status === "pending" || state()?.status === "running"}
           />
@@ -293,6 +302,7 @@ export const AssistantMessage: Component<AssistantMessageProps> = (props) => {
             if (!planExitInfo(part)) return
             return part as unknown as ToolPart
           })
+          const forceOpen = createMemo(() => !!props.forceOpenPartID && part.id === props.forceOpenPartID)
           // Reasoning blocks are excluded: they animate their own height and
           // their header and body bleed 6px past this wrapper, so the grow-in
           // clip would trim their sides for the whole stream and then release
@@ -407,11 +417,17 @@ export const AssistantMessage: Component<AssistantMessageProps> = (props) => {
                                     />
                                   }
                                 >
-                                  <TodoToolCard part={part as unknown as ToolPart} />
+                                  <TodoToolCard part={part as unknown as ToolPart} forceOpen={forceOpen()} />
                                 </Show>
                               }
                             >
-                              {(tool) => <BashToolCard part={tool() as unknown as ToolPart} defaultOpen={open()} />}
+                              {(tool) => (
+                                <BashToolCard
+                                  part={tool() as unknown as ToolPart}
+                                  defaultOpen={open()}
+                                  forceOpen={forceOpen()}
+                                />
+                              )}
                             </Show>
                           }
                         >

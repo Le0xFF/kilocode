@@ -86,7 +86,7 @@ function harness(dir: string) {
 
 describe("marketplace HTTP API", () => {
   test("installs, lists, and removes project MCP and agent items", async () => {
-    await using tmp = await tmpdir({ config: { formatter: false, lsp: false } })
+    await using tmp = await tmpdir({ config: { formatter: false } })
     const json = harness(tmp.path)
 
     const mcp = {
@@ -149,7 +149,7 @@ describe("marketplace HTTP API", () => {
   // lean catalog model can install without echoing back presentation fields. The
   // full-catalog-entry payload used by the test above must stay accepted too.
   test("installs from an identity and content payload", async () => {
-    await using tmp = await tmpdir({ config: { formatter: false, lsp: false } })
+    await using tmp = await tmpdir({ config: { formatter: false } })
     const json = harness(tmp.path)
 
     const installed = await json("POST", KilocodePaths.marketplaceInstall, {
@@ -176,7 +176,7 @@ describe("marketplace HTTP API", () => {
   // The skill install/remove path shells out to `tar`; keep this POSIX-only because
   // Windows runners do not consistently provide tar with the same extraction behavior.
   posix("installs, removes, and reinstalls a marketplace skill", async () => {
-    await using tmp = await tmpdir({ config: { formatter: false, lsp: false } })
+    await using tmp = await tmpdir({ config: { formatter: false } })
     const json = harness(tmp.path)
     const manifest = path.join(tmp.path, ".kilo", "skills", "marketplace-skill", "SKILL.md")
 

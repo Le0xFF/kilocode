@@ -36,3 +36,7 @@ export function reviewCommand(): Command.Info {
     hints: ["$ARGUMENTS"],
   }
 }
+
+export function legacyReviewMessage(name: string) {
+  return legacy[name as keyof typeof legacy]?.message
+}

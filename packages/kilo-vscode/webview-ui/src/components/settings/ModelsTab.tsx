@@ -19,7 +19,6 @@ import {
   selectedSpeechToTextModel,
 } from "../speech-to-text/availability"
 import { speechToTextModelOptions } from "../speech-to-text/model-selector"
-import { AUTOCOMPLETE_SELECTOR_MODELS, getAutocompleteSelection } from "./autocomplete-model-selector"
 import { useSpeechToTextModels } from "../../context/speech-to-text-models"
 import { preserveVariant } from "../../context/session-variant-store"
 
@@ -181,22 +180,6 @@ const ModelsTab: Component = () => {
             clearLabel={language.t("settings.context.compactionModel.useChatModel")}
             label={language.t("settings.context.compactionModel.title")}
             description={language.t("settings.context.compactionModel.description")}
-          />
-        </SettingsRow>
-        <SettingsRow
-          title={language.t("settings.autocomplete.model.title")}
-          description={language.t("settings.autocomplete.model.description")}
-        >
-          <ModelSelectorBase
-            value={getAutocompleteSelection(autocompleteProvider(), autocompleteModel())}
-            onSelect={handleAutocompleteModelSelect}
-            placement="bottom-start"
-            models={AUTOCOMPLETE_SELECTOR_MODELS}
-            favorites={false}
-            allowClear
-            clearLabel={language.t("settings.providers.notSet")}
-            label={language.t("settings.autocomplete.model.title")}
-            description={language.t("settings.autocomplete.model.description")}
           />
         </SettingsRow>
         <SettingsRow

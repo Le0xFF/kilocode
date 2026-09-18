@@ -1462,6 +1462,7 @@ export class AgentManagerProvider implements Disposable {
       post: (msg) => this.postToWebview(msg),
       notify: (message) => this.host.showError(message),
       log: (...args) => this.log(...args),
+      capture: (event, props) => this.host.capture(event, props),
     }
   }
 

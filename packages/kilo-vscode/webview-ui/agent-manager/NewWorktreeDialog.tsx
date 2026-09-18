@@ -122,9 +122,9 @@ export const NewWorktreeDialog: Component<{
     metrics.track(button, "configure_worktree_dialog", properties)
   const click = metrics.click
 
-  const speech = useSpeechToText(vscode, { t })
+  const speech = useSpeechToText(vscode, server, { t })
   const speechModels = useSpeechToTextModels()
-  const canUseSpeech = () => canUseSpeechToText(config(), provider.authStates())
+  const canUseSpeech = () => canUseSpeechToText(config(), provider.authStates(), features().speechToText)
   const speechModel = () => selectedSpeechToTextModel(config(), speechModels.models())
 
   const [tab, setTab] = createSignal<DialogTab>("new")
@@ -183,11 +183,7 @@ export const NewWorktreeDialog: Component<{
   const [sandboxReason, setSandboxReason] = createSignal<string | undefined>()
   const [sandboxRevision, setSandboxRevision] = createSignal(-1)
   const sandboxRequestID = crypto.randomUUID()
-  const sandboxVisible = () => features().sandboxControls && globalConfig().sandbox?.enabled === true
-const speech = useSpeechToText(vscode, server, { t })
-  const speechModels = useSpeechToTextModels()
-  const canUseSpeech = () => canUseSpeechToText(config(), provider.authStates())
-  const speechModel = () => selectedSpeechToTextModel(config(), speechModels.models())
+const sandboxVisible = () => features().sandboxControls && globalConfig().sandbox?.enabled === true
   let prior: string | null = null
   let request: string | undefined
   const cancel = () => {

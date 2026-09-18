@@ -44,7 +44,6 @@ import {
 import { GitOps } from "./agent-manager/GitOps"
 import { GitStatsPoller, type LocalStats } from "./agent-manager/GitStatsPoller"
 import { removeMcp } from "./kilo-provider/remove-config-item"
-import { removeMcp } from "./kilo-provider/remove-config-item"
 import { resolveProjectDirectory } from "./project-directory"
 import { seedSessionStatuses } from "./session-status"
 import { normalizeEnhancePromptErrorMessage } from "./enhance-prompt-error"
@@ -141,8 +140,6 @@ import { watchRestore } from "./kilo-provider/prompt-focus"
 import type { ProjectRef, SessionRef, WorktreeRef } from "./agent-manager/project/route"
 import { indexingConsentStore, registeredProjects } from "./indexing-consent"
 import { fetchImageModels } from "./image-generation/models"
-import { fetchSpeechToTextModels } from "./speech-to-text/catalog"
-import { SPEECH_TO_TEXT_MODELS } from "./speech-to-text/models"
 import {
   hasCustomSource,
   resolveSpeechToTextSource,

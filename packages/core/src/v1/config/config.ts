@@ -320,10 +320,6 @@ export const Info = Schema.Struct({
       }),
       speech_to_text_model: Schema.optional(Schema.String).annotate({
         description: "Speech-to-text transcription model ID to use for voice input",
-
-      }),
-speech_to_text_model: Schema.optional(Schema.String).annotate({
-        description: "Speech-to-text transcription model ID to use for voice input",
       }),
       // kilocode_change - custom STT source: user-declared OpenAI-compatible endpoint (offline-safe)
       speech_to_text_base_url: Schema.optional(Schema.String).annotate({

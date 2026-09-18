@@ -8,6 +8,10 @@ export interface SearchMatch {
    * attributed to one — lets highlighting scan just that part's DOM subtree
    * instead of every element in the row. */
   partId?: string
+  /** For a multi-file apply_patch part, the specific file path this
+   * occurrence falls within — lets navigation open just that file's nested
+   * accordion instead of every file in the patch. */
+  partFile?: string
 }
 
 interface TranscriptSearchContextValue {

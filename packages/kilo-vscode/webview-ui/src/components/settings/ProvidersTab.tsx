@@ -14,13 +14,12 @@ import { useVSCode } from "../../context/vscode"
 import type { Provider } from "../../types/messages"
 import CustomProviderDialog from "./CustomProviderDialog"
 import ProviderConnectDialog from "./ProviderConnectDialog"
-import ProviderSelectDialog from "./ProviderSelectDialog"
-import { isPopularProvider, providerIcon, providerNoteKey, sortProviders } from "./provider-catalog"
+import { providerIcon } from "./provider-catalog"
 import {
   canChangeProviderKey,
   disabledProviderOptions,
 } from "./provider-visibility"
-import { isCustomProviderPackage, KILO_PROVIDER_ID } from "../../../../src/shared/provider-model"
+import { isCustomProviderPackage } from "../../../../src/shared/provider-model"
 import { createProviderAction } from "../../utils/provider-action"
 
 type ProviderSource = "env" | "api" | "config" | "custom"
@@ -115,6 +114,10 @@ const ProvidersTab: Component = () => {
         },
       },
     )
+  }
+
+  function connectProvider(item: Provider) {
+    dialog.show(() => <ProviderConnectDialog providerID={item.id} />)
   }
 
   function disableProvider(providerID: string) {

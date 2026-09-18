@@ -15,7 +15,7 @@ import { MemorySaveTool } from "./memory-save"
 
 import { OpenPlanTool } from "./open-plan"
 import { ScheduleWakeupTool } from "./schedule-wakeup"
-import { SendFileTool } from "./send-file"
+// kilocode_change - offline: send-file (remote CLI file delivery) removed with the mobile surface; import + wiring dropped at v7.7.4 sync
 import * as Tool from "../../tool/tool"
 import { Flag } from "@opencode-ai/core/flag/flag"
 import { Effect } from "effect"
@@ -83,9 +83,8 @@ export namespace KiloToolRegistry {
       const process = yield* BackgroundProcessTool
       const browser = Flag.KILO_CLIENT === "vscode" ? yield* BrowserOpenTool : undefined
       const chart = yield* ChartTool
-      // kilocode_change - offline: generate-image removed; openPlan/send retained
+      // kilocode_change - offline: generate-image removed; openPlan retained (send-file dropped with mobile surface)
       const openPlan = yield* OpenPlanTool
-      const send = yield* SendFileTool
       // Wakeup.Service is provided by Wakeup.node in the tool-registry node graph.
       const schedule = yield* ScheduleWakeupTool
       const cancel = yield* CancelWakeupTool
@@ -105,7 +104,6 @@ if (!notebook)
           browser,
           chart,
           openPlan,
-          send,
           schedule,
           cancel,
           ...board,
@@ -125,7 +123,6 @@ return {
         browser,
         chart,
         openPlan,
-        send,
         schedule,
         cancel,
         ...board,
@@ -146,9 +143,8 @@ return {
       process: Tool.Info
       browser?: Tool.Info
       chart: Tool.Info
-// kilocode_change - offline: generate-image removed; openPlan/send/schedule/cancel retained
+// kilocode_change - offline: generate-image removed; openPlan/schedule/cancel retained (send dropped with mobile surface)
       openPlan?: Tool.Info
-      send: Tool.Info
       schedule?: Tool.Info
       cancel?: Tool.Info
       boardRead?: Tool.Info
@@ -202,7 +198,6 @@ const openPlan = tools.openPlan ? yield* Tool.init(tools.openPlan) : undefined
         openPlan,
         schedule,
         cancel,
-        send: base.send,
       }
 
     })
@@ -266,9 +261,8 @@ const openPlan = tools.openPlan ? yield* Tool.init(tools.openPlan) : undefined
       process: Tool.Def
       browser?: Tool.Def
       chart: Tool.Def
-// kilocode_change - offline: generate-image removed; openPlan/send/schedule/cancel retained
+// kilocode_change - offline: generate-image removed; openPlan/schedule/cancel retained (send dropped with mobile surface)
       openPlan?: Tool.Def
-      send: Tool.Def
       schedule?: Tool.Def
       cancel?: Tool.Def
       boardRead?: Tool.Def

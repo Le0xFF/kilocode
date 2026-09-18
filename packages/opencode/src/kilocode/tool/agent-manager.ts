@@ -269,6 +269,7 @@ function rank(providerID: string, preferred: string | undefined): number {
 function select(
   task: Input,
   all: Candidate[],
+  providers: Record<string, Provider.Info> | undefined,
   preferred: string | undefined,
   source: Source | undefined,
   index: number,
@@ -281,6 +282,7 @@ function select(
   if (!task.model?.trim() && !task.variant?.trim()) {
     return { task: task.prompt?.trim() && source ? { ...base, ...source } : base }
   }
+  if (!providers) return { error: `Task ${index + 1} has a model but no provider catalog is available` }
   const selected = selectModel(task, providers, source, preferred)
   if ("error" in selected) return { error: `Task ${index + 1} ${selected.error}` }
   // Naming the invoking model again must not drop the invoking reasoning variant.
@@ -484,7 +486,7 @@ export const AgentManagerTool = Tool.define<
               )))
             : undefined
           const all = need && providers ? candidates(providers) : []
-          const selected = params.tasks.map((task, index) => select(task, all, preferred, source, index))
+          const selected = params.tasks.map((task, index) => select(task, all, providers, preferred, source, index))
           const errors = selected.flatMap((item) => (item.error ? [item.error] : []))
           if (errors.length > 0) {
             return {

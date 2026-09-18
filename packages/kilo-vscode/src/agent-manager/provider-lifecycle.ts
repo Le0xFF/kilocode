@@ -133,6 +133,8 @@ export interface LifecycleHost {
   post: (message: AgentManagerOutMessage) => void
   notify: (message: string) => void
   log: (...args: unknown[]) => void
+  /** Capture a telemetry event. */
+  capture(event: string, properties?: Record<string, unknown>): void
 }
 
 /**
