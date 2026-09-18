@@ -33,6 +33,8 @@ export const KNOWN_KEYS: ReadonlyArray<string> = [
   "tools",
   
   "auto_collapse_reasoning",
+  "reasoning_display",
+  "shared_agent_board",
   "terminal_command_display",
   "code_edit_display",
   "mcp_tool_display",

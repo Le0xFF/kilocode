@@ -1,12 +1,14 @@
 import { routeSuggestionWebviewMessage } from "./handlers/suggestion"
+import { routeInputToolMessage } from "../services/input-tools"
 import * as ModelState from "./model-state"
 import type { KiloConnectionService } from "../services/cli-backend/connection-service"
+import type { SpeechToTextSource } from "../speech-to-text/source"
 import type { SuggestionContext } from "./handlers/suggestion"
 import type { KiloClient } from "@kilocode/sdk/v2/client"
 import { buildChatSettingsMessage } from "./chat-settings"
 import { buildThroughputSettingMessage } from "./throughput-settings"
 import { buildAutoApprovalReasonSettingMessage } from "./auto-approval-reason-settings"
-import { handleModelUsageMessage, type ModelUsageMessage } from "./model-usage"
+import type { ModelUsageMessage } from "./model-usage"
 
 type Ctx = {
   question: SuggestionContext
@@ -20,6 +22,8 @@ type Ctx = {
   copy: (text: string) => PromiseLike<void>
   openSessions: (ids: string[]) => void
   activity: (state: unknown) => void
+  speechToTextModels: () => Promise<void>
+  speechToTextSource: () => SpeechToTextSource | undefined
   modelUsage: (message: ModelUsageMessage) => Promise<void>
   backgroundJobs: (sessionID: string, requestID: string) => Promise<void>
   board: (message: Record<string, unknown>) => Promise<boolean>
@@ -141,5 +145,13 @@ export async function routeEarlyMessage(
     return true
   }
   const background = await routeBackgroundMessage(message, ctx)
-  return background ?? false
+  return (
+    background ??
+    (await routeInputToolMessage(message, {
+      connection: ctx.connection,
+      dir: ctx.dir,
+      post: ctx.post,
+      speechSource: ctx.speechToTextSource,
+    }))
+  )
 }

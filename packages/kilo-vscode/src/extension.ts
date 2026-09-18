@@ -15,7 +15,11 @@ import { AttentionService, showOSNotification } from "./services/attention"
 import { CaffeinationService } from "./services/caffeination"
 import { confirmCaffeination } from "./services/caffeination/confirm"
 import { createCaffeinationDriver } from "./services/caffeination/inhibitor"
-import { BrowserBroker } from "./services/browser-automation"
+import { BrowserAutomationService, BrowserBroker } from "./services/browser-automation"
+import {
+  integratedBrowserUseSystemChrome,
+  migrateIntegratedBrowserUseSystemChrome,
+} from "./services/browser-automation/chrome-setting"
 import { TelemetryEventName, TelemetryProxy } from "./services/telemetry"
 
 import { registerCommitMessageService } from "./services/commit-message"
@@ -56,17 +60,29 @@ export async function activate(context: vscode.ExtensionContext) {
 
   const telemetry = TelemetryProxy.getInstance()
 
+  await migrateIntegratedBrowserUseSystemChrome().catch((error: unknown) =>
+    console.warn("[Kilo New] Integrated Browser Chrome preference migration failed:", error),
+  )
+
   const browserBroker = new BrowserBroker({
     log: (...args) => console.warn("[Kilo New] BrowserBroker:", ...args),
     enabled: () => vscode.workspace.getConfiguration("kilo-code.new.experimental").get("browserAutomation", false),
     trusted: () => vscode.workspace.isTrusted,
-    useSystemChrome: () =>
-      vscode.workspace.getConfiguration("kilo-code.new.browserAutomation").get("useSystemChrome", true),
+    useSystemChrome: () => integratedBrowserUseSystemChrome(),
   })
 
 
   // Create shared connection service (one server for all webviews)
-  const connectionService = new KiloConnectionService(context, () => browserBroker.env())
+  const connectionService = new KiloConnectionService(
+    context,
+    () => browserBroker.env(),
+    (dir): Promise<void> => browserAutomationService.ready(dir),
+  )
+
+  // Manages the built-in Playwright MCP server for ordinary sessions. This is
+  // independent from the Agent Manager browser broker above.
+  const browserAutomationService = new BrowserAutomationService(connectionService)
+  void browserAutomationService.syncWithSettings()
   const notebookBridge = createNotebookBridge(connectionService)
   let restore = context.workspaceState.get<RestoreState>(RESTORE_KEY) ?? {}
   const remember = (patch: RestoreState) => {
@@ -82,6 +98,9 @@ export async function activate(context: vscode.ExtensionContext) {
   // kilocode_change - offline: broker is lazy; no settings sync / reconnect re-registration needed
   const unsubscribeStateChange = connectionService.onStateChange((state) => {
     if (state === "connected") {
+      void browserAutomationService
+        .reregisterIfEnabled()
+        .catch((error) => console.warn("[Kilo New] Playwright MCP re-registration failed:", error))
       const config = connectionService.getServerConfig()
       if (config) {
         telemetry.configure(config.baseUrl, config.password)
@@ -297,7 +316,7 @@ export async function activate(context: vscode.ExtensionContext) {
 }),
   )
 
-  // Create diff virtual provider (lightweight single-file diff for permission approval)
+// Create diff virtual provider (lightweight single-file diff for permission approval)
   const diffVirtualProvider = new DiffVirtualProvider(context.extensionUri)
   provider.setDiffVirtualProvider(diffVirtualProvider)
   agentManagerHost.setDiffVirtualProvider(diffVirtualProvider)
@@ -422,7 +441,7 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand("kilo-code.new.sidebarTitle.historyButtonClicked", () => {
       track("kilo-code.new.historyButtonClicked")
     }),
-    vscode.commands.registerCommand("kilo-code.new.sidebarTitle.agentManagerOpen", () => {
+vscode.commands.registerCommand("kilo-code.new.sidebarTitle.agentManagerOpen", () => {
       track("kilo-code.new.agentManagerOpen")
     }),
     vscode.commands.registerCommand("kilo-code.new.sidebarTitle.settingsButtonClicked", () => {
@@ -433,7 +452,7 @@ export async function activate(context: vscode.ExtensionContext) {
       if (tab) tab.postMessage({ type: "action", action: "plusButtonClicked" })
       else provider.postMessage({ type: "action", action: "plusButtonClicked" })
     }),
-    vscode.commands.registerCommand("kilo-code.new.agentManagerOpen", () => {
+vscode.commands.registerCommand("kilo-code.new.agentManagerOpen", () => {
       agentManagerProvider.openPanel()
     }),
     vscode.commands.registerCommand("kilo-code.new.historyButtonClicked", () => {
@@ -529,6 +548,13 @@ export async function activate(context: vscode.ExtensionContext) {
     }),
     vscode.commands.registerCommand("kilo-code.new.agentManager.nextTerminal", () => {
       agentManagerProvider.postMessage({ type: "action", action: "terminalNext" })
+    }),
+    vscode.commands.registerCommand("kilo-code.new.agentManager.diagnostics", () => {
+      // diagnose() spawns git/gh probes and writes to the output channel; a rejection (disposed
+      // channel, disposed context mid-probe) would otherwise be an invisible unhandled rejection.
+      void agentManagerProvider.diagnose().catch((err: unknown) => {
+        console.error("[Kilo New] Agent Manager diagnostics failed:", err)
+      })
     }),
     vscode.commands.registerCommand("kilo-code.new.agentManager.search", () => {
       agentManagerProvider.postMessage({ type: "action", action: "search" })
@@ -638,6 +664,7 @@ export async function activate(context: vscode.ExtensionContext) {
       unsubscribeStateChange()
       attention.dispose()
       browserBroker.dispose()
+      browserAutomationService.dispose()
       provider.dispose()
       notebookBridge.dispose()
       connectionService.dispose()

@@ -8,6 +8,7 @@ import { createMemo } from "solid-js"
 import { useBindings } from "@tui/keymap"
 import { useSync } from "@tui/context/sync"
 import { useDialog } from "@tui/ui/dialog"
+
 import { DialogIndexing } from "./components/dialog-indexing.js"
 import { showAboutDialog } from "./cli/cmd/tui/component/dialog-about.js" // kilocode_change - upstream About dialog adopted offline
 import { indexingEnabled } from "./indexing-feature"
@@ -29,6 +30,7 @@ export function registerKiloCommands(useSDK: () => UseSDK) {
 
   useBindings(() => ({
     commands: [
+
       ...(indexing()
         ? [
             {

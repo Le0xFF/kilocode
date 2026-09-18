@@ -5,11 +5,13 @@ import { Bus } from "@/bus"
 import { Provider } from "@/provider/provider"
 import { Session } from "@/session/session"
 import { SessionSummary } from "@/session/summary"
+import { InstanceRef } from "@/effect/instance-ref" // kilocode_change - wakeup adopt needs the live instance context; session-export and kilo-telemetry imports are kept-deleted in the offline fork
 import { MemoryLifecycle } from "@/kilocode/memory/turn"
 import { MemoryService } from "@kilocode/kilo-memory/effect/service"
 import { MemoryEvents } from "@/kilocode/memory/events"
 import { installMemoryRuntime } from "@/kilocode/memory/runtime"
 import { KiloToolRegistry } from "@/kilocode/tool/registry"
+import { Wakeup } from "@/kilocode/wakeup"
 import { LayerNode } from "@opencode-ai/core/effect/layer-node"
 import { KilocodeWatcher } from "@/kilocode/watcher"
 import { AppNodeBuilder } from "@opencode-ai/core/effect/app-node-builder" // kilocode_change
@@ -34,6 +36,7 @@ export namespace KilocodeBootstrap {
       const provider = yield* Provider.Service
       const memory = yield* MemoryService.Service
       const watcher = yield* KilocodeWatcher.Service
+      const wake = yield* Wakeup.Service
 
       const init = Effect.fn("KilocodeBootstrap.init")(function* () {
         yield* watcher.init()
@@ -45,6 +48,17 @@ export namespace KilocodeBootstrap {
         yield* bus.subscribeCallback(MemoryEvents.Updated, (evt) =>
           KiloToolRegistry.invalidateMemoryEnabled(evt.properties.directory),
         )
+        // Re-arm this directory's persisted wakeups on every instance start: overdue ones
+        // fire immediately, the rest get their timers. A failure must not block bootstrap.
+        // kilocode_change - offline: session-export bootstrap removed with the keep-deleted surface
+        const inst = yield* InstanceRef
+        if (inst) {
+          yield* wake.adopt(inst.directory).pipe(
+            Effect.catchCause((cause) =>
+              Effect.sync(() => log.warn("wakeup adopt failed", { err: Cause.squash(cause) })),
+            ),
+          )
+        }
         if (process.env["KILO_PLATFORM"] !== "vscode") {
           yield* EffectBridge.fromPromise(() =>
             import("@/kilocode/indexing").then((mod) => mod.KiloIndexing.init()),
@@ -61,24 +75,34 @@ export namespace KilocodeBootstrap {
     }),
   )
 
-export const defaultLayer = layer.pipe(
-  Layer.provide([
-    Session.defaultLayer,
-    AppNodeBuilder.build(SessionSummary.node),
-    AppNodeBuilder.build(Provider.node),
-    MemoryService.layer,
-    Bus.defaultLayer,
-    KilocodeWatcher.defaultLayer,
-  ]),
-)
+  // kilocode_change - offline: KiloSessions (mobile/remote surface) keep-deleted; Wakeup node adopted from upstream
+  export const defaultLayer = layer.pipe(
+    Layer.provide([
+      Session.defaultLayer,
+      AppNodeBuilder.build(SessionSummary.node),
+      AppNodeBuilder.build(Provider.node),
+      MemoryService.layer,
+      Bus.defaultLayer,
+      KilocodeWatcher.defaultLayer,
+      AppNodeBuilder.build(Wakeup.node),
+    ]),
+  )
 
-const memory = LayerNode.make({ service: MemoryService.Service, layer: MemoryService.layer, deps: [] })
-const watcher = LayerNode.make({ service: KilocodeWatcher.Service, layer: KilocodeWatcher.defaultLayer, deps: [] })
-export const node = LayerNode.suspend(() =>
-  LayerNode.make({
-    service: Service,
-    layer,
-    deps: [Session.node, SessionSummary.node, Provider.node, memory, Bus.node, watcher],
-  }),
-)
+  const memory = LayerNode.make({ service: MemoryService.Service, layer: MemoryService.layer, deps: [] })
+  const watcher = LayerNode.make({ service: KilocodeWatcher.Service, layer: KilocodeWatcher.defaultLayer, deps: [] })
+  export const node = LayerNode.suspend(() =>
+    LayerNode.make({
+      service: Service,
+      layer,
+      deps: [
+        Session.node,
+        SessionSummary.node,
+        Provider.node,
+        memory,
+        Bus.node,
+        watcher,
+        Wakeup.node,
+      ],
+    }),
+  )
 }

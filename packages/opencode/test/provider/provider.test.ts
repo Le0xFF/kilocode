@@ -828,6 +828,7 @@ it.instance(
 )
 
 it.instance("getSmallModel returns undefined for the unreachable azure provider", () =>
+// kilocode_change - offline: Kilo auto small-model fallback test removed with the keep-deleted kilo provider (no credentials in the offline surface)
   Effect.gen(function* () {
     const model = yield* Provider.use.getSmallModel(ProviderV2.ID.azure)
     expect(model).toBeUndefined()

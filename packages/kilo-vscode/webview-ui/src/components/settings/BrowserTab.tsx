@@ -29,7 +29,9 @@ const BrowserTab: Component = () => {
   
 
   const [settings, setSettings] = createSignal<BrowserSettings>({
+    enabled: false,
     useSystemChrome: true,
+    headless: false,
   })
 
   onMount(() => {
@@ -89,6 +91,16 @@ const BrowserTab: Component = () => {
           {t("settings.browser.description")}
         </p>
         <Card>
+          {/* Enable toggle */}
+          <SettingsRow
+            title={t("settings.browser.enable.title")}
+            description={t("settings.browser.enable.description")}
+          >
+            <Switch checked={settings().enabled} onChange={(checked: boolean) => update("enabled", checked)} hideLabel>
+              {t("settings.browser.enable.title")}
+            </Switch>
+          </SettingsRow>
+
           {/* Use System Chrome */}
           <SettingsRow
             title={t("settings.browser.systemChrome.title")}
@@ -102,12 +114,18 @@ const BrowserTab: Component = () => {
               {t("settings.browser.systemChrome.title")}
             </Switch>
           </SettingsRow>
+
+          {/* Headless mode */}
           <SettingsRow
             title={t("settings.browser.headless.title")}
             description={t("settings.browser.headless.description")}
             last
           >
-            <Switch checked disabled hideLabel>
+            <Switch
+              checked={settings().headless}
+              onChange={(checked: boolean) => update("headless", checked)}
+              hideLabel
+            >
               {t("settings.browser.headless.title")}
             </Switch>
           </SettingsRow>

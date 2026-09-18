@@ -1,7 +1,7 @@
 import type { Command } from "@/command"
 import REVIEW from "./review.txt"
 
-type ReviewCommand = "review"
+type ReviewCommand = "review" // kilocode_change - offline: local ReviewCommand type replaces the kilo-telemetry import (keep-deleted)
 
 const legacy = {
   "local-review": {
@@ -34,20 +34,5 @@ export function reviewCommand(): Command.Info {
     description: "review changes [uncommitted|staged|unpushed|branch|commit|pr]",
     template: REVIEW,
     hints: ["$ARGUMENTS"],
-  }
-}
-
-export function legacyReviewMessage(name: string) {
-  return legacy[name as keyof typeof legacy]?.message
-}
-
-export function legacyReviewCommand(name: string): Command.Info | undefined {
-  const item = legacy[name as keyof typeof legacy]
-  if (!item) return
-  return {
-    name,
-    description: item.description,
-    template: item.message,
-    hints: [],
   }
 }

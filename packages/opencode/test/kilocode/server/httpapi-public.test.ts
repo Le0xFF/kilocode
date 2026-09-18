@@ -192,6 +192,8 @@ describe("Kilo PublicApi OpenAPI contract", () => {
     expect(branch).toEqual({ anyOf: [{ type: "string" }, { type: "null" }] })
   })
 
+// kilocode_change - offline: Kilo gateway nullability tests removed with the keep-deleted gateway surface
+
   test("keeps provider usage flat and credential-free", () => {
     const spec = OpenApi.fromApi(PublicApi)
     const schemas = (spec.components?.schemas ?? {}) as Record<string, Schema>

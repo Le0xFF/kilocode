@@ -3,6 +3,9 @@ import z from "zod"
 import { Cause, Effect, Schema } from "effect"
 import { Bus } from "@/bus"
 import { Instance, type InstanceContext } from "@/kilocode/instance"
+// kilocode_change - offline: EffectBridge import dropped (unused in the offline session surface); InstanceRef/InstanceState kept for wakeup cancellation on session removal
+import { InstanceRef } from "@/effect/instance-ref"
+import { InstanceState } from "@/effect/instance-state"
 import { Session } from "@/session/session"
 import { MessageID, SessionID } from "@/session/schema"
 import { and, desc, eq, gte, inArray, isNull, like, lt, or, type SQL } from "drizzle-orm"
@@ -244,6 +247,28 @@ const num = (value: unknown): number | undefined => {
     const [app, state] = await Promise.all([import("@/effect/app-runtime"), import("@/session/run-state")])
     const { SessionID } = await import("@/session/schema")
     await app.AppRuntime.runPromise(state.SessionRunState.Service.use((svc) => svc.cancel(SessionID.make(id))))
+  }
+
+  // Stop a removed session's wakeups so they stop holding Keep Awake and can never
+  // resume a session that no longer exists. This crosses into AppRuntime, which does
+  // not inherit the caller's instance reference, so the captured context is passed
+  // along to keep the published `session.wakeup` event on the session's directory and
+  // project instead of falling back to "global".
+  export function cancelWakeups(id: SessionID) {
+    return Effect.gen(function* () {
+      const inst = yield* InstanceState.context
+      yield* Effect.tryPromise(async () => {
+        const [app, wake] = await Promise.all([import("@/effect/app-runtime"), import("@/kilocode/wakeup")])
+        await app.AppRuntime.runPromise(
+          wake.Wakeup.Service.use((svc) => svc.cancelSession(id)).pipe(Effect.provideService(InstanceRef, inst)),
+        )
+      })
+    }).pipe(
+      Effect.catchCause((cause) =>
+        Effect.logWarning("wakeup cancel on session remove failed", { sessionID: id, cause }),
+      ),
+      Effect.forkDetach,
+    )
   }
 
   // ---------------------------------------------------------------------------

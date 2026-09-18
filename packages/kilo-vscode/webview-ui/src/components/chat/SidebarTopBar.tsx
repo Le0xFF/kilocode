@@ -21,7 +21,7 @@ export interface SidebarTopBarProps {
 
 interface Action {
   key: string
-  icon: "plus" | "history" | "organization" | "comment" | "extensions" | "user" | "settings-gear"
+  icon: "plus" | "history" | "organization" | "extensions" | "user" | "settings-gear"
   button: string
   run: () => void
 }
@@ -32,12 +32,14 @@ export const SidebarTopBar: Component<SidebarTopBarProps> = (props) => {
 
   // Mirrors the native toolbar buttons; analytics tracking removed.
 
+  // kilocode_change - offline: marketplace/profile/claw panels removed; only agent manager + settings remain
   const open = (type: "openAgentManager" | "openSettingsPanel") => vscode.postMessage({ type })
 
   const actions: Action[] = [
     { key: "newTask", icon: "plus", button: "new_task", run: () => props.onNewTask() },
     { key: "history", icon: "history", button: "history", run: () => props.onHistory() },
     { key: "agentManager", icon: "organization", button: "agent_manager", run: () => open("openAgentManager") },
+
     { key: "settings", icon: "settings-gear", button: "settings", run: () => open("openSettingsPanel") },
   ]
 

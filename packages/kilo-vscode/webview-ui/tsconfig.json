@@ -12,10 +12,5 @@
     "esModuleInterop": true,
     "skipLibCheck": true
   },
-  "include": [
-    "src/**/*",
-    "agent-manager/**/*",
-    "diff-viewer/**/*",
-    "diff-virtual/**/*"
-  ]
+  "include": ["src/**/*", "agent-manager/**/*", "diff-viewer/**/*", "diff-virtual/**/*"]
 }

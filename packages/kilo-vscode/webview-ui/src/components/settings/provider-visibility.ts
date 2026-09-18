@@ -1,4 +1,23 @@
-import type { Provider } from "../../types/messages"
+import type { Provider, ProviderConfig } from "../../types/messages"
+import type { ProviderAuthMethod } from "@kilocode/sdk/v2/client"
+import { isCustomProviderPackage } from "../../../../src/shared/provider-model"
+import { isLocalProviderOptionalApiKey } from "../../utils/local-providers"
+
+export function canChangeProviderKey(
+  item: Provider,
+  cfg: ProviderConfig | undefined,
+  methods: ProviderAuthMethod[] | undefined,
+) {
+  if (item.source !== "api" && item.source !== "config") return false
+  // Config keys override the stored key written by the connection dialog.
+  if (cfg?.options?.apiKey != null || cfg?.api_key != null) return false
+  if (isCustomProviderPackage(cfg?.npm)) return false
+  if (isLocalProviderOptionalApiKey(item.id)) return false
+  // Only offer key replacement when the dialog opens a standard API-key form.
+  return (
+    methods === undefined || (methods.length === 1 && methods.at(0)?.type === "api" && !methods.at(0)?.prompts?.length)
+  )
+}
 
 export function disabledProviderOptions(
   providers: Record<string, Provider>,

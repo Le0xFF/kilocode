@@ -48,7 +48,7 @@ export function matchLegacyKiloOpenApi(input: Record<string, unknown>) {
   if (rules) rules.schema = { const: "project", default: "project", type: "string" }
 
 
-
+// kilocode_change - offline: /kilo/* gateway spec patches removed with the keep-deleted gateway surface
   const provider = spec.components?.schemas?.Config?.properties?.provider
   if (provider?.additionalProperties && typeof provider.additionalProperties === "object")
     provider.additionalProperties = nullable(provider.additionalProperties)

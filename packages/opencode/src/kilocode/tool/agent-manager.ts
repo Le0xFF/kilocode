@@ -2,7 +2,7 @@ import { Bus } from "@/bus"
 import { InstanceState } from "@/effect/instance-state"
 import { AgentManagerEvent, type AgentManagerTask } from "@/kilocode/agent-manager/event"
 import { AgentManager, HostError } from "@/kilocode/agent-manager/service"
-import { RequestID, type Result } from "@/kilocode/agent-manager/protocol"
+import { RequestID } from "@/kilocode/agent-manager/protocol"
 import * as SandboxInheritance from "@/kilocode/sandbox/inheritance"
 import { KiloSessionMessageOrder } from "@/kilocode/session/message-order"
 import { Provider } from "@/provider/provider"
@@ -10,7 +10,9 @@ import { SessionID } from "@/session/schema"
 import * as ToolJsonSchema from "@/tool/json-schema"
 import { Tool } from "@/tool/tool"
 import { Effect, Schema } from "effect"
-import { matchesQuery } from "./model-search"
+import { matchesQuery } from "./model-search" // kilocode_change - offline: ours model-search helpers retained alongside upstream selectModel
+import { selectModel } from "./model-selection"
+import { runner } from "./host"
 import DESCRIPTION from "./agent-manager.txt"
 
 const Task = Schema.Struct({
@@ -211,19 +213,7 @@ type Selected = { task?: AgentManagerTask; error?: string }
 type Candidate = { providerID: string; model: Provider.Info["models"][string] }
 type Source = { model: NonNullable<AgentManagerTask["model"]>; variant?: string }
 
-function abort(signal: AbortSignal) {
-  return Effect.callback<never, HostError>((resume) => {
-    const err = () => new HostError({ code: "cancelled", detail: "The Agent Manager tool call was cancelled" })
-    if (signal.aborted) return resume(Effect.fail(err()))
-    const handler = () => resume(Effect.fail(err()))
-    signal.addEventListener("abort", handler, { once: true })
-    return Effect.sync(() => signal.removeEventListener("abort", handler))
-  })
-}
-
-function run(effect: Effect.Effect<Result, HostError>, signal: AbortSignal) {
-  return effect.pipe(Effect.raceFirst(abort(signal)), Effect.orDie)
-}
+const run = runner(() => new HostError({ code: "cancelled", detail: "The Agent Manager tool call was cancelled" }))
 
 
 function candidates(providers: Record<string, Provider.Info>): Candidate[] {
@@ -291,63 +281,16 @@ function select(
   if (!task.model?.trim() && !task.variant?.trim()) {
     return { task: task.prompt?.trim() && source ? { ...base, ...source } : base }
   }
-  const value = task.model?.trim()
-  const provider = task.provider?.trim()
-  const variant = task.variant?.trim()
-  if (!value) {
-    if (!variant) return { error: `Task ${index + 1} requires a model or an available current model.` }
-    const active = all.find(
-      (item) => item.providerID === source?.model.providerID && item.model.id === source?.model.modelID,
-    )
-    if (!active) return { error: `Task ${index + 1} variant override requires an available current model.` }
-    if (!active.model.variants || !Object.hasOwn(active.model.variants, variant)) {
-      return {
-        error: `Task ${index + 1} variant "${variant}" is not available for ${active.model.name}. Available variants: ${Object.keys(active.model.variants ?? {}).join(", ") || "none"}`,
-      }
-    }
-    return { task: { ...base, model: source!.model, variant } }
-  }
-  const scope = provider ? all.filter((item) => item.providerID === provider) : all
-  if (provider && scope.length === 0) {
-    return { error: `Task ${index + 1} provider is not available for model selection: ${provider}. Requested model: ${value}.` }
-  }
-  const { pool, names } = lookup(scope, value)
-  if (pool.length === 0) {
-    const close = suggest(scope, value)
-    const hint = close.length ? ` Closest matches: ${close.join(", ")}.` : ""
-    return {
-      error:
-        (provider
-          ? `Task ${index + 1} model is not available from provider "${provider}": ${value}.`
-          : `Task ${index + 1} model is not available: ${value}.`) + hint + " Use agent_manager_models to search models.",
-    }
-  }
-  if (names.length > 1) {
-    return {
-      error: `Task ${index + 1} model "${value}" is ambiguous and matches several models: ${names.slice(0, 5).join(", ")}. Use a more specific name.`,
-    }
-  }
-  const eligible = variant
-    ? pool.filter((item) => item.model.variants && Object.hasOwn(item.model.variants, variant))
-    : pool
-  if (variant && eligible.length === 0) {
-    const available = [...new Set(pool.flatMap((item) => Object.keys(item.model.variants ?? {})))]
-    return {
-      error: `Task ${index + 1} variant "${variant}" is not available for ${names.at(0)}. Available variants: ${available.join(", ") || "none"}`,
-    }
-  }
-  const chosen = [...eligible]
-    .sort(
-      (a, b) =>
-        rank(a.providerID, preferred) - rank(b.providerID, preferred) ||
-        a.providerID.localeCompare(b.providerID) ||
-        a.model.id.localeCompare(b.model.id),
-    )
-    .at(0)
-  if (!chosen) return { error: `Task ${index + 1} model is not available: ${value}. Use agent_manager_models to search models.` }
-  return {
-    task: { ...base, model: { providerID: chosen.model.providerID, modelID: chosen.model.id }, ...(variant ? { variant } : {}) },
-  }
+  const selected = selectModel(task, providers, source, preferred)
+  if ("error" in selected) return { error: `Task ${index + 1} ${selected.error}` }
+  // Naming the invoking model again must not drop the invoking reasoning variant.
+  const variant =
+    selected.variant ??
+    (source && selected.model.providerID === source.model.providerID && selected.model.modelID === source.model.modelID
+      ? source.variant
+      : undefined)
+  return { task: { ...base, ...selected, ...(variant ? { variant } : {}) } }
+// kilocode_change - offline: upstream selectModel adopted; ours inline lookup/suggest/rank helpers retained for agent_manager_models filtering
 }
 
 export const AgentManagerTool = Tool.define<

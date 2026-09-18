@@ -29,12 +29,13 @@ export function createReviewSpeech(t: T): {
 } {
   const vscode = useVSCode()
   const provider = useProvider()
-  const { config } = useConfig()
+  const { config, features } = useConfig()
+  // kilocode_change - offline: the STT hook keeps its 2-arg form (no server/goToLogin surface)
   const speech = useSpeechToText(vscode, { t })
   const models = useSpeechToTextModels()
   return {
     speech,
-    enabled: () => canUseSpeechToText(config(), provider.authStates()),
+    enabled: () => canUseSpeechToText(config(), provider.authStates(), features().speechToText),
     model: () => selectedSpeechToTextModel(config(), models.models()),
   }
 }

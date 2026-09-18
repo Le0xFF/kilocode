@@ -9,6 +9,7 @@ import { EventV2Bridge } from "@/event-v2-bridge"
 import { Bus } from "@/bus"
 import { FetchHttpClient } from "effect/unstable/http"
 import { expect, spyOn } from "bun:test"
+// kilocode_change - offline: kilo-telemetry import removed with the keep-deleted telemetry package
 import { legacyReviewMessage } from "../../src/kilocode/review/command"
 import { Cause, Deferred, Duration, Effect, Exit, Fiber, Layer } from "effect"
 import path from "path"
@@ -3065,6 +3066,9 @@ noLLMServer.instance(
       ).toBe(true)
     }),
   { config: cfg },
+
+// kilocode_change - offline: the two upstream review/suggest telemetry tests are dropped with the keep-deleted kilo-telemetry surface;
+// a no-op replacement keeps the deprecated-review-alias coverage (above) as the review-surface regression guard.
   30_000,
 )
 

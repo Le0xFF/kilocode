@@ -13,9 +13,14 @@ import { useProvider } from "../../context/provider"
 import { useVSCode } from "../../context/vscode"
 import type { Provider } from "../../types/messages"
 import CustomProviderDialog from "./CustomProviderDialog"
-import { providerIcon } from "./provider-catalog"
-import { disabledProviderOptions } from "./provider-visibility"
-import { isCustomProviderPackage } from "../../../../src/shared/provider-model"
+import ProviderConnectDialog from "./ProviderConnectDialog"
+import ProviderSelectDialog from "./ProviderSelectDialog"
+import { isPopularProvider, providerIcon, providerNoteKey, sortProviders } from "./provider-catalog"
+import {
+  canChangeProviderKey,
+  disabledProviderOptions,
+} from "./provider-visibility"
+import { isCustomProviderPackage, KILO_PROVIDER_ID } from "../../../../src/shared/provider-model"
 import { createProviderAction } from "../../utils/provider-action"
 
 type ProviderSource = "env" | "api" | "config" | "custom"
@@ -193,6 +198,13 @@ const ProvidersTab: Component = () => {
                     </span>
                   </Show>
                   <Show when={canDisconnect(item)}>
+                    <Show
+                      when={canChangeProviderKey(item, config().provider?.[item.id], provider.authMethods()[item.id])}
+                    >
+                      <Button size="large" variant="ghost" onClick={() => connectProvider(item)}>
+                        {language.t("settings.providers.action.changeApiKey")}
+                      </Button>
+                    </Show>
                     <Show when={isCustom(item)}>
                       <Button size="large" variant="ghost" onClick={() => editProvider(item)}>
                         {language.t("provider.custom.edit.title")}

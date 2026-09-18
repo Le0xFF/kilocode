@@ -189,7 +189,7 @@ export function handleSessionError(error: unknown, toast: ReturnType<typeof useT
 /**
  * One-shot initialiser called from the App component body.
  *
- * - Registers Kilo TUI commands (indexing, etc.)
+ * - Registers Kilo TUI commands (indexing, etc.) // kilocode_change - offline: kilo-gateway surface keep-deleted
  * - Registers the auto-approve toggle command
  */
 export function init() {
@@ -200,7 +200,7 @@ export function init() {
 
   useIndexingWarnings()
 
-  // Register Kilo TUI commands (indexing, etc.)
+  // Register Kilo TUI commands (indexing, etc.) // kilocode_change - offline: kilo-gateway TUI deps/commands keep-deleted
   registerKiloCommands(useSDK)
   useCaffeination()
 

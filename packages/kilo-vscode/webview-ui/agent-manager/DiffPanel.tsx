@@ -1,10 +1,8 @@
 import { type Component, createMemo, Show, type JSXElement } from "solid-js"
 import { Accordion } from "@kilocode/kilo-ui/accordion"
-import { Icon } from "@kilocode/kilo-ui/icon"
-import { Button } from "@kilocode/kilo-ui/button"
 import { IconButton } from "@kilocode/kilo-ui/icon-button"
-import { Tooltip, TooltipKeybind } from "@kilocode/kilo-ui/tooltip"
-import { useLanguage } from "../src/context/language"
+import { Spinner } from "@kilocode/kilo-ui/spinner"
+import { Tooltip } from "@kilocode/kilo-ui/tooltip"
 import { DiffStyleSelect } from "../diff-viewer/InlineSelect"
 
 import { useVSCode } from "../src/context/vscode"
@@ -41,14 +39,17 @@ import {
   toggleOpenFiles,
 } from "../diff-viewer/diff-open-policy"
 import { DiffEndMarker } from "../diff-viewer/DiffEndMarker"
+import { DiffViewerNotice } from "../diff-viewer/DiffViewerNotice"
 import { VirtualDiffList } from "../diff-viewer/VirtualDiffList"
 import { createDiffViewport } from "../diff-viewer/diff-requests"
 import "./pr/pr-panel.css"
 import "../diff-viewer/remote-comments.css"
 import { RemoteCommentsOutside } from "../diff-viewer/remote-comment-renderer"
 import { ReviewDiffItem } from "../diff-viewer/ReviewDiffItem"
-import { createReviewView, type ReviewViewProps } from "../diff-viewer/review-controller"
-import { notice, reviewSendAllKeybind } from "../diff-viewer/review-setup"
+import { type ReviewViewProps } from "../diff-viewer/review-controller"
+import { SendAllButton } from "../diff-viewer/SendAllButton"
+import { createReviewSurface } from "../diff-viewer/review-surface"
+import type { PRDiffSnapshot, PRTarget } from "../../src/shared/pr-comment-actions"
 
 // --- Data model ---
 
@@ -69,15 +70,18 @@ interface DiffPanelProps extends ReviewViewProps {
   lead?: JSXElement
   /** Defaults to true. Hides the per-file Revert action when false. */
   canRevert?: boolean
+  prTarget?: PRTarget
+  prSnapshot?: PRDiffSnapshot
+  prLoading?: boolean
+  prError?: string
 }
 
 export const DiffPanel: Component<DiffPanelProps> = (props) => {
-  const { t } = useLanguage()
-  const noticeText = () => notice(t, props.notice)
-  const sendAllKeybind = () => reviewSendAllKeybind(t)
-
   let rootRef: HTMLDivElement | undefined
   const {
+    t,
+    noticeText,
+    sendAllKeybind,
     open,
     setOpen,
     rows,
@@ -97,7 +101,12 @@ export const DiffPanel: Component<DiffPanelProps> = (props) => {
     commentsByFile,
     handleGutterClick,
     sendAllClick,
-  } = createReviewView(props, () => rootRef)
+    sendAllToGithub,
+    sendAllGithubCount,
+    sendAllGithubAvailable,
+    sendAllPending,
+    sendAllError,
+  } = createReviewSurface(props, () => rootRef)
 
   const handleExpandAll = () => {
     setOpen(toggleOpenFiles(props.diffs, open()))
@@ -122,6 +131,16 @@ export const DiffPanel: Component<DiffPanelProps> = (props) => {
               what you're looking at and is the primary control. Always shown,
               so an empty scope can still be switched away from. */}
           <Show when={props.lead}>{props.lead}</Show>
+          <Show when={props.prTarget}>
+            {(target) => (
+              <span class="am-diff-pr-context" title={target().prUrl}>
+                {t("diffViewer.comment.prContext", { number: target().prNumber })}
+                <Show when={props.prLoading}>
+                  <Spinner />
+                </Show>
+              </span>
+            )}
+          </Show>
           <Show when={props.diffs.length > 0}>
             <>
               <DiffStyleSelect
@@ -175,15 +194,9 @@ export const DiffPanel: Component<DiffPanelProps> = (props) => {
           <IconButton icon="close" size="small" variant="ghost" label={t("common.close")} onClick={props.onClose} />
         </div>
       </div>
+      <DiffViewerNotice text={props.prError} role="alert" />
 
-      <Show when={noticeText()}>
-        <div class="diff-viewer-notice" role="status">
-          <span class="diff-viewer-notice-icon">
-            <Icon name="warning" size="small" />
-          </span>
-          <span class="diff-viewer-notice-text">{noticeText()}</span>
-        </div>
-      </Show>
+      <DiffViewerNotice text={noticeText()} role="status" />
 
       <Show when={props.loading && props.diffs.length === 0}>
         <div class="am-diff-loading">
@@ -249,11 +262,20 @@ export const DiffPanel: Component<DiffPanelProps> = (props) => {
             <span class="am-diff-comments-count">
               {comments().length} comment{comments().length !== 1 ? "s" : ""}
             </span>
-            <TooltipKeybind title={t("agentManager.review.sendAllToChat")} keybind={sendAllKeybind()} placement="top">
-              <Button variant="primary" size="small" onClick={sendAllClick}>
-                {t("agentManager.review.sendAllToChat")}
-              </Button>
-            </TooltipKeybind>
+            <Show when={sendAllError()}>
+              <span class="am-review-send-error" role="alert">
+                {sendAllError()}
+              </span>
+            </Show>
+            <SendAllButton
+              count={comments().length}
+              githubCount={sendAllGithubCount()}
+              githubNumber={sendAllGithubAvailable() ? props.prTarget?.prNumber : undefined}
+              pending={sendAllPending()}
+              onSendChat={sendAllClick}
+              onSendGithub={sendAllToGithub}
+              keybind={sendAllKeybind()}
+            />
           </div>
         </Show>
       </Show>

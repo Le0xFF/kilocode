@@ -5,6 +5,7 @@ import { AgentManagerTool } from "./agent-manager"
 import { BackgroundProcessTool } from "./background-process"
 import { BoardReadTool, BoardPostTool } from "./board"
 import { BrowserOpenTool } from "./browser-open"
+import { CancelWakeupTool } from "./cancel-wakeup"
 import { ChartTool } from "./chart"
 // kilocode_change - offline: generate-image tool removed (gateway-backed); image generation goes via media-local routes
 
@@ -13,7 +14,8 @@ import { MemoryRecallTool } from "./memory-recall"
 import { MemorySaveTool } from "./memory-save"
 
 import { OpenPlanTool } from "./open-plan"
-
+import { ScheduleWakeupTool } from "./schedule-wakeup"
+import { SendFileTool } from "./send-file"
 import * as Tool from "../../tool/tool"
 import { Flag } from "@opencode-ai/core/flag/flag"
 import { Effect } from "effect"
@@ -81,19 +83,54 @@ export namespace KiloToolRegistry {
       const process = yield* BackgroundProcessTool
       const browser = Flag.KILO_CLIENT === "vscode" ? yield* BrowserOpenTool : undefined
       const chart = yield* ChartTool
-
+      // kilocode_change - offline: generate-image removed; openPlan/send retained
+      const openPlan = yield* OpenPlanTool
+      const send = yield* SendFileTool
+      // Wakeup.Service is provided by Wakeup.node in the tool-registry node graph.
+      const schedule = yield* ScheduleWakeupTool
+      const cancel = yield* CancelWakeupTool
       const board = yield* Effect.all({
         boardRead: BoardReadTool,
         boardPost: BoardPostTool,
         goalReport: GoalReportTool,
       })
-      if (!notebook) return { recall, managerModels, memory, save, manager, process, browser, chart, ...board }
+if (!notebook)
+        return {
+          recall,
+          managerModels,
+          memory,
+          save,
+          manager,
+          process,
+          browser,
+          chart,
+          openPlan,
+          send,
+          schedule,
+          cancel,
+          ...board,
+        }
       const tools = yield* Effect.all({
         notebookRead: NotebookReadTool,
         notebookEdit: NotebookEditTool,
         notebookExecute: NotebookExecuteTool,
       }).pipe(Effect.provideService(Notebook.Service, notebook))
-      return { recall, managerModels, memory, save, manager, process, browser, chart, ...board, ...tools }
+return {
+        recall,
+        managerModels,
+        memory,
+        save,
+        manager,
+        process,
+        browser,
+        chart,
+        openPlan,
+        send,
+        schedule,
+        cancel,
+        ...board,
+        ...tools,
+      }
     })
   }
 
@@ -109,8 +146,11 @@ export namespace KiloToolRegistry {
       process: Tool.Info
       browser?: Tool.Info
       chart: Tool.Info
-
-      // kilocode_change - offline: image (generate-image removed) and openPlan are not wired in the shared registry
+// kilocode_change - offline: generate-image removed; openPlan/send/schedule/cancel retained
+      openPlan?: Tool.Info
+      send: Tool.Info
+      schedule?: Tool.Info
+      cancel?: Tool.Info
       boardRead?: Tool.Info
       goalReport?: Tool.Info
       boardPost?: Tool.Info
@@ -132,6 +172,9 @@ export namespace KiloToolRegistry {
         process: Tool.init(tools.process),
         chart: Tool.init(tools.chart),
       })
+const openPlan = tools.openPlan ? yield* Tool.init(tools.openPlan) : undefined
+      const schedule = tools.schedule ? yield* Tool.init(tools.schedule) : undefined
+      const cancel = tools.cancel ? yield* Tool.init(tools.cancel) : undefined
       const report = tools.goalReport ? { goalReport: yield* Tool.init(tools.goalReport) } : {}
       const board =
         tools.boardRead && tools.boardPost
@@ -156,6 +199,10 @@ export namespace KiloToolRegistry {
         browser,
         ...notebooks,
         semantic,
+        openPlan,
+        schedule,
+        cancel,
+        send: base.send,
       }
 
     })
@@ -219,8 +266,11 @@ export namespace KiloToolRegistry {
       process: Tool.Def
       browser?: Tool.Def
       chart: Tool.Def
-
-      // kilocode_change - offline: image (generate-image removed) and openPlan are not wired in the shared registry
+// kilocode_change - offline: generate-image removed; openPlan/send/schedule/cancel retained
+      openPlan?: Tool.Def
+      send: Tool.Def
+      schedule?: Tool.Def
+      cancel?: Tool.Def
       boardRead?: Tool.Def
       goalReport?: Tool.Def
       boardPost?: Tool.Def
@@ -234,15 +284,12 @@ export namespace KiloToolRegistry {
         image_generation?: boolean
         native_notebook_tools?: boolean
         task_model_selection?: boolean
-        shared_agent_board?: boolean
       }
+      shared_agent_board?: boolean
     },
     flags: Pick<RuntimeFlags.Info, "experimentalSharedAgentBoard">,
   ): Tool.Def[] {
-    const enabled = BoardEnabled.resolve({
-      config: cfg.experimental?.shared_agent_board,
-      flag: flags.experimentalSharedAgentBoard,
-    })
+    const enabled = BoardEnabled.on(cfg, flags)
     return [
 
       ...(tools.goalReport ? [tools.goalReport] : []),
@@ -254,6 +301,8 @@ export namespace KiloToolRegistry {
       tools.recall,
       ...(Flag.KILO_CLIENT === "vscode" ? [tools.chart] : []),
       ...(Flag.KILO_CLIENT === "cli" || Flag.KILO_CLIENT === "vscode" ? [tools.process] : []),
+      ...((Flag.KILO_CLIENT === "cli" || Flag.KILO_CLIENT === "vscode") && tools.schedule ? [tools.schedule] : []),
+      ...((Flag.KILO_CLIENT === "cli" || Flag.KILO_CLIENT === "vscode") && tools.cancel ? [tools.cancel] : []),
       ...(Flag.KILO_CLIENT === "vscode" || cfg.experimental?.task_model_selection === true
         ? [tools.managerModels]
         : []),
