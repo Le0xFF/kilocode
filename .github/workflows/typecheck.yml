@@ -1,0 +1,56 @@
+name: typecheck
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  # kilocode_change start
+  changes:
+    name: detect typecheck changes
+    runs-on: ${{ github.repository == 'Kilo-Org/kilocode' && 'blacksmith-4vcpu-ubuntu-2404' || 'ubuntu-latest' }} # kilocode_change
+    outputs:
+      javascript: ${{ github.event_name == 'workflow_dispatch' && 'true' || steps.filter.outputs.javascript }}
+    steps:
+      - name: Checkout repository
+        if: github.event_name != 'workflow_dispatch'
+        uses: actions/checkout@v6
+
+      - name: Detect typecheck changes
+        if: github.event_name != 'workflow_dispatch'
+        id: filter
+        uses: Kilo-Org/paths-filter@668c092af3649c4b664c54e4b704aa46782f6f7c # v3
+        with:
+          predicate-quantifier: every
+          filters: |
+            javascript:
+              - '**'
+              - '!.changeset/**'
+              - '!.kilo/plans/**'              - '**'
+              - '!.changeset/**'
+              - '!.kilo/plans/**'
+              - '!packages/opencode/**'
+              - '!packages/kilo-vscode/**'
+              - '!packages/kilo-docs/**'
+  # kilocode_change end
+
+  typecheck-js:
+    name: typecheck-js
+    needs: changes # kilocode_change
+    if: github.event_name == 'workflow_dispatch' || needs.changes.outputs.javascript == 'true' # kilocode_change
+    runs-on: ${{ github.repository == 'Kilo-Org/kilocode' && 'blacksmith-4vcpu-ubuntu-2404' || 'ubuntu-latest' }} # kilocode_change
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6 # kilocode_change
+
+      - name: Setup Bun
+        uses: ./.github/actions/setup-bun
+
+      # kilocode_change start
+      - name: Run TypeScript typecheck
+        run: bun turbo typecheck
+      # kilocode_change end
+

@@ -1,0 +1,7 @@
+export const dict = {
+  "server.processExited": "Der CLI-Prozess wurde mit dem Code {{code}} beendet, bevor der Server gestartet wurde",
+  "server.processSignaled":
+    "Der CLI-Prozess wurde durch das Signal {{signal}} beendet, bevor der Server gestartet wurde",
+  "server.spawnFailed": "Fehler beim Starten der CLI-Binärdatei ({{code}})",
+  "server.startupTimeout": "Zeitüberschreitung beim Serverstart nach {{seconds}} Sekunden",
+} as const

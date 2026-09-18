@@ -1,0 +1,638 @@
+// Bun Snapshot v1, https://bun.sh/docs/test/snapshots
+
+exports[`Kilo CLI help-text snapshots every documented command emits stable help text: kilo acp --help 1`] = `
+"kilo acp
+
+start ACP (Agent Client Protocol) server
+
+Opzioni:
+  -h, --help         show help                                                            [booleano]
+  -v, --version      show version number                                                  [booleano]
+      --print-logs   print logs to stderr                                                 [booleano]
+      --log-level    log level                  [stringa] [scelte: "DEBUG", "INFO", "WARN", "ERROR"]
+      --pure         run without external plugins                                         [booleano]
+      --port         port to listen on                                     [numero] [predefinito: 0]
+      --hostname     hostname to listen on                      [stringa] [predefinito: "127.0.0.1"]
+      --mdns         enable mDNS service discovery (defaults hostname to 0.0.0.0)
+                                                                     [booleano] [predefinito: false]
+      --mdns-domain  custom domain name for mDNS service (default: kilo.local)
+                                                               [stringa] [predefinito: "kilo.local"]
+      --cors         additional domains to allow for CORS                [vettore] [predefinito: []]
+      --cwd          working directory                 [stringa] [predefinito: "<HOME>"]
+"
+`;
+
+exports[`Kilo CLI help-text snapshots every documented command emits stable help text: kilo mcp --help 1`] = `
+"kilo mcp
+
+manage MCP (Model Context Protocol) servers
+
+Comandi:
+  kilo mcp add [name]     add an MCP server
+  kilo mcp list           list MCP servers and their status                              [alias: ls]
+  kilo mcp auth [name]    authenticate with an OAuth-enabled MCP server
+  kilo mcp logout [name]  remove OAuth credentials for an MCP server
+  kilo mcp debug <name>   debug OAuth connection for an MCP server
+
+Opzioni:
+  -h, --help        show help                                                             [booleano]
+  -v, --version     show version number                                                   [booleano]
+      --print-logs  print logs to stderr                                                  [booleano]
+      --log-level   log level                   [stringa] [scelte: "DEBUG", "INFO", "WARN", "ERROR"]
+      --pure        run without external plugins                                          [booleano]
+"
+`;
+
+exports[`Kilo CLI help-text snapshots every documented command emits stable help text: kilo attach --help 1`] = `
+"kilo attach <url>
+
+attach to a running kilo server
+
+Positionals:
+  url  http://localhost:4096                                                   [stringa] [richiesto]
+
+Opzioni:
+  -h, --help          show help                                                           [booleano]
+  -v, --version       show version number                                                 [booleano]
+      --print-logs    print logs to stderr                                                [booleano]
+      --log-level     log level                 [stringa] [scelte: "DEBUG", "INFO", "WARN", "ERROR"]
+      --pure          run without external plugins                                        [booleano]
+      --dir           directory to run in                                                  [stringa]
+  -c, --continue      continue the last session                                           [booleano]
+  -s, --session       session id to continue                                               [stringa]
+      --fork          fork the session when continuing (use with --continue or --session) [booleano]
+  -p, --password      basic auth password (defaults to KILO_SERVER_PASSWORD)               [stringa]
+  -u, --username      basic auth username (defaults to KILO_SERVER_USERNAME or 'kilo')     [stringa]
+      --mini          start the minimal interactive interface        [booleano] [predefinito: false]
+      --no-replay     disable mini session history replay on resume and after resize      [booleano]
+      --replay-limit  cap visible mini replay to the newest N messages                      [numero]
+"
+`;
+
+exports[`Kilo CLI help-text snapshots every documented command emits stable help text: kilo run --help 1`] = `
+"kilo run [message..]
+
+run kilo with a message
+
+Positionals:
+  message  message to send                                               [vettore] [predefinito: []]
+
+Opzioni:
+  -h, --help         show help                                                            [booleano]
+  -v, --version      show version number                                                  [booleano]
+      --print-logs   print logs to stderr                                                 [booleano]
+      --log-level    log level                  [stringa] [scelte: "DEBUG", "INFO", "WARN", "ERROR"]
+      --pure         run without external plugins                                         [booleano]
+      --command      the command to run, use message for args                              [stringa]
+  -c, --continue     continue the last session                                            [booleano]
+  -s, --session      session id to continue                                                [stringa]
+      --fork         fork the session before continuing (requires --continue or --session)[booleano]
+  -m, --model        model to use in the format of provider/model                          [stringa]
+      --agent        agent to use                                                          [stringa]
+      --format       format: default (formatted) or json (raw JSON events)
+                                      [stringa] [scelte: "default", "json"] [predefinito: "default"]
+  -f, --file         file(s) to attach to message                                          [vettore]
+      --title        title for the session (uses truncated prompt if no value provided)    [stringa]
+      --attach       attach to a running kilo server (e.g., http://localhost:4096)         [stringa]
+  -p, --password     basic auth password (defaults to KILO_SERVER_PASSWORD)                [stringa]
+  -u, --username     basic auth username (defaults to KILO_SERVER_USERNAME or 'kilo')      [stringa]
+      --dir          directory to run in, path on remote server if attaching               [stringa]
+      --port         port for the local server (defaults to random port if no value provided)
+                                                                                            [numero]
+      --variant      model variant (provider-specific reasoning effort, e.g., high, max, minimal)
+                                                                                           [stringa]
+      --thinking     show thinking blocks                                                 [booleano]
+  -i, --interactive  run in direct interactive split-footer mode     [booleano] [predefinito: false]
+      --auto         auto-approve permissions that are not explicitly denied (dangerous!)
+                                                                     [booleano] [predefinito: false]
+"
+`;
+
+exports[`Kilo CLI help-text snapshots every documented command emits stable help text: kilo debug --help 1`] = `
+"kilo debug
+
+debugging and troubleshooting tools
+
+Comandi:
+  kilo debug config        show resolved configuration
+  kilo debug rg            ripgrep debugging utilities
+  kilo debug file          file system debugging utilities
+  kilo debug scrap         list all known projects
+  kilo debug skill         list all available skills
+  kilo debug snapshot      snapshot debugging utilities
+  kilo debug startup       print startup timing
+  kilo debug agent <name>  show agent configuration details
+  kilo debug v2            debug v2 catalog and built-in plugins
+  kilo debug info          show debug information
+  kilo debug paths         show global paths (data, config, cache, state)
+  kilo debug wait          wait indefinitely (for debugging)
+
+Opzioni:
+  -h, --help        show help                                                             [booleano]
+  -v, --version     show version number                                                   [booleano]
+      --print-logs  print logs to stderr                                                  [booleano]
+      --log-level   log level                   [stringa] [scelte: "DEBUG", "INFO", "WARN", "ERROR"]
+      --pure        run without external plugins                                          [booleano]
+"
+`;
+
+exports[`Kilo CLI help-text snapshots every documented command emits stable help text: kilo providers --help 1`] = `
+"kilo auth
+
+manage AI providers and credentials
+
+Comandi:
+  kilo providers list               list providers and credentials                       [alias: ls]
+  kilo providers login [url]        log in to a provider
+  kilo providers logout [provider]  log out from a configured provider
+
+Opzioni:
+  -h, --help        show help                                                             [booleano]
+  -v, --version     show version number                                                   [booleano]
+      --print-logs  print logs to stderr                                                  [booleano]
+      --log-level   log level                   [stringa] [scelte: "DEBUG", "INFO", "WARN", "ERROR"]
+      --pure        run without external plugins                                          [booleano]
+"
+`;
+
+exports[`Kilo CLI help-text snapshots every documented command emits stable help text: kilo agent --help 1`] = `
+"kilo agent
+
+manage agents
+
+Comandi:
+  kilo agent create  create a new agent
+  kilo agent list    list all available agents
+
+Opzioni:
+  -h, --help        show help                                                             [booleano]
+  -v, --version     show version number                                                   [booleano]
+      --print-logs  print logs to stderr                                                  [booleano]
+      --log-level   log level                   [stringa] [scelte: "DEBUG", "INFO", "WARN", "ERROR"]
+      --pure        run without external plugins                                          [booleano]
+"
+`;
+
+exports[`Kilo CLI help-text snapshots every documented command emits stable help text: kilo upgrade --help 1`] = `
+"kilo upgrade [target]
+
+upgrade kilo to the latest or a specific version
+
+Positionals:
+  target  version to upgrade to, for ex '0.1.48' or 'v0.1.48'                              [stringa]
+
+Opzioni:
+  -h, --help        show help                                                             [booleano]
+  -v, --version     show version number                                                   [booleano]
+      --print-logs  print logs to stderr                                                  [booleano]
+      --log-level   log level                   [stringa] [scelte: "DEBUG", "INFO", "WARN", "ERROR"]
+      --pure        run without external plugins                                          [booleano]
+  -m, --method      installation method to use
+                  [stringa] [scelte: "curl", "npm", "yarn", "pnpm", "bun", "brew", "choco", "scoop"]
+"
+`;
+
+exports[`Kilo CLI help-text snapshots every documented command emits stable help text: kilo uninstall --help 1`] = `
+"kilo uninstall
+
+uninstall kilo and remove all related files
+
+Opzioni:
+  -h, --help         show help                                                            [booleano]
+  -v, --version      show version number                                                  [booleano]
+      --print-logs   print logs to stderr                                                 [booleano]
+      --log-level    log level                  [stringa] [scelte: "DEBUG", "INFO", "WARN", "ERROR"]
+      --pure         run without external plugins                                         [booleano]
+  -c, --keep-config  keep configuration files                        [booleano] [predefinito: false]
+  -d, --keep-data    keep session data and snapshots                 [booleano] [predefinito: false]
+      --dry-run      show what would be removed without removing     [booleano] [predefinito: false]
+  -f, --force        skip confirmation prompts                       [booleano] [predefinito: false]
+"
+`;
+
+exports[`Kilo CLI help-text snapshots every documented command emits stable help text: kilo serve --help 1`] = `
+"kilo serve
+
+starts a headless kilo server
+
+Opzioni:
+  -h, --help         show help                                                            [booleano]
+  -v, --version      show version number                                                  [booleano]
+      --print-logs   print logs to stderr                                                 [booleano]
+      --log-level    log level                  [stringa] [scelte: "DEBUG", "INFO", "WARN", "ERROR"]
+      --pure         run without external plugins                                         [booleano]
+      --port         port to listen on                                     [numero] [predefinito: 0]
+      --hostname     hostname to listen on                      [stringa] [predefinito: "127.0.0.1"]
+      --mdns         enable mDNS service discovery (defaults hostname to 0.0.0.0)
+                                                                     [booleano] [predefinito: false]
+      --mdns-domain  custom domain name for mDNS service (default: kilo.local)
+                                                               [stringa] [predefinito: "kilo.local"]
+      --cors         additional domains to allow for CORS                [vettore] [predefinito: []]
+"
+`;
+
+exports[`Kilo CLI help-text snapshots every documented command emits stable help text: kilo models --help 1`] = `
+"kilo models [provider]
+
+list all available models
+
+Positionals:
+  provider  provider ID to filter models by                                                [stringa]
+
+Opzioni:
+  -h, --help        show help                                                             [booleano]
+  -v, --version     show version number                                                   [booleano]
+      --print-logs  print logs to stderr                                                  [booleano]
+      --log-level   log level                   [stringa] [scelte: "DEBUG", "INFO", "WARN", "ERROR"]
+      --pure        run without external plugins                                          [booleano]
+      --verbose     use more verbose model output (includes metadata like costs)          [booleano]
+      --refresh     refresh the models cache from models.dev (goes online)                [booleano]
+"
+`;
+
+exports[`Kilo CLI help-text snapshots every documented command emits stable help text: kilo stats --help 1`] = `
+"kilo stats
+
+show token usage and cost statistics
+
+Opzioni:
+  -h, --help        show help                                                             [booleano]
+  -v, --version     show version number                                                   [booleano]
+      --print-logs  print logs to stderr                                                  [booleano]
+      --log-level   log level                   [stringa] [scelte: "DEBUG", "INFO", "WARN", "ERROR"]
+      --pure        run without external plugins                                          [booleano]
+      --days        show stats for the last N days (default: all time)                      [numero]
+      --tools       number of tools to show (default: all)                                  [numero]
+      --models      show model statistics (default: hidden). Pass a number to show top N, otherwise
+                    shows all
+      --project     filter by project (default: all projects, empty string: current project)
+                                                                                           [stringa]
+"
+`;
+
+exports[`Kilo CLI help-text snapshots every documented command emits stable help text: kilo export --help 1`] = `
+"kilo export [sessionID]
+
+export session data as JSON
+
+Positionals:
+  sessionID  session id to export                                                          [stringa]
+
+Opzioni:
+  -h, --help        show help                                                             [booleano]
+  -v, --version     show version number                                                   [booleano]
+      --print-logs  print logs to stderr                                                  [booleano]
+      --log-level   log level                   [stringa] [scelte: "DEBUG", "INFO", "WARN", "ERROR"]
+      --pure        run without external plugins                                          [booleano]
+      --sanitize    redact sensitive transcript and file data                             [booleano]
+"
+`;
+
+exports[`Kilo CLI help-text snapshots every documented command emits stable help text: kilo import --help 1`] = `
+"kilo import <file>
+
+import session data from JSON file or URL
+
+Positionals:
+  file  path to JSON file                                                      [stringa] [richiesto]
+
+Opzioni:
+  -h, --help        show help                                                             [booleano]
+  -v, --version     show version number                                                   [booleano]
+      --print-logs  print logs to stderr                                                  [booleano]
+      --log-level   log level                   [stringa] [scelte: "DEBUG", "INFO", "WARN", "ERROR"]
+      --pure        run without external plugins                                          [booleano]
+"
+`;
+
+exports[`Kilo CLI help-text snapshots every documented command emits stable help text: kilo github --help 1`] = `
+"kilo github
+
+manage GitHub agent
+
+Comandi:
+  kilo github install  install the GitHub agent
+  kilo github run      run the GitHub agent
+
+Opzioni:
+  -h, --help        show help                                                             [booleano]
+  -v, --version     show version number                                                   [booleano]
+      --print-logs  print logs to stderr                                                  [booleano]
+      --log-level   log level                   [stringa] [scelte: "DEBUG", "INFO", "WARN", "ERROR"]
+      --pure        run without external plugins                                          [booleano]
+"
+`;
+
+exports[`Kilo CLI help-text snapshots every documented command emits stable help text: kilo pr --help 1`] = `
+"kilo pr
+
+manage pull requests
+
+Comandi:
+  kilo pr checkout <number>  fetch and checkout a GitHub PR branch, then run kilo
+  kilo pr link <url>         link the current worktree to a pull request
+  kilo pr unlink             clear the linked pull request
+  kilo pr status             show the linked pull request
+
+Opzioni:
+  -h, --help        show help                                                             [booleano]
+  -v, --version     show version number                                                   [booleano]
+      --print-logs  print logs to stderr                                                  [booleano]
+      --log-level   log level                   [stringa] [scelte: "DEBUG", "INFO", "WARN", "ERROR"]
+      --pure        run without external plugins                                          [booleano]
+"
+`;
+
+exports[`Kilo CLI help-text snapshots every documented command emits stable help text: kilo session --help 1`] = `
+"kilo session
+
+manage sessions
+
+Comandi:
+  kilo session list                list sessions
+  kilo session delete <sessionID>  delete a session
+
+Opzioni:
+  -h, --help        show help                                                             [booleano]
+  -v, --version     show version number                                                   [booleano]
+      --print-logs  print logs to stderr                                                  [booleano]
+      --log-level   log level                   [stringa] [scelte: "DEBUG", "INFO", "WARN", "ERROR"]
+      --pure        run without external plugins                                          [booleano]
+"
+`;
+
+exports[`Kilo CLI help-text snapshots every documented command emits stable help text: kilo plugin --help 1`] = `
+"kilo plugin <module>
+
+install plugin and update config
+
+Positionals:
+  module  npm module name                                                      [stringa] [richiesto]
+
+Opzioni:
+  -h, --help        show help                                                             [booleano]
+  -v, --version     show version number                                                   [booleano]
+      --print-logs  print logs to stderr                                                  [booleano]
+      --log-level   log level                   [stringa] [scelte: "DEBUG", "INFO", "WARN", "ERROR"]
+      --pure        run without external plugins                                          [booleano]
+  -g, --global      install in global config                         [booleano] [predefinito: false]
+  -f, --force       replace existing plugin version                  [booleano] [predefinito: false]
+"
+`;
+
+exports[`Kilo CLI help-text snapshots every documented command emits stable help text: kilo db --help 1`] = `
+"kilo db
+
+database tools
+
+Comandi:
+  kilo db [query]     open an interactive sqlite3 shell or run a query                 [predefinito]
+  kilo db path        print the database path
+
+Positionals:
+  query  SQL query to execute                                                              [stringa]
+
+Opzioni:
+  -h, --help        show help                                                             [booleano]
+  -v, --version     show version number                                                   [booleano]
+      --print-logs  print logs to stderr                                                  [booleano]
+      --log-level   log level                   [stringa] [scelte: "DEBUG", "INFO", "WARN", "ERROR"]
+      --pure        run without external plugins                                          [booleano]
+      --format      Output format             [stringa] [scelte: "json", "tsv"] [predefinito: "tsv"]
+"
+`;
+
+exports[`Kilo CLI help-text snapshots every documented command emits stable help text: kilo mcp list --help 1`] = `
+"kilo mcp list
+
+list MCP servers and their status
+
+Opzioni:
+  -h, --help        show help                                                             [booleano]
+  -v, --version     show version number                                                   [booleano]
+      --print-logs  print logs to stderr                                                  [booleano]
+      --log-level   log level                   [stringa] [scelte: "DEBUG", "INFO", "WARN", "ERROR"]
+      --pure        run without external plugins                                          [booleano]
+"
+`;
+
+exports[`Kilo CLI help-text snapshots every documented command emits stable help text: kilo mcp add --help 1`] = `
+"kilo mcp add [name]
+
+add an MCP server
+
+Positionals:
+  name  name of the MCP server                                                             [stringa]
+
+Opzioni:
+  -h, --help        show help                                                             [booleano]
+  -v, --version     show version number                                                   [booleano]
+      --print-logs  print logs to stderr                                                  [booleano]
+      --log-level   log level                   [stringa] [scelte: "DEBUG", "INFO", "WARN", "ERROR"]
+      --pure        run without external plugins                                          [booleano]
+      --url         URL for a remote MCP server                                            [stringa]
+      --env         environment variable for a local MCP server (KEY=VALUE)                [vettore]
+      --header      HTTP header for a remote MCP server (KEY=VALUE)                        [vettore]
+"
+`;
+
+exports[`Kilo CLI help-text snapshots every documented command emits stable help text: kilo mcp auth --help 1`] = `
+"kilo mcp auth [name]
+
+authenticate with an OAuth-enabled MCP server
+
+Comandi:
+  kilo mcp auth list  list OAuth-capable MCP servers and their auth status               [alias: ls]
+
+Positionals:
+  name  name of the MCP server                                                             [stringa]
+
+Opzioni:
+  -h, --help        show help                                                             [booleano]
+  -v, --version     show version number                                                   [booleano]
+      --print-logs  print logs to stderr                                                  [booleano]
+      --log-level   log level                   [stringa] [scelte: "DEBUG", "INFO", "WARN", "ERROR"]
+      --pure        run without external plugins                                          [booleano]
+"
+`;
+
+exports[`Kilo CLI help-text snapshots every documented command emits stable help text: kilo mcp logout --help 1`] = `
+"kilo mcp logout [name]
+
+remove OAuth credentials for an MCP server
+
+Positionals:
+  name  name of the MCP server                                                             [stringa]
+
+Opzioni:
+  -h, --help        show help                                                             [booleano]
+  -v, --version     show version number                                                   [booleano]
+      --print-logs  print logs to stderr                                                  [booleano]
+      --log-level   log level                   [stringa] [scelte: "DEBUG", "INFO", "WARN", "ERROR"]
+      --pure        run without external plugins                                          [booleano]
+"
+`;
+
+exports[`Kilo CLI help-text snapshots every documented command emits stable help text: kilo providers list --help 1`] = `
+"kilo providers list
+
+list providers and credentials
+
+Opzioni:
+  -h, --help        show help                                                             [booleano]
+  -v, --version     show version number                                                   [booleano]
+      --print-logs  print logs to stderr                                                  [booleano]
+      --log-level   log level                   [stringa] [scelte: "DEBUG", "INFO", "WARN", "ERROR"]
+      --pure        run without external plugins                                          [booleano]
+"
+`;
+
+exports[`Kilo CLI help-text snapshots every documented command emits stable help text: kilo providers login --help 1`] = `
+"kilo providers login [url]
+
+log in to a provider
+
+Positionals:
+  url  kilo auth provider                                                                  [stringa]
+
+Opzioni:
+  -h, --help        show help                                                             [booleano]
+  -v, --version     show version number                                                   [booleano]
+      --print-logs  print logs to stderr                                                  [booleano]
+      --log-level   log level                   [stringa] [scelte: "DEBUG", "INFO", "WARN", "ERROR"]
+      --pure        run without external plugins                                          [booleano]
+  -p, --provider    provider id or name to log in to (skips provider selection)            [stringa]
+  -m, --method      login method label (skips method selection)                            [stringa]
+"
+`;
+
+exports[`Kilo CLI help-text snapshots every documented command emits stable help text: kilo providers logout --help 1`] = `
+"kilo providers logout [provider]
+
+log out from a configured provider
+
+Positionals:
+  provider  provider id or name to log out from                                            [stringa]
+
+Opzioni:
+  -h, --help        show help                                                             [booleano]
+  -v, --version     show version number                                                   [booleano]
+      --print-logs  print logs to stderr                                                  [booleano]
+      --log-level   log level                   [stringa] [scelte: "DEBUG", "INFO", "WARN", "ERROR"]
+      --pure        run without external plugins                                          [booleano]
+"
+`;
+
+exports[`Kilo CLI help-text snapshots every documented command emits stable help text: kilo agent create --help 1`] = `
+"kilo agent create
+
+create a new agent
+
+Opzioni:
+  -h, --help                  show help                                                   [booleano]
+  -v, --version               show version number                                         [booleano]
+      --print-logs            print logs to stderr                                        [booleano]
+      --log-level             log level         [stringa] [scelte: "DEBUG", "INFO", "WARN", "ERROR"]
+      --pure                  run without external plugins                                [booleano]
+      --path                  directory path to generate the agent file                    [stringa]
+      --description           what the agent should do                                     [stringa]
+      --mode                  agent mode            [stringa] [scelte: "all", "primary", "subagent"]
+      --permissions, --tools  comma-separated list of permissions to allow (default: all).
+                              Available: "bash, read, edit, glob, grep, webfetch, task, todowrite,
+                              skill"                                                       [stringa]
+  -m, --model                 model to use in the format of provider/model                 [stringa]
+"
+`;
+
+exports[`Kilo CLI help-text snapshots every documented command emits stable help text: kilo agent list --help 1`] = `
+"kilo agent list
+
+list all available agents
+
+Opzioni:
+  -h, --help        show help                                                             [booleano]
+  -v, --version     show version number                                                   [booleano]
+      --print-logs  print logs to stderr                                                  [booleano]
+      --log-level   log level                   [stringa] [scelte: "DEBUG", "INFO", "WARN", "ERROR"]
+      --pure        run without external plugins                                          [booleano]
+"
+`;
+
+exports[`Kilo CLI help-text snapshots every documented command emits stable help text: kilo session list --help 1`] = `
+"kilo session list
+
+list sessions
+
+Opzioni:
+  -h, --help        show help                                                             [booleano]
+  -v, --version     show version number                                                   [booleano]
+      --print-logs  print logs to stderr                                                  [booleano]
+      --log-level   log level                   [stringa] [scelte: "DEBUG", "INFO", "WARN", "ERROR"]
+      --pure        run without external plugins                                          [booleano]
+  -n, --max-count   limit to N most recent sessions                                         [numero]
+      --format      output format         [stringa] [scelte: "table", "json"] [predefinito: "table"]
+  -a, --all         list sessions from all projects                  [booleano] [predefinito: false]
+  -s, --search      filter sessions by title                                               [stringa]
+"
+`;
+
+exports[`Kilo CLI help-text snapshots every documented command emits stable help text: kilo session delete --help 1`] = `
+"kilo session delete <sessionID>
+
+delete a session
+
+Positionals:
+  sessionID  session ID to delete                                              [stringa] [richiesto]
+
+Opzioni:
+  -h, --help        show help                                                             [booleano]
+  -v, --version     show version number                                                   [booleano]
+      --print-logs  print logs to stderr                                                  [booleano]
+      --log-level   log level                   [stringa] [scelte: "DEBUG", "INFO", "WARN", "ERROR"]
+      --pure        run without external plugins                                          [booleano]
+"
+`;
+
+exports[`Kilo CLI help-text snapshots every documented command emits stable help text: kilo github install --help 1`] = `
+"kilo github install
+
+install the GitHub agent
+
+Opzioni:
+  -h, --help        show help                                                             [booleano]
+  -v, --version     show version number                                                   [booleano]
+      --print-logs  print logs to stderr                                                  [booleano]
+      --log-level   log level                   [stringa] [scelte: "DEBUG", "INFO", "WARN", "ERROR"]
+      --pure        run without external plugins                                          [booleano]
+"
+`;
+
+exports[`Kilo CLI help-text snapshots every documented command emits stable help text: kilo github run --help 1`] = `
+"kilo github run
+
+run the GitHub agent
+
+Opzioni:
+  -h, --help        show help                                                             [booleano]
+  -v, --version     show version number                                                   [booleano]
+      --print-logs  print logs to stderr                                                  [booleano]
+      --log-level   log level                   [stringa] [scelte: "DEBUG", "INFO", "WARN", "ERROR"]
+      --pure        run without external plugins                                          [booleano]
+      --event       GitHub mock event to run the agent for                                 [stringa]
+      --token       GitHub personal access token (github_pat_********)                     [stringa]
+"
+`;
+
+exports[`Kilo CLI help-text snapshots every documented command emits stable help text: kilo db path --help 1`] = `
+"kilo db path
+
+print the database path
+
+Opzioni:
+  -h, --help        show help                                                             [booleano]
+  -v, --version     show version number                                                   [booleano]
+      --print-logs  print logs to stderr                                                  [booleano]
+      --log-level   log level                   [stringa] [scelte: "DEBUG", "INFO", "WARN", "ERROR"]
+      --pure        run without external plugins                                          [booleano]
+"
+`;

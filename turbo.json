@@ -1,0 +1,44 @@
+{
+  "$schema": "https://v2-8-13.turborepo.dev/schema.json",
+  "globalEnv": ["CI", "KILO_DISABLE_SHARE"],
+  "globalPassThroughEnv": ["CI", "KILO_DISABLE_SHARE"],
+  "tasks": {
+    "typecheck": {
+      "dependsOn": ["^typecheck"]
+    },
+    "build": {
+      "dependsOn": [],
+      "outputs": ["dist/**"]
+    },
+    "@kilocode/cli#build": {
+      "dependsOn": ["@kilocode/sdk#build"],
+      "outputs": ["dist/**"]
+    },
+    "@kilocode/cli#test": {
+      "dependsOn": ["^build"],
+      "outputs": [],
+      "passThroughEnv": ["*"]
+    },
+    "test:ci": {
+      "outputs": [".artifacts/unit/junit.xml"],
+      "passThroughEnv": ["*"]
+    },
+    "@opencode-ai/core#test": {
+      "dependsOn": ["^build"],
+      "outputs": []
+    },
+    "@kilocode/cli#test:ci": {
+      "dependsOn": ["^build"],
+      "env": ["KILO_TEST_PROFILE", "KILO_TEST_SHARD"],
+      "inputs": ["$TURBO_DEFAULT$", "$TURBO_ROOT$/.github/workflows/test.yml"],
+      "outputs": [".artifacts/unit/junit.xml"],
+      "passThroughEnv": ["*"]
+    },
+    "@kilocode/cli#test:httpapi": {
+      "dependsOn": ["^build"],
+      "cache": false,
+      "outputs": [],
+      "passThroughEnv": ["*"]
+    }
+  }
+}

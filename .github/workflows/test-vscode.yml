@@ -1,0 +1,73 @@
+name: test-vscode
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+    paths:
+      - "packages/kilo-vscode/**"
+      - "packages/ui/**"
+      - "packages/kilo-ui/**"
+      - ".github/workflows/test-vscode.yml"
+  pull_request:
+    paths:
+      - "packages/kilo-vscode/**"
+      - "packages/ui/**"
+      - "packages/kilo-ui/**"
+      - ".github/workflows/test-vscode.yml"
+  workflow_dispatch:
+
+jobs:
+  unit:
+    name: unit tests
+    runs-on: ${{ github.repository == 'Kilo-Org/kilocode' && 'blacksmith-4vcpu-ubuntu-2404' || 'ubuntu-latest' }} # kilocode_change
+    timeout-minutes: 15 # kilocode_change - suite hard deadline is 5 min (KILO_TEST_GLOBAL_TIMEOUT); 15 covers install/lint/knip/marker margin
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6 # kilocode_change
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Bun
+        uses: ./.github/actions/setup-bun
+
+      - name: Run unit tests
+        working-directory: packages/kilo-vscode
+        run: bun run test:unit
+        # kilocode_change start - align the extension CI with the RAM-aware runner (script/run-unit-tests.ts)
+        # and the tuning pattern already used by test.yml's unit jobs.
+        env:
+          # 600s per-file kill deadline, matching test.yml. The runner's default is 300s; a heavy
+          # file on a saturated worker can legitimately exceed that before it finishes or hangs.
+          KILO_TEST_FILE_TIMEOUT: "600000"
+          # Hard 5-min budget for the whole suite: files not started by the deadline are reported as
+          # budget-exceeded (exit 1), so an over-budget run stays visible instead of silently running
+          # to the job timeout. In-flight files finish or hit their per-file deadline.
+          KILO_TEST_GLOBAL_TIMEOUT: "300000"
+          # KILO_TEST_CONCURRENCY is intentionally left unset so the runner applies its automatic
+          # RAM-based cap (~2GB per worker). The blacksmith-4vcpu host has uncertain RAM from here,
+          # and on forks this job falls back to ubuntu-latest (variable RAM); the automatic cap covers
+          # both. If the host were confirmed to have <=8GB and OOM still occurred, set this to "2"
+          # (test.yml caps Windows to 2 for exactly this reason: at the default min(4, cpus)=4, four
+          # heavy files share the vCPUs and blow their per-test timeouts).
+        # kilocode_change end
+
+      - name: Check lint (ESLint)
+        working-directory: packages/kilo-vscode
+        run: bun run lint
+
+      - name: Check formatting (prettier)
+        working-directory: packages/kilo-vscode
+        run: bun run format:check
+
+      - name: Check for dead code (knip)
+        working-directory: packages/kilo-vscode
+        run: bun run knip
+
+      - name: Check for kilocode_change markers
+        working-directory: packages/kilo-vscode
+        run: bun run check-kilocode-change
