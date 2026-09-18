@@ -15,7 +15,7 @@
     "directory": "packages/kilo-vscode"
   },
   "engines": {
-    "vscode": "^1.105.1"
+    "vscode": "^1.103.0"
   },
   "license": "MIT",
   "author": {
@@ -1181,7 +1181,7 @@
     "@storybook/addon-docs": "10.2.10",
     "@types/mocha": "^10.0.10",
     "@types/node": "22.x",
-    "@types/vscode": "^1.105.1",
+    "@types/vscode": "^1.103.0",
     "@types/ws": "8.18.1",
     "@vscode/test-cli": "^0.0.12",
     "@vscode/test-electron": "^2.5.2",
