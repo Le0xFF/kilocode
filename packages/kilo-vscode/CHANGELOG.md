@@ -25,6 +25,15 @@
   - @kilocode/kilo-gateway@7.7.5
   - @kilocode/kilo-indexing@7.7.5
 
+### Offline fork (leocode)
+
+This build is the **offline `leocode` fork** of Kilo Code, synced to upstream v7.7.5 (v7.7.4 → v7.7.5 in this cycle). It runs fully offline against your local OpenAI-compatible providers only — there is no Kilo Gateway, marketplace, cloud sessions, or KiloClaw.
+
+- Adopted from upstream: Agent Manager mentions (`@model`, `@past-chats`, `@worktrees`) and worktree-independent slash commands in the New Worktree prompt, permission approval recovery for stalled dialogs, the Agent Manager memory-leak fix on session switching, and the `.kilo` directory handling fixes for subdirectory workspaces.
+- Kept gated/off for the offline build: the shared agent board stays off by default (`shared_agent_board` / `KILO_EXPERIMENTAL_SHARED_AGENT_BOARD`); browser automation remains an experimental feature off by default; all new settings ship with their offline-safe defaults.
+- Rejected or neutralized for offline use: Kilo Gateway, telemetry, KiloClaw, marketplace, cloud sessions, remote notifications, models.dev fetching (the backend serves its catalog from the committed local snapshot), and ChatGPT OAuth flows. Invariants I1–I10 re-verified via `bun run check:offline`.
+- Close-out: smoke test of the spawned backend confirmed a 100% local provider catalog (`GET /provider`: privatemode-ai, atomic-chat, lmstudio, anaconda-desktop, llamacpp, ninfer4090 — no `kilo`/gateway entries, no remote endpoints); visual regression baselines regenerated once after the sync (new `permission-dock-dropdown` story set added by the merge, existing PNGs unchanged) and the extension bundle builds clean with zero operational online symbols.
+
 ## 7.7.4
 
 ### Minor Changes
