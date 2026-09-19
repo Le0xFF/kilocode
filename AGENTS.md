@@ -23,6 +23,8 @@ This repo has been pruned to contain only the Kilo VS Code extension (`packages/
 - **workflow allowlist**: `bun run script/check-workflows.ts` from repo root. CI runs this — any `.yml` / `.yaml` file added to or removed from `.github/workflows/` must be reflected in the hardcoded list in `script/check-workflows.ts`. Prevents upstream-merged workflows from silently starting to run in our CI.
 - **Backend/SDK programmatic testing**: spawn the local backend with `bun dev serve` from `packages/opencode/` and drive it via `curl`; use this instead of `kilo serve` (prod binary) when testing backend fixes. // kilocode_change - TESTING.md is pruned in this fork
 
+- The Kilo VS Code extension (`packages/kilo-vscode/`) MUST remain installable on **VS Code 1.103**: `engines.vscode` stays `^1.103.0` with `@types/vscode` aligned. This is an offline-fork hard requirement, at the same level as invariants I1–I10: any upstream sync, dependency bump, or API usage that would raise the minimum supported VS Code version beyond 1.103 (newer `vscode` APIs only available in >= 1.104, `@types/vscode` past 1.103, or a changed `engines.vscode`) must be rejected or neutralized during conflict resolution / review. If upstream raises its own floor above 1.103, the fork keeps 1.103 and the incompatibility must be documented/reported, not silently accepted; raising the floor requires explicit user approval plus a doc update.
+
 ## Quality Checks
 
 Before saying an implementation is ready, run the smallest relevant checks that can catch lint, typecheck, and test failures for the touched package. Do not rely on manual extension launch to discover build problems. Fix failures you introduced before the final response, or state exactly which check is still failing or could not be run.

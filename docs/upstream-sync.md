@@ -69,6 +69,7 @@ Ogni invariante va ri-verificata con grep dopo il merge (i path sono relativi a 
 | I8 | Superfici rimosse dall'estensione: `src/kiloclaw/**`, `RemoteStatusService.ts`, `MarketplacePanelProvider.ts`, `services/autocomplete/**` (gateway FIM), device-flow auth, cloud sessions, notifications | `ls packages/kilo-vscode/src/kiloclaw packages/kilo-vscode/src/RemoteStatusService.ts packages/kilo-vscode/src/MarketplacePanelProvider.ts packages/kilo-vscode/src/services/autocomplete` deve fallire (keep-deleted anche se upstream li modifica) |
 | I9 | Locale i18n: 4 alberi (kilo-i18n, webview src, agent-manager, ui) tagliati sulle chiavi online | `bun test tests/unit/i18n-unused-keys.test.ts` da `packages/kilo-vscode/`; audit delle chiavi nuove upstream referenziate dal codice integrato. Il guard `check-offline-invariants.ts` verifica l'insieme automatizzabile più forte (esistenza degli alberi + di ogni `en.ts` e della test); il taglio per-chiave resta delegato alla test stessa |
 | I10 | Guard CI: 10 workflow allowlistati in `script/check-workflows.ts`; guard duplication `script/check-kilocode-duplication.ts` + allowlist portati dal merge | `bun run script/check-workflows.ts` da root (exit 0); presenza di `script/check-kilocode-duplication.ts` e della sua allowlist post-merge |
+| I11 | Floor VS Code: l'estensione deve restare installabile su **VS Code 1.103** (`engines.vscode` = `^1.103.0`, `@types/vscode` allineata). Durante la risoluzione conflitti rifiutare/neutralizzare ogni cambio che alzi `engines.vscode`/`@types/vscode` oltre 1.103 o adotti API `vscode` disponibili solo da >= 1.104; se l'upstream alza il proprio floor, mantenere 1.103 e documentare/riportare l'incompatibilità (mai accettarla silenziosamente) | Dopo il merge `grep -n '"vscode": "\^1.103.0"' packages/kilo-vscode/package.json` e `grep -n '"@types/vscode": "\^1.103.0"' packages/kilo-vscode/package.json` devono entrambi risaltire hit |
 
 ### Tabella take-ours / take-theirs per categoria
 
@@ -93,7 +94,7 @@ Ogni invariante va ri-verificata con grep dopo il merge (i path sono relativi a 
 | `kilo-vscode/src/kilo-provider/**` + `KiloProvider.ts` + `extension.ts` | Integrare + riapplicare rimozioni offline | Keep-deleted `handlers/cloud-session.ts`, `src/kiloclaw/**`, `RemoteStatusService.ts`, `MarketplacePanelProvider.ts`, `services/autocomplete/**`; pulire union/case/import |
 | `kilo-vscode/src/services/browser-automation/**` | take-theirs | Feature nuova, setting sperimentale off di default |
 | `kilo-vscode/src/legacy-migration/**` | take-theirs (accept deletion di `migration-service.ts`, `native-mode-defaults.ts`, `provider-mapping.ts` e relativo test) | Adattare i riferimenti residui nostri (`handlers/migration.ts`, `legacy-types.ts`, `MigrationWizard.tsx`) |
-| `kilo-vscode/package.json` | Unione | Command `updateFromBase`, setting browserAutomation, flip `terminalButtonDestination`; deps browser (`playwright-core`, `chromium-bidi`, `ws`, `@types/ws`) da theirs; rimuovere ciò che il fork ha tolto |
+| `kilo-vscode/package.json` | Unione | Command `updateFromBase`, setting browserAutomation, flip `terminalButtonDestination`; deps browser (`playwright-core`, `chromium-bidi`, `ws`, `@types/ws`) da theirs; rimuovere ciò che il fork ha tolto; MAI alzare `engines.vscode`/`@types/vscode` oltre 1.103 (I11) |
 | `kilo-vscode/esbuild.js` | take-theirs | Bundle browser |
 | `kilo-ui/**`, `core/**`, `kilo-indexing/**`, `tui/**`, `schema/**`, altri shared | take-theirs | Salvo i pochi file toccati dai marker offline |
 
@@ -127,7 +128,7 @@ Un sync è completo quando:
 
 - Gli step 0–8 del piano sono completati, ciascuno approvato dall'utente prima dello step successivo.
 - Ogni step termina con codebase compilabile, eccetto lo step merge (step 2) la cui riconciliazione è completata nello step 5 — dipendenza esplicita a due step prevista dal piano.
-- Le invarianti I1–I10 sono verificate una per una: `bun run check:offline` (guard `script/check-offline-invariants.ts`, traduzione programmatica dei grep della matrice sopra) deve uscire a 0, più lo smoke offline. La matrice resta la fonte; il guard ne automatizza l'assertion post-merge.
+- Le invarianti I1–I11 sono verificate una per una: `bun run check:offline` (guard `script/check-offline-invariants.ts`, traduzione programmatica dei grep della matrice sopra) deve uscire a 0, più lo smoke offline. La matrice resta la fonte; il guard ne automatizza l'assertion post-merge.
 - `origin/main` è completamente integrata: `git rev-list --count leocode..origin/main` == 0.
 - Nessuna funzionalità online è riattivata: gateway/claw/marketplace/cloud/telemetry assenti da runtime e type surface.
 - Test unit, guard CI (`check-workflows`, `check-forbidden-strings`, `check-kilo-generated-artifacts`, `check-md-table-padding`, `check-kilocode-duplication`, `check-offline-invariants`), `compile` e smoke offline sono verdi.

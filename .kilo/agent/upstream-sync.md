@@ -41,6 +41,7 @@ Se il prompt manca del range/batch, fermati e riportalo: non indovinare il delta
 7. **Dipendenze**: `bun install` da root dopo aver risolto i conflitti su `package.json`/`turbo.json`; rigettare le dipendenze online di theirs (es. ai-sdk per provider cloud, `bonjour-service`, `@aws-sdk/credential-providers`, sst/changesets). Se il batch tocca httpapi/server: `bun run script/generate.ts` da root (preferisce lo snapshot `models-dev.local.json`).
 8. **Baseline visual regression**: NON mergiare i PNG di baseline sparsi sul range; annotarli nel report per la rigenerazione finale di fine sync.
 9. **Git**: lavorare su `leocode` con tree pulito; il tag `pre-sync-*` esiste già come punto di rollback locale. Non pushare, non aprire PR.
+10. **Floor VS Code 1.103 inviolabile** (I11): mai alzare il requisito minimo VS Code oltre 1.103 durante una risoluzione conflitti — né `engines.vscode` in `packages/kilo-vscode/package.json`, né `@types/vscode`, né l'adozione di API `vscode` disponibili solo da >= 1.104; se l'upstream lo richiede, rifiutare/neutralizzare il cambio e documentarlo nel report (mai accettarlo silenziosamente). Verificare post-merge che `grep -n '"vscode"' packages/kilo-vscode/package.json` resti `"vscode": "^1.103.0"`.
 
 ## Report strutturato (obbligatorio a fine step)
 

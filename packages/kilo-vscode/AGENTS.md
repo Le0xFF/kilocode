@@ -6,6 +6,8 @@ This file provides guidance to agents when working with code in this repository.
 
 Paths below are relative to this package. Start with the relevant implementation and nearby tests; the sections below retain the architecture and safety details.
 
+**Hard requirement**: this extension MUST remain installable on **VS Code 1.103**. `engines.vscode` in `package.json` is the source of truth (`^1.103.0`, with `@types/vscode` aligned) and must never be raised beyond 1.103 by any upstream sync, dependency bump, or newer `vscode` API usage — reject or neutralize such changes during conflict resolution / review, exactly like offline-surface reintroductions. If upstream raises its own floor above 1.103, keep 1.103 and document/report the incompatibility instead of silently accepting it.
+
 | Area | Entry points |
 |---|---|
 | CLI connection and process lifecycle | [connection-service.ts](src/services/cli-backend/connection-service.ts), [server-manager.ts](src/services/cli-backend/server-manager.ts) |
