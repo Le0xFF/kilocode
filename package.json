@@ -173,6 +173,6 @@
     "@modelcontextprotocol/sdk@1.29.0": "patches/@modelcontextprotocol%2Fsdk@1.29.0.patch",
     "bun-pty@0.4.8": "patches/bun-pty@0.4.8.patch"
   },
-  "version": "7.7.4",
+  "version": "7.7.5",
   "peerDependencies": {}
 }
