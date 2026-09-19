@@ -1,5 +1,13 @@
 import { expect, test, type Page } from "@playwright/test"
 
+// OFFLINE-FORK-SKIP: every spec in this file asserts on the `kilo` provider's
+// model catalog (provider tags "Kilo", tree items like "Kilo Auto Efficient",
+// remote auto-model routing) which was hard-cut from the offline fork (see
+// PRUNE-NOTES.md, invariant I3). The whole file is skipped deliberately; do
+// not "fix" it by re-adding the online kilo provider surface. Re-enabling later
+// only requires removing this module-scope skip flag below.
+test.skip(true, "offline fork: kilo provider / remote model catalog pruned (PRUNE-NOTES.md)")
+
 const GLOBALS = "colorScheme:dark;theme:kilo-vscode;vscodeTheme:dark-modern"
 
 function story(id: string) {

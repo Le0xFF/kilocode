@@ -46,7 +46,19 @@ async function reach(page: Page, target: Locator) {
 }
 
 test.describe("webview accessibility ratchet", () => {
+  // OFFLINE-FORK-SKIP: the offline fork pruned the Profile/gateway-auth surface
+  // (profile--* stories no longer exist; see PRUNE-NOTES.md, invariant I7). The
+  // WCAG ratchets below assert on that pruned surface and are skipped
+  // deliberately; do not "fix" them by re-adding online surface.
+  const PROFILE_PRUNED = "offline fork: Profile/gateway-auth surface pruned (PRUNE-NOTES.md)"
   for (const story of STORIES) {
+    if (story.id.startsWith("profile--")) {
+      test.skip(`${story.name} passes automated WCAG checks`, async ({ page }) => {
+        await open(page, story.id)
+        await scan(page)
+      }, PROFILE_PRUNED)
+      continue
+    }
     test(`${story.name} passes automated WCAG checks`, async ({ page }) => {
       await open(page, story.id)
       await scan(page)
@@ -335,19 +347,25 @@ test.describe("webview accessibility ratchet", () => {
     await expect(page.locator('.sr-only[role="status"]')).toHaveAttribute("aria-live", "polite")
   })
 
-  test("Profile login exposes a keyboard-operable named control", async ({ page }) => {
-    await open(page, "profile--not-logged-in")
+  // OFFLINE-FORK-SKIP: asserts the "Login with Kilo Code" button on the pruned
+  // profile--not-logged-in story (gateway-auth surface, PRUNE-NOTES.md I7).
+  test.skip(
+    "Profile login exposes a keyboard-operable named control",
+    async ({ page }) => {
+      await open(page, "profile--not-logged-in")
 
-    const login = page.getByRole("button", { name: "Login with Kilo Code" })
-    await reach(page, login)
-    await expect(login).toBeFocused()
+      const login = page.getByRole("button", { name: "Login with Kilo Code" })
+      await reach(page, login)
+      await expect(login).toBeFocused()
 
-    await login.evaluate((node) => {
-      node.addEventListener("click", () => node.setAttribute("data-keyboard-activated", "true"), { once: true })
-    })
-    await page.keyboard.press("Enter")
-    await expect(login).toHaveAttribute("data-keyboard-activated", "true")
-  })
+      await login.evaluate((node) => {
+        node.addEventListener("click", () => node.setAttribute("data-keyboard-activated", "true"), { once: true })
+      })
+      await page.keyboard.press("Enter")
+      await expect(login).toHaveAttribute("data-keyboard-activated", "true")
+    },
+    "offline fork: Profile/gateway-auth surface pruned (PRUNE-NOTES.md)",
+  )
 
   test("Agent Manager sidebar search filters and selects with the keyboard", async ({ page }) => {
     await open(page, "agentmanager--sidebar-search-open")

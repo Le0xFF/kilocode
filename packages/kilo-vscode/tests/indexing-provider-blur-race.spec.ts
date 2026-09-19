@@ -122,52 +122,64 @@ test("scope switching preserves raw overrides and commits blur to the original s
   await expect(tuningRow.locator('[data-component="tag"]')).toHaveText("Default")
 })
 
-test("Kilo exposes only supported embedding model presets", async ({ page }) => {
-  await page.setViewportSize({ width: 420, height: 720 })
-  await page.goto(storyUrl(KILO_STORY_ID), { waitUntil: "load" })
-  await disableAnimations(page)
-  await page.waitForSelector("#storybook-root *", { state: "attached" })
+// OFFLINE-FORK-SKIP: the offline fork pruned the Kilo remote embedding catalog
+// (settings--indexing-kilo-* stories no longer exist; see PRUNE-NOTES.md,
+// invariant I3). These two specs assert on that pruned surface and are skipped
+// deliberately; do not "fix" them by re-adding online surface.
+test.skip(
+  "Kilo exposes only supported embedding model presets",
+  async ({ page }) => {
+    await page.setViewportSize({ width: 420, height: 720 })
+    await page.goto(storyUrl(KILO_STORY_ID), { waitUntil: "load" })
+    await disableAnimations(page)
+    await page.waitForSelector("#storybook-root *", { state: "attached" })
 
-  await expect(page.getByText("Kilo model preset", { exact: true })).toBeVisible()
-  await expect(page.getByText("Embedding model", { exact: true })).toHaveCount(0)
-  await expect(page.getByText("Vector dimension", { exact: true })).toBeVisible()
+    await expect(page.getByText("Kilo model preset", { exact: true })).toBeVisible()
+    await expect(page.getByText("Embedding model", { exact: true })).toHaveCount(0)
+    await expect(page.getByText("Vector dimension", { exact: true })).toBeVisible()
 
-  const preset = selectIn(page, "Kilo model preset")
-  await expect(preset).toContainText("Provider Model")
+    const preset = selectIn(page, "Kilo model preset")
+    await expect(preset).toContainText("Provider Model")
 
-  const dimension = field(page, "Vector dimension").first()
-  await expect(dimension).toHaveValue("")
+    const dimension = field(page, "Vector dimension").first()
+    await expect(dimension).toHaveValue("")
 
-  await preset.click()
-  await page.locator('[data-slot="select-select-item-label"]', { hasText: "Provider Compact" }).click()
-  await expect(preset).toContainText("Provider Compact")
-})
+    await preset.click()
+    await page.locator('[data-slot="select-select-item-label"]', { hasText: "Provider Compact" }).click()
+    await expect(preset).toContainText("Provider Compact")
+  },
+  "offline fork: Kilo remote embedding catalog pruned (PRUNE-NOTES.md)",
+)
 
-test("enabling Kilo before its catalog loads does not store an empty model", async ({ page }) => {
-  const saved = page.getByTestId("indexing-kilo-loading-save")
-  const cfg = async () => JSON.parse(((await saved.textContent()) ?? "{}").trim()) as Saved
-  const verify = async () => {
-    await expect.poll(async () => (await cfg()).provider).toBe("kilo")
-    expect((await cfg()).model).toBeNull()
-    expect((await cfg()).dimension).toBeNull()
-  }
+test.skip(
+  "enabling Kilo before its catalog loads does not store an empty model",
+  async ({ page }) => {
+    const saved = page.getByTestId("indexing-kilo-loading-save")
+    const cfg = async () => JSON.parse(((await saved.textContent()) ?? "{}").trim()) as Saved
+    const verify = async () => {
+      await expect.poll(async () => (await cfg()).provider).toBe("kilo")
+      expect((await cfg()).model).toBeNull()
+      expect((await cfg()).dimension).toBeNull()
+    }
 
-  await page.setViewportSize({ width: 420, height: 720 })
-  await page.goto(storyUrl(KILO_LOADING_STORY_ID), { waitUntil: "load" })
-  await disableAnimations(page)
-  await page.waitForSelector("#storybook-root *", { state: "attached" })
-  await page.getByRole("button", { name: "Local", exact: true }).click()
-  await page
-    .locator('[data-slot="settings-row"]', { hasText: "Enable for this project" })
-    .locator('[data-slot="switch-control"]')
-    .click()
-  await verify()
+    await page.setViewportSize({ width: 420, height: 720 })
+    await page.goto(storyUrl(KILO_LOADING_STORY_ID), { waitUntil: "load" })
+    await disableAnimations(page)
+    await page.waitForSelector("#storybook-root *", { state: "attached" })
+    await page.getByRole("button", { name: "Local", exact: true }).click()
+    await page
+      .locator('[data-slot="settings-row"]', { hasText: "Enable for this project" })
+      .locator('[data-slot="switch-control"]')
+      .click()
+    await verify()
 
-  await page.goto(storyUrl(KILO_LOADING_STORY_ID), { waitUntil: "load" })
-  await page.waitForSelector("#storybook-root *", { state: "attached" })
-  await page
-    .locator('[data-slot="settings-row"]', { hasText: "Enable globally" })
-    .locator('[data-slot="switch-control"]')
-    .click()
-  await verify()
-})
+    await page.goto(storyUrl(KILO_LOADING_STORY_ID), { waitUntil: "load" })
+    await page.waitForSelector("#storybook-root *", { state: "attached" })
+    await page
+      .locator('[data-slot="settings-row"]', { hasText: "Enable globally" })
+      .locator('[data-slot="switch-control"]')
+      .click()
+    await verify()
+  },
+  "offline fork: Kilo remote embedding catalog pruned (PRUNE-NOTES.md)",
+)
