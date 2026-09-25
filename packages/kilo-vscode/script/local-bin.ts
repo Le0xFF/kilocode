@@ -12,20 +12,50 @@ import {
   kiloSandboxWorkerForBinary,
   sanitizeSandboxResources,
 } from "../src/services/cli-backend/cli-resources"
-import { currentBwrapTarget, ensureBwrapForTarget } from "./bwrap-helper"
-import { currentFfmpegTarget, ensureFfmpegForTarget } from "./ffmpeg-helper"
+import { ensureBwrapForTarget } from "./bwrap-helper"
+import { ensureFfmpegForTarget } from "./ffmpeg-helper"
 
 const forceRebuild = process.argv.includes("--force")
 const compiledOnly = process.argv.includes("--compiled")
 
+type CliTarget = {
+  os: "win32" | "linux" | "darwin"
+  arch: "x64" | "arm64"
+}
+
+function hostTarget(): CliTarget {
+  const os = (process.platform === "win32" ? "win32" : process.platform) as CliTarget["os"]
+  const arch = (process.arch === "x64" ? "x64" : process.arch === "arm64" ? "arm64" : process.arch) as CliTarget["arch"]
+  return { os, arch }
+}
+
+// Explicit cross-target selection (`--target <os>-<arch>` or KILO_CLI_TARGET), e.g.
+// `windows-x64`. Default is the host platform, preserving the existing behavior.
+function parseCliTarget(): CliTarget {
+  const argIdx = process.argv.indexOf("--target")
+  const raw = (argIdx >= 0 ? process.argv[argIdx + 1] : undefined) ?? process.env.KILO_CLI_TARGET
+  if (!raw) return hostTarget()
+  const parts = raw.split("-")
+  const os = parts[0]
+  const arch = parts.slice(1).join("-")
+  if ((os !== "windows" && os !== "linux" && os !== "darwin") || (arch !== "x64" && arch !== "arm64")) {
+    throw new Error(`Invalid CLI target "${raw}" (expected <os>-<arch>, e.g. windows-x64)`)
+  }
+  return { os: os === "windows" ? "win32" : (os as CliTarget["os"]), arch: arch as CliTarget["arch"] }
+}
+
+const cliTarget = parseCliTarget()
+
 /**
- * Ensures the VS Code extension has a CLI binary at `packages/kilo-vscode/bin/kilo`.
+ * Ensures the VS Code extension has a CLI binary at `packages/kilo-vscode/bin/kilo`
+ * (or `bin/kilo.exe` when building for Windows).
  *
  * Strategy:
- * 1) If `bin/kilo` already exists -> ok.
+ * 1) If the target binary already exists -> ok.
  * 2) Else try to locate a prebuilt binary produced by `packages/opencode` build.
- * 3) Else try to build it via `bun run build --single` in `packages/opencode`.
- * 4) Copy the resulting binary into `packages/kilo-vscode/bin/kilo` and chmod +x.
+ * 3) Else build it in `packages/opencode` (`--single` for the host, `--target <os>-<arch>`
+ *    for foreign targets selected via `--target windows-x64` or KILO_CLI_TARGET=windows-x64).
+ * 4) Copy the resulting binary into `packages/kilo-vscode/bin/` and chmod +x.
  *
  * This script is intended to be run from `packages/kilo-vscode` as part of build/package.
  */
@@ -39,9 +69,11 @@ const rootFile = join(repoDir, "package.json")
 
 const targetBinDir = join(kiloVscodeDir, "bin")
 const localModelsJson = join(opencodeDir, "models-dev.local.json")
-const binName = process.platform === "win32" ? "kilo.exe" : "kilo"
+const binName = cliTarget.os === "win32" ? "kilo.exe" : "kilo"
 const targetBinPath = join(targetBinDir, binName)
-const versionFile = join(kiloVscodeDir, "node_modules", ".kilo-cli-version")
+// Per-target version marker so coexisting binaries (bin/kilo + bin/kilo.exe) do not
+// invalidate each other's staleness state.
+const versionFile = join(kiloVscodeDir, "node_modules", `.kilo-cli-version-${cliTarget.os}-${cliTarget.arch}`)
 
 function log(msg: string) {
   console.log(`[local-bin] ${msg}`)
@@ -185,8 +217,12 @@ async function writeVersion(kind: "compiled" | "wrapper") {
 }
 
 function platformTag(): string {
-  const os = process.platform === "win32" ? "windows" : process.platform
-  return `cli-${os}-${process.arch}`
+  return `cli-${cliTarget.os === "win32" ? "windows" : cliTarget.os}-${cliTarget.arch}`
+}
+
+function isForeignTarget(): boolean {
+  const host = hostTarget()
+  return cliTarget.os !== host.os || cliTarget.arch !== host.arch
 }
 
 async function findKiloBinaryInOpencodeDist(): Promise<string | null> {
@@ -259,12 +295,14 @@ const pkg = await Bun.file(join(repoDir, "package.json")).json()
     // The pinned bun runtime may have a restricted PATH without git, which breaks channel
     // detection in the shared script package. Inherit the current PATH so git resolves.
     const env: Record<string, string> = { ...process.env, ...(process.env.MODELS_DEV_API_JSON ? {} : { MODELS_DEV_API_JSON: localModelsJson }) }
-    log("Building CLI binary...")
+    log(`Building CLI binary for ${platformTag()}...`)
+    // `--single` is host-bound; foreign targets are selected by name via `--target`.
+    const flag = isForeignTarget() ? ["--target", platformTag()] : ["--single"]
     try {
-      await $`bunx ${bun} run build --single --skip-install`.cwd(opencodeDir).env(env)
+      await $`bunx ${bun} run build ${flag} --skip-install`.cwd(opencodeDir).env(env)
     } catch (err) {
       log(`Pinned bunx build failed (${err}), running via active bun runtime...`)
-      await $`bun run script/build.ts --single --skip-install`.cwd(opencodeDir).env(env)
+      await $`bun run script/build.ts ${flag} --skip-install`.cwd(opencodeDir).env(env)
     }
 
   const built = await findKiloBinaryInOpencodeDist()
@@ -288,15 +326,17 @@ async function bundleKiloSandboxWorker() {
 }
 
 async function ensureLocalHelpers() {
-  await ensureFfmpegForTarget(currentFfmpegTarget(), targetBinDir)
+  const helperTarget = `${cliTarget.os}-${cliTarget.arch}`
+  await ensureFfmpegForTarget(helperTarget, targetBinDir)
   if (process.env.KILO_SKIP_BUNDLED_BWRAP === "1") return
   if (await sanitizeSandboxResources(targetBinDir, true)) return
-  await ensureBwrapForTarget(currentBwrapTarget())
+  if (cliTarget.os !== "linux") return
+  await ensureBwrapForTarget(helperTarget)
 }
 
 async function writeSourceWrapper() {
-  if (process.platform === "win32") {
-    throw new Error("Compiled CLI build failed and source wrapper fallback is not supported on Windows.")
+  if (cliTarget.os === "win32") {
+    throw new Error(`Compiled CLI build failed and source wrapper fallback is not supported for the ${platformTag()} target.`)
   }
 
   const bun = Bun.which("bun") ?? "bun"
