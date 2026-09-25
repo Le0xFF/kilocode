@@ -18,7 +18,6 @@ process.chdir(dir)
 const generated = await import("./generate.ts")
 
 import { Script } from "@opencode-ai/script"
-import { iife } from "../src/util/iife" // kilocode_change
 import pkg from "../package.json"
 // kilocode_change start
 import { stageBubblewrap } from "./kilocode/bubblewrap"
@@ -28,11 +27,6 @@ import { KiloSandboxNetwork } from "./kilocode/kilo-sandbox-network"
 // kilocode_change end
 
 const singleFlag = process.argv.includes("--single")
-// kilocode_change start - explicit target selection for cross-building a single
-// non-host target (e.g. `--target cli-windows-x64` from Linux); see local-bin.ts.
-const targetIdx = process.argv.indexOf("--target")
-const targetName = targetIdx >= 0 ? process.argv[targetIdx + 1] : undefined
-// kilocode_change end
 const baselineFlag = process.argv.includes("--baseline")
 const skipInstall = process.argv.includes("--skip-install")
 const sourcemapsFlag = process.argv.includes("--sourcemaps")
@@ -260,42 +254,26 @@ const allTargets: {
   },
 ]
 
-const targets = iife(() => {
-  // kilocode_change start - `--target <name>` selects a single named entry from allTargets,
-  // allowing cross-builds of non-host platforms; takes precedence over --single.
-  if (targetName) {
-    const name = (item: (typeof allTargets)[number]) =>
-      [pkg.name, item.os === "win32" ? "windows" : item.os, item.arch, item.avx2 === false ? "baseline" : undefined, item.abi ?? undefined]
-        .filter(Boolean)
-        .join("-")
-    const found = allTargets.filter((item) => name(item) === targetName || name(item).endsWith(targetName))
-    if (found.length !== 1) {
-      throw new Error(`Unknown build target "${targetName}". Valid values: ${allTargets.map(name).join(", ")}`)
-    }
-    return found
-  }
-  // kilocode_change end
-  return singleFlag
-    ? allTargets.filter((item) => {
-        if (item.os !== process.platform || item.arch !== process.arch) {
-          return false
-        }
+const targets = singleFlag
+  ? allTargets.filter((item) => {
+      if (item.os !== process.platform || item.arch !== process.arch) {
+        return false
+      }
 
-        // When building for the current platform, prefer a single native binary by default.
-        // Baseline binaries require additional Bun artifacts and can be flaky to download.
-        if (item.avx2 === false) {
-          return baselineFlag
-        }
+      // When building for the current platform, prefer a single native binary by default.
+      // Baseline binaries require additional Bun artifacts and can be flaky to download.
+      if (item.avx2 === false) {
+        return baselineFlag
+      }
 
-        // also skip abi-specific builds for the same reason
-        if (item.abi !== undefined) {
-          return false
-        }
+      // also skip abi-specific builds for the same reason
+      if (item.abi !== undefined) {
+        return false
+      }
 
-        return true
-      })
-    : allTargets
-})
+      return true
+    })
+  : allTargets
 
 // kilocode_change start
 await $`rm -rf dist`
@@ -404,13 +382,6 @@ for (const item of targets) {
   await KiloSandboxWorker.copy(kiloSandboxWorker, path.resolve(dir, `dist/${name}/bin`))
   if (item.os === "linux") {
     await KiloSandboxNetwork.copy(kiloSandboxNetwork, path.resolve(dir, `dist/${name}/bin`), item.arch)
-  } else {
-    // The relay/seccomp helpers are linux-only; drop any stale copies so a target built in place
-    // of a previous linux build (e.g. cross-compiling win32 over an existing dist tree) cannot ship them.
-    for (const file of [KiloSandboxNetwork.relay, KiloSandboxNetwork.seccomp]) {
-      await fs.promises.rm(path.resolve(dir, `dist/${name}/bin`, file), { force: true })
-    }
-    await fs.promises.rm(path.resolve(dir, `dist/${name}/bin/licenses/sandbox-runtime`), { recursive: true, force: true })
   }
 
   if (item.os === "linux") {

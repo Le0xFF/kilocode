@@ -102,20 +102,6 @@ bun script/local-bin.ts --force
 
 The script checks for a prebuilt binary in `packages/opencode/dist/`, builds the CLI if needed, and copies it to `bin/kilo`.
 
-### Cross-building both binaries from Linux
-
-`script/local-bin.ts` accepts an explicit target via `KILO_CLI_TARGET=<os>-<arch>` or `--target <os>-<arch>` (default: host platform). Run both from this machine:
-
-```bash
-bun script/local-bin.ts                          # host (linux-x64) -> bin/kilo
-KILO_CLI_TARGET=windows-x64 bun script/local-bin.ts   # -> bin/kilo.exe
-bun script/local-bin.ts --target windows-x64     # same, via flag
-```
-
-For foreign targets the underlying `packages/opencode` build is invoked with `--target <name>` instead of `--single` (`build.ts` selects the single matching entry of its target list and skips smoke test/bwrap/patchelf for non-linux targets). Both binaries coexist in `bin/`; staleness is tracked per target via `node_modules/.kilo-cli-version-<os>-<arch>` markers.
-
-Prerequisites: bun 1.3.14 pinned (invoked via `bunx`); network access on the first cross-compile (bun runtime artifact of the target platform + `npm pack @ffmpeg-installer/win32-x64` for `ffmpeg.exe`). zig/patchelf are irrelevant for win32. Caveats: the binary smoke test only runs for the host target — a PE binary cannot execute on Linux, so win32 validation is static (`file` reports "PE32+ executable"). VSIX packaging needs one staging per platform: vsce 3.9.2 strips the `!` negations in `.vscodeignore`, so sequential packing with temporary exclusion does not work — stage twice and produce two artifacts, `dist-vsix/kilo-code-<ver>-linux.vsix` and `dist-vsix/kilo-code-<ver>-win32.vsix`.
-
 ## Architecture
 
 ### Extension ↔ CLI Backend
