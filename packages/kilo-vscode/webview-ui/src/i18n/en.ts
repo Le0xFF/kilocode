@@ -52,6 +52,8 @@ export const anacondaDesktopDict = {
 export const dict = {
   ...anacondaDesktopDict,
   "session.activity.waiting": "Waiting for an answer or approval.",
+  "session.activity.scheduled": "Waiting for a scheduled wakeup.",
+  "session.tabs.switcher.scheduled": "Scheduled",
   "session.activity.error": "Error or connection lost.",
   "session.activity.retry": "Retrying automatically.",
   "session.activity.busy": "In progress.",

@@ -59,6 +59,8 @@ export const dict = {
   "settings.agentBehaviour.pushFixes.title": "Push Pull Request Fixes",
   "settings.agentBehaviour.pushFixes.description": "When you send pull request CI failures or review comments to the agent, or update a worktree from its base, ask it to commit and push so the pull request updates. Permission prompts still apply. Turn off to keep commits manual.",
   "session.activity.waiting": "正在等待回复或批准。",
+  "session.activity.scheduled": "正在等待计划好的唤醒。",
+  "session.tabs.switcher.scheduled": "已计划",
   "session.activity.error": "错误或连接已断开。",
   "session.activity.retry": "正在自动重试。",
   "session.activity.busy": "进行中。",

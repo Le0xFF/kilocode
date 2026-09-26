@@ -62,6 +62,8 @@ export const dict = {
   "settings.agentBehaviour.pushFixes.title": "Push Pull Request Fixes",
   "settings.agentBehaviour.pushFixes.description": "When you send pull request CI failures or review comments to the agent, or update a worktree from its base, ask it to commit and push so the pull request updates. Permission prompts still apply. Turn off to keep commits manual.",
   "session.activity.waiting": "답변 또는 승인을 기다리는 중입니다.",
+  "session.activity.scheduled": "예약된 웨이크업을 기다리는 중입니다.",
+  "session.tabs.switcher.scheduled": "예약됨",
   "session.activity.error": "오류 또는 연결 끊김.",
   "session.activity.retry": "자동으로 재시도하는 중입니다.",
   "session.activity.busy": "진행 중입니다.",
