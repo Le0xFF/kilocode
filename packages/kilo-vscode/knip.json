@@ -23,6 +23,7 @@
     "@kilocode/kilo-memory",
     "@kilocode/kilo-ui",
     "@kilocode/plugin",
+    "@kilocode/sandbox",
     "@kilocode/sdk",
     "@opencode-ai/core",
     "@opencode-ai/ui"

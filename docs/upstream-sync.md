@@ -106,6 +106,7 @@ Ogni invariante va ri-verificata con grep dopo il merge (i path sono relativi a 
 | Delete/modify su `kilo-vscode/src/services/browser-automation-service*` | Take-theirs: è superficie nuova upstream (setting sperimentale off di default) |
 | Add/add su file nuovi under dir pruned (es. `packages/kilo-jetbrains/**`, `packages/docs/**`) | Accettare la nostra cancellazione: `git rm` il file; la dir pruned non rientra nella workspace list |
 | Rename+modify (es. rinominati upstream tipo `kilo-sessions` → …) | Verificare `git status` per "deleted by us/them" e decidere nominalmente: keep-deleted se reintroduce superficie online, integrare se ortogonale all'offline |
+| `packages/kilo-docs/` come subtree live di `leocode` (2026-09-26): la sua tree `public/img/screenshot-tests/kilo-vscode/` è lo store di baseline visual **trattato** (referenziato da `snapshotPathTemplate` in `packages/kilo-vscode/playwright.config.ts`); `test-fixtures/` e le regole LFS affini **non** esistono nel fork — gli store sono plain git blobs | Mai `git rm` in blocco o "pulire" `packages/kilo-docs/` durante un slice: si orfana lo store delle visual baselines e i guard/CI del fork (incidente S3 del sync 2026-09-26). La rigenerazione dei baseline avviene **una sola volta al close-out**, e il delta va revisionato e committato lì; i PNG che arrivano come LFS-pointer si rigenerano, mai editati a mano |
 
 ## Rollback
 

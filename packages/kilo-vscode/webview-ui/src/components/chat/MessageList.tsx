@@ -843,6 +843,9 @@ export const MessageList: Component<MessageListProps> = (props) => {
   let highlightFrame: number | undefined
   let highlightFrameInner: number | undefined
   let pendingCenter = false
+  // Enter (and result selection) must center the exact occurrence, so jumps
+  // bypass the comfort band that keeps stepping between nearby matches still.
+  let forceCenter = false
   const paintHighlights = () => {
     const el = scrollEl()
     if (!el || !search.active()) {
@@ -856,8 +859,10 @@ export const MessageList: Component<MessageListProps> = (props) => {
       active && { key: active.key, occurrence: active.occurrence },
       matchedPartsByRow(),
     )
-    if (!pendingCenter) return
+    if (!pendingCenter && !forceCenter) return
     pendingCenter = false
+    const force = forceCenter
+    forceCenter = false
     if (!range) return
     // Only nudge the scroll position when the match isn't already
     // comfortably placed — re-centering on every single step (even when
@@ -873,9 +878,19 @@ export const MessageList: Component<MessageListProps> = (props) => {
     // uncomfortably close to the edge.
     const comfortMargin = box.height * 0.35
     const centered = Math.abs(rect.top + rect.height / 2 - (box.top + box.height / 2)) <= comfortMargin
-    if (fullyVisible && centered) return
+    if (!force && fullyVisible && centered) return
     // Scroll only the transcript, not VS Code's outer webview container.
-    el.scrollBy({ top: rect.top + rect.height / 2 - box.top - el.clientTop - el.clientHeight / 2 })
+    const delta = rect.top + rect.height / 2 - box.top - el.clientTop - el.clientHeight / 2
+    if (Math.abs(delta) < 0.5) return
+    el.scrollBy({ top: delta })
+    if (force) {
+      // Inserting the mark re-measures the row after this scroll is committed,
+      // shifting the settled offset by about one line. Run one follow-up pass
+      // against the settled layout; the sub-pixel guard above ends the chain
+      // once the match sits centered.
+      forceCenter = true
+      scheduleHighlight()
+    }
   }
 
   // Two frames of margin so the virtualizer has settled the DOM for the new
@@ -912,7 +927,7 @@ export const MessageList: Component<MessageListProps> = (props) => {
         const match = m[idx]
         if (!match) return
         autoScroll.pause()
-        pendingCenter = true
+        forceCenter = true
         const el = scrollEl()
         const mounted = el?.querySelector<HTMLElement>(`[data-row-key="${CSS.escape(match.key)}"]`)
         // Only force the coarse row-level scroll when the row isn't in the

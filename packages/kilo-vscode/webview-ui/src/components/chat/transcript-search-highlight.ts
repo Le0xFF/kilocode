@@ -58,12 +58,12 @@ export function scanScope(scope: HTMLElement, pattern: RegExp): Range[] {
   }
   if (nodes.length === 0) return []
 
-  const locate = (at: number) => {
+  const locate = (at: number, strict = false) => {
     let lo = 0
     let hi = ends.length - 1
     while (lo < hi) {
       const mid = (lo + hi) >> 1
-      if (ends[mid]! >= at) hi = mid
+      if (strict ? ends[mid]! > at : ends[mid]! >= at) hi = mid
       else lo = mid + 1
     }
     const prev = lo === 0 ? 0 : ends[lo - 1]!
@@ -72,7 +72,14 @@ export function scanScope(scope: HTMLElement, pattern: RegExp): Range[] {
 
   const ranges: Range[] = []
   for (const span of spans) {
-    const start = locate(span.start)
+    // Start anchors use strict boundary attribution: a match beginning
+    // exactly where one text node ends belongs to the *next* node at
+    // offset 0. Attributing it to the previous node's end parks a
+    // zero-width caret at the end of the earlier line, which makes
+    // `range.getClientRects()[0]` report that line and centers the
+    // scroll on the wrong (previous) line. End anchors keep the
+    // inclusive test, as a boundary end already covers the line.
+    const start = locate(span.start, true)
     const end = locate(span.end)
     const range = document.createRange()
     range.setStart(start.node, start.offset)
