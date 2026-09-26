@@ -80,6 +80,7 @@ describe("RuntimeFlags", () => {
       expect(flags.enableQuestionTool).toBe(true)
       expect(flags.experimentalReferences).toBe(true)
       // kilocode_change - LSP removed; no experimentalLspTy/experimentalLspTool flags
+      expect(flags.experimentalContextTools).toBe(true) // kilocode_change
       expect(flags.experimentalOxfmt).toBe(true)
       expect(flags.experimentalEventSystem).toBe(true)
       expect(flags.experimentalWorkspaces).toBe(true)
@@ -251,6 +252,31 @@ describe("RuntimeFlags", () => {
       expect(flags.experimentalOxfmt).toBe(true)
     }),
   )
+
+  // kilocode_change start - self-context tools
+  it.effect("experimentalContextTools defaults to false", () =>
+    Effect.gen(function* () {
+      const flags = yield* readFlags.pipe(Effect.provide(fromConfig({})))
+
+      expect(flags.experimentalContextTools).toBe(false)
+    }),
+  )
+
+  it.effect("experimentalContextTools is disabled by an explicit false override", () =>
+    Effect.gen(function* () {
+      const flags = yield* readFlags.pipe(
+        Effect.provide(
+          fromConfig({
+            KILO_EXPERIMENTAL: "true",
+            KILO_EXPERIMENTAL_CONTEXT_TOOLS: "false",
+          }),
+        ),
+      )
+
+      expect(flags.experimentalContextTools).toBe(false)
+    }),
+  )
+  // kilocode_change end
 
   for (const input of [
     { name: "absent", config: {}, expected: undefined },
