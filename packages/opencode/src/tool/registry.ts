@@ -81,7 +81,6 @@ import { McpCatalog } from "@/mcp/catalog"
 import { InstanceRef } from "@/effect/instance-ref" // kilocode_change
 
 
-
 type TaskDef = Tool.InferDef<typeof TaskTool>
 type ReadDef = Tool.InferDef<typeof ReadTool>
 

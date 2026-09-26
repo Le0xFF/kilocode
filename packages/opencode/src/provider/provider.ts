@@ -420,6 +420,17 @@ function cost(c: ModelsDev.Model["cost"]): Model["cost"] {
   return result
 }
 
+// Cloudflare AI Gateway routes OpenAI and Anthropic models through their native
+// passthrough SDKs (Responses / Messages APIs). Resolving the native npm before
+// variants are computed makes reasoning variants produce payloads the native
+// SDKs understand (e.g. anthropic `effort` instead of compat `reasoningEffort`).
+function cloudflareGatewayNpm(providerID: string, modelID: string) {
+  if (providerID !== "cloudflare-ai-gateway") return undefined
+  if (modelID.startsWith("openai/")) return "@ai-sdk/openai"
+  if (modelID.startsWith("anthropic/")) return "@ai-sdk/anthropic"
+  return undefined
+}
+
 function fromModelsDevModel(provider: ModelsDev.Provider, model: ModelsDev.Model): Model {
   const base: Model = {
     id: ModelV2.ID.make(model.id),
@@ -429,7 +440,11 @@ function fromModelsDevModel(provider: ModelsDev.Provider, model: ModelsDev.Model
     api: {
       id: model.id,
       url: model.provider?.api ?? provider.api ?? "",
-      npm: model.provider?.npm ?? provider.npm ?? "@ai-sdk/openai-compatible",
+      npm:
+        cloudflareGatewayNpm(provider.id, model.id) ??
+        model.provider?.npm ??
+        provider.npm ??
+        "@ai-sdk/openai-compatible",
     },
     status: model.status ?? "active",
     headers: {},
