@@ -32,6 +32,7 @@ import {
   MessageConfirmation,
   runWithMessageConfirmation,
   loadSessions as loadSessionsUtil,
+  loadMoreSessions as loadMoreSessionsUtil,
   flushPendingSessionRefresh as flushPendingSessionRefreshUtil,
   resolveContextDirectory,
   resolveNewSessionDirectory,
@@ -65,6 +66,7 @@ import { interceptMessage } from "./kilo-provider/git-changes-request"
 import { matchFollowup, recordFollowup, type Followup } from "./kilo-provider/followup-session"
 import { clearCommandsCache, loadCommands } from "./kilo-provider/commands"
 import { fetchMessagePage, MESSAGE_PAGE_LIMIT } from "./kilo-provider/message-page"
+import { createSessionPageState, fetchSessionPage } from "./kilo-provider/session-page"
 import { editPaths } from "./kilo-provider/session-edits"
 import { childID } from "./kilo-provider/task-session"
 import { VisibleTaskStreams } from "./kilo-provider/visible-task-streams"
@@ -163,6 +165,8 @@ import {
 } from "./kilo-provider/config-bindings"
 import { canonicalizePath, projectIdFor, samePath } from "./agent-manager/project/paths"
 import { buildTimelineSettingMessage, validChatSetting, watchChatConfig } from "./kilo-provider/chat-settings"
+import { retention } from "./services/task-cleanup/retention"
+import { failure } from "./services/task-cleanup/failure"
 import { buildThroughputSettingMessage, watchThroughputConfig } from "./kilo-provider/throughput-settings"
 import {
   buildAutoApprovalReasonSettingMessage,
@@ -489,6 +493,7 @@ export class KiloProvider implements vscode.WebviewViewProvider {
   private cachedGitDirectory: string | undefined
   private gitStatusRevision = 0
   private sessionRefreshRevision = 0
+  private sessionPages = createSessionPageState()
 
   private onBeforeMessage: ((msg: Record<string, unknown>) => Promise<Record<string, unknown> | null>) | null = null
 
@@ -1077,6 +1082,7 @@ speechToTextModels: () => this.fetchAndSendSpeechToTextModels(),
       }
       if (this.handleEditorOpenMessage(message)) return
       if (await this.handleAgentManagerSettingsMessage(message)) return
+      if (await this.handleAutoCleanupMessage(message)) return
       if (
         await handleWorkStyleMessage({
           message,
@@ -1197,7 +1203,9 @@ speechToTextModels: () => this.fetchAndSendSpeechToTextModels(),
           })
           break
         case "loadSessions":
-          this.handleLoadSessions().catch((e) => console.error("[Kilo New] handleLoadSessions failed:", e))
+          this.handleLoadSessions(message.more === true).catch((e) =>
+            console.error("[Kilo New] handleLoadSessions failed:", e),
+          )
           break
         case "requestSessionModelUsage":
           void this.fetchAndSendSessionModelUsage(message.sessionID, message.requestID)
@@ -2239,6 +2247,8 @@ speechToTextModels: () => this.fetchAndSendSpeechToTextModels(),
         ? (dir: string) =>
             client.session.list({ directory: dir, roots: true }, { throwOnError: true }).then(({ data }) => data)
         : null,
+      listSessionPage: client ? (dir: string, cursor?: number) => fetchSessionPage(client, { dir, cursor }) : null,
+      page: this.sessionPages,
       sessionDirectories: this.sessionDirectories,
       worktreeDirectories: this.opts.worktreeDirectories,
       workspaceDirectory: this.getWorkspaceDirectory(),
@@ -2269,20 +2279,26 @@ speechToTextModels: () => this.fetchAndSendSpeechToTextModels(),
   /**
    * Handle loading all sessions.
    */
-  private async handleLoadSessions(): Promise<void> {
+  private async handleLoadSessions(more = false): Promise<void> {
     const revision = ++this.sessionRefreshRevision
     const scope = this.opts.projectQualifier?.()?.projectId
-    if (scope !== undefined) this.projectID = undefined
+    if (!more && scope !== undefined) this.projectID = undefined
     const ctx = this.getSessionRefreshContext(revision)
     try {
-      const resolved = await loadSessionsUtil(ctx)
-      if (resolved && scope === this.opts.projectQualifier?.()?.projectId) this.projectID = resolved
+      if (more) {
+        await loadMoreSessionsUtil(ctx)
+      } else {
+        const resolved = await loadSessionsUtil(ctx)
+        if (resolved && scope === this.opts.projectQualifier?.()?.projectId) this.projectID = resolved
+      }
     } catch (error) {
       console.error("[Kilo New] KiloProvider: Failed to load sessions:", error)
-      this.postMessage({
-        type: "error",
-        message: getErrorMessage(error) || "Failed to load sessions",
-      })
+      if (!more) {
+        this.postMessage({
+          type: "error",
+          message: getErrorMessage(error) || "Failed to load sessions",
+        })
+      }
     }
     this.pendingSessionRefresh = ctx.pendingSessionRefresh
   }
@@ -3227,6 +3243,52 @@ const client = this.client
 
   private sendTimelineSetting(): void {
     this.postMessage(buildTimelineSettingMessage())
+  }
+
+  private autoCleanup() {
+    return this.extensionContext ? retention(this.connectionService, this.extensionContext) : undefined
+  }
+
+  private async handleAutoCleanupMessage(message: TypedWebviewMessage & { requestID?: unknown }): Promise<boolean> {
+    const requestID = typeof message.requestID === "string" ? message.requestID : undefined
+    if (message.type === "requestAutoCleanupState") {
+      const service = this.autoCleanup()
+      const result = await service?.status().then(
+        (status) => ({ status, error: undefined }),
+        (error: unknown) => {
+          const diagnostic = failure(error)
+          console.warn("[Kilo New] Session cleanup status request failed:", {
+            ...diagnostic,
+            connection: this.connectionState,
+          })
+          return { status: null, error: diagnostic.reason }
+        },
+      )
+      const status = result?.status
+      this.postMessage({
+        type: "autoCleanupStateLoaded",
+        requestID,
+        last: status?.last ?? service?.lastResult() ?? null,
+        progress: status?.progress,
+        pending: service?.running,
+        ...(!status ? { error: result?.error ?? "status" } : {}),
+      })
+      return true
+    }
+    if (message.type === "runAutoCleanupNow") {
+      const service = this.autoCleanup()
+      const status = await service?.run(true).catch(() => null)
+      this.postMessage({
+        type: "autoCleanupStateLoaded",
+        requestID,
+        last: status?.last ?? service?.lastResult() ?? null,
+        progress: status?.progress,
+        pending: service?.running,
+        ...(!status ? { error: "run" } : {}),
+      })
+      return true
+    }
+    return false
   }
 
   private sendWorkStyle(): void {

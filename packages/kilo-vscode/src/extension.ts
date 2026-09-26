@@ -11,6 +11,7 @@ import { SettingsEditorProvider } from "./SettingsEditorProvider"
 import { SubAgentViewerProvider } from "./SubAgentViewerProvider"
 import { EXTENSION_DISPLAY_NAME } from "./constants"
 import { KiloConnectionService } from "./services/cli-backend"
+import { retention } from "./services/task-cleanup/retention"
 import { AttentionService, showOSNotification } from "./services/attention"
 import { CaffeinationService } from "./services/caffeination"
 import { confirmCaffeination } from "./services/caffeination/confirm"
@@ -93,6 +94,11 @@ export async function activate(context: vscode.ExtensionContext) {
   }
 
   // Create remote status service (one status bar item for all webviews)
+
+  // Daily trigger for the backend-owned session retention pass (Settings → Checkpoints)
+  const cleanup = retention(connectionService, context)
+  cleanup.start()
+  context.subscriptions.push({ dispose: () => cleanup.dispose() })
 
   // Create browser automation broker (manages Playwright MCP registration)
   // kilocode_change - offline: broker is lazy; no settings sync / reconnect re-registration needed

@@ -168,3 +168,10 @@ body.vscode-light
   outline: 1px solid var(--vscode-focusBorder);
   outline-offset: -1px;
 }
+
+.session-list-load-more {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: center;
+  padding: 8px;
+}
