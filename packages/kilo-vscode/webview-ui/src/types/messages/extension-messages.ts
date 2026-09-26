@@ -853,6 +853,7 @@ export interface AgentManagerStateMessage {
    */
   orphanDirectories?: { path: string; kind: "broken" | "leftover"; bytes?: number; sized?: boolean }[]
   tabOrder?: Record<string, string[]>
+  pinnedTabs?: Record<string, string[]>
   worktreeOrder?: string[]
   sessionsCollapsed?: boolean
   sidebarCollapsed?: boolean
@@ -1323,6 +1324,11 @@ export interface DiffViewerMarkdownRenderMessage {
   render: boolean
 }
 
+export interface DiffViewerInitialDiffStyleMessage {
+  type: "diffViewer.initialDiffStyle"
+  style: "unified" | "split"
+}
+
 export interface DiffViewerInitialFileMessage {
   type: "diffViewer.initialFile"
   file?: string
@@ -1665,6 +1671,7 @@ export type ExtensionMessage =
   | DiffViewerRevertFileResultMessage
   | DiffViewerDiffFileMessage
   | DiffViewerMarkdownRenderMessage
+  | DiffViewerInitialDiffStyleMessage
   | DiffViewerInitialFileMessage
   | DiffViewerInitialMarkdownMessage
   | SetAvailableSourcesMessage

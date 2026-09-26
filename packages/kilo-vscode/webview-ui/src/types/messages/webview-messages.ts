@@ -992,6 +992,13 @@ export interface SetTabOrderRequest {
   order: string[]
 }
 
+// Persist pinned session tabs for a context (worktree ID or "local"), in pin order
+export interface SetPinnedTabsRequest {
+  type: "agentManager.setPinnedTabs"
+  key: string
+  ids: string[]
+}
+
 // Persist sidebar worktree order
 export interface SetWorktreeOrderRequest {
   type: "agentManager.setWorktreeOrder"
@@ -1232,6 +1239,11 @@ export interface DiffViewerSetBaseBranchRequest {
 export interface DiffVirtualSetMarkdownRenderRequest {
   type: "diffVirtual.setMarkdownRender"
   render: boolean
+}
+
+export interface DiffVirtualSetDiffStyleRequest {
+  type: "diffVirtual.setDiffStyle"
+  style: "unified" | "split"
 }
 
 export interface RetryConnectionRequest {
@@ -1667,6 +1679,7 @@ export type WebviewMessage =
   | AgentManagerRequestDocumentMessage
   | CreateMultiVersionRequest
   | SetTabOrderRequest
+  | SetPinnedTabsRequest
   | SetWorktreeOrderRequest
   | SetSessionsCollapsedRequest
   | SetSidebarCollapsedRequest
@@ -1706,6 +1719,7 @@ export type WebviewMessage =
   | DiffViewerRequestBranchesRequest
   | DiffViewerSetBaseBranchRequest
   | DiffVirtualSetMarkdownRenderRequest
+  | DiffVirtualSetDiffStyleRequest
   | RetryConnectionRequest
   | ReloadRequest
   | OpenSubAgentViewerRequest

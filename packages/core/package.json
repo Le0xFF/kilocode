@@ -83,6 +83,8 @@
     "semver": "^7.6.3",
     "xdg-basedir": "5.1.0",
 "zod": "catalog:",
+    "@ai-sdk/alibaba": "1.0.17",
+    "@ai-sdk/amazon-bedrock": "4.0.166",
     "@ai-sdk/anthropic": "3.0.82",
     "@ai-sdk/openai": "3.0.88",
     "@ai-sdk/openai-compatible": "2.0.48",
