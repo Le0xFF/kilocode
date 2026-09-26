@@ -99,8 +99,6 @@ export const Flag = {
 
   // kilocode_change - LSP removed; no KILO_EXPERIMENTAL_LSP_TOOL flag
 
-  KILO_EXPERIMENTAL_PLAN_MODE: KILO_EXPERIMENTAL || truthy("KILO_EXPERIMENTAL_PLAN_MODE"), // kilocode_change
-
   KILO_EXPERIMENTAL_SCOUT: KILO_EXPERIMENTAL || truthy("KILO_EXPERIMENTAL_SCOUT"), // kilocode_change
 
   KILO_EXPERIMENTAL_MARKDOWN: !falsy("KILO_EXPERIMENTAL_MARKDOWN"), // kilocode_change

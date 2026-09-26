@@ -2075,6 +2075,7 @@ export const SessionProvider: ParentComponent = (props) => {
     review?: ReviewMessageData,
     origin?: string | null,
     browserFeedback?: BrowserFeedbackData,
+    injectedTitle?: string,
   ): boolean {
     if (!server.isConnected()) {
       console.warn("[Kilo New] Cannot send message: not connected")
@@ -2117,6 +2118,7 @@ export const SessionProvider: ParentComponent = (props) => {
       review,
       browserFeedback,
       agentManagerContext: context,
+      injectedTitle,
     })
     return true
   }

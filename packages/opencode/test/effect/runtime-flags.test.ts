@@ -81,7 +81,6 @@ describe("RuntimeFlags", () => {
       expect(flags.experimentalReferences).toBe(true)
       // kilocode_change - LSP removed; no experimentalLspTy/experimentalLspTool flags
       expect(flags.experimentalOxfmt).toBe(true)
-      expect(flags.experimentalPlanMode).toBe(true)
       expect(flags.experimentalEventSystem).toBe(true)
       expect(flags.experimentalWorkspaces).toBe(true)
       expect(flags.experimentalIconDiscovery).toBe(true)

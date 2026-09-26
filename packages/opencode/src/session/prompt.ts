@@ -2416,6 +2416,8 @@ export const layer = Layer.effect(
       // kilocode_change end
 
       const templateParts = yield* resolvePromptParts(template)
+      // kilocode_change - label the expanded template for clients (injected-prompt)
+      KiloSessionProcessor.markCommand(templateParts, input.command, input.arguments)
       const inputFiles = new Set(
         input.parts?.filter((part) => new URL(part.url).protocol === "file:").map((part) => fileURLToPath(part.url)),
       )

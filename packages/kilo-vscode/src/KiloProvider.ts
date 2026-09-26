@@ -109,6 +109,7 @@ import { nativeTitle } from "./kilo-provider/native-tab-title"
 import { parseReview, reviewMetadata, type PRReviewCommentData, type ReviewMessageData } from "./shared/review-comments"
 import { feedbackMetadata, parseFeedback, type BrowserFeedbackData } from "./shared/browser-feedback"
 import { isActivity, type Activity } from "../webview-ui/src/utils/session-activity"
+import { mergeInjected } from "./shared/injected-prompt"
 import { completesWithoutStatus, goalControl } from "./kilo-provider/command-completion"
 
 import { KiloProviderMemory } from "./kilo-provider/memory"
@@ -201,6 +202,7 @@ type SendWebviewMessage = {
   browserFeedback?: unknown
   agentManagerContext?: unknown
   contextDirectory?: unknown
+  injectedTitle?: unknown
 }
 type SandboxSupportClient = {
   support: (
@@ -1408,6 +1410,7 @@ speechToTextModels: () => this.fetchAndSendSpeechToTextModels(),
             this.postMessage({ type: "gitRemoteUrlLoaded", gitUrl: url ?? null })
           })
           break
+
         case "dismissNotification":
           // kilocode_change - remote notifications removed with the offline surface
           break
@@ -1494,6 +1497,7 @@ speechToTextModels: () => this.fetchAndSendSpeechToTextModels(),
       typeof message.agentManagerContext === "string" ? message.agentManagerContext : undefined,
       typeof message.contextDirectory === "string" ? message.contextDirectory : undefined,
       feedback?.browserFeedback,
+      typeof message.injectedTitle === "string" ? message.injectedTitle : undefined,
     )
   }
   private async handleProfileDataMessage(message: TypedWebviewMessage): Promise<boolean> {
@@ -4083,6 +4087,7 @@ const client = this.client
     context?: string,
     contextDirectory?: string,
     browserFeedback?: BrowserFeedbackData,
+    injectedTitle?: string,
   ): Promise<void> {
     if (!this.client) {
       this.postMessage({
@@ -4116,7 +4121,11 @@ const client = this.client
           parts.push({ type: "file", mime: f.mime, url: f.url, filename: f.filename, source: f.source })
         }
       }
-      parts.push({ type: "text", text, metadata: feedbackMetadata(review, browserFeedback) })
+      parts.push({
+        type: "text",
+        text,
+        metadata: mergeInjected(feedbackMetadata(review, browserFeedback), injectedTitle),
+      })
 
       const editorContext = await this.gatherEditorContext(dir)
       if (draftID && this.closedDrafts.delete(draftID)) {

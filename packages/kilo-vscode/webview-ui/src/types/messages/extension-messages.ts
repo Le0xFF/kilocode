@@ -386,6 +386,8 @@ export interface AppendReviewCommentsToTerminalMessage {
 export interface TriggerTaskMessage {
   type: "triggerTask"
   text: string
+  /** Label for a prompt Kilo composed, such as an editor code action. */
+  injectedTitle?: string
 }
 
 export interface NavigateMessage {

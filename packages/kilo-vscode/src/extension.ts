@@ -514,7 +514,11 @@ vscode.commands.registerCommand("kilo-code.new.agentManagerOpen", () => {
       if (!input) return
       await vscode.commands.executeCommand("kilo-code.SidebarProvider.focus")
       await provider.waitForReady()
-      provider.postMessage({ type: "triggerTask", text: `Generate a terminal command: ${input}` })
+      provider.postMessage({
+        type: "triggerTask",
+        text: `Generate a terminal command: ${input}`,
+        injectedTitle: "Generate terminal command",
+      })
     }),
     vscode.commands.registerCommand("kilo-code.new.openInTab", () => {
       return openKiloInNewTab(context, tabPanels, attach, diffVirtualProvider, autoApprove)

@@ -35,6 +35,8 @@ export interface SendMessageRequest {
   browserFeedback?: BrowserFeedbackData
   agentManagerContext?: string
   contextDirectory?: string
+  /** Label for a prompt Kilo composed, such as an editor code action. */
+  injectedTitle?: string
 }
 
 export interface ResumeSessionRequest {
