@@ -204,13 +204,13 @@ export const prepare = Effect.fn("LLMRequestPrep.prepare")(function* (input: Pre
     params,
     messageTransformOptions: options,
     headers: {
-
+// kilocode_change start - opencode (Zen) branch and kilo provider headers removed with the online surface
       "x-session-affinity": input.sessionID,
       "X-Session-Id": input.sessionID,
       ...(input.parentSessionID ? { "x-parent-session-id": input.parentSessionID } : {}),
       "User-Agent": USER_AGENT,
       ...(input.model.providerID !== "anthropic" ? DEFAULT_HEADERS : undefined), // kilocode_change
-
+      // kilocode_change end
       ...input.model.headers,
       ...headers,
     },

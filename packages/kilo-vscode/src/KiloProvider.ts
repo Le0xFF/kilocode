@@ -784,6 +784,7 @@ export class KiloProvider implements vscode.WebviewViewProvider {
     this.setStatsVisible(visible)
     this.setStreamVisibility(visible)
     vscode.commands.executeCommand("setContext", "kilo-code.new.sidebarVisible", visible)
+    if (!visible) this.opts.onHidden?.()
     if (!visible && this.opts.focusContext) {
       void vscode.commands.executeCommand("setContext", this.opts.focusContext, false)
     }
@@ -1546,6 +1547,7 @@ speechToTextModels: () => this.fetchAndSendSpeechToTextModels(),
 
   private handleWebviewFocusMessage(message: TypedWebviewMessage & { focused?: unknown; target?: unknown }): void {
     if (message.type === "webviewFocusChanged") this.latch?.note(message.focused === true)
+    if (message.type === "webviewFocusChanged" && message.focused === true) this.opts.onFocused?.()
     if (message.type === "webviewFocusChanged" && this.opts.focusContext) {
       void vscode.commands.executeCommand("setContext", this.opts.focusContext, message.focused === true)
     }
@@ -2691,8 +2693,9 @@ const client = this.client
     const config = msg.config && typeof msg.config === "object" ? (msg.config as Record<string, unknown>) : undefined
     const metadata =
       msg.metadata && typeof msg.metadata === "object" ? (msg.metadata as Record<string, unknown>) : undefined
+    const inputs = msg.inputs && typeof msg.inputs === "object" ? (msg.inputs as Record<string, string>) : undefined
     if (msg.type === "connectProvider" && key) return connectProviderAction(ctx, rid, pid, key, metadata)
-    if (msg.type === "authorizeProviderOAuth") return authorizeOAuthAction(ctx, rid, pid, method)
+    if (msg.type === "authorizeProviderOAuth") return authorizeOAuthAction(ctx, rid, pid, method, inputs)
     if (msg.type === "completeProviderOAuth") return completeOAuthAction(ctx, rid, pid, method, code)
     if (msg.type === "disconnectProvider") return disconnectProviderAction(ctx, rid, pid, this.cachedConfigMessage, set)
     if (msg.type === "saveCustomProvider" && config)
@@ -3330,6 +3333,20 @@ const client = this.client
         progress: status?.progress,
         pending: service?.running,
         ...(!status ? { error: "run" } : {}),
+      })
+      return true
+    }
+    if (message.type === "stopAutoCleanupNow") {
+      const service = this.autoCleanup()
+      const requested = await service?.cancel().catch(() => false)
+      const status = await service?.status().catch(() => null)
+      this.postMessage({
+        type: "autoCleanupStateLoaded",
+        requestID,
+        last: status?.last ?? service?.lastResult() ?? null,
+        progress: status?.progress,
+        pending: service?.running,
+        ...(!requested && !status ? { error: "run" } : {}),
       })
       return true
     }
@@ -5723,6 +5740,7 @@ const client = this.client
    * Does NOT kill the server — that's the connection service's job.
    */
   dispose(): void {
+    this.opts.onHidden?.()
     if (this.opts.focusContext) {
       void vscode.commands.executeCommand("setContext", this.opts.focusContext, false)
     }

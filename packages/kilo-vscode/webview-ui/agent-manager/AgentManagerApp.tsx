@@ -149,6 +149,7 @@ import { applyTabOrder, firstOrderedTitle } from "./tab-order"
 import { createTabPersistence } from "./tab-persistence"
 import { createTabDrag } from "./tab-drag"
 import { createTabOrderSync } from "./tab-order-sync"
+import { activeTask, closeAllTasks, closeFocusedTask } from "./task-close"
 import { reportRemoteSessions, reportVisibleSession, visible } from "./remote-sessions"
 import { ConstrainDragYAxis } from "../src/components/chat/TabDnd"
 import {
@@ -1283,6 +1284,8 @@ const AgentManagerContent: Component = () => {
       } else if (msg.action === "toggleDiff") {
         diffPanels.toggleCommand()
       } else if (msg.action === "newTab") handleNewTabForCurrentSelection()
+      else if (msg.action === "closeTask") closeFocusedTask(visibleTabId(), tabLookup(), handleCloseTab)
+      else if (msg.action === "closeAllTasks") closeAllTasks(activeTabs(), activeTaskId(), handleCloseTab)
       else if (msg.action === "closeTab") closeActiveTab()
       else if (msg.action === "newWorktree") showNewWorktreeDialog()
       else if (msg.action === "quickWorktree") handleCreateWorktree()
@@ -2167,6 +2170,8 @@ const AgentManagerContent: Component = () => {
     return termHandlers.cycle(direction, placement)
   }
 
+  const activeTaskId = () => activeTask(activeTabs(), session.currentSessionID(), activePendingId())
+
   // Close the currently active tab via keyboard shortcut.
   // If no tabs remain, fall through to close the selected worktree.
   const closeActiveTab = () => {
@@ -2196,15 +2201,9 @@ const AgentManagerContent: Component = () => {
       closeSelectedWorktree()
       return
     }
-    const current = session.currentSessionID()
-    const pending = activePendingId()
-    const target = current
-      ? tabs.find((s) => s.id === current)
-      : pending
-        ? tabs.find((s) => s.id === pending)
-        : undefined
+    const target = activeTaskId()
     if (!target) return
-    handleCloseTab(target.id)
+    handleCloseTab(target)
   }
 
   // Close the currently selected worktree with a confirmation dialog

@@ -334,7 +334,7 @@ const queries: Record<string, QuerySet> = {
     locals: [nvim("nix", "locals")],
   },
   diff: {
-    highlights: [url("tree-sitter-grammars/tree-sitter-diff", "master", "queries/highlights.scm")],
+    highlights: [url("tree-sitter-grammars/tree-sitter-diff", "2520c3f934b3179bb540d23e0ef45f75304b5fed", "queries/highlights.scm")], // kilocode_change - upstream pinned the diff query URL to a commit SHA
   },
   elixir: {
     highlights: [nvim("elixir", "highlights")],

@@ -1877,6 +1877,8 @@ export const SessionProvider: ParentComponent = (props) => {
       loaded,
       preserve,
       append,
+      hasMore,
+      open: paging.open(),
       fresh: freshSessions,
       setSessions: (updater) => setStore("sessions", produce(updater)),
     })
@@ -2868,6 +2870,7 @@ export const SessionProvider: ParentComponent = (props) => {
     loadSessions,
     loadMoreSessions: paging.loadMore,
     sessionsHasMore: paging.hasMore,
+    keepSessions: paging.keep,
     sessionsLoadingMore: paging.loadingMore,
     loadOlderMessages,
     selectSession,

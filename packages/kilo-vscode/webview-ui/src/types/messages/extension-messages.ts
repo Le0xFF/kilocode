@@ -729,6 +729,8 @@ export interface AutoCleanupLastResult {
   skippedActive: number
   failed: number
   durationMs: number
+  cancelled?: boolean
+  reclaimedBytes?: number
 }
 
 export interface AutoCleanupStateLoadedMessage {
@@ -738,7 +740,7 @@ export interface AutoCleanupStateLoadedMessage {
   pending?: boolean
   error?: "status" | "timeout" | "run"
   progress?: {
-    phase: "scanning" | "deleting"
+    phase: "scanning" | "deleting" | "cancelling"
     total: number
     processed: number
     deleted: number
