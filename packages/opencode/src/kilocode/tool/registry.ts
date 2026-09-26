@@ -310,7 +310,6 @@ const openPlan = tools.openPlan ? yield* Tool.init(tools.openPlan) : undefined
       experimental?: {
         image_generation?: boolean
         native_notebook_tools?: boolean
-        task_model_selection?: boolean
       }
       shared_agent_board?: boolean
     },
@@ -334,9 +333,7 @@ const openPlan = tools.openPlan ? yield* Tool.init(tools.openPlan) : undefined
       ...((Flag.KILO_CLIENT === "cli" || Flag.KILO_CLIENT === "vscode") && tools.cronCreate ? [tools.cronCreate] : []),
       ...((Flag.KILO_CLIENT === "cli" || Flag.KILO_CLIENT === "vscode") && tools.cronList ? [tools.cronList] : []),
       ...((Flag.KILO_CLIENT === "cli" || Flag.KILO_CLIENT === "vscode") && tools.cronDelete ? [tools.cronDelete] : []),
-      ...(Flag.KILO_CLIENT === "vscode" || cfg.experimental?.task_model_selection === true
-        ? [tools.managerModels]
-        : []),
+      tools.managerModels,
       ...(Flag.KILO_CLIENT === "vscode" ? [tools.manager] : []),
       ...(Flag.KILO_CLIENT === "vscode" && tools.browser ? [tools.browser] : []),
       ...(Flag.KILO_CLIENT === "vscode" &&

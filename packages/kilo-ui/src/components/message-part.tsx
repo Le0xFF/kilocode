@@ -60,7 +60,15 @@ import { ToolApprovalProvider, resolveToolApproval, useToolApproval } from "./to
 export { ToolApprovalProvider, resolveToolApproval, ToolApprovalVisibilityProvider } from "./tool-approval"
 import { GrowBox } from "./grow-box"
 import { COLLAPSIBLE_SPRING } from "./motion"
-import { bashLineUpdate, busy, createThrottledValue, STREAMING_TEXT_RENDER_THROTTLE_MS, TEXT_RENDER_THROTTLE_MS, useCollapsible, useToolFade, useContextToolPending } from "./tool-utils"
+import {
+  bashLineUpdate,
+  busy,
+  createThrottledValue,
+  STREAMING_TEXT_RENDER_THROTTLE_MS,
+  TEXT_RENDER_THROTTLE_MS,
+  useCollapsible,
+  useContextToolPending,
+} from "./tool-utils"
 export { useGrowIn } from "./tool-utils"
 import { readToolOpen, toolOpenKey } from "./tool-open-state"
 import { ContextToolGroupHeader, ContextToolExpandedList, ContextToolRollingResults } from "./context-tool-results"
@@ -114,6 +122,8 @@ type TodoView = {
 
 type TodoItem = Todo & {
   changed?: boolean
+  done?: boolean
+  started?: boolean
 }
 
 function getDiagnostics(
@@ -123,6 +133,21 @@ function getDiagnostics(
   if (!diagnosticsByFile || !filePath) return []
   const diagnostics = diagnosticsByFile[filePath] ?? []
   return diagnostics.filter((d) => d.severity === 1).slice(0, 3)
+}
+
+/**
+ * The host streams a provisional diff count while a write, edit, or
+ * apply_patch runs, so the header counts up before the final diff exists. It
+ * can differ from the final metadata and is replaced by it at completion.
+ */
+function streamedChanges(
+  metadata: Record<string, any>,
+  pending: boolean,
+): { additions: number; deletions: number } | undefined {
+  if (!pending) return undefined
+  const changes = metadata?.streamChanges
+  if (!changes || typeof changes.additions !== "number" || typeof changes.deletions !== "number") return undefined
+  return changes
 }
 
 function DiagnosticsDisplay(props: { diagnostics: Diagnostic[] }): JSX.Element {
@@ -1128,7 +1153,6 @@ export interface ToolProps {
   forceOpenFile?: string
   locked?: boolean
   animate?: boolean
-  reveal?: boolean
   readonly?: boolean
 }
 
@@ -1429,7 +1453,6 @@ PART_MAPPING["tool"] = function ToolPartDisplay(props) {
                     forceOpen={props.forceOpen}
                     forceOpenFile={props.forceOpenFile}
                     animate
-                    reveal={props.animate}
                     readonly={props.readonly}
                   />
                 )
@@ -1507,7 +1530,6 @@ PART_MAPPING["tool"] = function ToolPartDisplay(props) {
                 defaultOpen={props.defaultOpen}
                 forceOpen={props.forceOpen}
                 animate
-                reveal={props.animate}
                 readonly={props.readonly}
               />
             </ToolApprovalProvider>
@@ -2107,18 +2129,9 @@ PART_MAPPING["reasoning"] = function ReasoningPartDisplay(props: MessagePartProp
   )
 }
 
-function useToolReveal(pending: () => boolean, animate?: () => boolean) {
-  const enabled = () => animate?.() ?? true
-  const [live, setLive] = createSignal(pending() || enabled())
-  createEffect(() => {
-    if (pending()) setLive(true)
-  })
-  return () => enabled() && live()
-}
-
-function WebfetchMeta(props: { url: string; animate?: boolean }) {
-  let ref: HTMLSpanElement | undefined
-  useToolFade(() => ref, { wipe: true, animate: props.animate })
+// Trigger details reveal themselves with CSS when the transcript marks the row
+// as live (see tool-motion.css), so these components render plain markup.
+function WebfetchMeta(props: { url: string }) {
   const data = useData()
 
   const open = (event: MouseEvent) => {
@@ -2130,7 +2143,7 @@ function WebfetchMeta(props: { url: string; animate?: boolean }) {
   }
 
   return (
-    <span ref={ref} data-slot="webfetch-meta">
+    <span data-slot="webfetch-meta">
       <a
         data-slot="basic-tool-tool-subtitle"
         class="clickable subagent-link"
@@ -2149,55 +2162,30 @@ function WebfetchMeta(props: { url: string; animate?: boolean }) {
   )
 }
 
-function TaskLink(props: { href: string; text: string; onClick: (e: MouseEvent) => void; animate?: boolean }) {
-  let ref: HTMLAnchorElement | undefined
-  useToolFade(() => ref, { wipe: true, animate: props.animate })
-
+function TaskLink(props: { href: string; text: string; onClick: (e: MouseEvent) => void }) {
   return (
-    <a
-      ref={ref}
-      data-slot="basic-tool-tool-subtitle"
-      class="clickable subagent-link"
-      href={props.href}
-      onClick={props.onClick}
-    >
+    <a data-slot="basic-tool-tool-subtitle" class="clickable subagent-link" href={props.href} onClick={props.onClick}>
       {props.text}
     </a>
   )
 }
 
-function ToolText(props: { text: string; delay?: number; animate?: boolean; onClick?: (event: MouseEvent) => void }) {
-  let ref: HTMLSpanElement | undefined
-  useToolFade(() => ref, { delay: props.delay, wipe: true, animate: props.animate })
-
+function ToolText(props: { text: string; onClick?: (event: MouseEvent) => void }) {
   return (
-    <span
-      ref={ref}
-      data-slot="basic-tool-tool-subtitle"
-      classList={{ clickable: !!props.onClick }}
-      onClick={props.onClick}
-    >
+    <span data-slot="basic-tool-tool-subtitle" classList={{ clickable: !!props.onClick }} onClick={props.onClick}>
       {props.text}
     </span>
   )
 }
 
-function ToolLoadedFile(props: { text: string; animate?: boolean; onClick?: () => void }) {
-  let ref: HTMLDivElement | undefined
-  useToolFade(() => ref, { delay: 0.02, wipe: true, animate: props.animate })
-
+function ToolLoadedFile(props: { text: string; onClick?: () => void }) {
   return (
-    <GrowBox animate={props.animate !== false} fade={false} class="w-full min-w-0">
-      <div
-        ref={ref}
-        data-component="tool-loaded-file"
-        classList={{ clickable: !!props.onClick }}
-        onClick={props.onClick}
-      >
+    <div class="w-full min-w-0">
+      <div data-component="tool-loaded-file" classList={{ clickable: !!props.onClick }} onClick={props.onClick}>
         <Icon name="enter" size="small" />
         <span>{props.text}</span>
       </div>
-    </GrowBox>
+    </div>
   )
 }
 
@@ -2207,21 +2195,9 @@ function ToolTriggerRow(props: {
   subtitle?: string
   args?: string[]
   action?: JSX.Element
-  animate?: boolean
-  revealOnMount?: boolean
   onClick?: (event: MouseEvent) => void
 }) {
-  const reveal = useToolReveal(
-    () => props.pending,
-    () => props.animate !== false,
-  )
   const detail = createMemo(() => [props.subtitle, ...(props.args ?? [])].filter((x): x is string => !!x).join(" "))
-  const detailAnimate = createMemo(() => {
-    if (props.animate === false) return false
-    if (props.revealOnMount) return true
-    if (!props.pending && !reveal()) return true
-    return reveal()
-  })
 
   return (
     <div data-slot="basic-tool-tool-info-structured">
@@ -2229,9 +2205,7 @@ function ToolTriggerRow(props: {
         <span data-slot="basic-tool-tool-title">
           <TextShimmer text={props.title} active={props.pending} />
         </span>
-        <Show when={detail()}>
-          {(text) => <ToolText text={text()} animate={detailAnimate()} onClick={props.onClick} />}
-        </Show>
+        <Show when={detail()}>{(text) => <ToolText text={text()} onClick={props.onClick} />}</Show>
       </div>
       <Show when={props.action}>{props.action}</Show>
     </div>
@@ -2244,17 +2218,11 @@ function ToolMetaLine(props: {
   filename: string
   path?: string
   changes?: DiffValue
-  delay?: number
-  animate?: boolean
   soft?: boolean
   onClick?: (e: MouseEvent) => void
 }) {
-  let ref: HTMLSpanElement | undefined
-  useToolFade(() => ref, { delay: props.delay ?? 0.02, wipe: true, animate: props.animate })
-
   return (
     <span
-      ref={ref}
       title={props.path ? `${props.filename} ${props.path}` : props.filename}
       data-slot={props.soft ? "basic-tool-tool-subtitle" : "message-part-meta-line"}
       classList={{
@@ -2273,27 +2241,54 @@ function ToolMetaLine(props: {
   )
 }
 
-function ToolChanges(props: { changes: DiffValue; animate?: boolean; slot?: string }) {
-  let ref: HTMLDivElement | undefined
-  useToolFade(() => ref, { delay: 0.04, animate: props.animate })
-
+function ToolFileMeta(props: { filePath?: string; changes?: DiffValue; fallback?: JSX.Element }) {
+  const filename = () => getFilename(props.filePath ?? "")
   return (
-    <div ref={ref} data-slot={props.slot}>
+    <Show when={filename()} fallback={props.fallback}>
+      {(name) => (
+        <ToolMetaLine
+          filename={name()}
+          path={props.filePath?.includes("/") ? getDirectory(props.filePath!) : undefined}
+          changes={props.changes}
+        />
+      )}
+    </Show>
+  )
+}
+
+function ToolChanges(props: { changes: DiffValue; slot?: string }) {
+  return (
+    <div data-slot={props.slot}>
       <DiffChanges changes={props.changes} />
     </div>
   )
 }
 
-function ShellText(props: { text: string; animate?: boolean }) {
-  let ref: HTMLSpanElement | undefined
-  useToolFade(() => ref, { wipe: true, animate: props.animate })
+function ToolDiffAction(props: { when: boolean; onClick: (e: MouseEvent) => void }) {
+  const i18n = useI18n()
+  return (
+    <Show when={props.when}>
+      <span data-slot="tool-trigger-actions">
+        <Tooltip value={i18n.t("ui.messagePart.openInDiffViewer")} placement="top" gutter={4}>
+          <IconButton
+            icon="square-arrow-top-right"
+            size="small"
+            variant="ghost"
+            onMouseDown={(e) => e.preventDefault()}
+            onClick={props.onClick}
+            aria-label={i18n.t("ui.messagePart.openInDiffViewer")}
+          />
+        </Tooltip>
+      </span>
+    </Show>
+  )
+}
 
+function ShellText(props: { text: string }) {
   return (
     <span data-component="shell-submessage">
       <span data-slot="basic-tool-tool-subtitle">
-        <span ref={ref} data-slot="shell-submessage-value">
-          {props.text}
-        </span>
+        <span data-slot="shell-submessage-value">{props.text}</span>
       </span>
     </span>
   )
@@ -2331,7 +2326,6 @@ ToolRegistry.register({
               pending={pending()}
               subtitle={props.input.filePath ? getFilename(props.input.filePath) : ""}
               args={args}
-              animate={props.reveal}
               onClick={
                 data.openFile && props.input.filePath
                   ? (event) => {
@@ -2347,7 +2341,6 @@ ToolRegistry.register({
           {(filepath) => (
             <ToolLoadedFile
               text={`${i18n.t("ui.tool.loaded")} ${relativizeProjectPath(filepath, data.directory)}`}
-              animate={props.reveal}
               onClick={data.openFile ? () => data.openFile!(filepath) : undefined}
             />
           )}
@@ -2388,7 +2381,6 @@ ToolRegistry.register({
             title={i18n.t("ui.tool.list")}
             pending={pending()}
             subtitle={getDirectory(props.input.path)}
-            animate={props.reveal}
           />
         }
       >
@@ -2419,7 +2411,6 @@ ToolRegistry.register({
             pending={pending()}
             subtitle={getDirectory(props.input.path)}
             args={props.input.pattern ? ["pattern=" + props.input.pattern] : []}
-            animate={props.reveal}
           />
         }
       >
@@ -2453,7 +2444,6 @@ ToolRegistry.register({
             pending={pending()}
             subtitle={getDirectory(props.input.path)}
             args={args}
-            animate={props.reveal}
           />
         }
       >
@@ -2474,7 +2464,6 @@ ToolRegistry.register({
   render(props) {
     const i18n = useI18n()
     const pending = createMemo(() => busy(props.status))
-    const reveal = useToolReveal(pending, () => props.reveal !== false)
     const url = createMemo(() => {
       const value = props.input.url
       if (typeof value !== "string") return ""
@@ -2491,7 +2480,7 @@ ToolRegistry.register({
               <span data-slot="basic-tool-tool-title">
                 <TextShimmer text={i18n.t("ui.tool.webfetch")} active={pending()} />
               </span>
-              <Show when={url()}>{(value) => <WebfetchMeta url={value()} animate={reveal()} />}</Show>
+              <Show when={url()}>{(value) => <WebfetchMeta url={value()} />}</Show>
             </div>
           </div>
         }
@@ -2570,7 +2559,6 @@ ToolRegistry.register({
       return undefined
     })
     const running = createMemo(() => busy(props.status))
-    const reveal = useToolReveal(running, () => props.reveal !== false)
 
     const href = createMemo(() => {
       const sessionId = childSessionId()
@@ -2618,12 +2606,10 @@ ToolRegistry.register({
           <Show when={description()}>
             <Switch>
               <Match when={href()}>
-                {(url) => (
-                  <TaskLink href={url()} text={description() ?? ""} onClick={handleLinkClick} animate={reveal()} />
-                )}
+                {(url) => <TaskLink href={url()} text={description() ?? ""} onClick={handleLinkClick} />}
               </Match>
               <Match when={true}>
-                <ToolText text={description() ?? ""} delay={0.02} animate={reveal()} />
+                <ToolText text={description() ?? ""} />
               </Match>
             </Switch>
           </Show>
@@ -2791,7 +2777,8 @@ function BashHighlightedOutput(props: {
       if (code.children.length > plan.start) dropTail(code, plan.start)
     }
     const tail = code.lastChild
-    const separator = code.childNodes.length > 0 && !(tail?.nodeType === Node.TEXT_NODE && tail.textContent === "\n") ? "\n" : ""
+    const separator =
+      code.childNodes.length > 0 && !(tail?.nodeType === Node.TEXT_NODE && tail.textContent === "\n") ? "\n" : ""
     code.insertAdjacentHTML("beforeend", separator + inner)
     renderedLines = lines
   }
@@ -2881,7 +2868,6 @@ ToolRegistry.register({
   render(props) {
     const i18n = useI18n()
     const pending = () => busy(props.status)
-    const reveal = useToolReveal(pending, () => props.reveal !== false)
     const subtitle = () => props.input.description ?? props.metadata.description
     const key = () => toolOpenKey(props)
     const [open, setOpen] = createSignal(readToolOpen(key(), props.defaultOpen ?? true) ?? true)
@@ -2925,7 +2911,7 @@ ToolRegistry.register({
               <span data-slot="basic-tool-tool-title">
                 <TextShimmer text={i18n.t("ui.tool.shell")} active={pending()} />
               </span>
-              <Show when={subtitle()}>{(text) => <ShellText text={text()} animate={reveal()} />}</Show>
+              <Show when={subtitle()}>{(text) => <ShellText text={text()} />}</Show>
             </div>
           </div>
         }
@@ -2952,9 +2938,10 @@ ToolRegistry.register({
     const fileComponent = useFileComponent()
     const diagnostics = createMemo(() => getDiagnostics(props.metadata.diagnostics, props.input.filePath))
     const path = createMemo(() => props.metadata?.filediff?.file || props.input.filePath || "")
-    const filename = () => getFilename(props.input.filePath ?? "")
     const pending = () => busy(props.status)
-    const reveal = useToolReveal(pending, () => props.reveal !== false)
+    // The host streams a provisional count from oldString/newString until the
+    // permission ask returns the real filediff.
+    const streamed = () => streamedChanges(props.metadata, pending())
     // A plain function, not `createMemo`: Solid evaluates a memo eagerly on
     // render, which parsed the patch with Pierre even while the card stayed
     // collapsed. This is only read when the deferred body mounts or the user
@@ -3013,32 +3000,10 @@ ToolRegistry.register({
                   <span data-slot="message-part-title-text">
                     <TextShimmer text={i18n.t("ui.messagePart.title.edit")} active={pending()} />
                   </span>
-                  <Show when={filename()}>
-                    {(name) => (
-                      <ToolMetaLine
-                        filename={name()}
-                        path={props.input.filePath?.includes("/") ? getDirectory(props.input.filePath!) : undefined}
-                        changes={props.metadata.filediff}
-                        animate={reveal()}
-                      />
-                    )}
-                  </Show>
+                  <ToolFileMeta filePath={props.input.filePath} changes={props.metadata.filediff ?? streamed()} />
                 </div>
               </div>
-              <Show when={canOpenDiff()}>
-                <span data-slot="tool-trigger-actions">
-                  <Tooltip value={i18n.t("ui.messagePart.openInDiffViewer")} placement="top" gutter={4}>
-                    <IconButton
-                      icon="square-arrow-top-right"
-                      size="small"
-                      variant="ghost"
-                      onMouseDown={(e) => e.preventDefault()}
-                      onClick={handleOpenDiffClick}
-                      aria-label={i18n.t("ui.messagePart.openInDiffViewer")}
-                    />
-                  </Tooltip>
-                </span>
-              </Show>
+              <ToolDiffAction when={canOpenDiff()} onClick={handleOpenDiffClick} />
             </div>
           }
         >
@@ -3046,9 +3011,7 @@ ToolRegistry.register({
             <ToolFileAccordion
               path={path()}
               actions={
-                <Show when={!pending() && props.metadata.filediff}>
-                  {(diff) => <ToolChanges changes={diff()} animate={reveal()} />}
-                </Show>
+                <Show when={!pending() && props.metadata.filediff}>{(diff) => <ToolChanges changes={diff()} />}</Show>
               }
             >
               <div data-component="edit-content">
@@ -3075,9 +3038,15 @@ ToolRegistry.register({
     const fileComponent = useFileComponent()
     const diagnostics = createMemo(() => getDiagnostics(props.metadata.diagnostics, props.input.filePath))
     const path = createMemo(() => props.input.filePath || "")
-    const filename = () => getFilename(props.input.filePath ?? "")
     const pending = () => busy(props.status)
-    const reveal = useToolReveal(pending, () => props.reveal !== false)
+    // While the model streams the file, the host sends a provisional count as
+    // `metadata.streamChanges`, so the header counts up before the diff exists.
+    const streamed = () => streamedChanges(props.metadata, pending())
+    // A write that leaves the file as it was has an empty diff: show only the header.
+    const unchanged = () => {
+      const diff = props.metadata?.filediff
+      return !pending() && !!diff && !diff.additions && !diff.deletions
+    }
     // Lazy like the edit card: only parsed when the deferred body mounts or the
     // user opens the diff viewer, never while the card is collapsed.
     const view = () => {
@@ -3111,6 +3080,7 @@ ToolRegistry.register({
           icon="code-lines"
           defer
           hasDetails
+          hideDetails={props.hideDetails || (unchanged() && !diagnostics().length)}
           trigger={
             <div data-component="write-trigger">
               <div data-slot="message-part-title-area">
@@ -3118,32 +3088,17 @@ ToolRegistry.register({
                   <span data-slot="message-part-title-text">
                     <TextShimmer text={i18n.t("ui.messagePart.title.write")} active={pending()} />
                   </span>
-                  <Show when={filename()}>
-                    {(name) => (
-                      <ToolMetaLine
-                        filename={name()}
-                        path={props.input.filePath?.includes("/") ? getDirectory(props.input.filePath!) : undefined}
-                        changes={props.metadata.filediff}
-                        animate={reveal()}
-                      />
-                    )}
-                  </Show>
+                  <ToolFileMeta
+                    filePath={props.input.filePath}
+                    changes={props.metadata.filediff ?? streamed()}
+                    fallback={
+                      // Some models stream the content before the file path.
+                      <Show when={streamed()}>{(changes) => <ToolChanges changes={changes()} />}</Show>
+                    }
+                  />
                 </div>
               </div>
-              <Show when={canOpenDiff()}>
-                <span data-slot="tool-trigger-actions">
-                  <Tooltip value={i18n.t("ui.messagePart.openInDiffViewer")} placement="top" gutter={4}>
-                    <IconButton
-                      icon="square-arrow-top-right"
-                      size="small"
-                      variant="ghost"
-                      onMouseDown={(e) => e.preventDefault()}
-                      onClick={handleOpenDiffClick}
-                      aria-label={i18n.t("ui.messagePart.openInDiffViewer")}
-                    />
-                  </Tooltip>
-                </span>
-              </Show>
+              <ToolDiffAction when={canOpenDiff()} onClick={handleOpenDiffClick} />
             </div>
           }
         >
@@ -3151,9 +3106,7 @@ ToolRegistry.register({
             <ToolFileAccordion
               path={path()}
               actions={
-                <Show when={!pending() && props.metadata.filediff}>
-                  {(diff) => <ToolChanges changes={diff()} animate={reveal()} />}
-                </Show>
+                <Show when={!pending() && props.metadata.filediff}>{(diff) => <ToolChanges changes={diff()} />}</Show>
               }
             >
               <div data-component="write-content">
@@ -3255,26 +3208,25 @@ ToolRegistry.register({
     // like the `view` guard did, without parsing every file while collapsed.
     const hasHunk = (file: ApplyPatchFile) => HUNK_MARKER.test(file.patch ?? file.diff ?? "")
     const allDiffAction = () => (
-      <Show when={data.openDiff && files().some(hasHunk)}>
-        <span data-slot="tool-trigger-actions">
-          <Tooltip value={i18n.t("ui.messagePart.openInDiffViewer")} placement="top" gutter={4}>
-            <IconButton
-              icon="square-arrow-top-right"
-              size="small"
-              variant="ghost"
-              onMouseDown={(e) => e.preventDefault()}
-              onClick={(e) => {
-                e.stopPropagation()
-                openAllDiff()
-              }}
-              aria-label={i18n.t("ui.messagePart.openInDiffViewer")}
-            />
-          </Tooltip>
-        </span>
-      </Show>
+      <ToolDiffAction
+        when={!!data.openDiff && files().some(hasHunk)}
+        onClick={(e) => {
+          e.stopPropagation()
+          openAllDiff()
+        }}
+      />
     )
     const pending = createMemo(() => busy(props.status))
-    const reveal = useToolReveal(pending, () => props.reveal !== false)
+    // The host streams a provisional count from patchText until the parsed
+    // files metadata arrives at completion.
+    const streamed = () => streamedChanges(props.metadata, pending())
+    // The aggregate count shows the parsed files once they exist, and the
+    // provisional streamed count while the patch is still being generated.
+    const triggerChanges = () => {
+      const list = files()
+      if (list.some((file) => file.additions > 0 || file.deletions > 0)) return list
+      return streamed()
+    }
     const single = createMemo(() => {
       const list = files()
       if (list.length !== 1) return
@@ -3340,19 +3292,12 @@ ToolRegistry.register({
                         filename={getFilename(file().relativePath)}
                         path={file().relativePath.includes("/") ? getDirectory(file().relativePath) : undefined}
                         changes={{ additions: file().additions, deletions: file().deletions }}
-                        animate={reveal()}
                       />
                     )}
                   </Show>
-                  <Show when={!single() && subtitle()}>
-                    {(text) => (
-                      <>
-                        <ToolText text={text()} animate={reveal()} />
-                        <Show when={files().some((file) => file.additions > 0 || file.deletions > 0)}>
-                          <ToolChanges changes={files()} animate={reveal()} slot="message-part-tool-changes" />
-                        </Show>
-                      </>
-                    )}
+                  <Show when={!single() && subtitle()}>{(text) => <ToolText text={text()} />}</Show>
+                  <Show when={!single() && triggerChanges()}>
+                    {(changes) => <ToolChanges changes={changes()} slot="message-part-tool-changes" />}
                   </Show>
                 </div>
               </div>
@@ -3464,10 +3409,7 @@ ToolRegistry.register({
                       </span>
                     </Match>
                     <Match when={true}>
-                      <ToolChanges
-                        changes={{ additions: file().additions, deletions: file().deletions }}
-                        animate={reveal()}
-                      />
+                      <ToolChanges changes={{ additions: file().additions, deletions: file().deletions }} />
                     </Match>
                   </Switch>
                 }
@@ -3493,11 +3435,18 @@ ToolRegistry.register({
   },
 })
 
-function TodoCheckbox(props: { checked: boolean; children: JSX.Element }) {
+function TodoCheckbox(props: { checked: boolean; done?: boolean; started?: boolean; children: JSX.Element }) {
   const id = createUniqueId()
   const state = () => (props.checked ? "" : undefined)
   return (
-    <div role="group" data-component="checkbox" data-readonly="" data-checked={state()}>
+    <div
+      role="group"
+      data-component="checkbox"
+      data-readonly=""
+      data-checked={state()}
+      data-done={props.done ? "" : undefined}
+      data-started={props.started ? "" : undefined}
+    >
       <input
         type="checkbox"
         id={`${id}-input`}
@@ -3518,6 +3467,7 @@ function TodoCheckbox(props: { checked: boolean; children: JSX.Element }) {
             <svg viewBox="0 0 12 12" fill="none" width="10" height="10" xmlns="http://www.w3.org/2000/svg">
               <path
                 d="M3 7.17905L5.02703 8.85135L9 3.5"
+                pathLength="1"
                 stroke="currentColor"
                 stroke-width="1.5"
                 stroke-linecap="square"
@@ -3570,14 +3520,7 @@ ToolRegistry.register({
         defaultOpen
         approvalPlacement="hidden"
         icon="checklist"
-        trigger={
-          <ToolTriggerRow
-            title={i18n.t("ui.tool.todos")}
-            pending={pending()}
-            subtitle={subtitle()}
-            animate={props.reveal}
-          />
-        }
+        trigger={<ToolTriggerRow title={i18n.t("ui.tool.todos")} pending={pending()} subtitle={subtitle()} />}
       >
         <Show when={shown().length}>
           <div data-component="todos">
@@ -3586,7 +3529,7 @@ ToolRegistry.register({
             </Show>
             <For each={shown()}>
               {(todo: TodoItem) => (
-                <TodoCheckbox checked={todo.status === "completed"}>
+                <TodoCheckbox checked={todo.status === "completed"} done={todo.done} started={todo.started}>
                   <span
                     data-slot="message-part-todo-content"
                     data-completed={todo.status === "completed" ? "completed" : undefined}
@@ -3642,14 +3585,7 @@ ToolRegistry.register({
         {...props}
         defaultOpen={completed() && !dismissed()}
         icon="bubble-5"
-        trigger={
-          <ToolTriggerRow
-            title={i18n.t("ui.tool.questions")}
-            pending={pending()}
-            subtitle={subtitle()}
-            animate={props.reveal}
-          />
-        }
+        trigger={<ToolTriggerRow title={i18n.t("ui.tool.questions")} pending={pending()} subtitle={subtitle()} />}
       >
         <Show when={hasContent()}>
           <div data-component="question-answers" data-dismissed={dismissed() ? "" : undefined}>
@@ -3689,15 +3625,7 @@ ToolRegistry.register({
         hideDetails
         icon="brain"
         status={props.status}
-        trigger={
-          <ToolTriggerRow
-            title={i18n.t("ui.tool.skill")}
-            pending={pending()}
-            subtitle={name()}
-            animate={props.reveal}
-            revealOnMount
-          />
-        }
+        trigger={<ToolTriggerRow title={i18n.t("ui.tool.skill")} pending={pending()} subtitle={name()} />}
         animated
       />
     )

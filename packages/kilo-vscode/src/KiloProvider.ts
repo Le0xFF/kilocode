@@ -53,6 +53,7 @@ import { integratedBrowserUseSystemChrome } from "./services/browser-automation/
 import { removeAgent } from "./services/agent-removal"
 import { normalize, type SSEPayload, type SyncPayload, type WirePayload } from "./services/cli-backend/sdk-sse-adapter"
 import { slimInfo, slimPart, slimParts } from "./kilo-provider/slim-metadata"
+import { ToolInputStream } from "./kilo-provider/tool-input-stream"
 import { handleSidebarWorktreeMessage } from "./kilo-provider/sidebar-worktree"
 import { parseMessageFiles, type MessageFile } from "./kilo-provider/message-files"
 import { renameSession } from "./kilo-provider/rename-session"
@@ -383,6 +384,7 @@ export class KiloProvider implements vscode.WebviewViewProvider {
   /** Coalesce provider refreshes — at most one follow-up rerun when a request lands mid-flight. */
   private providersRefresh: Promise<void> | null = null
   private providersQueued = false
+  private providersRetry = false
   private providersGeneration = 0
   private sandboxRevision = 0
   private cachedAgentsMessage: unknown = null
@@ -448,6 +450,7 @@ export class KiloProvider implements vscode.WebviewViewProvider {
   private lastReconciledAt = new Map<string, number>() // Per-session focus-mode reconcile timestamp.
   private pendingSessionRefresh = false // Refresh requested before the client is ready.
   private readonly streams = new SessionStreamScheduler((msg) => this.postMessage(msg))
+  private readonly inputs = new ToolInputStream((msg) => this.streams.push(msg))
   private readonly visibleTaskStreams = new VisibleTaskStreams((id, visible) => this.streams.setVisible(id, visible))
   private readonly confirmations = new MessageConfirmation()
   private readonly costs = new MaxCostNudge()
@@ -1841,7 +1844,9 @@ speechToTextModels: () => this.fetchAndSendSpeechToTextModels(),
           const target = this.indexingScope
           this.fetchAndSendIndexingStatus(target.directory, target.projectId)
           this.flushPendingKiloModel()
-
+          // A fetch that ran without a usable client set this flag. Fetch again
+          // so the model picker does not stay on "No providers".
+          if (this.providersRetry) void this.fetchAndSendProviders()
           // Fire config warnings independently so a failure in the
           // sequential await chain doesn't prevent warnings from being shown
           void this.checkConfigWarnings("state")
@@ -2590,6 +2595,9 @@ const client = this.client
         this.providersQueued = false
         const client = this.client
         if (!client) {
+          // Nothing was loaded, so remember to fetch once a client is available.
+          // The webview retries may already be spent by then.
+          if (!this.cachedProvidersMessage) this.providersRetry = true
           if (this.cachedProvidersMessage && generation === this.providersGeneration)
             this.postMessage(this.cachedProvidersMessage)
           return
@@ -2621,6 +2629,7 @@ const client = this.client
             authStates,
           }
           this.cachedProvidersMessage = message
+          this.providersRetry = false
           this.postMessage(message)
         } catch (error) {
           if (generation !== this.providersGeneration) {
@@ -2628,6 +2637,8 @@ const client = this.client
             generation = this.providersGeneration
             continue
           }
+          // A rejected fetch leaves nothing cached, so retry on the next connect.
+          if (!this.cachedProvidersMessage) this.providersRetry = true
           console.error("[Kilo New] KiloProvider: Failed to fetch providers:", error)
         }
         if (!this.providersQueued) return
@@ -5039,6 +5050,13 @@ const client = this.client
     if (this.postModelUsageChanged(event, sessionID)) return
     if (event.type !== "session.deleted" && sessionID && !this.trackedSessionIds.has(sessionID)) return
 
+    // Streamed tool input becomes pending part updates, so a tool row shows its
+    // arguments while the model still generates them.
+    if (event.type === "session.next.tool.input.delta") {
+      if (sessionID) this.inputs.delta(event.properties)
+      return
+    }
+
     if (event.type === "message.part.updated") this.refreshGitStatusFromPart(event, sessionID)
 
     if (event.type === "session.updated" && typeof event.properties.info.cost === "number") {
@@ -5155,7 +5173,7 @@ const client = this.client
       : mapSSEEventToWebviewMessage(event, sessionID)
     if (!msg) return
     if (msg.type === "partUpdated") {
-      this.streams.push({ ...msg, part: this.slimPart(msg.part) })
+      this.streams.push({ ...msg, part: this.inputs.track(this.slimPart(msg.part)) })
       return
     }
     const next = msg.type === "messageCreated" ? { ...msg, message: this.slimInfo(msg.message) } : msg
@@ -5738,6 +5756,7 @@ const client = this.client
     this.autoApproveBridge?.dispose()
     // kilocode_change - offline: marketplace service keep-deleted; no dispose call
     this.visibleTaskStreams.clear()
+    this.inputs.dispose()
     this.streams.dispose()
     this.isWebviewReady = false
     this.webview = null

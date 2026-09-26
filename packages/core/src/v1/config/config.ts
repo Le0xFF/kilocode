@@ -327,9 +327,7 @@ export const Info = Schema.Struct({
         description: "Local OpenAI-compatible provider and model used for image generation",
       }),
 
-      task_model_selection: Schema.optional(Schema.Boolean).annotate({
-        description: "Allow task subagents to select a model, provider, and reasoning effort",
-      }),
+      // kilocode_change end
       code_mode: Schema.optional(Schema.Boolean).annotate({
         description:
           "Route MCP tool calls through a confined JavaScript runtime with on-demand tool discovery instead of exposing every MCP tool directly",

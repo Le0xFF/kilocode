@@ -1150,9 +1150,6 @@ export const dict = {
   "settings.notifications.workbench.title": "Enable VS Code Notifications",
   "settings.notifications.workbench.description":
     "Show VS Code notifications when Kilo completes a task or needs your input",
-  "settings.experimental.taskModelSelection.title": "Task Subagent Model Selection",
-  "settings.experimental.taskModelSelection.description":
-    "Allow task subagents to use an explicitly selected model, provider, and reasoning effort.",
   "prompt.goal.set": "Set goal",
   "prompt.goal.start": "Start goal",
   "prompt.action.send.recording": "Transcribe and send",

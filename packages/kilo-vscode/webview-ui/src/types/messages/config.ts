@@ -56,13 +56,12 @@ export interface ExperimentalMediaProvider {
 export interface ExperimentalConfig {
   batch_tool?: boolean
   image_generation?: boolean
+  image_generation_model?: string
   code_mode?: boolean
   // kilocode_change - offline: local media provider reference + custom STT source keys
   image_generation_provider?: ExperimentalMediaProvider
   speech_to_text_base_url?: string
   speech_to_text_api_key?: string
-  image_generation_model?: string
-  task_model_selection?: boolean
   native_notebook_tools?: boolean
   speech_to_text_model?: string
   primary_tools?: string[]

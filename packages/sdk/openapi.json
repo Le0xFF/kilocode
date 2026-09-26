@@ -33298,9 +33298,6 @@
                 },
                 "additionalProperties": false
               },
-              "task_model_selection": {
-                "type": "boolean"
-              },
               "code_mode": {
                 "type": "boolean"
               },
@@ -37367,6 +37364,19 @@
         "required": ["name", "content"],
         "additionalProperties": false
       },
+      "McpSkill": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string"
+          }
+        },
+        "required": ["id", "content"],
+        "additionalProperties": false
+      },
       "McpMarketplaceItem": {
         "type": "object",
         "properties": {
@@ -37421,6 +37431,12 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/McpParameter"
+            }
+          },
+          "skills": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/McpSkill"
             }
           }
         },
@@ -37719,6 +37735,12 @@
                 }
               }
             ]
+          },
+          "skills": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/McpSkill"
+            }
           }
         },
         "required": ["type", "id", "content"],
