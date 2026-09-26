@@ -463,7 +463,6 @@ export interface ImageModelsLoadedMessage {
   models: Array<{ id: string; name: string; description?: string }>
 }
 
-// kilocode_change - speech-to-text messages (kept local media surface)
 export interface SpeechToTextModelsLoadedMessage {
   type: "speechToTextModelsLoaded"
   models: SpeechToTextModelDef[]
@@ -1714,7 +1713,6 @@ export type ExtensionMessage =
   | MemoryOperationResultMessage
   | BackgroundJobsLoadedMessage
   | SessionBoardLoadedMessage
-  // kilocode_change - speech-to-text messages (kept local media surface)
   | SpeechToTextModelsLoadedMessage
   | SpeechToTextResultMessage
   | SpeechToTextStartedMessage

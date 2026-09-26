@@ -75,7 +75,6 @@ export interface ToolDeps {
   post: (msg: unknown) => void
   log: (...args: unknown[]) => void
   error: (msg: string) => void
-  // kilocode_change - upstream telemetry capture; optional so the offline build can leave it undefined (no-op)
   capture?: (event: string, properties?: Record<string, unknown>) => void
 }
 
@@ -187,9 +186,7 @@ async function local(
   deps.getPanel()?.sessions.registerSession(session)
   if (wt) deps.post({ type: "agentManager.sessionAdded", sessionId: session.id, worktreeId: wt.id })
 
-  // kilocode_change - single source-attributed prompt; the merge left a plain + attributed pair which double-prompted
   await prompt(client, session.id, target, task, source)
-  // kilocode_change - no-op when telemetry is cut (offline build leaves capture undefined)
   deps.capture?.("Agent Manager Session Started", {
     source: PLATFORM,
     sessionId: session.id,
@@ -268,7 +265,6 @@ async function worktree(
   deps.notifyReady(session.id, created.result, created.worktree.id)
   deps.getPanel()?.sessions.registerSession(session)
   timing.mark("ready")
-  // kilocode_change - single source-attributed prompt; the merge left a plain + attributed pair which double-prompted
   await ready
   try {
     await prompt(client, session.id, created.result.path, task, source)
@@ -276,7 +272,6 @@ async function worktree(
     await prepared.done
   }
   const span = timing.end()
-  // kilocode_change - no-op when telemetry is cut (offline build leaves capture undefined)
   deps.capture?.("Agent Manager Session Started", {
     source: PLATFORM,
     sessionId: session.id,

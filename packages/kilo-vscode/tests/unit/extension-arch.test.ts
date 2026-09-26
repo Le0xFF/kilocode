@@ -289,7 +289,6 @@ describe("Extension — KiloProvider handler wiring", () => {
     const body = sliceBlock(ext, start)
     const resolve = body.indexOf("resolveWebviewPanel")
     expect(resolve, "resolveWebviewPanel must be called").toBeGreaterThan(-1)
-    // kilocode_change - offline fork: RemoteStatusService was removed, so the
     // shared tab setup no longer wires setRemoteService / setDiffViewerProvider /
     // setReviewCommentsHandler. Assert only the handlers the attach() closure
     // actually wires today.
@@ -308,7 +307,6 @@ describe("Extension — KiloProvider handler wiring", () => {
   })
 
   it("new and restored tabs use shared setup and retain disposal", () => {
-    // kilocode_change - offline fork: openKiloInNewTab takes the diff provider and
     // auto-approve controller as extra args (remote service arg was removed).
     expect(ext).toContain("openKiloInNewTab(context, tabPanels, attach, diffVirtualProvider, autoApprove)")
     for (const name of ["function openKiloInNewTab", '"kilo-code.new.TabPanel"']) {

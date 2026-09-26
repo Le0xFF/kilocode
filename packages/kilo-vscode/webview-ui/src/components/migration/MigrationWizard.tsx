@@ -167,7 +167,6 @@ const MigrationWizard: Component<MigrationWizardProps> = (props) => {
   const language = useLanguage()
   const source = props.source ?? "roo"
   const operationId = props.operationId ?? crypto.randomUUID()
-  // kilocode_change - offline: the What's New intro screen is hidden by default; the migration migrate-screen is the active one
   const [screen, setScreen] = createSignal<Screen>("migrate")
   const [phase, setPhase] = createSignal<MigratePhase>("selecting")
   const [sessions, setSessions] = createSignal<MigrationSessionInfo[]>([])
@@ -314,7 +313,6 @@ const MigrationWizard: Component<MigrationWizardProps> = (props) => {
     <div class="migration-wizard">
       <div class="migration-wizard__container">
         <Show when={screen() === "whats-new"}>
-          {/* kilocode_change - offline: the What's New intro screen is hidden by default, so its section is not rendered at all */}
           <div class="migration-wizard__screen--active">
             <div class="migration-wizard__header">
               <KiloLogo />

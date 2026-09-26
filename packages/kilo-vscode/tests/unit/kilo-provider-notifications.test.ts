@@ -1,6 +1,5 @@
 import { describe, expect, it } from "bun:test"
 
-// kilocode_change - offline fork: the Kilo gateway notification pipeline
 // (fetchAndSendNotifications / dismissNotification and the src/kilo-provider/notifications
 // module) was removed with the offline surface. Remote notifications no longer exist, so
 // there is nothing to assert here. This file is kept as an explicit marker of the removed

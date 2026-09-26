@@ -543,7 +543,6 @@ describe("disconnectProvider", () => {
 })
 
 describe("fetchProviderData", () => {
-  // kilocode_change - offline fork: organization-based API defaults, the `ready`
   // flag, and the Kilo gateway auth-context validation were all removed with the
   // offline surface. fetchProviderData now only reports provider availability,
   // connection, auth states, and retained keys — so the organization-default and

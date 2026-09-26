@@ -3,7 +3,6 @@ import type { Config } from "@kilocode/sdk/v2/client"
 
 const { KiloProvider } = await import("../../src/KiloProvider")
 
-// kilocode_change - offline fork: the gateway organization/account surface was
 // removed. The catalog refresh mechanics below (coalescing, invalidation, disposal
 // re-fetch) still exist and are exercised here, but they no longer carry an
 // organizationId / ready / notification pipeline. Assertions target the offline

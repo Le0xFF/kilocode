@@ -410,7 +410,6 @@ export class KiloProvider implements vscode.WebviewViewProvider {
   private pending = 0
   private configWarningsShown = false
 
-  // kilocode_change - cachedNotificationsMessage removed with remote notifications (offline)
   /** Cached provider usage payload for profile view remounts and temporary disconnects. */
   private cachedProviderUsageMessage: { type: "providerUsageLoaded" } | null = null
   private providerUsageGeneration = 0
@@ -1141,7 +1140,6 @@ speechToTextModels: () => this.fetchAndSendSpeechToTextModels(),
           openAgentManager: () => vscode.commands.executeCommand("kilo-code.new.agentManagerOpen"),
           openAdvancedWorktree: () => vscode.commands.executeCommand("kilo-code.new.agentManager.advancedWorktree"),
 
-          // kilocode_change - keep method-based openChanges; drop the redundant command variant + profileButton (offline)
           openChanges: (sessionId?: string, turnId?: string) => this.openChanges(sessionId, turnId),
           currentSessionId: this.currentSession?.id,
           createWorktree: async (baseBranch, branchName) => {
@@ -1458,7 +1456,6 @@ speechToTextModels: () => this.fetchAndSendSpeechToTextModels(),
           break
 
         case "requestNotifications":
-          // kilocode_change - remote notifications removed with the offline surface
           break
         case "requestGitRemoteUrl":
           void this.getGitRemoteUrl().then((url) => {
@@ -1467,7 +1464,6 @@ speechToTextModels: () => this.fetchAndSendSpeechToTextModels(),
           break
 
         case "dismissNotification":
-          // kilocode_change - remote notifications removed with the offline surface
           break
 
         case "resetAllSettings":
@@ -1556,7 +1552,6 @@ speechToTextModels: () => this.fetchAndSendSpeechToTextModels(),
     )
   }
   private async handleProfileDataMessage(message: TypedWebviewMessage): Promise<boolean> {
-    // kilocode_change - profile refresh removed with the offline surface (auth module deleted)
     if (message.type === "requestProviderUsage") {
       await this.fetchAndSendProviderUsage()
       return true
@@ -2644,7 +2639,6 @@ const client = this.client
             providers: indexProvidersById(response.all),
             connected: response.connected,
             defaults: response.default,
-            // kilocode_change - organizationId/ready removed with the offline surface (no gateway)
             defaultSelection: computeDefaultSelection(
               this.cachedConfigMessage as { config?: { model?: string } } | null,
               settings.get<string>("providerID", ""),
@@ -3010,7 +3004,6 @@ const client = this.client
   private async fetchAndSendSpeechToTextModels(): Promise<void> {
     const seq = ++this.speechToTextSeq
     const source = this.speechToTextSource()
-    // kilocode_change - offline: no hosted catalog; "local" kind is used when no custom source is configured
     const kind = hasCustomSource(source) ? ("custom" as const) : ("local" as const)
     const result = await fetchSpeechToTextModels(source)
     // A newer fetch started while this one was in flight, so drop this result.
@@ -4664,7 +4657,6 @@ const client = this.client
     }
   }
 
-  // kilocode_change - cloud-session + auth/profile handlers removed with the offline surface (modules deleted)
 
   private invalidateProviderUsage(): void {
     this.providerUsageGeneration++
@@ -4693,7 +4685,6 @@ const client = this.client
       return
     }
     const { section, leaf } = buildSettingPath(key)
-    // kilocode_change - autocomplete settings removed with the offline surface
     if (section === "indexing" && !validIndexingSetting(leaf, value)) return
     if (section === "chat" && !validChatSetting(leaf, value)) return
     const config = vscode.workspace.getConfiguration(`kilo-code.new${section ? `.${section}` : ""}`)
@@ -4742,7 +4733,6 @@ const client = this.client
     await this.extensionContext?.globalState.update("kilo.agentMigrationBannerDismissed", undefined)
     await this.extensionContext?.globalState.update("kilo.marketplace.dismissedSuggestions", undefined)
 
-    // kilocode_change - autocomplete + remote notifications removed with the offline surface
     await this.sendIndexingSettings()
     this.sendBrowserSettings()
     this.sendNotificationSettings()
@@ -4758,7 +4748,6 @@ const client = this.client
     this.postMessage({ type: "recentsLoaded", recents: [] })
     this.postMessage({ type: "modelUsageLoaded", usage: {} })
 
-    // kilocode_change - remote notifications removed with the offline surface
 
     vscode.window.showInformationMessage("Kilo Code settings have been reset to defaults.")
   }
@@ -4801,7 +4790,6 @@ const client = this.client
           this.fetchAndSendSkills(),
           this.fetchAndSendCommands(),
           this.fetchAndSendIndexingStatus(),
-          // kilocode_change - remote notifications removed with the offline surface
         ]),
       ),
     ])
@@ -4972,7 +4960,6 @@ const client = this.client
       return
     }
 
-    // kilocode_change - kilo-sessions remote status removed with the offline surface
 
     if (event.type === "memory.status" || event.type === "memory.updated" || event.type === "memory.error") {
       const props = event.properties as { sessionID?: unknown; detail?: unknown; reason?: unknown }
@@ -5774,7 +5761,6 @@ const client = this.client
     this.setFocusTarget("other")
     this.latch?.dispose()
     this.latch = undefined
-    // kilocode_change - remote-status/profile/autocomplete disposal removed with the offline surface
     this.streams.focus(undefined)
     this.connectionService.unregisterVisible(this.instanceId)
     this.connectionService.unregisterAttached(this.instanceId)
@@ -5799,7 +5785,6 @@ const client = this.client
     this.autoApprovalReasonConfigDisposable?.dispose()
     this.pushFixesConfigDisposable?.dispose()
     this.autoApproveBridge?.dispose()
-    // kilocode_change - offline: marketplace service keep-deleted; no dispose call
     this.visibleTaskStreams.clear()
     this.inputs.dispose()
     this.streams.dispose()

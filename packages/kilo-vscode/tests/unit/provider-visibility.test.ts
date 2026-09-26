@@ -21,7 +21,6 @@ describe("canChangeProviderKey", () => {
 
   it("excludes custom providers and local optional-key providers", () => {
     expect(canChangeProviderKey(item, { npm: "@ai-sdk/openai-compatible" }, undefined)).toBe(false)
-    // kilocode_change - offline: only the localhost OpenAI-compatible providers keep an optional key
     for (const id of ["atomic-chat", "lmstudio"]) {
       expect(canChangeProviderKey({ ...item, id }, undefined, undefined)).toBe(false)
     }

@@ -201,7 +201,6 @@ export function useSlashCommand(
       },
     },
     {
-      // kilocode_change - offline: remote-control and kiloclaw slash commands removed
       name: "sandbox",
       description: "Toggle sandbox",
       hints: [],

@@ -123,7 +123,7 @@ describe("KiloProvider providers on reconnect", () => {
     expect(requests).toEqual(["/unavailable", "/healthy"])
     expect(configs).toEqual(["/healthy"])
     expect(internal.providersRetry).toBe(false)
-    expect(messages).toContainEqual(expect.objectContaining({ type: "providersLoaded", ready: true }))
+    expect(messages).toContainEqual(expect.objectContaining({ type: "providersLoaded" })) // offline fork: ready field removed with the gateway surface (see KiloProvider providersLoaded marker)
 
     await internal.retryInitialization()
     expect(requests).toHaveLength(2)

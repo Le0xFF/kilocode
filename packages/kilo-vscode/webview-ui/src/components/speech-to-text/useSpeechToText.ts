@@ -154,7 +154,6 @@ export function useSpeechToText(
 
   function login() {
     const message = lang.t("speechToText.error.loginRequired")
-    // kilocode_change - offline: device-flow sign-in is inert, so the action falls back to dismiss
     showToast({
       variant: "error",
       title: message,

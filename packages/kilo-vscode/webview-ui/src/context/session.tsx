@@ -470,7 +470,6 @@ export const SessionProvider: ParentComponent = (props) => {
       defaults: provider.defaults(),
       getModeModel,
       getGlobalModel,
-      // kilocode_change - no Kilo gateway auto model in the offline surface
       fallback: null,
     }
   }
@@ -673,7 +672,6 @@ export const SessionProvider: ParentComponent = (props) => {
         defaults: provider.defaults(),
         getModeModel,
         getGlobalModel,
-        // kilocode_change - offline: no Kilo gateway auto model fallback in the offline surface
         fallback: null,
       },
       agentName,
@@ -2086,7 +2084,6 @@ export const SessionProvider: ParentComponent = (props) => {
     const selection = providerID && modelID ? { providerID, modelID } : selected(draftID ?? sid)
     if (!available(selection)) return false
     recordModelUsage(selection.providerID, selection.modelID)
-    // kilocode_change - cloud session previews removed with the offline surface
 
     dismiss(sid)
 
@@ -2184,7 +2181,6 @@ export const SessionProvider: ParentComponent = (props) => {
     for (const q of scopedQuestions(sid)) {
       dismissQuestion(q.id)
     }
-    // kilocode_change - cloud session previews removed with the offline surface
     if (command !== "goal") dismiss(sid)
 
     if (scope) {

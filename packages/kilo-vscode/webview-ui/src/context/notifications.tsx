@@ -1,7 +1,6 @@
 import { createContext, createSignal, type ParentComponent, type Accessor } from "solid-js"
 import { useVSCode } from "./vscode"
 
-// kilocode_change - offline surface: remote/cloud notifications were removed with the
 // online notification service. This provider keeps the upstream component contract so
 // webview code that references it still renders (with an always-empty list); the host
 // handler for requestNotifications is a no-op.

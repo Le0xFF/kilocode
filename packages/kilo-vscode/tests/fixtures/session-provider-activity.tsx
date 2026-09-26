@@ -656,7 +656,6 @@ try {
   value.setCurrentSessionID("cloud:preview")
   assert.equal(value.sendMessage("cloud effective model"), true)
   const cloud = requests().at(-1)
-  // kilocode_change - offline: cloud session previews were removed, so a send to a
   // cloud:* session posts a plain sendMessage/sendCommand instead of importAndSend.
   assert(cloud?.type === "sendMessage")
   assert.equal(cloud.providerID, recommended.providerID)
@@ -1112,7 +1111,6 @@ try {
     retained(text, count)
   }
 await catalog("org-a", [recommended.modelID], recommended.modelID)
-    // kilocode_change - offline: cloud session previews were removed, so only the local
     // composer goal path is exercised here.
     for (const sid of ["composer"]) {
     await seed("/goal", sid)
@@ -1134,7 +1132,6 @@ await catalog("org-a", [recommended.modelID], recommended.modelID)
       await settle()
       assert.equal(requests().length, count + 1)
       const request = requests().at(-1)
-      // kilocode_change - offline: goal sends always post sendCommand (no cloud import path).
       assert(request?.type === "sendCommand")
       assert.equal(request.command, "goal")
       assert.equal(request.type === "sendCommand" ? request.arguments : request.commandArgs, `-- ${text}`)
@@ -1345,7 +1342,6 @@ await catalog("org-a", [recommended.modelID], recommended.modelID)
   }
   await emit({ type: "sessionUpdated", session: { ...info("root"), goal } })
   await emit({ type: "sessionStatus", sessionID: "root", status: "busy" })
-  // kilocode_change - offline: pending scoped prompts are dismissed on any send (including
   // goals), so this segment no longer seeds a question/suggestion it expects to survive.
   const count = value.messages().length
   for (const phase of ["ready", "loading", "empty"]) {
@@ -1410,7 +1406,6 @@ await catalog("org-a", [recommended.modelID], recommended.modelID)
       if (control) assert.equal(snapshot("root"), before)
       assert.equal(value.status(), "busy")
     }
-    // kilocode_change - offline: the cloud:* goal import path (importAndSend /
     // cloudSessionId) was removed with the offline surface, so this segment is no
     // longer exercised. The local "root" goal path above still covers goal sends.
   }

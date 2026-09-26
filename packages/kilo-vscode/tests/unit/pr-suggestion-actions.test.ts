@@ -243,7 +243,6 @@ describe("working-tree PR suggestions", () => {
       expect(await fs.readFile(file, "utf8")).toBe(before.replace("old", "new"))
       expect((await fs.stat(file)).ino).not.toBe(stat.ino)
       expect((await fs.stat(file)).mode).toBe(stat.mode)
-      // kilocode_change - offline fork: readdir() order is not stable across
       // filesystems after a rename-based atomic replace, so compare the entry set
       // order-independently (no leftover temp files, originals intact) instead of
       // relying on a specific directory-entry order.

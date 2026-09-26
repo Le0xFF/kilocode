@@ -19,7 +19,6 @@ import { dict as tr } from "./tr"
 import { dict as uk } from "./uk"
 import { dict as zh } from "./zh"
 import { dict as zht } from "./zht"
-// kilocode_change - wire upstream attention notification locales; the merge dropped this block and left the bundles unimported
 import { dict as arAttention } from "./attention/ar"
 import { dict as brAttention } from "./attention/br"
 import { dict as bsAttention } from "./attention/bs"

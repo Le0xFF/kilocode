@@ -79,7 +79,6 @@ describe("resolveModelSelection", () => {
   })
 
   it("rejects an explicit final fallback whose provider is not connected", () => {
-    // kilocode_change - offline: non-kilo selections require their provider to be
     // connected, so a fallback pointing at an unconnected provider is dropped.
     const result = resolveModelSelection({
       providers,
@@ -91,7 +90,6 @@ describe("resolveModelSelection", () => {
 
 
   it("rejects the explicit fallback when its provider is missing from the catalog", () => {
-    // kilocode_change - offline: a fallback whose provider is absent from the
     // catalog is not trusted, so it resolves to null rather than the fallback.
     const result = resolveModelSelection({
       providers: { anthropic: providers.anthropic },

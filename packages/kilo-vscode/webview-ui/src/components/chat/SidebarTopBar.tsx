@@ -32,7 +32,6 @@ export const SidebarTopBar: Component<SidebarTopBarProps> = (props) => {
 
   // Mirrors the native toolbar buttons; analytics tracking removed.
 
-  // kilocode_change - offline: marketplace/profile/claw panels removed; only agent manager + settings remain
   const open = (type: "openAgentManager" | "openSettingsPanel") => vscode.postMessage({ type })
 
   const actions: Action[] = [

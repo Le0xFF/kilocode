@@ -140,7 +140,6 @@ for (const stale of [
 assert.equal(button("Import Sessions").disabled, true)
 emit({ ...scope, type: "migrationData", data: catalog })
 assert.equal(root.querySelectorAll('input[type="checkbox"]').length, 1)
-// kilocode_change - offline fork: the wizard keeps its "Migrate Your Settings" header but
 // only offers the Chat Sessions & History category; the legacy Provider API Keys / MCP
 // Servers / Custom Modes / UI Language categories were removed with the offline surface.
 assert.doesNotMatch(

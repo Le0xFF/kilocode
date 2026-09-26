@@ -22,7 +22,6 @@ export interface GhostText {
   setMentionOpen: (open: boolean) => void
 }
 
-// kilocode_change - offline: chat-completion / autocomplete settings messages were removed with the FIM surface,
 // so ghost text is inert. All methods are no-ops that preserve the call-site contract without posting those messages.
 export function useGhostText(_vscode: VSCodeContext, _getText: () => string, _connected: () => boolean): GhostText {
   const [ghost] = createSignal("")

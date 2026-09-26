@@ -297,7 +297,6 @@ describe("organization model store", () => {
     const updated = { ...store, ...applyModel(store, "code", KILO_AUTO, scope) }
     const before = structuredClone(updated)
     const restricted = { ...organization, providers: { kilo: makeProvider("kilo", [recommendation.modelID]) } }
-    // kilocode_change - offline fork: a personal catalog (env()) that contains no kilo
     // provider cannot validate an explicit KILO_AUTO choice, so those reads fall back to
     // the local default. Catalogs that still list the kilo provider (restricted) resolve
     // it to the available recommendation instead.

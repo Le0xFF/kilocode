@@ -401,7 +401,6 @@ export interface RequestFileSearchMessage {
   sessionID?: string
 }
 
-// kilocode_change - speech-to-text request messages (kept local media surface)
 export interface SpeechToTextPrewarmMessage {
   type: "speechToTextPrewarm"
 }
@@ -583,7 +582,6 @@ export interface SettingsTabChangedMessage {
   tab: string
 }
 
-// kilocode_change - offline surface: the notification types exist so upstream
 // webview code (and the test fixture) can reference them; the host handler is a
 // no-op, so the provider always renders an empty list.
 export interface RequestNotificationsMessage {
@@ -1647,7 +1645,6 @@ export type WebviewMessage =
   | TestOSNotificationMessage
   | ResetAllSettingsRequest
   | SettingsTabChangedMessage
-  // kilocode_change - offline: no-op notification messages (see above)
   | RequestNotificationsMessage
   | DismissNotificationMessage
   | SyncSessionRequest
@@ -1795,7 +1792,6 @@ export type WebviewMessage =
   | AgentManagerTerminalDestinationSelectedRequest
   | AgentManagerTerminalResizeRequest
   | RequestImageModelsMessage
-  // kilocode_change - speech-to-text request messages (kept local media surface)
   | SpeechToTextPrewarmMessage
   | SpeechToTextStartMessage
   | SpeechToTextStopMessage

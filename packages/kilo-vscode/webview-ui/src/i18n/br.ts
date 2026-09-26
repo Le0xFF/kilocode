@@ -1169,7 +1169,6 @@ export const dict = {
   "chat.search.noResults": "Nenhum resultado",
   "chat.search.searchingHistory": "Pesquisando mensagens anteriores…",
 
-  // kilocode_change - step 6: keys added from upstream delta (EN fallback)
   "speechToText.tooltip.start": "Start voice input with Kilo Gateway",
   "speechToText.tooltip.shortcut":
     "Tap to start or stop recording. Hold while speaking, then release to transcribe and submit.",
@@ -1214,7 +1213,6 @@ export const dict = {
   "task.backgroundAgents.stopAll": "Stop all ({{count}})",
   "migration.roo.button": "Import Sessions",
   "migration.roo.empty": "No Roo Code sessions found.",
-  // kilocode_change - offline fork: i18n keys imported after v7.7.4 sync
   "prompt.paste.expand": "Click to expand pasted text",
   "prompt.action.autoApprove.sandboxExcluded": "Sandbox escalation prompts are always excluded.",
   "prompt.action.sandbox.description.escalation": "Permission rules and auto-approve apply inside the sandbox. Commands that must leave it always ask.",
@@ -1251,7 +1249,6 @@ export const dict = {
   "diffViewer.comment.sendToGithub": "Send to GitHub #{{number}}",
   "diffViewer.comment.sendToKilo": "Send to Kilo",
   "diffViewer.comment.unavailable": "This line is not available in the current pull request snapshot.",
-// kilocode_change - offline fork: i18n keys imported after v7.7.4 sync
   "notification.permission.descriptionSandboxEscalation": "This runs the whole command with filesystem and network restrictions removed, for this command only. Git must write to .git, which is read-only in the sandbox and outside the worktree in a linked worktree. Bash allow rules and auto-approve never approve this prompt automatically.",
   "settings.experimental.codeMode.title": "Programmatic Tool Calling",
   "settings.experimental.codeMode.description": "Route MCP tool calls through a confined JavaScript runtime with on-demand tool discovery instead of exposing every MCP tool directly. Saves context when many MCP tools are connected.",

@@ -1,4 +1,3 @@
-// kilocode_change - offline speech-to-text model catalog: empty by default; the local surface has no hosted speech models.
 export interface SpeechToTextModelDef {
   readonly id: string
   readonly label?: string

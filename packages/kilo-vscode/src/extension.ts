@@ -102,7 +102,6 @@ export async function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push({ dispose: () => cleanup.dispose() })
 
   // Create browser automation broker (manages Playwright MCP registration)
-  // kilocode_change - offline: broker is lazy; no settings sync / reconnect re-registration needed
   const unsubscribeStateChange = connectionService.onStateChange((state) => {
     if (state === "connected") {
       void browserAutomationService

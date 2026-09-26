@@ -107,7 +107,6 @@ export const ServerProvider: ParentComponent = (props) => {
   })
 
 
-  // kilocode_change - device-flow login + provider usage removed with the offline surface
 
   const value: ServerContextValue = {
     connectionState,

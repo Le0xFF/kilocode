@@ -1,4 +1,3 @@
-// kilocode_change - offline speech-to-text catalog: the local media surface exposes no hosted /kilo/models/transcriptions
 // endpoint, so discovery goes to the custom source (user-declared OpenAI-compatible endpoint) or degrades to the empty
 // catalog (speech input stays available for users that wire a local recognizer).
 import type { SpeechToTextModelDef } from "./models"

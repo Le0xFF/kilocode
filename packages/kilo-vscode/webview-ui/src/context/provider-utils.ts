@@ -40,7 +40,6 @@ export function isModelValid(
   if (!selection) return false
   const provider = providers[selection.providerID]
   if (!provider) return false
-  // kilocode_change - offline: the kilo provider needs no "connected" state, so exempt it from the connection check
   if (selection.providerID !== "kilo" && !connected.includes(selection.providerID)) return false
   return !!provider.models[selection.modelID]
 }

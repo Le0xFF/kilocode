@@ -1,4 +1,3 @@
-// kilocode_change - offline telemetry stub: PostHog/OTel telemetry was removed with the kilo-telemetry package, so the
 // proxy is a no-op singleton that preserves the call sites without any network activity.
 
 export enum TelemetryEventName {
