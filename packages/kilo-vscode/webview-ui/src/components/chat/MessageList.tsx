@@ -1134,10 +1134,9 @@ export const MessageList: Component<MessageListProps> = (props) => {
     active = { id, keys: current, fingerprint: value }
   })
 
-  const save = (id: string | undefined, saved = active) => {
+  const save = (id: string | undefined, handle?: VirtualizerHandle, saved = active) => {
     const el = scrollEl()
     if (!id || !el || saved.id !== id) return
-    const handle = virtualizer()
     const token = layout()
     if (handle && token && saved.keys.length > 0) {
       setMeasurement(id, saved.fingerprint, token, handle.cache)
@@ -1159,9 +1158,12 @@ export const MessageList: Component<MessageListProps> = (props) => {
     session.loadOlderMessages()
   }
 
+  // A synthetic scroll only exists to let virtua re-read the offset after a
+  // remount. It must not page history for the session that just became active.
+  let syncing = false
   const handleScroll = () => {
     autoScroll.handleScroll()
-    maybeLoadOlder()
+    if (!syncing) maybeLoadOlder()
     scheduleActive()
     if (search.active()) scheduleHighlight()
   }
@@ -1252,6 +1254,10 @@ export const MessageList: Component<MessageListProps> = (props) => {
 
   onCleanup(() => save(session.currentSessionID()))
 
+  // Virtua keeps measured sizes by index, not by key. Give each session its
+  // own instance so rows never inherit another session's sizes, which left
+  // blank gaps above the last message until the user scrolled.
+  const instance = () => (scrollEl() && partition().virtual.length > 0 ? session.currentSessionID() : undefined)
   return (
     <div class="message-list-container" classList={{ "am-intro-layout": introduction() }}>
       <Show when={props.announce === false}>
@@ -1312,35 +1318,58 @@ export const MessageList: Component<MessageListProps> = (props) => {
                 data-direct-count={partition().direct.length}
                 data-queued-count={partition().queued.length}
               >
-                <Show when={scrollEl() && partition().virtual.length > 0}>
-                  <Virtualizer
-                    ref={setVirtualizer}
-                    data={partition().virtual}
-                    scrollRef={scrollEl()}
-                    shift={session.messageMutation() === "prepend"}
-                    cache={measurement()}
-                    bufferSize={520}
-                    itemSize={260}
-                  >
-                    {(row, index) => (
-                      <TranscriptRowView
-                        row={row}
-                        index={index()}
-                        onSelectSession={props.onSelectSession}
-                        isSessionOpen={props.isSessionOpen}
-                        onForkMessage={props.onForkMessage}
-                        onEditMessage={props.onEditMessage}
-                        queuedDisabled={props.queuedDisabled}
-                        editDisabled={props.editDisabled}
-                        highlight={highlight}
-                        activeSearch={activeKey() === row.key}
-                        activeSearchPartID={activeKey() === row.key ? activeMatch()?.partId : undefined}
-                        activeSearchPartFile={activeKey() === row.key ? activeMatch()?.partFile : undefined}
-                        readonly={props.readonly}
-                        interactivePrompts={props.interactivePrompts}
-                      />
-                    )}
-                  </Virtualizer>
+                <Show when={instance()} keyed>
+                  {(id) => {
+                    let handle: VirtualizerHandle | undefined
+                    // The old instance is gone before the switch effect runs,
+                    // so persist its sizes and position from its own handle.
+                    onCleanup(() => save(id, handle))
+                    const ref = (next?: VirtualizerHandle) => {
+                      if (next) handle = next
+                      setVirtualizer(next)
+                      const el = scrollEl()
+                      if (!next || !el) return
+                      // A new instance starts at offset 0. If the scroller is
+                      // already elsewhere and does not move again, no scroll
+                      // event would sync it, so report the position once.
+                      queueMicrotask(() => {
+                        if (virtualizer() !== next || Math.abs(el.scrollTop - next.scrollOffset) < 1) return
+                        syncing = true
+                        el.dispatchEvent(new Event("scroll"))
+                        syncing = false
+                      })
+                    }
+                    return (
+                      <Virtualizer
+                        ref={ref}
+                        data={partition().virtual}
+                        scrollRef={scrollEl()}
+                        shift={session.messageMutation() === "prepend"}
+                        cache={measurement()}
+                        bufferSize={520}
+                        itemSize={260}
+                      >
+                        {(row, index) => (
+                          <TranscriptRowView
+                            row={row}
+                            index={index()}
+                            onSelectSession={props.onSelectSession}
+                            isSessionOpen={props.isSessionOpen}
+                            onForkMessage={props.onForkMessage}
+                            onEditMessage={props.onEditMessage}
+                            queuedDisabled={props.queuedDisabled}
+                            editDisabled={props.editDisabled}
+                            highlight={highlight}
+                            activeSearch={activeKey() === row.key}
+                            activeSearchPartID={activeKey() === row.key ? activeMatch()?.partId : undefined}
+                            activeSearchPartFile={activeKey() === row.key ? activeMatch()?.partFile : undefined}
+                            readonly={props.readonly}
+                            interactivePrompts={props.interactivePrompts}
+                          />
+                        )}
+                      </Virtualizer>
+                    )
+                  }}
                 </Show>
                 <For each={tail()}>
                   {(key) => (

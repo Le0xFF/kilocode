@@ -9,6 +9,7 @@ import { CancelWakeupTool } from "./cancel-wakeup"
 import { ChartTool } from "./chart"
 import { CronCreateTool, CronDeleteTool, CronListTool } from "./cron"
 // kilocode_change - offline: generate-image tool removed (gateway-backed); image generation goes via media-local routes
+import { LinkPrTool } from "./link-pr"
 import { NotebookEditTool, NotebookExecuteTool, NotebookReadTool } from "./notebook-host"
 import { MemoryRecallTool } from "./memory-recall"
 import { MemorySaveTool } from "./memory-save"
@@ -85,6 +86,7 @@ export namespace KiloToolRegistry {
       const chart = yield* ChartTool
       // kilocode_change - offline: generate-image removed; openPlan retained (send-file dropped with mobile surface)
       const openPlan = yield* OpenPlanTool
+      const linkPr = yield* LinkPrTool
       // Wakeup.Service is provided by Wakeup.node in the tool-registry node graph.
       const schedule = yield* ScheduleWakeupTool
       const cancel = yield* CancelWakeupTool
@@ -108,6 +110,7 @@ if (!notebook)
           browser,
           chart,
           openPlan,
+          linkPr,
           schedule,
           cancel,
           cronCreate,
@@ -130,6 +133,7 @@ return {
         browser,
         chart,
         openPlan,
+        linkPr,
         schedule,
         cancel,
         cronCreate,
@@ -155,6 +159,7 @@ return {
       chart: Tool.Info
 // kilocode_change - offline: generate-image removed; openPlan/schedule/cancel retained (send dropped with mobile surface)
       openPlan?: Tool.Info
+      linkPr: Tool.Info
       schedule?: Tool.Info
       cancel?: Tool.Info
       cronCreate?: Tool.Info
@@ -181,6 +186,7 @@ return {
         manager: Tool.init(tools.manager),
         process: Tool.init(tools.process),
         chart: Tool.init(tools.chart),
+        linkPr: Tool.init(tools.linkPr),
       })
 const openPlan = tools.openPlan ? yield* Tool.init(tools.openPlan) : undefined
       const schedule = tools.schedule ? yield* Tool.init(tools.schedule) : undefined
@@ -285,6 +291,7 @@ const openPlan = tools.openPlan ? yield* Tool.init(tools.openPlan) : undefined
       chart: Tool.Def
 // kilocode_change - offline: generate-image removed; openPlan/schedule/cancel retained (send dropped with mobile surface)
       openPlan?: Tool.Def
+      linkPr: Tool.Def
       schedule?: Tool.Def
       cancel?: Tool.Def
       cronCreate?: Tool.Def
@@ -339,7 +346,7 @@ const openPlan = tools.openPlan ? yield* Tool.init(tools.openPlan) : undefined
       tools.notebookExecute
         ? [tools.notebookRead, tools.notebookEdit, tools.notebookExecute]
         : []),
-
+      tools.linkPr,
     ]
   }
 

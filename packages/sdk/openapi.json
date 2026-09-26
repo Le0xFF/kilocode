@@ -13205,7 +13205,7 @@
             }
           }
         },
-        "description": "Install a marketplace MCP server, agent, or skill into project or global Kilo config.",
+        "description": "Install a marketplace MCP server, agent, skill, or plugin into project or global Kilo config.",
         "summary": "Install a marketplace item",
         "requestBody": {
           "content": {
@@ -13282,7 +13282,7 @@
             }
           }
         },
-        "description": "Remove a marketplace MCP server, agent, or skill from project or global Kilo config.",
+        "description": "Remove a marketplace MCP server, agent, skill, or plugin from project or global Kilo config.",
         "summary": "Remove a marketplace item",
         "requestBody": {
           "content": {
@@ -14219,6 +14219,9 @@
                         "type": "string",
                         "pattern": "^ses"
                       }
+                    },
+                    "sessionCost": {
+                      "type": "number"
                     },
                     "totals": {
                       "type": "object",
@@ -16634,7 +16637,7 @@
                       },
                       "workspace": {
                         "type": "string",
-                        "enum": ["restored", "snapshots-disabled", "unavailable"]
+                        "enum": ["restored", "snapshots-disabled", "unavailable", "not-a-git-repo"]
                       }
                     },
                     "required": ["messageID"],
@@ -26589,7 +26592,7 @@
               },
               "workspace": {
                 "type": "string",
-                "enum": ["restored", "snapshots-disabled", "unavailable"]
+                "enum": ["restored", "snapshots-disabled", "unavailable", "not-a-git-repo"]
               }
             },
             "required": ["messageID"],
@@ -34074,7 +34077,7 @@
               },
               "workspace": {
                 "type": "string",
-                "enum": ["restored", "snapshots-disabled", "unavailable"]
+                "enum": ["restored", "snapshots-disabled", "unavailable", "not-a-git-repo"]
               }
             },
             "required": ["messageID"],
@@ -35086,7 +35089,7 @@
               },
               "workspace": {
                 "type": "string",
-                "enum": ["restored", "snapshots-disabled", "unavailable"]
+                "enum": ["restored", "snapshots-disabled", "unavailable", "not-a-git-repo"]
               }
             },
             "required": ["messageID"],
@@ -35249,7 +35252,7 @@
               },
               "workspace": {
                 "type": "string",
-                "enum": ["restored", "snapshots-disabled", "unavailable"]
+                "enum": ["restored", "snapshots-disabled", "unavailable", "not-a-git-repo"]
               }
             },
             "required": ["messageID"],
@@ -35431,7 +35434,7 @@
               },
               "workspace": {
                 "type": "string",
-                "enum": ["restored", "snapshots-disabled", "unavailable"]
+                "enum": ["restored", "snapshots-disabled", "unavailable", "not-a-git-repo"]
               }
             },
             "required": ["messageID"],
@@ -35594,7 +35597,7 @@
               },
               "workspace": {
                 "type": "string",
-                "enum": ["restored", "snapshots-disabled", "unavailable"]
+                "enum": ["restored", "snapshots-disabled", "unavailable", "not-a-git-repo"]
               }
             },
             "required": ["messageID"],
@@ -35757,7 +35760,7 @@
               },
               "workspace": {
                 "type": "string",
-                "enum": ["restored", "snapshots-disabled", "unavailable"]
+                "enum": ["restored", "snapshots-disabled", "unavailable", "not-a-git-repo"]
               }
             },
             "required": ["messageID"],
@@ -36085,7 +36088,7 @@
               },
               "workspace": {
                 "type": "string",
-                "enum": ["restored", "snapshots-disabled", "unavailable"]
+                "enum": ["restored", "snapshots-disabled", "unavailable", "not-a-git-repo"]
               }
             },
             "required": ["messageID"],
@@ -36248,7 +36251,7 @@
               },
               "workspace": {
                 "type": "string",
-                "enum": ["restored", "snapshots-disabled", "unavailable"]
+                "enum": ["restored", "snapshots-disabled", "unavailable", "not-a-git-repo"]
               }
             },
             "required": ["messageID"],
@@ -37579,6 +37582,50 @@
         ],
         "additionalProperties": false
       },
+      "PluginMarketplaceItem": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "author": {
+            "type": "string"
+          },
+          "authorUrl": {
+            "type": "string"
+          },
+          "prerequisites": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "suggest_for": {
+            "$ref": "#/components/schemas/MarketplaceSuggestFor"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["plugin"]
+          },
+          "content": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          }
+        },
+        "required": ["id", "name", "description", "category", "type", "content"],
+        "additionalProperties": false
+      },
       "MarketplaceItem": {
         "anyOf": [
           {
@@ -37589,6 +37636,9 @@
           },
           {
             "$ref": "#/components/schemas/SkillMarketplaceItem"
+          },
+          {
+            "$ref": "#/components/schemas/PluginMarketplaceItem"
           }
         ]
       },
@@ -37762,6 +37812,23 @@
         "required": ["type", "id", "content"],
         "additionalProperties": false
       },
+      "PluginInstallItem": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["plugin"]
+          },
+          "id": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string"
+          }
+        },
+        "required": ["type", "id", "content"],
+        "additionalProperties": false
+      },
       "MarketplaceInstallItem": {
         "anyOf": [
           {
@@ -37772,6 +37839,9 @@
           },
           {
             "$ref": "#/components/schemas/SkillInstallItem"
+          },
+          {
+            "$ref": "#/components/schemas/PluginInstallItem"
           }
         ]
       },
@@ -37790,6 +37860,12 @@
           "filePath": {
             "type": "string"
           },
+          "filePaths": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
           "line": {
             "type": "integer"
           }
@@ -37805,7 +37881,7 @@
           },
           "type": {
             "type": "string",
-            "enum": ["mcp", "agent", "skill"]
+            "enum": ["mcp", "agent", "skill", "plugin"]
           }
         },
         "required": ["id", "type"],
@@ -43300,7 +43376,7 @@
           },
           "workspace": {
             "type": "string",
-            "enum": ["restored", "snapshots-disabled", "unavailable"]
+            "enum": ["restored", "snapshots-disabled", "unavailable", "not-a-git-repo"]
           }
         },
         "required": ["messageID"],
