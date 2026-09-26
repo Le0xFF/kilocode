@@ -207,6 +207,7 @@ panel.onDidDispose(() => {
       isSessionRouteAmbiguous: (sessionId) => provider.isSessionRouteAmbiguous(sessionId),
       routeSessionDirectoryFor: (ref) => provider.routeSessionDirectoryFor(ref),
       refreshGitStatus: () => void provider.refreshGitStatus(),
+      retryInitialization: () => void provider.retryInitialization(),
       dispose: () => provider.dispose(),
     }
 
@@ -418,6 +419,15 @@ panel.onDidDispose(() => {
     return vscode.workspace.getConfiguration("kilo-code.new.experimental").get("browserAutomation", false)
   }
 
+  async approveBrowserNavigation(origin: string): Promise<boolean> {
+    const answer = await vscode.window.showWarningMessage(
+      `Allow the Agent Manager browser to navigate to ${origin}?`,
+      { modal: true },
+      "Allow",
+    )
+    return answer === "Allow"
+  }
+
   worktreePool(): boolean {
     return vscode.workspace.getConfiguration("kilo-code.new.agentManager").get("worktreePool", true)
   }
@@ -531,8 +541,12 @@ panel.onDidDispose(() => {
     return ext?.packageJSON?.contributes?.keybindings ?? []
   }
 
-  copyToClipboard(text: string): void {
-    void vscode.env.clipboard.writeText(text)
+  async copyToClipboard(text: string): Promise<void> {
+    await vscode.env.clipboard.writeText(text)
+  }
+
+  async readClipboard(): Promise<string> {
+    return vscode.env.clipboard.readText()
   }
 
   capture(event: string, properties?: Record<string, unknown>): void {
