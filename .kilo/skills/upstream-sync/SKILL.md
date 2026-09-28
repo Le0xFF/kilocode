@@ -1,6 +1,6 @@
 ---
 name: upstream-sync
-description: Use when syncing `origin/main` (github.com/Kilo-Org/kilocode) into the offline VS Code extension fork branch `leocode`. Covers pre-conditions, exact commands, conflict-resolution matrix, invariants I1–I10 verification, rollback, and final smoke/test gates.
+description: Use when syncing `origin/main` (github.com/Kilo-Org/kilocode) into the offline VS Code extension fork branch `leocode`. Covers pre-conditions, exact commands, conflict-resolution matrix, invariants I1–I11 verification, rollback, and final smoke/test gates.
 ---
 
 # Upstream Sync (`origin/main` → `leocode`)
@@ -29,13 +29,13 @@ Use this skill whenever you merge upstream Kilo Code into the offline fork, reso
 5. **Merge**: `git merge main`. Risolvere ogni conflitto secondo la matrice take-ours/take-theirs; dove tace, la porzione marcata `kilocode_change` vince; in assenza di marker preferire la versione che mantiene l'applicazione offline.
 6. **Riconciliazione dipendenze**: `bun install` da root (non frozen: rigenera `bun.lock` contro la workspace list esplicita a 22 voci); verificare che `patchedDependencies` continui ad applicarsi e che `packages/kilo-gateway`/`kilo-telemetry` non siano riacquistate.
 7. **Rigenerazione**: `bun run script/generate.ts` da root se la superficie server è cambiata (rigenera SDK + OpenAPI e preferisce lo snapshot committo `models-dev.local.json`).
-8. **Check + invarianti**: `bun turbo typecheck`, `bun run lint`, `bun run script/check-workflows.ts` da root; poi verificare una per una le invarianti I1–I10 con i comandi grep della matrice in `docs/upstream-sync.md`; infine verificare il floor VS Code 1.103: `grep -n '"vscode"' packages/kilo-vscode/package.json` deve mostrare `"vscode": "^1.103.0"` (e `@types/vscode` allineata) — mai alzato oltre 1.103 dal merge.
+8. **Check + invarianti**: `bun turbo typecheck`, `bun run lint`, `bun run script/check-workflows.ts` da root; poi verificare una per una le invarianti I1–I11 con i comandi grep della matrice in `docs/upstream-sync.md`; infine verificare il floor VS Code 1.103: `grep -n '"vscode"' packages/kilo-vscode/package.json` deve mostrare `"vscode": "^1.103.0"` (e `@types/vscode` allineata) — mai alzato oltre 1.103 dal merge.
 9. **Test + packaging**: da `packages/kilo-vscode/`: `bun run test:unit` (MAI `bun test` da root), poi `bun run compile` quando il sync tocca SDK/bundle.
 10. **Smoke offline**: dal `packages/opencode/` eseguire `bun dev serve` e con `curl`: `GET /provider` deve mostrare SOLO provider locali/configurati — nessun `kilo`, nessun gateway; suite unit verde. Solo a questo punto il sync è completo (criteri in `docs/upstream-sync.md`).
 
 ## Cross-references
 
-- `docs/upstream-sync.md`: comandi esatti, matrice take-ours/take-theirs, verifiche post-merge I1–I10, casi limite, rollback, definizione di sync completo.
+- `docs/upstream-sync.md`: comandi esatti, matrice take-ours/take-theirs, verifiche post-merge I1–I11, casi limite, rollback, definizione di sync completo.
 - `PRUNE-NOTES.md`: cosa è stato rimosso e perché, vincoli strutturali (workspace list esplicita, patchedDependencies, zdiff3), matrice dei residui online gated, comandi validi dopo il prune.
 
 ## `kilocode_change` markers during conflict resolution

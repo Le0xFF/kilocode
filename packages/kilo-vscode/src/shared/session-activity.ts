@@ -2,9 +2,3 @@
 // The host must not import from webview-ui (breaks tsc rootDir); keep semantics in sync.
 
 export type Activity = "waiting" | "error" | "retry" | "busy" | "done" | "scheduled" | "idle"
-
-const STATES: Activity[] = ["scheduled", "done", "busy", "retry", "error", "waiting"]
-
-export function isActivity(value: unknown): value is Activity {
-  return value === "idle" || (typeof value === "string" && STATES.includes(value as Activity))
-}

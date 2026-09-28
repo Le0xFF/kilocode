@@ -17,6 +17,12 @@
   "project": ["src/**/*.ts", "webview-ui/**/*.{ts,tsx}"],
   "ignoreExportsUsedInFile": true,
   "exclude": ["devDependencies", "unlisted", "unresolved", "binaries"],
+  "ignore": [
+    "webview-ui/src/components/chat/transcript-row-handoff.ts",
+    "webview-ui/src/components/speech-to-text/SpeechToTextPrewarm.tsx",
+    "webview-ui/src/context/notifications.tsx",
+    "webview-ui/src/context/speech-to-text-models.tsx"
+  ],
   "ignoreDependencies": [
     "@kilocode/kilo-i18n",
     "@kilocode/kilo-indexing",
@@ -26,6 +32,7 @@
     "@kilocode/sandbox",
     "@kilocode/sdk",
     "@opencode-ai/core",
-    "@opencode-ai/ui"
+    "@opencode-ai/ui",
+    "chromium-bidi"
   ]
 }

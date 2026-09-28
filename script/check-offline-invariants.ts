@@ -2,7 +2,7 @@
 // kilocode_change - new file
 
 /**
- * Deterministic, read-only guard that asserts the 10 offline invariants (I1–I10)
+ * Deterministic, read-only guard that asserts the 11 offline invariants (I1–I11)
  * from `docs/upstream-sync.md`. It translates each invariant's grep/`ls` command
  * into a programmatic check so a future upstream sync cannot silently re-activate
  * online surface (models.dev fetch, network probes, gateway/telemetry packages,
@@ -305,6 +305,35 @@ const fail = (id: string, name: string, detail: string) => results.push({ id, na
       if (missing.length > 0) parts.push(`allowlisted but absent: ${missing.join(", ")}`)
       fail("I10", "workflow allowlist coherent", parts.join("; "))
     }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// I11 — VSIX packaging self-sufficiency. The scripted offline packager
+// (packages/kilo-vscode/script/pack-vsix.ts) must keep asserting that the
+// playwright runtime (`dist/node_modules/playwright-core` + `chromium-bidi`)
+// ships in the VSIX, and `.vscodeignore` must keep the `!dist/**` negation so
+// the whole dist tree survives the pack. Deliberately coarse: it fails loudly
+// if the packaging script or its runtime assertions are dropped in a future
+// sync, not re-implement the packer.
+// ---------------------------------------------------------------------------
+{
+  const packRel = "packages/kilo-vscode/script/pack-vsix.ts"
+  const ignRel = "packages/kilo-vscode/.vscodeignore"
+  const pack = await readText(packRel)
+  const ign = await readText(ignRel)
+  if (pack === null || ign === null) {
+    const parts: string[] = []
+    if (pack === null) parts.push(`${packRel} not found`)
+    if (ign === null) parts.push(`${ignRel} not found`)
+    fail("I11", "vsix packaging self-sufficiency", parts.join("; "))
+  } else {
+    const parts: string[] = []
+    if (!pack.includes("dist/node_modules/playwright-core")) parts.push("pack-vsix.ts no longer asserts dist/node_modules/playwright-core")
+    if (!pack.includes("dist/node_modules/chromium-bidi")) parts.push("pack-vsix.ts no longer asserts dist/node_modules/chromium-bidi")
+    if (!/^!dist\/\*\*$/m.test(ign)) parts.push(".vscodeignore missing the `!dist/**` negation line")
+    if (parts.length === 0) pass("I11", "vsix packaging self-sufficiency")
+    else fail("I11", "vsix packaging self-sufficiency", parts.join("; "))
   }
 }
 

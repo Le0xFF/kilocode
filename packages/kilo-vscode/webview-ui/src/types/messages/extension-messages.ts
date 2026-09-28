@@ -1564,6 +1564,7 @@ export type ExtensionMessage =
   | ModelUsageLoadedMessage
   | MessageCreatedMessage
   | SessionsLoadedMessage
+  | GitRemoteUrlLoadedMessage
   | ActionMessage
   | NavigateMessage
   | AgentManagerSettingsLoadedMessage

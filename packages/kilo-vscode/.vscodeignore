@@ -31,3 +31,11 @@ bin/.cli-version
 
 # Include WAV assets used by extension-host notification playback
 !audio-wav/**
+
+# Exclude dev/test artifacts that must never ship in the VSIX
+tests/**
+test-results/**
+storybook-static/**
+docs/**
+dist-vsix/**
+vsc-extension-quickstart.md

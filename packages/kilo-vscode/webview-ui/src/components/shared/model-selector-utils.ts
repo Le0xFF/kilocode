@@ -22,7 +22,6 @@ export function hasByok(model: Pick<EnrichedModel, "hasUserByokAvailable">): boo
 }
 
 // upstream signatures so ModelSelector compiles, and simply never match local providers.
-export const KILO_AUTO_SMALL_IDS = new Set(["kilo-auto/small", "auto-small"])
 
 export function isAuto(_model: Pick<EnrichedModel, "providerID" | "id">): boolean {
   return false

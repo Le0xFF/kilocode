@@ -49,11 +49,11 @@ bun test packages/script/tests/check-kilocode-duplication.test.ts   # se present
 cd packages/kilo-vscode && bun run test:unit
 ```
 
-Il gate finale di packaging resta `bun run compile` da `packages/kilo-vscode/` (prepare:cli-binary + prepare:sdk + bundle), da eseguire quando il sync tocca SDK o bundle.
+Il gate finale di packaging è `bun run compile` da `packages/kilo-vscode/` (prepare:cli-binary + prepare:sdk + bundle) seguito da `bun run package:vsix`, che si auto-verifica su `dist/node_modules` (runtime playwright) prima del pack; da eseguire quando il sync tocca SDK, bundle o packaging.
 
 Approccio alla risoluzione: risolvere conflitto per conflitto seguendo la matrice take-ours/take-theirs; dove la matrice tace, la porzione marcata `kilocode_change` vince e, in assenza di marker, preferire la versione che mantiene l'applicazione offline. Non fare refactoring extra durante la risoluzione.
 
-### Matrice invarianti I1–I10 e verifica post-merge
+### Matrice invarianti I1–I12 e verifica post-merge
 
 Ogni invariante va ri-verificata con grep dopo il merge (i path sono relativi a root):
 
@@ -69,7 +69,7 @@ Ogni invariante va ri-verificata con grep dopo il merge (i path sono relativi a 
 | I8 | Superfici rimosse dall'estensione: `src/kiloclaw/**`, `RemoteStatusService.ts`, `MarketplacePanelProvider.ts`, `services/autocomplete/**` (gateway FIM), device-flow auth, cloud sessions, notifications | `ls packages/kilo-vscode/src/kiloclaw packages/kilo-vscode/src/RemoteStatusService.ts packages/kilo-vscode/src/MarketplacePanelProvider.ts packages/kilo-vscode/src/services/autocomplete` deve fallire (keep-deleted anche se upstream li modifica) |
 | I9 | Locale i18n: 4 alberi (kilo-i18n, webview src, agent-manager, ui) tagliati sulle chiavi online | `bun test tests/unit/i18n-unused-keys.test.ts` da `packages/kilo-vscode/`; audit delle chiavi nuove upstream referenziate dal codice integrato. Il guard `check-offline-invariants.ts` verifica l'insieme automatizzabile più forte (esistenza degli alberi + di ogni `en.ts` e della test); il taglio per-chiave resta delegato alla test stessa |
 | I10 | Guard CI: 10 workflow allowlistati in `script/check-workflows.ts`; guard duplication `script/check-kilocode-duplication.ts` + allowlist portati dal merge | `bun run script/check-workflows.ts` da root (exit 0); presenza di `script/check-kilocode-duplication.ts` e della sua allowlist post-merge |
-| I11 | Floor VS Code: l'estensione deve restare installabile su **VS Code 1.103** (`engines.vscode` = `^1.103.0`, `@types/vscode` allineata). Durante la risoluzione conflitti rifiutare/neutralizzare ogni cambio che alzi `engines.vscode`/`@types/vscode` oltre 1.103 o adotti API `vscode` disponibili solo da >= 1.104; se l'upstream alza il proprio floor, mantenere 1.103 e documentare/riportare l'incompatibilità (mai accettarla silenziosamente) | Dopo il merge `grep -n '"vscode": "\^1.103.0"' packages/kilo-vscode/package.json` e `grep -n '"@types/vscode": "\^1.103.0"' packages/kilo-vscode/package.json` devono entrambi risaltire hit |
+| I12 | Floor VS Code: l'estensione deve restare installabile su **VS Code 1.103** (`engines.vscode` = `^1.103.0`, `@types/vscode` allineata). Durante la risoluzione conflitti rifiutare/neutralizzare ogni cambio che alzi `engines.vscode`/`@types/vscode` oltre 1.103 o adotti API `vscode` disponibili solo da >= 1.104; se l'upstream alza il proprio floor, mantenere 1.103 e documentare/riportare l'incompatibilità (mai accettarla silenziosamente) | Dopo il merge `grep -n '"vscode": "\^1.103.0"' packages/kilo-vscode/package.json` e `grep -n '"@types/vscode": "\^1.103.0"' packages/kilo-vscode/package.json` devono entrambi risaltire hit |
 
 ### Tabella take-ours / take-theirs per categoria
 
@@ -94,7 +94,7 @@ Ogni invariante va ri-verificata con grep dopo il merge (i path sono relativi a 
 | `kilo-vscode/src/kilo-provider/**` + `KiloProvider.ts` + `extension.ts` | Integrare + riapplicare rimozioni offline | Keep-deleted `handlers/cloud-session.ts`, `src/kiloclaw/**`, `RemoteStatusService.ts`, `MarketplacePanelProvider.ts`, `services/autocomplete/**`; pulire union/case/import |
 | `kilo-vscode/src/services/browser-automation/**` | take-theirs | Feature nuova, setting sperimentale off di default |
 | `kilo-vscode/src/legacy-migration/**` | take-theirs (accept deletion di `migration-service.ts`, `native-mode-defaults.ts`, `provider-mapping.ts` e relativo test) | Adattare i riferimenti residui nostri (`handlers/migration.ts`, `legacy-types.ts`, `MigrationWizard.tsx`) |
-| `kilo-vscode/package.json` | Unione | Command `updateFromBase`, setting browserAutomation, flip `terminalButtonDestination`; deps browser (`playwright-core`, `chromium-bidi`, `ws`, `@types/ws`) da theirs; rimuovere ciò che il fork ha tolto; MAI alzare `engines.vscode`/`@types/vscode` oltre 1.103 (I11) |
+| `kilo-vscode/package.json` | Unione | Command `updateFromBase`, setting browserAutomation, flip `terminalButtonDestination`; deps browser (`playwright-core`, `chromium-bidi`, `ws`, `@types/ws`) da theirs; rimuovere ciò che il fork ha tolto; MAI alzare `engines.vscode`/`@types/vscode` oltre 1.103 (I12) |
 | `kilo-vscode/esbuild.js` | take-theirs | Bundle browser |
 | `kilo-ui/**`, `core/**`, `kilo-indexing/**`, `tui/**`, `schema/**`, altri shared | take-theirs | Salvo i pochi file toccati dai marker offline |
 

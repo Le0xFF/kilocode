@@ -133,16 +133,6 @@ export interface RequestGitRemoteUrlMessage {
   type: "requestGitRemoteUrl"
 }
 
-export interface LoginRequest {
-  type: "login"
-}
-export interface LogoutRequest {
-  type: "logout"
-}
-export interface RefreshProfileRequest {
-  type: "refreshProfile"
-}
-
 export interface OpenExternalRequest {
   type: "openExternal"
   url: string
@@ -1576,6 +1566,7 @@ export type WebviewMessage =
   | LoadMessagesRequest
   | LoadSessionsRequest
   | RequestSessionModelUsageMessage
+  | RequestGitRemoteUrlMessage
   | OpenExternalRequest
   | OpenSettingsPanelRequest
   | RequestAgentManagerSettingsMessage
