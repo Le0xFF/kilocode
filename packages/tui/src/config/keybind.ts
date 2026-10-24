@@ -94,6 +94,7 @@ export const Definitions = {
   session_delete: keybind("ctrl+d", "Delete session"),
   // kilocode_change - session sharing feature removed; no session_share/session_unshare keybinds
   session_interrupt: keybind("escape", "Interrupt current session"),
+  subagent_interrupt: keybind("escape", "Interrupt current subagent"), // kilocode_change
   session_background: keybind("ctrl+b", "Background synchronous subagents"),
   session_compact: keybind("<leader>c", "Compact the session"),
   session_toggle_timestamps: keybind("none", "Toggle message timestamps"),
@@ -300,6 +301,7 @@ export const CommandMap = {
   session_delete: "session.delete",
   // kilocode_change - session sharing feature removed; no session_share/session_unshare command mappings
   session_interrupt: "session.interrupt",
+  subagent_interrupt: "subagent.interrupt", // kilocode_change
   session_background: "session.background",
   session_compact: "session.compact",
   session_toggle_timestamps: "session.toggle.timestamps",
