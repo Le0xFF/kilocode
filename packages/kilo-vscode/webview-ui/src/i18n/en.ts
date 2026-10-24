@@ -743,6 +743,11 @@ export const dict = {
   "settings.experimental.mcpTimeout.description": "Timeout for MCP server requests in milliseconds",
   "browserTab.noSession": "Open the browser from a session to preview a local application or public HTTPS page.",
   "browserTab.disabled": "The Integrated Browser is disabled. Enable it in Kilo Settings > Experimental.",
+  "settings.experimental.browserLinks.title": "Open links in",
+  "settings.experimental.browserLinks.description":
+    "Choose where web links open from Kilo chats. Requires the Integrated Browser.",
+  "settings.experimental.browserLinks.external": "System browser",
+  "settings.experimental.browserLinks.integrated": "Integrated Browser",
   "settings.experimental.conversationPromptHistory.title": "Per-Conversation Prompt History",
   "settings.experimental.conversationPromptHistory.description":
     "Keep the prompt input history (ArrowUp/ArrowDown recall) separate for each conversation instead of sharing one history across all conversations.",

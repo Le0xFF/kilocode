@@ -1232,4 +1232,8 @@ export const dict = {
   "settings.agentBehaviour.removeSkill.bundleConfirm": "要移除技能 \"{{name}}\" 嗎？這也會卸載 {{mcp}} MCP 伺服器以及來自同一個 Marketplace 安裝的所有配套技能。",
   "task.todos.done": "全部完成",
   "task.todos.title": "待辦",
+  "settings.experimental.browserLinks.title": "連結開啟位置",
+  "settings.experimental.browserLinks.description": "選擇 Kilo 聊天中的網頁連結開啟位置。需要整合瀏覽器。",
+  "settings.experimental.browserLinks.external": "系統瀏覽器",
+  "settings.experimental.browserLinks.integrated": "整合瀏覽器",
 } satisfies Partial<Record<Keys, string>>

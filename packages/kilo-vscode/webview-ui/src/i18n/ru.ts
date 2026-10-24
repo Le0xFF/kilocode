@@ -1292,4 +1292,9 @@ export const dict = {
   "settings.agentBehaviour.removeSkill.bundleConfirm": "Удалить навык \"{{name}}\"? Это также удалит сервер MCP {{mcp}} и каждый сопутствующий навык из той же установки Marketplace.",
   "task.todos.done": "Всё готово",
   "task.todos.title": "Задачи",
+  "settings.experimental.browserLinks.title": "Открывать ссылки в",
+  "settings.experimental.browserLinks.description":
+    "Выберите, где открывать веб-ссылки из чатов Kilo. Требуется встроенный браузер.",
+  "settings.experimental.browserLinks.external": "Системный браузер",
+  "settings.experimental.browserLinks.integrated": "Встроенный браузер",
 }

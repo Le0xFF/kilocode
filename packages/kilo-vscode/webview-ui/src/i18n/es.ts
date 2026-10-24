@@ -1311,4 +1311,9 @@ export const dict = {
   "settings.agentBehaviour.removeSkill.bundleConfirm": "¿Eliminar la habilidad \"{{name}}\"? Esto también desinstalará el servidor MCP {{mcp}} y cada habilidad complementaria de la misma instalación del Marketplace.",
   "task.todos.done": "Todo listo",
   "task.todos.title": "Tareas",
+  "settings.experimental.browserLinks.title": "Abrir enlaces en",
+  "settings.experimental.browserLinks.description":
+    "Elige dónde se abren los enlaces web desde los chats de Kilo. Requiere el Navegador integrado.",
+  "settings.experimental.browserLinks.external": "Navegador del sistema",
+  "settings.experimental.browserLinks.integrated": "Navegador integrado",
 }

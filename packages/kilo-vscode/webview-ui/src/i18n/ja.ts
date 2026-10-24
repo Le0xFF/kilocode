@@ -1284,4 +1284,9 @@ export const dict = {
   "settings.agentBehaviour.removeSkill.bundleConfirm": "スキル \"{{name}}\" を削除しますか？これにより、{{mcp}} MCPサーバーと同じMarketplaceインストールの関連スキルもすべてアンインストールされます。",
   "task.todos.done": "すべて完了",
   "task.todos.title": "タスク",
+  "settings.experimental.browserLinks.title": "リンクを開く場所",
+  "settings.experimental.browserLinks.description":
+    "Kilo のチャットから web リンクを開く場所を選択します。統合ブラウザーが必要です。",
+  "settings.experimental.browserLinks.external": "システムブラウザー",
+  "settings.experimental.browserLinks.integrated": "統合ブラウザー",
 }

@@ -1299,4 +1299,9 @@ export const dict = {
   "settings.agentBehaviour.removeSkill.bundleConfirm": "Ukloniti vještinu \"{{name}}\"? Ovo će također deinstalirati MCP server {{mcp}} i svaku pratećeg vještinu iz iste instalacije sa Marketplace-a.",
   "task.todos.done": "Sve završeno",
   "task.todos.title": "Zadaci",
+  "settings.experimental.browserLinks.title": "Otvori linkove u",
+  "settings.experimental.browserLinks.description":
+    "Odaberite gdje se web linkovi otvaraju iz Kilo razgovora. Zahtijeva Integrirani preglednik.",
+  "settings.experimental.browserLinks.external": "Sistemski preglednik",
+  "settings.experimental.browserLinks.integrated": "Integrirani preglednik",
 }

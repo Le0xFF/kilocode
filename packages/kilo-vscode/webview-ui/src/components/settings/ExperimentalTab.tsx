@@ -8,6 +8,22 @@ import { useLanguage } from "../../context/language"
 import { useImageModels } from "../../context/image-models"
 import SettingsRow from "./SettingsRow"
 
+interface ShareOption {
+  value: string
+  labelKey: string
+}
+
+const SHARE_OPTIONS: ShareOption[] = [
+  { value: "manual", labelKey: "settings.experimental.share.manual" },
+  { value: "auto", labelKey: "settings.experimental.share.auto" },
+  { value: "disabled", labelKey: "settings.experimental.share.disabled" },
+]
+
+const LINK_OPTIONS: ShareOption[] = [
+  { value: "external", labelKey: "settings.experimental.browserLinks.external" },
+  { value: "integrated", labelKey: "settings.experimental.browserLinks.integrated" },
+]
+
 const ExperimentalTab: Component = () => {
   const { config, settings, updateConfig, applySetting } = useConfig()
   const language = useLanguage()
@@ -172,6 +188,30 @@ const ExperimentalTab: Component = () => {
             {language.t("settings.experimental.browserAutomation.title")}
           </Switch>
         </SettingsRow>
+
+        <Show when={settings().browserAutomation === true}>
+          <SettingsRow
+            title={language.t("settings.experimental.browserLinks.title")}
+            description={language.t("settings.experimental.browserLinks.description")}
+          >
+            <Select
+              options={LINK_OPTIONS}
+              current={LINK_OPTIONS.find(
+                (o) => o.value === (settings().agentManagerBrowserOpenLinksIn ?? "integrated"),
+              )}
+              value={(o) => o.value}
+              label={(o) => language.t(o.labelKey)}
+              onSelect={(o) => {
+                if (!o) return
+                if (o.value === (settings().agentManagerBrowserOpenLinksIn ?? "integrated")) return
+                applySetting("agentManagerBrowserOpenLinksIn", o.value, "agentManager.browser.openLinksIn")
+              }}
+              variant="secondary"
+              size="small"
+              triggerVariant="settings"
+            />
+          </SettingsRow>
+        </Show>
 
         <SettingsRow
           title={language.t("settings.experimental.browserAutomation.systemChrome.title")}

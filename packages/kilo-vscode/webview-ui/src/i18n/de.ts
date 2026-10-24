@@ -1320,4 +1320,9 @@ export const dict = {
   "settings.agentBehaviour.removeSkill.bundleConfirm": "Skill \"{{name}}\" entfernen? Dadurch wird auch der {{mcp}} MCP-Server und jeder Begleit-Skill aus derselben Marketplace-Installation deinstalliert.",
   "task.todos.done": "Alles erledigt",
   "task.todos.title": "Aufgaben",
+  "settings.experimental.browserLinks.title": "Links öffnen in",
+  "settings.experimental.browserLinks.description":
+    "Wählen Sie, wo Weblinks aus Kilo-Chats geöffnet werden. Erfordert den integrierten Browser.",
+  "settings.experimental.browserLinks.external": "Systembrowser",
+  "settings.experimental.browserLinks.integrated": "Integrierter Browser",
 } satisfies Partial<Record<Keys, string>>

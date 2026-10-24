@@ -1266,4 +1266,8 @@ export const dict = {
   "settings.agentBehaviour.removeSkill.bundleConfirm": "إزالة المهارة \"{{name}}\"؟ سيؤدي هذا أيضًا إلى إلغاء تثبيت خادم MCP {{mcp}} وكل مهارة مرافقة من نفس تثبيت المتجر.",
   "task.todos.done": "اكتمل الكل",
   "task.todos.title": "المهام",
+  "settings.experimental.browserLinks.title": "فتح الروابط في",
+  "settings.experimental.browserLinks.description": "اختر مكان فتح روابط الويب من محادثات Kilo. يتطلب المتصفح المدمج.",
+  "settings.experimental.browserLinks.external": "متصفح النظام",
+  "settings.experimental.browserLinks.integrated": "المتصفح المدمج",
 }

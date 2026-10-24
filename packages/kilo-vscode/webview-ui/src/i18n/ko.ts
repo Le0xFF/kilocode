@@ -1272,4 +1272,9 @@ export const dict = {
   "settings.agentBehaviour.removeSkill.bundleConfirm": "스킬 \"{{name}}\"을(를) 제거하시겠습니까? 이는 {{mcp}} MCP 서버와 동일한 마켓플레이스 설치의 모든 동반 스킬도 제거합니다.",
   "task.todos.done": "모두 완료",
   "task.todos.title": "할 일",
+  "settings.experimental.browserLinks.title": "링크 열기 위치",
+  "settings.experimental.browserLinks.description":
+    "Kilo 채팅에서 웹 링크를 여는 위치를 선택합니다. 통합 브라우저가 필요합니다.",
+  "settings.experimental.browserLinks.external": "시스템 브라우저",
+  "settings.experimental.browserLinks.integrated": "통합 브라우저",
 }

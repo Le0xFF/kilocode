@@ -1311,4 +1311,9 @@ export const dict = {
   "settings.agentBehaviour.removeSkill.bundleConfirm": "Видалити навичку \"{{name}}\"? Це також видалить сервер MCP {{mcp}} і кожну супутню навичку з того ж встановлення Marketplace.",
   "task.todos.done": "Усе готово",
   "task.todos.title": "Завдання",
+  "settings.experimental.browserLinks.title": "Відкривати посилання в",
+  "settings.experimental.browserLinks.description":
+    "Виберіть, де відкривати веб-посилання з чатів Kilo. Потрібен вбудований браузер.",
+  "settings.experimental.browserLinks.external": "Системний браузер",
+  "settings.experimental.browserLinks.integrated": "Вбудований браузер",
 }

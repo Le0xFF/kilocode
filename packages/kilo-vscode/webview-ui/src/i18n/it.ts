@@ -1279,4 +1279,9 @@ export const dict = {
   "settings.agentBehaviour.removeSkill.bundleConfirm": "Rimuovere la skill \"{{name}}\"? Questo disinstallerà anche il server MCP {{mcp}} e ogni skill correlata della stessa installazione dal Marketplace.",
   "task.todos.done": "Tutto fatto",
   "task.todos.title": "To-do",
+  "settings.experimental.browserLinks.title": "Apri i link in",
+  "settings.experimental.browserLinks.description":
+    "Scegli dove aprire i link web dalle chat di Kilo. Richiede il Browser integrato.",
+  "settings.experimental.browserLinks.external": "Browser di sistema",
+  "settings.experimental.browserLinks.integrated": "Browser integrato",
 } as const

@@ -23,6 +23,7 @@ import { Auth } from "@/auth"
 import { KiloLLM } from "@/kilocode/session/llm"
 import { KiloSessionOverflow } from "@/kilocode/session/overflow"
 import { KiloToolSchema } from "@/kilocode/session/tool-schema"
+import { KiloMessageDiagnostics } from "@/kilocode/session/message-diagnostics"
 // kilocode_change end
 import { EffectBridge } from "@/effect/bridge"
 import { RuntimeFlags } from "@/effect/runtime-flags"
@@ -300,8 +301,10 @@ yield* Effect.logInfo("native runtime unavailable; falling back to ai-sdk", {
           ],
         }),
       })
-      
-    return { type: "ai-sdk" as const, result }
+      // kilocode_change start - offline fork: session export observation removed; the
+      // assembled messages are still returned for ModelMessage diagnostics (#13185)
+      return { type: "ai-sdk" as const, result, messages: prepared.messages }
+      // kilocode_change end
     })
 
     const stream: Interface["stream"] = (input) =>
@@ -324,6 +327,12 @@ yield* Effect.logInfo("native runtime unavailable; falling back to ai-sdk", {
               e instanceof Error ? e : new Error(String(e)),
             ).pipe(
               Stream.mapEffect((event) => LLMAISDK.toLLMEvents(state, event)),
+              // kilocode_change start - emit structural diagnostics when the AI SDK
+              // rejects the assembled ModelMessage[] before dispatch (#13185)
+              Stream.tapError((e) =>
+                Effect.sync(() => KiloMessageDiagnostics.reportModelMessageError(e, result.messages)),
+              ),
+              // kilocode_change end
               Stream.flatMap((events) => Stream.fromIterable(events)),
             )
           }),

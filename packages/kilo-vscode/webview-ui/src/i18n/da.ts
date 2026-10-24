@@ -1294,4 +1294,9 @@ export const dict = {
   "settings.agentBehaviour.removeSkill.bundleConfirm": "Fjern færdigheden \"{{name}}\"? Dette afinstallerer også {{mcp}} MCP-serveren og alle tilhørende færdigheder fra samme Marketplace-installation.",
   "task.todos.done": "Alt færdigt",
   "task.todos.title": "Opgaver",
+  "settings.experimental.browserLinks.title": "Åbn links i",
+  "settings.experimental.browserLinks.description":
+    "Vælg, hvor web-links åbnes fra Kilo-chats. Kræver den integrerede browser.",
+  "settings.experimental.browserLinks.external": "Systembrowser",
+  "settings.experimental.browserLinks.integrated": "Integreret browser",
 }

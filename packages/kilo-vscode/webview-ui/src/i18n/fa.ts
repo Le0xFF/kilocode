@@ -1295,4 +1295,9 @@ export const dict = {
   "settings.agentBehaviour.removeSkill.bundleConfirm": "مهارت «{{name}}» حذف شود؟ این کار سرور MCP {{mcp}} و هر مهارت همراه از همان نصب مارکت‌پلیس را نیز حذف می‌کند.",
   "task.todos.done": "همه انجام شد",
   "task.todos.title": "کارها",
+  "settings.experimental.browserLinks.title": "باز کردن پیوندها در",
+  "settings.experimental.browserLinks.description":
+    "انتخاب کنید پیوندهای وب از گفتگوهای Kilo کجا باز شوند. به مرورگر یکپارچه نیاز دارد.",
+  "settings.experimental.browserLinks.external": "مرورگر سیستم",
+  "settings.experimental.browserLinks.integrated": "مرورگر یکپارچه",
 }

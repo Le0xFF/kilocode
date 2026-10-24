@@ -8,6 +8,7 @@ import type {
 import { Effect } from "effect"
 import { McpAuth } from "./auth"
 import { clientMetadataUrl } from "../kilocode/mcp/client-metadata" // kilocode_change
+import { configured, retain, stored } from "../kilocode/mcp/oauth-issuer" // kilocode_change
 
 const OAUTH_CALLBACK_PORT = 19876
 const OAUTH_CALLBACK_PATH = "/mcp/oauth/callback"
@@ -73,10 +74,10 @@ export class McpOAuthProvider implements OAuthClientProvider {
 
   async clientInformation(): Promise<OAuthClientInformation | undefined> {
     if (this.config.clientId) {
-      return {
-        client_id: this.config.clientId,
-        client_secret: this.config.clientSecret,
-      }
+      // kilocode_change start - honor the stored issuer binding of pre-registered credentials
+      const entry = await Effect.runPromise(this.auth.getForUrl(this.mcpName, this.serverUrl))
+      return configured(entry?.clientInfo, this.config.clientId, this.config.clientSecret)
+      // kilocode_change end
     }
 
     // Check stored client info (from dynamic registration)
@@ -90,6 +91,7 @@ export class McpOAuthProvider implements OAuthClientProvider {
       return {
         client_id: entry.clientInfo.clientId,
         client_secret: entry.clientInfo.clientSecret,
+        issuer: entry.clientInfo.issuer, // kilocode_change
       }
     }
 
@@ -98,6 +100,14 @@ export class McpOAuthProvider implements OAuthClientProvider {
   }
 
   async saveClientInformation(info: OAuthClientInformationFull): Promise<void> {
+    // kilocode_change start - never store the configured secret, only its binding
+    if (this.config.clientId) {
+      await Effect.runPromise(
+        this.auth.updateClientInfo(this.mcpName, stored(info, this.config.clientId), this.serverUrl),
+      )
+      return
+    }
+    // kilocode_change end
     await Effect.runPromise(
       this.auth.updateClientInfo(
         this.mcpName,
@@ -106,6 +116,7 @@ export class McpOAuthProvider implements OAuthClientProvider {
           clientSecret: info.client_secret,
           clientIdIssuedAt: info.client_id_issued_at,
           clientSecretExpiresAt: info.client_secret_expires_at,
+          issuer: info.issuer, // kilocode_change
         },
         this.serverUrl,
       ),
@@ -125,6 +136,7 @@ export class McpOAuthProvider implements OAuthClientProvider {
         ? Math.max(0, Math.floor(entry.tokens.expiresAt - Date.now() / 1000))
         : undefined,
       scope: entry.tokens.scope,
+      issuer: entry.tokens.issuer, // kilocode_change
     }
   }
 
@@ -137,6 +149,7 @@ export class McpOAuthProvider implements OAuthClientProvider {
           refreshToken: tokens.refresh_token,
           expiresAt: tokens.expires_in ? Date.now() / 1000 + tokens.expires_in : undefined,
           scope: tokens.scope,
+          issuer: tokens.issuer, // kilocode_change
         },
         this.serverUrl,
       ),
@@ -235,10 +248,7 @@ export class McpOAuthPendingProvider extends McpOAuthProvider {
 
   override async clientInformation(): Promise<OAuthClientInformation | undefined> {
     if (!this.config.clientId) return this.pendingClientInfo
-    return {
-      client_id: this.config.clientId,
-      client_secret: this.config.clientSecret,
-    }
+    return this.pendingClientInfo ?? super.clientInformation() // kilocode_change - honor the issuer binding
   }
 
   override async saveClientInformation(info: OAuthClientInformationFull): Promise<void> {
@@ -260,6 +270,11 @@ export class McpOAuthPendingProvider extends McpOAuthProvider {
 
   async commit(): Promise<void> {
     if (!this.pendingTokens) return
+    // kilocode_change start
+    const stored = this.config.clientId
+      ? (await Effect.runPromise(this.auth.getForUrl(this.mcpName, this.serverUrl)))?.clientInfo
+      : undefined
+    // kilocode_change end
     await Effect.runPromise(
       this.auth.set(
         this.mcpName,
@@ -269,6 +284,7 @@ export class McpOAuthPendingProvider extends McpOAuthProvider {
             refreshToken: this.pendingTokens.refresh_token,
             expiresAt: this.pendingTokens.expires_in ? Date.now() / 1000 + this.pendingTokens.expires_in : undefined,
             scope: this.pendingTokens.scope,
+            issuer: this.pendingTokens.issuer, // kilocode_change
           },
           clientInfo:
             this.pendingClientInfo && !this.config.clientId
@@ -277,8 +293,13 @@ export class McpOAuthPendingProvider extends McpOAuthProvider {
                   clientSecret: this.pendingClientInfo.client_secret,
                   clientIdIssuedAt: this.pendingClientInfo.client_id_issued_at,
                   clientSecretExpiresAt: this.pendingClientInfo.client_secret_expires_at,
+                  issuer: this.pendingClientInfo.issuer, // kilocode_change
                 }
-              : undefined,
+              : // kilocode_change start - keep the issuer binding of pre-registered credentials
+                this.config.clientId
+                ? retain(this.pendingClientInfo, stored, this.config.clientId)
+                : undefined,
+          // kilocode_change end
         },
         this.serverUrl,
       ),

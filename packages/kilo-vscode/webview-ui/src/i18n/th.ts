@@ -1269,4 +1269,8 @@ export const dict = {
   "settings.agentBehaviour.removeSkill.bundleConfirm": "ลบทักษะ \"{{name}}\" หรือไม่? การดำเนินการนี้จะถอนการติดตั้งเซิร์ฟเวอร์ MCP {{mcp}} และทักษะคู่กันทั้งหมดจากการติดตั้ง Marketplace เดียวกันด้วย",
   "task.todos.done": "เสร็จทั้งหมด",
   "task.todos.title": "รายการงาน",
+  "settings.experimental.browserLinks.title": "เปิดลิงก์ใน",
+  "settings.experimental.browserLinks.description": "เลือกว่าเว็บลิงก์จะเปิดจากแชท Kilo ที่ใด ต้องใช้เบราว์เซอร์ในตัว",
+  "settings.experimental.browserLinks.external": "เบราว์เซอร์ของระบบ",
+  "settings.experimental.browserLinks.integrated": "เบราว์เซอร์ในตัว",
 }

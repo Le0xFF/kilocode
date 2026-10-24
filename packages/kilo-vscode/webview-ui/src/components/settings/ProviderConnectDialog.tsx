@@ -511,6 +511,7 @@ const bedrockKeys = () =>
             href={state.authorization?.url ?? "#"}
             onClick={(e) => {
               e.preventDefault()
+              e.stopPropagation()
               if (!state.authorization?.url) return
               openExternal(state.authorization.url)
             }}
@@ -610,6 +611,7 @@ const bedrockKeys = () =>
             href={state.authorization?.url ?? "#"}
             onClick={(e) => {
               e.preventDefault()
+              e.stopPropagation()
               if (!state.authorization?.url) return
               openExternal(state.authorization.url)
             }}

@@ -1326,4 +1326,9 @@ export const dict = {
   "settings.agentBehaviour.removeSkill.bundleConfirm": "Supprimer la compétence \"{{name}}\" ? Cela désinstallera également le serveur MCP {{mcp}} et chaque compétence associée de la même installation du Marketplace.",
   "task.todos.done": "Tout est fait",
   "task.todos.title": "Tâches",
+  "settings.experimental.browserLinks.title": "Ouvrir les liens dans",
+  "settings.experimental.browserLinks.description":
+    "Choisissez l'emplacement d'ouverture des liens web depuis les chats Kilo. Nécessite le Navigateur intégré.",
+  "settings.experimental.browserLinks.external": "Navigateur système",
+  "settings.experimental.browserLinks.integrated": "Navigateur intégré",
 }

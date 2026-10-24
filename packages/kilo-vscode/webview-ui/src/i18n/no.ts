@@ -1289,4 +1289,9 @@ export const dict = {
   "settings.agentBehaviour.removeSkill.bundleConfirm": "Fjerne ferdigheten \"{{name}}\"? Dette avinstallerer også {{mcp}} MCP-serveren og alle tilhørende ferdigheter fra samme Marketplace-installasjon.",
   "task.todos.done": "Alt ferdig",
   "task.todos.title": "Oppgaver",
+  "settings.experimental.browserLinks.title": "Åpne lenker i",
+  "settings.experimental.browserLinks.description":
+    "Velg hvor nettlenker åpnes fra Kilo-samtaler. Krever Integrert nettleser.",
+  "settings.experimental.browserLinks.external": "Systemnettleser",
+  "settings.experimental.browserLinks.integrated": "Integrert nettleser",
 } satisfies Partial<Record<Keys, string>>

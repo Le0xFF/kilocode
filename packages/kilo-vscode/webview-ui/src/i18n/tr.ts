@@ -1307,4 +1307,9 @@ export const dict = {
   "settings.agentBehaviour.removeSkill.bundleConfirm": "\"{{name}}\" becerisi kaldırılsın mı? Bu, aynı Marketplace yüklemesinden {{mcp}} MCP sunucusunu ve her eşlik eden beceriyi de kaldıracaktır.",
   "task.todos.done": "Hepsi tamam",
   "task.todos.title": "Görevler",
+  "settings.experimental.browserLinks.title": "Bağlantıların açılacağı yer",
+  "settings.experimental.browserLinks.description":
+    "Kilo sohbetlerindeki web bağlantılarının nerede açılacağını seçin. Entegre Tarayıcı gerektirir.",
+  "settings.experimental.browserLinks.external": "Sistem tarayıcısı",
+  "settings.experimental.browserLinks.integrated": "Entegre Tarayıcı",
 }

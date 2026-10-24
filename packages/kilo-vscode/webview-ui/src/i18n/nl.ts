@@ -1318,4 +1318,9 @@ export const dict = {
   "settings.agentBehaviour.removeSkill.bundleConfirm": "Skill \"{{name}}\" verwijderen? Dit verwijdert ook de {{mcp}} MCP-server en elke bijbehorende skill uit dezelfde Marketplace-installatie.",
   "task.todos.done": "Alles klaar",
   "task.todos.title": "To-do's",
+  "settings.experimental.browserLinks.title": "Links openen in",
+  "settings.experimental.browserLinks.description":
+    "Kies waar weblinks openen vanuit Kilo-chats. Vereist de geïntegreerde browser.",
+  "settings.experimental.browserLinks.external": "Systeembrowser",
+  "settings.experimental.browserLinks.integrated": "Geïntegreerde browser",
 }

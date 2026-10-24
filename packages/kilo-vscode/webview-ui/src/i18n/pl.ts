@@ -1298,4 +1298,9 @@ export const dict = {
   "settings.agentBehaviour.removeSkill.bundleConfirm": "Usunąć umiejętność \"{{name}}\"? Spowoduje to również odinstalowanie serwera MCP {{mcp}} i każdej powiązanej umiejętności z tej samej instalacji Marketplace.",
   "task.todos.done": "Wszystko gotowe",
   "task.todos.title": "Zadania",
+  "settings.experimental.browserLinks.title": "Otwieraj linki w",
+  "settings.experimental.browserLinks.description":
+    "Wybierz, gdzie otwierają się linki internetowe z czatów Kilo. Wymaga zintegrowanej przeglądarki.",
+  "settings.experimental.browserLinks.external": "Przeglądarka systemowa",
+  "settings.experimental.browserLinks.integrated": "Zintegrowana przeglądarka",
 }
