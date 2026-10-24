@@ -5,14 +5,12 @@ import { describe, expect, test } from "bun:test"
 import { Effect } from "effect"
 import path from "path"
 import { pathToFileURL } from "url"
-import { Account } from "../../../src/account/account"
 import { Auth } from "../../../src/auth"
 import { Command } from "../../../src/command"
 import { Config } from "../../../src/config/config"
 import { RuntimeFlags } from "../../../src/effect/runtime-flags"
 import { Plugin } from "../../../src/plugin/index"
 import * as Reserved from "../../../src/kilocode/command/reserved"
-import { AccountTest } from "../../fake/account"
 import { AuthTest } from "../../fake/auth"
 import { NpmTest } from "../../fake/npm"
 import { TestInstance, provideTmpdirInstance } from "../../fixture/fixture"
@@ -25,7 +23,6 @@ const it = testEffect(LayerNode.compile(LayerNode.group([Command.node, Config.no
 const plugin = testEffect(
   LayerNode.compile(LayerNode.group([Plugin.node, Command.node, Config.node, CrossSpawnSpawner.node]), [
     [Auth.node, AuthTest.empty],
-    [Account.node, AccountTest.empty],
     [Npm.node, NpmTest.noop],
     [RuntimeFlags.node, RuntimeFlags.layer({ disableDefaultPlugins: true })],
   ]),
