@@ -2705,6 +2705,7 @@ const client = this.client
             authMethods,
             authStates,
             kiloUnavailable: unavailable,
+            failures: response.failures,
           }
           this.cachedProvidersMessage = message
           this.cachedProvidersDirectory = this.settingsDirectory()

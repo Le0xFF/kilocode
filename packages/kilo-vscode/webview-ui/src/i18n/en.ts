@@ -246,6 +246,14 @@ export const dict = {
   "error.providerAuth.title": "{{provider}} signed you out",
   "error.providerAuth.description": "Reconnect {{provider}}, then send your message again.",
 
+  "provider.failure.unauthorized": "Credentials rejected (HTTP {{status}}). Sign in again.",
+  "provider.failure.unauthorizedNoStatus": "Credentials rejected. Sign in again.",
+  "provider.failure.unauthenticated": "Not signed in.",
+  "provider.failure.network": "Couldn't reach the provider. Check your connection.",
+  "provider.failure.http": "Provider error (HTTP {{status}}).",
+  "provider.failure.httpNoStatus": "Provider error.",
+  "provider.failure.schema": "Unexpected response from the provider.",
+
   "notification.permission.title": "Permission required",
   "notification.permission.titleSubagent": "Permission required (subagent)",
   "notification.permission.titleSkillShell": 'Run shell commands from skill "{{skill}}"?',

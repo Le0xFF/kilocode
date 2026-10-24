@@ -256,6 +256,14 @@ export const dict = {
   "error.providerAuth.title": "{{provider}} شما را خارج کرد",
   "error.providerAuth.description": "{{provider}} را دوباره متصل کنید، سپس پیام خود را مجدداً ارسال کنید.",
 
+  "provider.failure.unauthorized": "اعتبارنامه رد شد (HTTP {{status}}). دوباره وارد شوید.",
+  "provider.failure.unauthorizedNoStatus": "اعتبارنامه رد شد. دوباره وارد شوید.",
+  "provider.failure.unauthenticated": "وارد نشده‌اید.",
+  "provider.failure.network": "دسترسی به ارائه‌دهنده ممکن نشد. اتصال خود را بررسی کنید.",
+  "provider.failure.http": "خطای ارائه‌دهنده (HTTP {{status}}).",
+  "provider.failure.httpNoStatus": "خطای ارائه‌دهنده.",
+  "provider.failure.schema": "پاسخ غیرمنتظره از ارائه‌دهنده.",
+
   "notification.permission.title": "مجوز لازم است",
   "notification.permission.titleSubagent": "مجوز مورد نیاز است (زیرعامل)",
   "notification.permission.titleSkillShell": "دستورهای شل از مهارت «{{skill}}» اجرا شود؟",

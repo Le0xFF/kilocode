@@ -121,6 +121,7 @@ const MockProviderProvider: ParentComponent<{ training?: boolean }> = (props) =>
     authStates: () => ({ lmstudio: "api" }) as Record<string, ProviderAuthState>,
     isModelValid: () => true,
     kiloUnavailable: () => false,
+    failures: () => [],
   }
   return <ProviderContext.Provider value={value}>{props.children}</ProviderContext.Provider>
 }

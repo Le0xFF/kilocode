@@ -3165,6 +3165,12 @@ export type PermissionNotFoundError = {
   message: string
 }
 
+export type ProviderFailure = {
+  providerID: string
+  kind: "unauthorized" | "unauthenticated" | "network" | "schema" | "http"
+  status?: number
+}
+
 export type ProviderAuthMethod = {
   type: "oauth" | "api"
   label: string
@@ -5024,6 +5030,7 @@ export type EventKilocodeAgentManagerStart = {
       prompt?: string
       name?: string
       branchName?: string
+      agent?: string
       model?: {
         providerID: string
         modelID: string
@@ -12960,6 +12967,7 @@ export type ProviderListResponses = {
     }
     connected: Array<string>
     failed: Array<string>
+    failures: Array<ProviderFailure>
   }
 }
 

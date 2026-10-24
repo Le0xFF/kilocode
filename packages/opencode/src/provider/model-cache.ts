@@ -8,7 +8,12 @@ import * as Log from "@opencode-ai/core/util/log"
 import { LayerNode } from "@opencode-ai/core/effect/layer-node"
 import { AppNodeBuilder } from "@opencode-ai/core/effect/app-node-builder" // kilocode_change
 
-type Failure = { message: string }
+// kilocode_change - shape mirrors Provider.Failure's kind/status (provider.ts) so handler
+// failure reports stay typed; the map itself is never populated in the offline stub
+type Failure = {
+  readonly kind: "unauthorized" | "unauthenticated" | "network" | "schema" | "http"
+  readonly status?: number
+}
 
 export interface Interface {
   readonly getFailure: (providerID: string) => Effect.Effect<Failure | undefined>

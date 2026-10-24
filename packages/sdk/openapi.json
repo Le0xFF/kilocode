@@ -5498,9 +5498,15 @@
                       "items": {
                         "type": "string"
                       }
+                    },
+                    "failures": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/ProviderFailure"
+                      }
                     }
                   },
-                  "required": ["all", "default", "connected", "failed"],
+                  "required": ["all", "default", "connected", "failed", "failures"],
                   "additionalProperties": false,
                   "description": "List of providers"
                 }
@@ -35060,6 +35066,23 @@
         "required": ["_tag", "requestID", "message"],
         "additionalProperties": false
       },
+      "ProviderFailure": {
+        "type": "object",
+        "properties": {
+          "providerID": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string",
+            "enum": ["unauthorized", "unauthenticated", "network", "schema", "http"]
+          },
+          "status": {
+            "type": "integer"
+          }
+        },
+        "required": ["providerID", "kind"],
+        "additionalProperties": false
+      },
       "ProviderAuthMethod": {
         "type": "object",
         "properties": {
@@ -40757,6 +40780,9 @@
                       "type": "string"
                     },
                     "branchName": {
+                      "type": "string"
+                    },
+                    "agent": {
                       "type": "string"
                     },
                     "model": {

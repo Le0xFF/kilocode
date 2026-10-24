@@ -30,6 +30,7 @@
 @import "./suggest-bar.css";
 @import "./settings.css";
 @import "./high-contrast.css";
+@import "./brand.css";
 
 .agent-manager-attribution {
   display: flex;

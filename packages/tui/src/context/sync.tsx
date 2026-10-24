@@ -121,6 +121,7 @@ export const {
         default: {},
         connected: [],
         failed: [],
+        failures: [], // kilocode_change
       },
       capabilities: {
         experimentalBackgroundSubagents: true, // kilocode_change - background subagents are enabled by default

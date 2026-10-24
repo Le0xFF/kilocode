@@ -257,6 +257,14 @@ export const dict = {
   "error.providerAuth.title": "{{provider}} har logget dig af",
   "error.providerAuth.description": "Forbind til {{provider}} igen, og send din besked på ny.",
 
+  "provider.failure.unauthorized": "Loginoplysninger blev afvist (HTTP {{status}}). Log ind igen.",
+  "provider.failure.unauthorizedNoStatus": "Loginoplysninger blev afvist. Log ind igen.",
+  "provider.failure.unauthenticated": "Ikke logget ind.",
+  "provider.failure.network": "Kunne ikke nå udbyderen. Tjek din forbindelse.",
+  "provider.failure.http": "Udbyderfejl (HTTP {{status}}).",
+  "provider.failure.httpNoStatus": "Udbyderfejl.",
+  "provider.failure.schema": "Uventet svar fra udbyderen.",
+
   "notification.permission.title": "Tilladelse påkrævet",
   "notification.permission.titleSubagent": "Tilladelse påkrævet (underagent)",
   "notification.permission.titleSkillShell": "Kør shell-kommandoer fra færdigheden „{{skill}}“?",

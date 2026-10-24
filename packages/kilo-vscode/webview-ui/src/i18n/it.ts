@@ -1158,6 +1158,15 @@ export const dict = {
   "error.providerAuth.title": "{{provider}} ti ha disconnesso",
   "error.providerAuth.description": "Riconnetti {{provider}}, quindi invia di nuovo il tuo messaggio.",
 
+  // Provider failure
+  "provider.failure.unauthorized": "Credenziali rifiutate (HTTP {{status}}). Accedi di nuovo.",
+  "provider.failure.unauthorizedNoStatus": "Credenziali rifiutate. Accedi di nuovo.",
+  "provider.failure.unauthenticated": "Non hai effettuato l'accesso.",
+  "provider.failure.network": "Impossibile raggiungere il provider. Controlla la connessione.",
+  "provider.failure.http": "Errore del provider (HTTP {{status}}).",
+  "provider.failure.httpNoStatus": "Errore del provider.",
+  "provider.failure.schema": "Risposta imprevista dal provider.",
+
   // Speech to Text tooltips and errors
   "chat.search.placeholder": "Cerca nella chat…",
   "chat.search.toggle": "Cerca nella chat",

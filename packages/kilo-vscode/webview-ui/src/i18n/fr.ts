@@ -261,6 +261,14 @@ export const dict = {
   "error.providerAuth.title": "{{provider}} vous a déconnecté",
   "error.providerAuth.description": "Reconnectez {{provider}}, puis renvoyez votre message.",
 
+  "provider.failure.unauthorized": "Identifiants refusés (HTTP {{status}}). Reconnectez-vous.",
+  "provider.failure.unauthorizedNoStatus": "Identifiants refusés. Reconnectez-vous.",
+  "provider.failure.unauthenticated": "Non connecté.",
+  "provider.failure.network": "Impossible de joindre le fournisseur. Vérifiez votre connexion.",
+  "provider.failure.http": "Erreur du fournisseur (HTTP {{status}}).",
+  "provider.failure.httpNoStatus": "Erreur du fournisseur.",
+  "provider.failure.schema": "Réponse inattendue du fournisseur.",
+
   "notification.permission.title": "Permission requise",
   "notification.permission.titleSubagent": "Permission requise (sous-agent)",
   "notification.permission.titleSkillShell": "Exécuter les commandes shell de la compétence «\u00a0{{skill}}\u00a0» ?",

@@ -266,6 +266,14 @@ export const dict = {
   "error.providerAuth.title": "{{provider}} hat Sie abgemeldet",
   "error.providerAuth.description": "Verbinden Sie {{provider}} erneut und senden Sie Ihre Nachricht noch einmal.",
 
+  "provider.failure.unauthorized": "Anmeldedaten abgelehnt (HTTP {{status}}). Melden Sie sich erneut an.",
+  "provider.failure.unauthorizedNoStatus": "Anmeldedaten abgelehnt. Melden Sie sich erneut an.",
+  "provider.failure.unauthenticated": "Nicht angemeldet.",
+  "provider.failure.network": "Anbieter nicht erreichbar. Überprüfen Sie Ihre Verbindung.",
+  "provider.failure.http": "Anbieterfehler (HTTP {{status}}).",
+  "provider.failure.httpNoStatus": "Anbieterfehler.",
+  "provider.failure.schema": "Unerwartete Antwort vom Anbieter.",
+
   "notification.permission.title": "Berechtigung erforderlich",
   "notification.permission.titleSubagent": "Berechtigung erforderlich (Subagent)",
   "notification.permission.titleSkillShell": "Shell-Befehle aus dem Skill „{{skill}}“ ausführen?",

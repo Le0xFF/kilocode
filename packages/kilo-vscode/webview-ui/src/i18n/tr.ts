@@ -256,6 +256,14 @@ export const dict = {
   "error.providerAuth.title": "{{provider}} oturumunuzu kapattı",
   "error.providerAuth.description": "{{provider}} bağlantısını yeniden kurun ve mesajınızı tekrar gönderin.",
 
+  "provider.failure.unauthorized": "Kimlik bilgileri reddedildi (HTTP {{status}}). Tekrar giriş yapın.",
+  "provider.failure.unauthorizedNoStatus": "Kimlik bilgileri reddedildi. Tekrar giriş yapın.",
+  "provider.failure.unauthenticated": "Giriş yapılmadı.",
+  "provider.failure.network": "Sağlayıcıya ulaşılamadı. Bağlantınızı kontrol edin.",
+  "provider.failure.http": "Sağlayıcı hatası (HTTP {{status}}).",
+  "provider.failure.httpNoStatus": "Sağlayıcı hatası.",
+  "provider.failure.schema": "Sağlayıcıdan beklenmeyen bir yanıt alındı.",
+
   "notification.permission.title": "İzin gerekli",
   "notification.permission.titleSubagent": "İzin gerekli (alt ajan)",
   "notification.permission.titleSkillShell": "“{{skill}}” becerisindeki kabuk komutları çalıştırılsın mı?",

@@ -1,9 +1,13 @@
 import type { ModelSelection, ModelUsageMap } from "../../types/messages"
 import type { EnrichedModel } from "../../context/provider"
 import { searchMatch } from "../../utils/search-match"
-import { PROVIDER_PRIORITY as PROVIDER_ORDER, providerOrderIndex } from "../../../../src/shared/provider-model"
+import {
+  KILO_PROVIDER_ID as KILO_GATEWAY_ID,
+  PROVIDER_PRIORITY as PROVIDER_ORDER,
+  providerOrderIndex,
+} from "../../../../src/shared/provider-model"
 
-export { PROVIDER_ORDER }
+export { KILO_GATEWAY_ID, PROVIDER_ORDER }
 
 export function providerSortKey(providerID: string, order: readonly string[] = PROVIDER_ORDER): number {
   return providerOrderIndex(providerID, order as typeof PROVIDER_ORDER)

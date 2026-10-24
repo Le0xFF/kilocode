@@ -255,6 +255,14 @@ export const dict = {
   "error.providerAuth.title": "Сеанс {{provider}} завершен",
   "error.providerAuth.description": "Подключитесь к {{provider}} снова, затем отправьте сообщение еще раз.",
 
+  "provider.failure.unauthorized": "Учетные данные отклонены (HTTP {{status}}). Войдите снова.",
+  "provider.failure.unauthorizedNoStatus": "Учетные данные отклонены. Войдите снова.",
+  "provider.failure.unauthenticated": "Вход не выполнен.",
+  "provider.failure.network": "Не удалось подключиться к провайдеру. Проверьте соединение.",
+  "provider.failure.http": "Ошибка провайдера (HTTP {{status}}).",
+  "provider.failure.httpNoStatus": "Ошибка провайдера.",
+  "provider.failure.schema": "Неожиданный ответ от провайдера.",
+
   "notification.permission.title": "Требуется разрешение",
   "notification.permission.titleSubagent": "Требуется разрешение (субагент)",
   "notification.permission.titleSkillShell": "Выполнить команды оболочки из навыка «{{skill}}»?",

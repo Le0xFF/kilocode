@@ -261,6 +261,14 @@ export const dict = {
   "error.providerAuth.title": "{{provider}} cerró tu sesión",
   "error.providerAuth.description": "Vuelve a conectar {{provider}} y envía tu mensaje de nuevo.",
 
+  "provider.failure.unauthorized": "Credenciales rechazadas (HTTP {{status}}). Vuelve a iniciar sesión.",
+  "provider.failure.unauthorizedNoStatus": "Credenciales rechazadas. Vuelve a iniciar sesión.",
+  "provider.failure.unauthenticated": "No has iniciado sesión.",
+  "provider.failure.network": "No se pudo conectar con el proveedor. Comprueba tu conexión.",
+  "provider.failure.http": "Error del proveedor (HTTP {{status}}).",
+  "provider.failure.httpNoStatus": "Error del proveedor.",
+  "provider.failure.schema": "Respuesta inesperada del proveedor.",
+
   "notification.permission.title": "Permiso requerido",
   "notification.permission.titleSubagent": "Permiso requerido (subagente)",
   "notification.permission.titleSkillShell": "¿Ejecutar comandos de shell de la habilidad «{{skill}}»?",
