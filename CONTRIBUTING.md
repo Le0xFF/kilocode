@@ -18,7 +18,7 @@ The Kilo Community is [on Discord](https://kilo.ai/discord).
 
 ## Prerequisites
 
-- **Bun 1.4.2+** — required for all packages.
+- **Bun `1.4.4`** — pinned in the root `package.json` (`packageManager` field); this offline fork's local gates run on the system bun.
 
 ## Developing
 
@@ -70,6 +70,8 @@ bun run package
 ```
 
 VSIX packaging is done via `bun run --cwd packages/kilo-vscode package`.
+
+Linux visual CI prefers Ubuntu's official HTTPS archive for Playwright system packages and retains the Azure mirror as a fallback.
 
 ### Guardrails
 

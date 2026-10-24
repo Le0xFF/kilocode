@@ -10,6 +10,7 @@ import { EffectFlock } from "@opencode-ai/core/util/effect-flock"
 import { AppNodeBuilderV1 } from "@/effect/app-node-builder-v1" // kilocode_change - defaultLayer aliases are gone
 
 import { agentBuilderHandlers } from "./handlers/agent-builder"
+import { agentUsageHandlers } from "./handlers/agent-usage"
 import { anacondaDesktopHandlers } from "./handlers/anaconda-desktop"
 import { backgroundProcessHandlers } from "./handlers/background-process"
 import { branchNameHandlers } from "./handlers/branch-name"
@@ -33,6 +34,7 @@ import { suggestionHandlers } from "./handlers/suggestion"
 
 export const provide = Layer.provide([
   agentBuilderHandlers,
+  agentUsageHandlers,
   anacondaDesktopHandlers.pipe(Layer.provide(AnacondaDesktop.liveLayer)),
   backgroundProcessHandlers,
   branchNameHandlers,
