@@ -54,6 +54,9 @@ export const dict = {
   ...anacondaDesktopDict,
   "settings.experimental.multiProject.title": "Multi-Project Agent Manager",
   "settings.experimental.multiProject.description": "Enable managing sessions and worktrees across multiple repositories in Agent Manager. The current workspace repository is always the default project.",
+  "settings.experimental.conversationPromptHistory.title": "История промптов для каждого разговора",
+  "settings.experimental.conversationPromptHistory.description":
+    "Хранить историю промптов (ArrowUp/ArrowDown) отдельно для каждого разговора вместо одной общей истории для всех.",
   "settings.experimental.claudeMigration.title": "Claude Code Migration (Experimental)",
   "settings.experimental.claudeMigration.description": "On the next backend start, import supported global CLAUDE.md instructions, simple skills, and disabled MCP definitions. This runs once with no automatic retry; global Claude instructions and skills are then handed off to Kilo. Claude files stay unchanged; keep them if you still use Claude Code.",
   "settings.agentBehaviour.pushFixes.title": "Push Pull Request Fixes",
@@ -459,6 +462,7 @@ export const dict = {
   "provider.custom.models.toggleImages": "Переключить изображения для всех",
   "provider.custom.models.remove": "Удалить модель",
   "provider.custom.models.add": "Добавить модель",
+  "provider.custom.models.fetch.button": "Получить модели",
   "provider.custom.models.fetch.authError": "Ошибка аутентификации. Проверьте API-ключ выше и попробуйте снова.",
   "provider.custom.models.fetch.empty": "На этом сервере модели не найдены.",
   "provider.custom.models.fetch.added": "Добавлено {{count}} модель(ей).",

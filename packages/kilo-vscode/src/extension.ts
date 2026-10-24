@@ -139,10 +139,17 @@ export async function activate(context: vscode.ExtensionContext) {
   // the Command Palette still know where to act after it takes focus away.
   const focus = new SurfaceFocus()
 
+  // Keep the concrete chat when focus moves to the editor to select code.
+  // SurfaceFocus alone cannot distinguish multiple Kilo editor tabs.
+  let chat: KiloProvider | AgentManagerProvider | undefined
+
   // Create the provider with shared service
   const provider = new KiloProvider(context.extensionUri, connectionService, context, {
     focusContext: "kilo-code.new.sidebarFocused",
-    onFocused: () => focus.gained("sidebar"),
+    onFocused: () => {
+      focus.gained("sidebar")
+      chat = provider
+    },
     onHidden: () => focus.lost("sidebar"),
   })
 
@@ -240,12 +247,20 @@ export async function activate(context: vscode.ExtensionContext) {
     log: (message) => console.warn(`[Kilo New] ${message}`),
   })
   const binary = process.platform === "win32" ? await git() : git
-const agentManagerHost = new VscodeHost(context.extensionUri, connectionService, context, controls)
-  agentManagerHost.setFocusListener({
-    gained: () => focus.gained("agentManager"),
-    lost: () => focus.lost("agentManager"),
-  })
+  const agentManagerHost = new VscodeHost(context.extensionUri, connectionService, context, controls)
   const agentManagerProvider = new AgentManagerProvider(agentManagerHost, connectionService, binary, browserBroker)
+  agentManagerHost.setFocusListener({
+    gained: () => {
+      focus.gained("agentManager")
+      // Webview focus messages can arrive after the panel's active state changes.
+      chat = agentManagerProvider
+    },
+    lost: () => {
+      focus.lost("agentManager")
+      // The host reports lost on panel disposal, not when switching to an editor.
+      if (chat === agentManagerProvider) chat = undefined
+    },
+  })
   agentManagerProvider.onPanelVisibilityChange((visible) => remember({ agentManager: visible }))
   agentManager = agentManagerProvider
   context.subscriptions.push(
@@ -342,8 +357,14 @@ const agentManagerHost = new VscodeHost(context.extensionUri, connectionService,
     const tabProvider = new KiloProvider(context.extensionUri, connectionService, context, {
       tabTitle: panelTitleHandler(panel),
       topBarSurface: "tab",
-      onFocused: () => focus.gained("tab"),
-      onHidden: () => focus.lost("tab"),
+      onFocused: () => {
+        focus.gained("tab")
+        chat = tabProvider
+      },
+      onHidden: () => {
+        focus.lost("tab")
+        if (chat === tabProvider) chat = undefined
+      },
     })
     tabProvider.setAutoApproveController(autoApprove)
     tabProvider.setContinueInWorktreeHandler((sessionId, progress) =>
@@ -684,7 +705,7 @@ vscode.commands.registerCommand("kilo-code.new.agentManagerOpen", () => {
   )
 
   // Register code actions (editor context menus, terminal context menus, keyboard shortcuts)
-  registerCodeActions(context, provider, agentManagerProvider, activeTabProvider)
+  registerCodeActions(context, provider, agentManagerProvider, activeTabProvider, () => chat)
   registerTerminalActions(context, provider, agentManagerProvider)
 
   // Register CodeActionProvider (lightbulb quick fixes)

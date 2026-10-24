@@ -54,6 +54,9 @@ export const dict = {
   ...anacondaDesktopDict,
   "settings.experimental.multiProject.title": "Multi-Project Agent Manager",
   "settings.experimental.multiProject.description": "Enable managing sessions and worktrees across multiple repositories in Agent Manager. The current workspace repository is always the default project.",
+  "settings.experimental.conversationPromptHistory.title": "تاریخچه پرامپت برای هر گفتگو",
+  "settings.experimental.conversationPromptHistory.description":
+    "تاریخچه پرامپت (ArrowUp/ArrowDown) را برای هر گفتگو جداگانه نگه دارید، به جای اشتراک یک تاریخچه بین همه گفتگوها.",
   "settings.experimental.claudeMigration.title": "Claude Code Migration (Experimental)",
   "settings.experimental.claudeMigration.description": "On the next backend start, import supported global CLAUDE.md instructions, simple skills, and disabled MCP definitions. This runs once with no automatic retry; global Claude instructions and skills are then handed off to Kilo. Claude files stay unchanged; keep them if you still use Claude Code.",
   "settings.agentBehaviour.pushFixes.title": "Push Pull Request Fixes",
@@ -387,6 +390,7 @@ export const dict = {
   "provider.custom.models.toggleImages": "تغییر وضعیت تصویر برای همه",
   "provider.custom.models.remove": "حذف مدل",
   "provider.custom.models.add": "افزودن مدل",
+  "provider.custom.models.fetch.button": "دریافت مدل‌ها",
   "provider.custom.models.fetch.authError": "احراز هویت ناموفق بود. کلید API بالا را بررسی کرده و دوباره امتحان کنید.",
   "provider.custom.models.fetch.empty": "هیچ مدلی در این سرور یافت نشد.",
   "provider.custom.models.fetch.added": "{{count}} مدل اضافه شد.",

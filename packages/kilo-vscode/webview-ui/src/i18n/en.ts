@@ -379,6 +379,7 @@ export const dict = {
   "provider.custom.models.toggleImages": "Toggle image for all",
   "provider.custom.models.remove": "Remove model",
   "provider.custom.models.add": "Add model",
+  "provider.custom.models.fetch.button": "Fetch models",
   "provider.custom.models.fetch.authError": "Authentication failed. Check the API key above and try again.",
   "provider.custom.models.fetch.empty": "No models found on this server.",
   "provider.custom.models.fetch.added": "Added {{count}} model(s).",
@@ -729,6 +730,9 @@ export const dict = {
   "settings.experimental.multiProject.title": "Multi-Project Agent Manager",
   "settings.experimental.multiProject.description":
     "Enable managing sessions and worktrees across multiple repositories in Agent Manager. The current workspace repository is always the default project.",
+  "settings.experimental.conversationPromptHistory.title": "Per-Conversation Prompt History",
+  "settings.experimental.conversationPromptHistory.description":
+    "Keep the prompt input history (ArrowUp/ArrowDown recall) separate for each conversation instead of sharing one history across all conversations.",
 "settings.experimental.claudeMigration.title": "Claude Code Migration",
   "settings.experimental.claudeMigration.description":
     "On the next backend start, import supported global CLAUDE.md instructions, simple skills, and disabled MCP definitions. This runs once with no automatic retry; global Claude instructions and skills are then handed off to Kilo. Claude files stay unchanged; keep them if you still use Claude Code.",

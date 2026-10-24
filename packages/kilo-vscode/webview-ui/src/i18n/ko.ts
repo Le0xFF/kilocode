@@ -57,6 +57,9 @@ export const dict = {
   ...anacondaDesktopDict,
   "settings.experimental.multiProject.title": "Multi-Project Agent Manager",
   "settings.experimental.multiProject.description": "Enable managing sessions and worktrees across multiple repositories in Agent Manager. The current workspace repository is always the default project.",
+  "settings.experimental.conversationPromptHistory.title": "대화별 프롬프트 기록",
+  "settings.experimental.conversationPromptHistory.description":
+    "프롬프트 기록(ArrowUp/ArrowDown)을 모든 대화에서 공유하지 않고 대화별로 분리하여 유지합니다.",
   "settings.experimental.claudeMigration.title": "Claude Code Migration (Experimental)",
   "settings.experimental.claudeMigration.description": "On the next backend start, import supported global CLAUDE.md instructions, simple skills, and disabled MCP definitions. This runs once with no automatic retry; global Claude instructions and skills are then handed off to Kilo. Claude files stay unchanged; keep them if you still use Claude Code.",
   "settings.agentBehaviour.pushFixes.title": "Push Pull Request Fixes",
@@ -422,6 +425,7 @@ export const dict = {
   "provider.custom.models.toggleImages": "모든 모델의 이미지 전환",
   "provider.custom.models.remove": "모델 제거",
   "provider.custom.models.add": "모델 추가",
+  "provider.custom.models.fetch.button": "모델 가져오기",
   "provider.custom.models.fetch.authError": "인증에 실패했습니다. 위의 API 키를 확인하고 다시 시도하세요.",
   "provider.custom.models.fetch.empty": "이 서버에서 모델을 찾을 수 없습니다.",
   "provider.custom.models.fetch.added": "{{count}}개 모델이 추가되었습니다.",

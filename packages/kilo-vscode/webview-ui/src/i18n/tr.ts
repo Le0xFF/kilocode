@@ -54,6 +54,9 @@ export const dict = {
   ...anacondaDesktopDict,
   "settings.experimental.multiProject.title": "Multi-Project Agent Manager",
   "settings.experimental.multiProject.description": "Enable managing sessions and worktrees across multiple repositories in Agent Manager. The current workspace repository is always the default project.",
+  "settings.experimental.conversationPromptHistory.title": "Sohbet başına istem geçmişi",
+  "settings.experimental.conversationPromptHistory.description":
+    "İstem geçmişini (ArrowUp/ArrowDown) tüm sohbetlerde tek bir geçmiş paylaşmak yerine her sohbet için ayrı tutun.",
   "settings.experimental.claudeMigration.title": "Claude Code Migration (Experimental)",
   "settings.experimental.claudeMigration.description": "On the next backend start, import supported global CLAUDE.md instructions, simple skills, and disabled MCP definitions. This runs once with no automatic retry; global Claude instructions and skills are then handed off to Kilo. Claude files stay unchanged; keep them if you still use Claude Code.",
   "settings.agentBehaviour.pushFixes.title": "Push Pull Request Fixes",
@@ -416,6 +419,7 @@ export const dict = {
   "provider.custom.models.toggleImages": "Tüm modeller için görüntüyü aç/kapat",
   "provider.custom.models.remove": "Modeli kaldır",
   "provider.custom.models.add": "Model ekle",
+  "provider.custom.models.fetch.button": "Modelleri getir",
   "provider.custom.models.fetch.authError":
     "Kimlik doğrulama başarısız oldu. Yukarıdaki API anahtarını kontrol edin ve tekrar deneyin.",
   "provider.custom.models.fetch.empty": "Bu sunucuda model bulunamadı.",

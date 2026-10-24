@@ -54,6 +54,9 @@ export const dict = {
   ...anacondaDesktopDict,
   "settings.experimental.multiProject.title": "Multi-Project Agent Manager",
   "settings.experimental.multiProject.description": "Enable managing sessions and worktrees across multiple repositories in Agent Manager. The current workspace repository is always the default project.",
+  "settings.experimental.conversationPromptHistory.title": "Prompthistorik pr. samtale",
+  "settings.experimental.conversationPromptHistory.description":
+    "Hold prompthistorikken (ArrowUp/ArrowDown) adskilt for hver samtale i stedet for at dele én historik på tværs af alle samtaler.",
   "settings.experimental.claudeMigration.title": "Claude Code Migration (Experimental)",
   "settings.experimental.claudeMigration.description": "On the next backend start, import supported global CLAUDE.md instructions, simple skills, and disabled MCP definitions. This runs once with no automatic retry; global Claude instructions and skills are then handed off to Kilo. Claude files stay unchanged; keep them if you still use Claude Code.",
   "settings.agentBehaviour.pushFixes.title": "Push Pull Request Fixes",
@@ -462,6 +465,7 @@ export const dict = {
   "provider.custom.models.toggleImages": "Slå billede til/fra for alle",
   "provider.custom.models.remove": "Fjern model",
   "provider.custom.models.add": "Tilføj model",
+  "provider.custom.models.fetch.button": "Hent modeller",
   "provider.custom.models.fetch.authError": "Godkendelse mislykkedes. Kontrollér API-nøglen ovenfor, og prøv igen.",
   "provider.custom.models.fetch.empty": "Ingen modeller fundet på denne server.",
   "provider.custom.models.fetch.added": "{{count}} model(ler) tilføjet.",

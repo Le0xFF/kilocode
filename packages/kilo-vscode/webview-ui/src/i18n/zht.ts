@@ -54,6 +54,9 @@ export const dict = {
   ...anacondaDesktopDict,
   "settings.experimental.multiProject.title": "Multi-Project Agent Manager",
   "settings.experimental.multiProject.description": "Enable managing sessions and worktrees across multiple repositories in Agent Manager. The current workspace repository is always the default project.",
+  "settings.experimental.conversationPromptHistory.title": "依對話區分的提示歷史",
+  "settings.experimental.conversationPromptHistory.description":
+    "為每個對話單獨保存提示歷史(ArrowUp/ArrowDown),而不是在所有對話間共用同一份。",
   "settings.experimental.claudeMigration.title": "Claude Code Migration (Experimental)",
   "settings.experimental.claudeMigration.description": "On the next backend start, import supported global CLAUDE.md instructions, simple skills, and disabled MCP definitions. This runs once with no automatic retry; global Claude instructions and skills are then handed off to Kilo. Claude files stay unchanged; keep them if you still use Claude Code.",
   "settings.agentBehaviour.pushFixes.title": "Push Pull Request Fixes",
@@ -407,6 +410,7 @@ export const dict = {
   "provider.custom.models.toggleImages": "切換所有模型的圖像",
   "provider.custom.models.remove": "移除模型",
   "provider.custom.models.add": "新增模型",
+  "provider.custom.models.fetch.button": "取得模型",
   "provider.custom.models.fetch.authError": "驗證失敗。請檢查上方的 API 金鑰後重試。",
   "provider.custom.models.fetch.empty": "此伺服器上未找到模型。",
   "provider.custom.models.fetch.added": "已新增 {{count}} 個模型。",

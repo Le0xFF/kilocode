@@ -59,6 +59,9 @@ export const dict = {
   ...anacondaDesktopDict,
   "settings.experimental.multiProject.title": "Multi-Project Agent Manager",
   "settings.experimental.multiProject.description": "Enable managing sessions and worktrees across multiple repositories in Agent Manager. The current workspace repository is always the default project.",
+  "settings.experimental.conversationPromptHistory.title": "Prompt-Verlauf pro Unterhaltung",
+  "settings.experimental.conversationPromptHistory.description":
+    "Den Prompt-Verlauf (ArrowUp/ArrowDown) für jede Unterhaltung getrennt halten, statt einen gemeinsamen Verlauf für alle Unterhaltungen zu nutzen.",
   "settings.experimental.claudeMigration.title": "Claude Code Migration (Experimental)",
   "settings.experimental.claudeMigration.description": "On the next backend start, import supported global CLAUDE.md instructions, simple skills, and disabled MCP definitions. This runs once with no automatic retry; global Claude instructions and skills are then handed off to Kilo. Claude files stay unchanged; keep them if you still use Claude Code.",
   "settings.agentBehaviour.pushFixes.title": "Push Pull Request Fixes",
@@ -471,6 +474,7 @@ export const dict = {
   "provider.custom.models.toggleImages": "Bild für alle umschalten",
   "provider.custom.models.remove": "Modell entfernen",
   "provider.custom.models.add": "Modell hinzufügen",
+  "provider.custom.models.fetch.button": "Modelle abrufen",
   "provider.custom.models.fetch.authError":
     "Authentifizierung fehlgeschlagen. Überprüfen Sie den API-Schlüssel oben und versuchen Sie es erneut.",
   "provider.custom.models.fetch.empty": "Keine Modelle auf diesem Server gefunden.",

@@ -54,6 +54,9 @@ export const dict = {
   ...anacondaDesktopDict,
   "settings.experimental.multiProject.title": "Multi-Project Agent Manager",
   "settings.experimental.multiProject.description": "Enable managing sessions and worktrees across multiple repositories in Agent Manager. The current workspace repository is always the default project.",
+  "settings.experimental.conversationPromptHistory.title": "会話ごとのプロンプト履歴",
+  "settings.experimental.conversationPromptHistory.description":
+    "プロンプト履歴 (ArrowUp/ArrowDown) をすべての会話で共有せず、会話ごとに分けて保持します。",
   "settings.experimental.claudeMigration.title": "Claude Code Migration (Experimental)",
   "settings.experimental.claudeMigration.description": "On the next backend start, import supported global CLAUDE.md instructions, simple skills, and disabled MCP definitions. This runs once with no automatic retry; global Claude instructions and skills are then handed off to Kilo. Claude files stay unchanged; keep them if you still use Claude Code.",
   "settings.agentBehaviour.pushFixes.title": "Push Pull Request Fixes",
@@ -459,6 +462,7 @@ export const dict = {
   "provider.custom.models.toggleImages": "すべてのモデルの画像を切り替え",
   "provider.custom.models.remove": "モデルを削除",
   "provider.custom.models.add": "モデルを追加",
+  "provider.custom.models.fetch.button": "モデルを取得",
   "provider.custom.models.fetch.authError": "認証に失敗しました。上記のAPIキーを確認して再試行してください。",
   "provider.custom.models.fetch.empty": "このサーバーにモデルが見つかりません。",
   "provider.custom.models.fetch.added": "{{count}}個のモデルを追加しました。",
