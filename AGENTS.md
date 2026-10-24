@@ -24,6 +24,7 @@ This repo has been pruned to contain only the Kilo VS Code extension (`packages/
 - **Backend/SDK programmatic testing**: spawn the local backend with `bun dev serve` from `packages/opencode/` and drive it via `curl`; use this instead of `kilo serve` (prod binary) when testing backend fixes. // kilocode_change - TESTING.md is pruned in this fork
 
 - The Kilo VS Code extension (`packages/kilo-vscode/`) MUST remain installable on **VS Code 1.103**: `engines.vscode` stays `^1.103.0` with `@types/vscode` aligned. This is an offline-fork hard requirement, at the same level as invariants I1–I11: any upstream sync, dependency bump, or API usage that would raise the minimum supported VS Code version beyond 1.103 (newer `vscode` APIs only available in >= 1.104, `@types/vscode` past 1.103, or a changed `engines.vscode`) must be rejected or neutralized during conflict resolution / review. If upstream raises its own floor above 1.103, the fork keeps 1.103 and the incompatibility must be documented/reported, not silently accepted; raising the floor requires explicit user approval plus a doc update.
+- The fork's extension identity is `kilocode.kilo-code-offline` (package name `kilo-code-offline`; never `kilocode.kilo-code`, to avoid a marketplace identity collision) and all online surfaces, including the marketplace catalog, are disabled — the same offline-fork hard-requirement level as the VS Code 1.103 floor above.
 
 ## Quality Checks
 
@@ -69,7 +70,7 @@ Turborepo + Bun workspaces. The packages you'll work with most:
 |---|---|---|
 | `packages/opencode/` | `@kilocode/cli` | Core CLI -- agents, tools, sessions, server, TUI. This is where most work happens. |
 | `packages/sdk/js/` | `@kilocode/sdk` | Auto-generated TypeScript SDK (client for the server API). Do not edit `src/gen/` by hand. |
-| `packages/kilo-vscode/` | `kilo-code` | VS Code extension with sidebar chat + Agent Manager. See its own `AGENTS.md` for details. |
+| `packages/kilo-vscode/` | `kilo-code-offline` | VS Code extension with sidebar chat + Agent Manager. See its own `AGENTS.md` for details. |
 | `packages/kilo-i18n/` | `@kilocode/kilo-i18n` | Internationalization / translations |
 | `packages/kilo-ui/` | `@kilocode/kilo-ui` | SolidJS component library shared by the extension webview and docs screenshot stories |
 | `packages/util/` | `@opencode-ai/util` | Shared utilities (error, path, retry, slug, etc.) |

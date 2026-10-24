@@ -94,7 +94,7 @@ Ogni invariante va ri-verificata con grep dopo il merge (i path sono relativi a 
 | `kilo-vscode/src/kilo-provider/**` + `KiloProvider.ts` + `extension.ts` | Integrare + riapplicare rimozioni offline | Keep-deleted `handlers/cloud-session.ts`, `src/kiloclaw/**`, `RemoteStatusService.ts`, `MarketplacePanelProvider.ts`, `services/autocomplete/**`; pulire union/case/import |
 | `kilo-vscode/src/services/browser-automation/**` | take-theirs | Feature nuova, setting sperimentale off di default |
 | `kilo-vscode/src/legacy-migration/**` | take-theirs (accept deletion di `migration-service.ts`, `native-mode-defaults.ts`, `provider-mapping.ts` e relativo test) | Adattare i riferimenti residui nostri (`handlers/migration.ts`, `legacy-types.ts`, `MigrationWizard.tsx`) |
-| `kilo-vscode/package.json` | Unione | Command `updateFromBase`, setting browserAutomation, flip `terminalButtonDestination`; deps browser (`playwright-core`, `chromium-bidi`, `ws`, `@types/ws`) da theirs; rimuovere ciò che il fork ha tolto; MAI alzare `engines.vscode`/`@types/vscode` oltre 1.103 (I12) |
+| `kilo-vscode/package.json` | Unione | Command `updateFromBase`, setting browserAutomation, flip `terminalButtonDestination`; deps browser (`playwright-core`, `chromium-bidi`, `ws`, `@types/ws`) da theirs; rimuovere ciò che il fork ha tolto; MAI alzare `engines.vscode`/`@types/vscode` oltre 1.103 (I12); identità fork keep-ours (`name` `kilo-code-offline`, extensionId `kilocode.kilo-code-offline`) — mai riallineare a `kilo-code` |
 | `kilo-vscode/esbuild.js` | take-theirs | Bundle browser |
 | `kilo-ui/**`, `core/**`, `kilo-indexing/**`, `tui/**`, `schema/**`, altri shared | take-theirs | Salvo i pochi file toccati dai marker offline |
 
@@ -121,7 +121,7 @@ Ogni invariante va ri-verificata con grep dopo il merge (i path sono relativi a 
 | `model-selector-lifecycle.test.ts` | I test upstream presupponevano la superficie online (picker gateway); le adattazioni offline del fork vanno **ri-applicate a ogni slice** che tocca il file |
 | I10 allowlist | Dall'ultimo sync l'allowlist è a **11** workflow (aggiunto `validate-cli-smoke.yml`, offline-compatible); aggiornare il conteggio in `PRUNE-NOTES.md`/`AGENTS.md` se cambia |
 | `check-kilocode-change` | Il guard (marker banditi in `packages/kilo-vscode/` e `packages/kilo-ui/`) era rimasto red da un merge: i commenti informativi `kilocode_change` nel package dell'estensione si riformulano togliendo il token letterale mantenendo il contesto; dal close-out 2026-10-24 il guard è verde |
-| `packageManager` = bun 1.4.4 (upstream) vs bun di sistema 1.4.0 | La metadata `packageManager` resta quella di upstream (1.4.4) senza installazioni alternative: i gate girano sul bun di sistema 1.4.0. Nota: la fix della CA-store eMudhra esiste solo in runtime bun ≥ 1.4.4 — chi ricostruisce i binary CLI per l'uso offline con CA non standard deve usare un runtime ≥ 1.4.4 |
+| `packageManager` = bun 1.4.4 (upstream) vs bun di sistema | La metadata `packageManager` resta quella di upstream (1.4.4) senza installazioni alternative: il bun di sistema è ora 1.4.4 (allineato al pin upstream), quindi gate e build girano sul medesimo runtime; i runtime CLI spediti nei VSIX sono stati ricompilati su bun 1.4.4. Nota per future rebuild: la fix della CA-store eMudhra esiste solo in runtime bun ≥ 1.4.4 — chi ricostruisce i binary CLI per l'uso offline con CA non standard deve usare un runtime ≥ 1.4.4 |
 
 ## Rollback
 
