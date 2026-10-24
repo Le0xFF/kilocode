@@ -1318,4 +1318,10 @@ export const dict = {
     "Wybierz, gdzie otwierają się linki internetowe z czatów Kilo. Wymaga zintegrowanej przeglądarki.",
   "settings.experimental.browserLinks.external": "Przeglądarka systemowa",
   "settings.experimental.browserLinks.integrated": "Zintegrowana przeglądarka",
+  "ui.permission.toolLabel.browserOpen": "Zintegrowana przeglądarka",
+  "session.workspaceScope.description":
+    "Czat Kilo używa tylko „{{folder}}”, pierwszego folderu w tym obszarze roboczym.",
+  "session.workspaceScope.alternatives":
+    "Aby pracować z innym folderem, otwórz go w osobnym oknie lub dodaj go jako projekt w Agent Manager.",
+  "session.workspaceScope.dismiss": "Ukryj wskazówkę dotyczącą zakresu obszaru roboczego",
 }

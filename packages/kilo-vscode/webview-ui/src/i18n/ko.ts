@@ -1292,4 +1292,9 @@ export const dict = {
     "Kilo 채팅에서 웹 링크를 여는 위치를 선택합니다. 통합 브라우저가 필요합니다.",
   "settings.experimental.browserLinks.external": "시스템 브라우저",
   "settings.experimental.browserLinks.integrated": "통합 브라우저",
+  "ui.permission.toolLabel.browserOpen": "통합 브라우저",
+  "session.workspaceScope.description": "Kilo 채팅은 이 작업 영역의 첫 번째 폴더인 “{{folder}}”만 사용합니다.",
+  "session.workspaceScope.alternatives":
+    "다른 폴더에서 작업하려면 해당 폴더를 별도 창에서 열거나 Agent Manager에 프로젝트로 추가하세요.",
+  "session.workspaceScope.dismiss": "작업 영역 범위 안내 닫기",
 }

@@ -1251,4 +1251,8 @@ export const dict = {
   "settings.experimental.browserLinks.description": "選擇 Kilo 聊天中的網頁連結開啟位置。需要整合瀏覽器。",
   "settings.experimental.browserLinks.external": "系統瀏覽器",
   "settings.experimental.browserLinks.integrated": "整合瀏覽器",
+  "ui.permission.toolLabel.browserOpen": "整合瀏覽器",
+  "session.workspaceScope.description": "Kilo 聊天僅使用此工作區中的第一個資料夾「{{folder}}」。",
+  "session.workspaceScope.alternatives": "若要使用其他資料夾，請在獨立視窗中開啟，或將其作為專案新增至 Agent Manager。",
+  "session.workspaceScope.dismiss": "關閉工作區範圍提示",
 } satisfies Partial<Record<Keys, string>>

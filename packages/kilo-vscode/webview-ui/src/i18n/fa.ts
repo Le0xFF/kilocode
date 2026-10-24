@@ -1315,4 +1315,9 @@ export const dict = {
     "انتخاب کنید پیوندهای وب از گفتگوهای Kilo کجا باز شوند. به مرورگر یکپارچه نیاز دارد.",
   "settings.experimental.browserLinks.external": "مرورگر سیستم",
   "settings.experimental.browserLinks.integrated": "مرورگر یکپارچه",
+  "ui.permission.toolLabel.browserOpen": "مرورگر یکپارچه",
+  "session.workspaceScope.description": "گفتگوی Kilo فقط از «{{folder}}»، اولین پوشه در این فضای کاری، استفاده می‌کند.",
+  "session.workspaceScope.alternatives":
+    "برای کار با پوشه‌ای دیگر، آن را در پنجره‌ای جداگانه باز کنید یا به‌عنوان پروژه به Agent Manager اضافه کنید.",
+  "session.workspaceScope.dismiss": "بستن راهنمای محدودهٔ فضای کاری",
 }

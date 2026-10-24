@@ -1319,4 +1319,9 @@ export const dict = {
     "Odaberite gdje se web linkovi otvaraju iz Kilo razgovora. Zahtijeva Integrirani preglednik.",
   "settings.experimental.browserLinks.external": "Sistemski preglednik",
   "settings.experimental.browserLinks.integrated": "Integrirani preglednik",
+  "ui.permission.toolLabel.browserOpen": "Integrirani preglednik",
+  "session.workspaceScope.description": "Kilo razgovor koristi samo „{{folder}}“, prvi folder u ovom radnom prostoru.",
+  "session.workspaceScope.alternatives":
+    "Za rad s drugim folderom, otvorite ga u zasebnom prozoru ili ga dodajte kao projekt u Agent Manager.",
+  "session.workspaceScope.dismiss": "Zatvori savjet o opsegu radnog prostora",
 }

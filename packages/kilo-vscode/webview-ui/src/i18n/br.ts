@@ -1327,4 +1327,10 @@ export const dict = {
     "Escolha onde os links da web abrem a partir das conversas do Kilo. Requer o Navegador Integrado.",
   "settings.experimental.browserLinks.external": "Navegador do sistema",
   "settings.experimental.browserLinks.integrated": "Navegador Integrado",
+  "ui.permission.toolLabel.browserOpen": "Navegador Integrado",
+  "session.workspaceScope.description":
+    "O chat do Kilo usa apenas “{{folder}}”, a primeira pasta deste espaço de trabalho.",
+  "session.workspaceScope.alternatives":
+    "Para trabalhar com outra pasta, abra-a em uma janela própria ou adicione-a como um projeto no Agent Manager.",
+  "session.workspaceScope.dismiss": "Ocultar dica sobre o escopo do espaço de trabalho",
 }

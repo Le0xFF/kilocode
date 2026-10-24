@@ -1300,4 +1300,9 @@ export const dict = {
     "Scegli dove aprire i link web dalle chat di Kilo. Richiede il Browser integrato.",
   "settings.experimental.browserLinks.external": "Browser di sistema",
   "settings.experimental.browserLinks.integrated": "Browser integrato",
+  "ui.permission.toolLabel.browserOpen": "Browser integrato",
+  "session.workspaceScope.description": "La chat di Kilo usa solo «{{folder}}», la prima cartella di questo workspace.",
+  "session.workspaceScope.alternatives":
+    "Per lavorare con un'altra cartella, aprila in una finestra separata o aggiungila come progetto in Agent Manager.",
+  "session.workspaceScope.dismiss": "Nascondi il suggerimento sull'ambito del workspace",
 } as const

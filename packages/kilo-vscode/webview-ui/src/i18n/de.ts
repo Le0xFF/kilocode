@@ -1340,4 +1340,10 @@ export const dict = {
     "Wählen Sie, wo Weblinks aus Kilo-Chats geöffnet werden. Erfordert den integrierten Browser.",
   "settings.experimental.browserLinks.external": "Systembrowser",
   "settings.experimental.browserLinks.integrated": "Integrierter Browser",
+  "ui.permission.toolLabel.browserOpen": "Integrierter Browser",
+  "session.workspaceScope.description":
+    "Der Kilo-Chat verwendet nur „{{folder}}“, den ersten Ordner in diesem Arbeitsbereich.",
+  "session.workspaceScope.alternatives":
+    "Um mit einem anderen Ordner zu arbeiten, öffnen Sie ihn in einem eigenen Fenster oder fügen Sie ihn als Projekt im Agent Manager hinzu.",
+  "session.workspaceScope.dismiss": "Hinweis zum Umfang des Arbeitsbereichs ausblenden",
 } satisfies Partial<Record<Keys, string>>

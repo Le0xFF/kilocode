@@ -115,6 +115,11 @@ export interface WorkspaceDirectoryChangedMessage {
   directory: string
 }
 
+export interface WorkspaceScopeMessage {
+  type: "workspaceScope"
+  folder?: { name: string; path: string }
+}
+
 export interface LanguageChangedMessage {
   type: "languageChanged"
   locale: string
@@ -1662,6 +1667,7 @@ export type ExtensionMessage =
   | BrowserTabFrameMessage
   | BrowserTabCursorMessage
   | ReadyMessage
+  | WorkspaceScopeMessage
   | FontSizeChangedMessage
   | GitStatusMessage
   | ConnectionStateMessage

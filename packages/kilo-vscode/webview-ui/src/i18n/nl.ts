@@ -1338,4 +1338,9 @@ export const dict = {
     "Kies waar weblinks openen vanuit Kilo-chats. Vereist de geïntegreerde browser.",
   "settings.experimental.browserLinks.external": "Systeembrowser",
   "settings.experimental.browserLinks.integrated": "Geïntegreerde browser",
+  "ui.permission.toolLabel.browserOpen": "Geïntegreerde browser",
+  "session.workspaceScope.description": "De Kilo-chat gebruikt alleen ‘{{folder}}’, de eerste map in deze werkruimte.",
+  "session.workspaceScope.alternatives":
+    "Om met een andere map te werken, open je deze in een eigen venster of voeg je deze als project toe in Agent Manager.",
+  "session.workspaceScope.dismiss": "Hint over het bereik van de werkruimte verbergen",
 }

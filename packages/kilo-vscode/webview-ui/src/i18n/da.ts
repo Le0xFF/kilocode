@@ -1314,4 +1314,9 @@ export const dict = {
     "Vælg, hvor web-links åbnes fra Kilo-chats. Kræver den integrerede browser.",
   "settings.experimental.browserLinks.external": "Systembrowser",
   "settings.experimental.browserLinks.integrated": "Integreret browser",
+  "ui.permission.toolLabel.browserOpen": "Integreret browser",
+  "session.workspaceScope.description": "Kilo-chatten bruger kun “{{folder}}”, den første mappe i dette arbejdsområde.",
+  "session.workspaceScope.alternatives":
+    "Hvis du vil arbejde med en anden mappe, skal du åbne den i sit eget vindue eller tilføje den som et projekt i Agent Manager.",
+  "session.workspaceScope.dismiss": "Skjul oplysningen om arbejdsområdets afgrænsning",
 }

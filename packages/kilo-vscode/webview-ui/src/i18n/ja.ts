@@ -1304,4 +1304,10 @@ export const dict = {
     "Kilo のチャットから web リンクを開く場所を選択します。統合ブラウザーが必要です。",
   "settings.experimental.browserLinks.external": "システムブラウザー",
   "settings.experimental.browserLinks.integrated": "統合ブラウザー",
+  "ui.permission.toolLabel.browserOpen": "統合ブラウザー",
+  "session.workspaceScope.description":
+    "Kilo チャットは、このワークスペースの最初のフォルダー「{{folder}}」のみを使用します。",
+  "session.workspaceScope.alternatives":
+    "別のフォルダーで作業するには、そのフォルダーを別のウィンドウで開くか、Agent Manager にプロジェクトとして追加してください。",
+  "session.workspaceScope.dismiss": "ワークスペースの範囲に関するヒントを閉じる",
 }

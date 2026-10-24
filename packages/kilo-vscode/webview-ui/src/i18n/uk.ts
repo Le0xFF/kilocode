@@ -1331,4 +1331,10 @@ export const dict = {
     "Виберіть, де відкривати веб-посилання з чатів Kilo. Потрібен вбудований браузер.",
   "settings.experimental.browserLinks.external": "Системний браузер",
   "settings.experimental.browserLinks.integrated": "Вбудований браузер",
+  "ui.permission.toolLabel.browserOpen": "Вбудований браузер",
+  "session.workspaceScope.description":
+    "Чат Kilo використовує лише «{{folder}}» — першу папку в цьому робочому просторі.",
+  "session.workspaceScope.alternatives":
+    "Щоб працювати з іншою папкою, відкрийте її в окремому вікні або додайте як проєкт до Agent Manager.",
+  "session.workspaceScope.dismiss": "Закрити підказку про межі робочого простору",
 }

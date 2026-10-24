@@ -1309,4 +1309,10 @@ export const dict = {
     "Velg hvor nettlenker åpnes fra Kilo-samtaler. Krever Integrert nettleser.",
   "settings.experimental.browserLinks.external": "Systemnettleser",
   "settings.experimental.browserLinks.integrated": "Integrert nettleser",
+  "ui.permission.toolLabel.browserOpen": "Integrert nettleser",
+  "session.workspaceScope.description":
+    "Kilo-chatten bruker bare «{{folder}}», den første mappen i dette arbeidsområdet.",
+  "session.workspaceScope.alternatives":
+    "For å jobbe med en annen mappe kan du åpne den i et eget vindu eller legge den til som et prosjekt i Agent Manager.",
+  "session.workspaceScope.dismiss": "Skjul hintet om arbeidsområdets avgrensning",
 } satisfies Partial<Record<Keys, string>>

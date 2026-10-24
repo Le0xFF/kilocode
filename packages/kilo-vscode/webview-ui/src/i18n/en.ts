@@ -1302,4 +1302,9 @@ export const dict = {
   "settings.agentBehaviour.removeSkill.bundleConfirm": "Remove skill \"{{name}}\"? This also uninstalls the {{mcp}} MCP server and every companion skill from the same Marketplace installation.",
   "task.todos.done": "All done",
   "task.todos.title": "To-dos",
+  "ui.permission.toolLabel.browserOpen": "Integrated Browser",
+  "session.workspaceScope.description": "Kilo chat uses only “{{folder}}”, the first folder in this workspace.",
+  "session.workspaceScope.alternatives":
+    "To work with another folder, open it in its own window or add it as a project in Agent Manager.",
+  "session.workspaceScope.dismiss": "Dismiss workspace scope hint",
 }

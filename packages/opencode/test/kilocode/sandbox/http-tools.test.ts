@@ -141,7 +141,8 @@ describe("model HTTP tool network policy", () => {
               ask: (request) =>
                 Effect.gen(function* () {
                   asked = true
-                  expect(request.always).toEqual([])
+                  expect(request.always).toEqual(["navigate:http://localhost:3018"])
+                  expect(request.metadata?.rules).toEqual(["navigate:http://localhost:3018", "navigate:*"])
                   expect(yield* enabled).toBe(true)
                 }),
             },
@@ -228,7 +229,8 @@ describe("model HTTP tool network policy", () => {
                     approvals++
                     expect(request.permission).toBe("browser_open")
                     expect(request.patterns).toEqual(["navigate:https://www.google.com"])
-                    expect(request.always).toEqual([])
+                    expect(request.always).toEqual(["navigate:https://www.google.com"])
+                    expect(request.metadata?.rules).toEqual(["navigate:https://www.google.com", "navigate:*"])
                     expect(yield* enabled).toBe(true)
                   }),
               },

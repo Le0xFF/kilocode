@@ -1285,4 +1285,9 @@ export const dict = {
   "settings.experimental.browserLinks.description": "اختر مكان فتح روابط الويب من محادثات Kilo. يتطلب المتصفح المدمج.",
   "settings.experimental.browserLinks.external": "متصفح النظام",
   "settings.experimental.browserLinks.integrated": "المتصفح المدمج",
+  "ui.permission.toolLabel.browserOpen": "المتصفح المدمج",
+  "session.workspaceScope.description":
+    "تستخدم دردشة Kilo المجلد «{{folder}}» فقط، وهو المجلد الأول في مساحة العمل هذه.",
+  "session.workspaceScope.alternatives": "للعمل على مجلد آخر، افتحه في نافذة مستقلة أو أضفه كمشروع في Agent Manager.",
+  "session.workspaceScope.dismiss": "إغلاق تلميح نطاق مساحة العمل",
 }

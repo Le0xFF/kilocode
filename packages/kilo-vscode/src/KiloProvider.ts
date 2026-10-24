@@ -522,6 +522,7 @@ export class KiloProvider implements vscode.WebviewViewProvider {
   private autoApprovalReasonConfigDisposable: vscode.Disposable | null = null
   private pushFixesConfigDisposable: vscode.Disposable | null = null
   private shortcutHintsConfigDisposable: vscode.Disposable | null = null
+  private workspaceFoldersDisposable: vscode.Disposable | null = null
   private shortcutContextDisposable: vscode.Disposable | null = null
   private viewStateDisposable: vscode.Disposable | null = null
   private visibilityDisposable: vscode.Disposable | null = null
@@ -648,6 +649,17 @@ export class KiloProvider implements vscode.WebviewViewProvider {
     void stopSessionProcesses(this.client, sid, this.getSessionDirectory(sid, session))
   }
 
+  private sendWorkspaceScope(): void {
+    const folders = vscode.workspace.workspaceFolders
+    const first = folders?.at(0)
+    // Explicit project hosts (including Agent Manager) do not use the sidebar fallback.
+    const scoped = this.projectDirectory != null || this.opts.rootDirectory != null
+    this.postMessage({
+      type: "workspaceScope",
+      folder:
+        !scoped && folders && folders.length > 1 && first ? { name: first.name, path: first.uri.fsPath } : undefined,
+    })
+  }
   private focusSession(id?: string): void {
     this.streams.focus(id)
     this.registerPresence()
@@ -1159,6 +1171,8 @@ export class KiloProvider implements vscode.WebviewViewProvider {
     this.pushFixesConfigDisposable = watchPushFixesConfig((msg) => this.postMessage(msg))
     this.shortcutHintsConfigDisposable?.dispose()
     this.shortcutHintsConfigDisposable = watchShortcutHintsConfig((msg) => this.postMessage(msg))
+    this.workspaceFoldersDisposable?.dispose()
+    this.workspaceFoldersDisposable = vscode.workspace.onDidChangeWorkspaceFolders(() => this.sendWorkspaceScope())
     this.shortcutContextDisposable?.dispose()
     this.shortcutContextDisposable = watchShortcutContext(this.extensionContext, (msg) => this.postMessage(msg))
     this.webviewMessageDisposable = webview.onDidReceiveMessage(async (message) => {
@@ -1243,6 +1257,9 @@ speechToTextModels: () => this.fetchAndSendSpeechToTextModels(),
       if (this.handleNotificationSettingsMessage(message)) return
 
       switch (message.type) {
+        case "requestWorkspaceScope":
+          this.sendWorkspaceScope()
+          break
         case "webviewReady":
           console.log("[Kilo New] KiloProvider: ✅ webviewReady received")
           this.isWebviewReady = true
@@ -6045,6 +6062,7 @@ const client = this.client
     this.autoApprovalReasonConfigDisposable?.dispose()
     this.pushFixesConfigDisposable?.dispose()
     this.shortcutHintsConfigDisposable?.dispose()
+    this.workspaceFoldersDisposable?.dispose()
     this.shortcutContextDisposable?.dispose()
     this.autoApproveBridge?.dispose()
     this.visibleTaskStreams.clear()

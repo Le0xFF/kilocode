@@ -1288,4 +1288,9 @@ export const dict = {
   "settings.experimental.browserLinks.description": "เลือกว่าเว็บลิงก์จะเปิดจากแชท Kilo ที่ใด ต้องใช้เบราว์เซอร์ในตัว",
   "settings.experimental.browserLinks.external": "เบราว์เซอร์ของระบบ",
   "settings.experimental.browserLinks.integrated": "เบราว์เซอร์ในตัว",
+  "ui.permission.toolLabel.browserOpen": "เบราว์เซอร์ในตัว",
+  "session.workspaceScope.description": "แชต Kilo ใช้เฉพาะ “{{folder}}” ซึ่งเป็นโฟลเดอร์แรกในพื้นที่ทำงานนี้",
+  "session.workspaceScope.alternatives":
+    "หากต้องการทำงานกับโฟลเดอร์อื่น ให้เปิดโฟลเดอร์นั้นในหน้าต่างแยกต่างหาก หรือเพิ่มเป็นโปรเจกต์ใน Agent Manager",
+  "session.workspaceScope.dismiss": "ปิดคำแนะนำเกี่ยวกับขอบเขตพื้นที่ทำงาน",
 }

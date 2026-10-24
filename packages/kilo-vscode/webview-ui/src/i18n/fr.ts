@@ -1346,4 +1346,10 @@ export const dict = {
     "Choisissez l'emplacement d'ouverture des liens web depuis les chats Kilo. Nécessite le Navigateur intégré.",
   "settings.experimental.browserLinks.external": "Navigateur système",
   "settings.experimental.browserLinks.integrated": "Navigateur intégré",
+  "ui.permission.toolLabel.browserOpen": "Navigateur intégré",
+  "session.workspaceScope.description":
+    "Le chat Kilo utilise uniquement « {{folder}} », le premier dossier de cet espace de travail.",
+  "session.workspaceScope.alternatives":
+    "Pour travailler avec un autre dossier, ouvrez-le dans sa propre fenêtre ou ajoutez-le comme projet dans Agent Manager.",
+  "session.workspaceScope.dismiss": "Masquer l’indication sur la portée de l’espace de travail",
 }

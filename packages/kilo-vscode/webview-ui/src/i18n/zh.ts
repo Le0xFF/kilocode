@@ -1245,4 +1245,9 @@ export const dict = {
   "settings.experimental.browserLinks.description": "选择 Kilo 聊天中的网页链接在何处打开。需要集成浏览器。",
   "settings.experimental.browserLinks.external": "系统浏览器",
   "settings.experimental.browserLinks.integrated": "集成浏览器",
+  "ui.permission.toolLabel.browserOpen": "集成浏览器",
+  "session.workspaceScope.description": "Kilo 聊天仅使用此工作区中的第一个文件夹“{{folder}}”。",
+  "session.workspaceScope.alternatives":
+    "要使用其他文件夹，请在单独的窗口中打开它，或将其作为项目添加到 Agent Manager。",
+  "session.workspaceScope.dismiss": "关闭工作区范围提示",
 } satisfies Partial<Record<Keys, string>>
