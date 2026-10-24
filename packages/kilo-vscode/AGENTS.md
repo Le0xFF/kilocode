@@ -51,11 +51,13 @@ The VS Code extension spawns or connects to a `kilo serve` process and communica
 | Package | Name | Role |
 |---|---|---|
 | `packages/kilo-vscode/` | `kilo-code-offline` | **This package.** VS Code extension. |
-| `packages/kilo-gateway/` | `@kilocode/kilo-gateway` | Auth (device flow), AI provider routing (OpenRouter), Kilo API integration (profile, balance, teams) |
+| `packages/kilo-gateway/` | `@kilocode/kilo-gateway` | **Absent in this fork** (pruned in the offline fork, invariant I7) — upstream role: auth (device flow), AI provider routing (OpenRouter), Kilo API integration (profile, balance, teams) |
 | `packages/kilo-ui/` | `@kilocode/kilo-ui` | SolidJS component library (40+ components, built on `@kobalte/core`). Shared by this extension's webview and docs screenshot stories |
-| `packages/kilo-telemetry/` | `@kilocode/kilo-telemetry` | PostHog analytics + OpenTelemetry tracing for the CLI |
+| `packages/kilo-telemetry/` | `@kilocode/kilo-telemetry` | **Absent in this fork** (pruned in the offline fork, invariant I7) — upstream role: PostHog analytics + OpenTelemetry tracing for the CLI |
 | `packages/kilo-i18n/` | `@kilocode/kilo-i18n` | Translation strings (16 languages) |
-| `packages/kilo-docs/` | `@kilocode/kilo-docs` | Documentation site (Next.js + Markdoc) |
+| `packages/kilo-docs/` | `@kilocode/kilo-docs` | **Absent in this fork** (docs site pruned; only the `public/` directory with screenshot-test baselines is retained) |
+
+Rows marked **Absent in this fork** are upstream packages pruned from the offline fork (invariant I7, see `PRUNE-NOTES.md`); they are listed with their upstream role for sync reference only and do not exist on disk here.
 
 The extension's identity is `kilocode.kilo-code-offline`, deliberately different from the official `kilocode.kilo-code` so the VS Code marketplace never identifies this build as the official Kilo Code extension.
 

@@ -1,4 +1,4 @@
-# kilo-code
+# kilo-code-offline
 
 ## 7.8.17
 
