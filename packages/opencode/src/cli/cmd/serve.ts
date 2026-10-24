@@ -35,12 +35,19 @@ export const ServeCommand = effectCmd({
         new Promise<void>((resolve) => {
           // Exit if the editor client that spawned us is hard-killed (no signal reaches us).
           const stopWatchdog = startParentWatchdog(() => process.kill(process.pid, "SIGTERM"))
+          let stopping = false
           const shutdown = async () => {
+            if (stopping) return
+            stopping = true
             stopWatchdog()
+            // The editor may exit before its SIGKILL fallback can run.
+            const timeout = setTimeout(() => process.exit(1), 5000)
+            timeout.unref()
             try {
               await InstanceRuntime.disposeAllInstances()
               await server.stop(true)
             } finally {
+              clearTimeout(timeout)
               resolve()
             }
           }
