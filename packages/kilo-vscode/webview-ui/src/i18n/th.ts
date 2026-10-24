@@ -51,6 +51,8 @@ export const anacondaDesktopDict = {
 
 export const dict = {
   ...anacondaDesktopDict,
+  "browserTab.noSession": "เปิดเบราว์เซอร์จากเซสชันเพื่อดูตัวอย่างแอปพลิเคชันในเครื่องหรือหน้า HTTPS สาธารณะ",
+  "browserTab.disabled": "เบราว์เซอร์ในตัวถูกปิดใช้งาน เปิดใช้งานได้ในการตั้งค่า Kilo > ทดลอง",
   "settings.experimental.conversationPromptHistory.title": "ประวัติพรอมต์แยกตามการสนทนา",
   "settings.experimental.conversationPromptHistory.description":
     "แยกประวัติพรอมต์ (ArrowUp/ArrowDown) ตามแต่ละการสนทนา แทนการใช้ประวัติเดียวร่วมกันในทุกการสนทนา",
@@ -61,6 +63,7 @@ export const dict = {
   "session.activity.waiting": "กำลังรอคำตอบหรือการอนุมัติ",
   "session.activity.scheduled": "กำลังรอการปลุกตามกำหนดเวลา",
   "session.tabs.switcher.scheduled": "ตั้งเวลาไว้",
+  "session.tabs.pinHint": "Shift+คลิกเพื่อปักหมุดหรือเลิกปักหมุด",
   "settings.display.presets.title": "พรีเซ็ตการแสดงผล",
   "settings.display.presets.description": "เปลี่ยนตัวเลือกการแสดงผลด้านล่าง ไม่ใช่สิทธิ์ บันทึกเพื่อนำไปใช้",
   "settings.display.preview.title": "ตัวอย่าง",
@@ -496,6 +499,9 @@ export const dict = {
   "provider.custom.error.duplicate": "ซ้ำ",
   "settings.openLocalConfig": "คอนฟิก Local",
   "settings.openGlobalConfig": "คอนฟิก Global",
+  "settings.search.placeholder": "ค้นหาการตั้งค่า",
+  "settings.search.noResults": "ไม่พบการตั้งค่า",
+  "settings.search.clear": "ล้างการค้นหา",
   "settings.config.scope.local": "ภายใน",
   "settings.config.scope.global": "ทั่วโลก",
   "settings.config.status.loaded": "โหลดแล้ว",
@@ -1213,7 +1219,8 @@ export const dict = {
   "settings.models.speechToTextApiKey.description": "Bearer token sent to the custom transcription base URL. Stored in your Kilo config file.",
   "settings.models.speechToTextApiKey.placeholder": "sk-...",
   "settings.experimental.browserAutomation.title": "Integrated Browser",
-  "settings.experimental.browserAutomation.description": "Show local application previews in Agent Manager and expose the browser_open tool to Agent Manager sessions.",
+  "settings.experimental.browserAutomation.description":
+    "แสดงตัวอย่างแอปพลิเคชันในเครื่องใน Agent Manager และเปิดเผยเครื่องมือ browser_open ให้กับเซสชัน Agent Manager",
   "settings.experimental.browserAutomation.systemChrome.title": "Use System Chrome",
   "settings.experimental.browserAutomation.systemChrome.description": "Use installed Google Chrome for the Integrated Browser. Disable only when a compatible Playwright Chromium browser is already installed.",
   "settings.context.compactionModel.hint": "To choose which model is used for compaction, see the Models settings.",

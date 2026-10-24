@@ -52,6 +52,8 @@ export const anacondaDesktopDict = {
 
 export const dict = {
   ...anacondaDesktopDict,
+  "browserTab.noSession": "مرورگر را از یک نشست باز کنید تا یک برنامه محلی یا یک صفحه HTTPS عمومی را پیش‌نمایش بگیرید.",
+  "browserTab.disabled": "مرورگر یکپارچه غیرفعال است. آن را در تنظیمات Kilo > آزمایشی فعال کنید.",
   "settings.experimental.conversationPromptHistory.title": "تاریخچه پرامپت برای هر گفتگو",
   "settings.experimental.conversationPromptHistory.description":
     "تاریخچه پرامپت (ArrowUp/ArrowDown) را برای هر گفتگو جداگانه نگه دارید، به جای اشتراک یک تاریخچه بین همه گفتگوها.",
@@ -62,6 +64,7 @@ export const dict = {
   "session.activity.waiting": "در انتظار پاسخ یا تأیید.",
   "session.activity.scheduled": "در انتظار بیدارشدن زمان‌بندی‌شده.",
   "session.tabs.switcher.scheduled": "زمان‌بندی‌شده",
+  "session.tabs.pinHint": "Shift+کلیک برای سنجاق کردن یا لغو آن",
   "settings.display.presets.title": "از پیش تعیین‌های نمایش",
   "settings.display.presets.description": "گزینه‌های نمایش زیر را تغییر می‌دهد، نه مجوزها. برای اعمال ذخیره کنید.",
   "settings.display.preview.title": "پیش‌نمایش",
@@ -426,6 +429,9 @@ export const dict = {
   "provider.custom.error.duplicate": "تکراری",
   "settings.openLocalConfig": "پیکربندی محلی",
   "settings.openGlobalConfig": "پیکربندی سراسری",
+  "settings.search.placeholder": "جست‌وجوی تنظیمات",
+  "settings.search.noResults": "تنظیمی یافت نشد",
+  "settings.search.clear": "پاک کردن جست‌وجو",
   "settings.config.scope.local": "محلی",
   "settings.config.scope.global": "سراسری",
   "settings.config.status.loaded": "بارگذاری شد",
@@ -1239,7 +1245,8 @@ export const dict = {
   "settings.models.speechToTextApiKey.description": "Bearer token sent to the custom transcription base URL. Stored in your Kilo config file.",
   "settings.models.speechToTextApiKey.placeholder": "sk-...",
   "settings.experimental.browserAutomation.title": "Integrated Browser",
-  "settings.experimental.browserAutomation.description": "Show local application previews in Agent Manager and expose the browser_open tool to Agent Manager sessions.",
+  "settings.experimental.browserAutomation.description":
+    "پیش‌نمایش برنامه‌های محلی را در Agent Manager نشان دهید و ابزار browser_open را در اختیار جلسات Agent Manager قرار دهید.",
   "settings.experimental.browserAutomation.systemChrome.title": "Use System Chrome",
   "settings.experimental.browserAutomation.systemChrome.description": "Use installed Google Chrome for the Integrated Browser. Disable only when a compatible Playwright Chromium browser is already installed.",
   "settings.context.compactionModel.hint": "To choose which model is used for compaction, see the Models settings.",

@@ -52,6 +52,8 @@ export const anacondaDesktopDict = {
 
 export const dict = {
   ...anacondaDesktopDict,
+  "browserTab.noSession": "从会话中打开浏览器以预览本地应用或公共 HTTPS 页面。",
+  "browserTab.disabled": "集成浏览器已禁用。请在 Kilo 设置 > 实验性中启用。",
   "settings.experimental.conversationPromptHistory.title": "按对话区分的提示历史",
   "settings.experimental.conversationPromptHistory.description":
     "为每个对话单独保存提示历史(ArrowUp/ArrowDown),而不是在所有对话间共享同一份。",
@@ -62,6 +64,7 @@ export const dict = {
   "session.activity.waiting": "正在等待回复或批准。",
   "session.activity.scheduled": "正在等待计划好的唤醒。",
   "session.tabs.switcher.scheduled": "已计划",
+  "session.tabs.pinHint": "按住 Shift 点击可固定或取消固定",
   "settings.display.presets.title": "显示预设",
   "settings.display.presets.description": "更改下方的显示选项，而非权限。保存后生效。",
   "settings.display.preview.title": "预览",
@@ -482,6 +485,9 @@ export const dict = {
   "provider.custom.error.duplicate": "重复",
   "settings.openLocalConfig": "本地配置",
   "settings.openGlobalConfig": "全局配置",
+  "settings.search.placeholder": "搜索设置",
+  "settings.search.noResults": "未找到设置",
+  "settings.search.clear": "清除搜索",
   "settings.config.scope.local": "本地",
   "settings.config.scope.global": "全局",
   "settings.config.status.loaded": "已加载",
@@ -1170,7 +1176,8 @@ export const dict = {
   "settings.models.speechToTextApiKey.description": "Bearer token sent to the custom transcription base URL. Stored in your Kilo config file.",
   "settings.models.speechToTextApiKey.placeholder": "sk-...",
   "settings.experimental.browserAutomation.title": "Integrated Browser",
-  "settings.experimental.browserAutomation.description": "Show local application previews in Agent Manager and expose the browser_open tool to Agent Manager sessions.",
+  "settings.experimental.browserAutomation.description":
+    "在 Agent Manager 中显示本地应用预览，并向 Agent Manager 会话公开 browser_open 工具。",
   "settings.experimental.browserAutomation.systemChrome.title": "Use System Chrome",
   "settings.experimental.browserAutomation.systemChrome.description": "Use installed Google Chrome for the Integrated Browser. Disable only when a compatible Playwright Chromium browser is already installed.",
   "settings.context.compactionModel.hint": "To choose which model is used for compaction, see the Models settings.",

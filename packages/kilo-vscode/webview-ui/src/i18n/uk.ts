@@ -52,6 +52,9 @@ export const anacondaDesktopDict = {
 
 export const dict = {
   ...anacondaDesktopDict,
+  "browserTab.noSession":
+    "Відкрийте браузер із сеансу, щоб переглянути локальний застосунок або загальнодоступну HTTPS-сторінку.",
+  "browserTab.disabled": "Вбудований браузер вимкнено. Увімкніть його в Налаштуваннях Kilo > Експериментальні.",
   "settings.experimental.conversationPromptHistory.title": "Історія промптів для кожної розмови",
   "settings.experimental.conversationPromptHistory.description":
     "Зберігати історію промптів (ArrowUp/ArrowDown) окремо для кожної розмови замість однієї спільної історії для всіх.",
@@ -62,6 +65,7 @@ export const dict = {
   "session.activity.waiting": "Очікується відповідь або підтвердження.",
   "session.activity.scheduled": "Очікування запланованого пробудження.",
   "session.tabs.switcher.scheduled": "Заплановано",
+  "session.tabs.pinHint": "Shift+клік, щоб закріпити або відкріпити",
   "settings.display.presets.title": "Пресети відображення",
   "settings.display.presets.description": "Змінює параметри відображення нижче, а не дозволи. Збережіть, щоб застосувати.",
   "settings.display.preview.title": "Попередній перегляд",
@@ -458,6 +462,9 @@ export const dict = {
   "provider.custom.error.duplicate": "Дублікат",
   "settings.openLocalConfig": "Локальний конфіг",
   "settings.openGlobalConfig": "Глобальний конфіг",
+  "settings.search.placeholder": "Пошук параметрів",
+  "settings.search.noResults": "Параметри не знайдено",
+  "settings.search.clear": "Очистити пошук",
   "settings.config.scope.local": "Локальний",
   "settings.config.scope.global": "Глобальний",
   "settings.config.status.loaded": "завантажено",
@@ -1254,7 +1261,8 @@ export const dict = {
   "settings.models.speechToTextApiKey.description": "Bearer token sent to the custom transcription base URL. Stored in your Kilo config file.",
   "settings.models.speechToTextApiKey.placeholder": "sk-...",
   "settings.experimental.browserAutomation.title": "Integrated Browser",
-  "settings.experimental.browserAutomation.description": "Show local application previews in Agent Manager and expose the browser_open tool to Agent Manager sessions.",
+  "settings.experimental.browserAutomation.description":
+    "Показуйте попередній перегляд локальних застосунків в Agent Manager і надавайте інструмент browser_open сесіям Agent Manager.",
   "settings.experimental.browserAutomation.systemChrome.title": "Use System Chrome",
   "settings.experimental.browserAutomation.systemChrome.description": "Use installed Google Chrome for the Integrated Browser. Disable only when a compatible Playwright Chromium browser is already installed.",
   "settings.context.compactionModel.hint": "To choose which model is used for compaction, see the Models settings.",

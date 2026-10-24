@@ -52,6 +52,9 @@ export const anacondaDesktopDict = {
 
 export const dict = {
   ...anacondaDesktopDict,
+  "browserTab.noSession":
+    "Yerel bir uygulamayı veya genel bir HTTPS sayfasını önizlemek için tarayıcıyı bir oturumdan açın.",
+  "browserTab.disabled": "Tümleşik Tarayıcı devre dışı. Kilo Ayarları > Deneysel'den etkinleştirin.",
   "settings.experimental.conversationPromptHistory.title": "Sohbet başına istem geçmişi",
   "settings.experimental.conversationPromptHistory.description":
     "İstem geçmişini (ArrowUp/ArrowDown) tüm sohbetlerde tek bir geçmiş paylaşmak yerine her sohbet için ayrı tutun.",
@@ -62,6 +65,7 @@ export const dict = {
   "session.activity.waiting": "Yanıt veya onay bekleniyor.",
   "session.activity.scheduled": "Zamanlanmış bir uyandırmayı bekliyor.",
   "session.tabs.switcher.scheduled": "Zamanlandı",
+  "session.tabs.pinHint": "Sabitlemek veya kaldırmak için Shift+tıkla",
   "settings.display.presets.title": "Görüntüleme ön ayarları",
   "settings.display.presets.description": "Aşağıdaki görüntüleme seçeneklerini değiştirir, izinleri değil. Uygulamak için kaydedin.",
   "settings.display.preview.title": "Önizleme",
@@ -456,6 +460,9 @@ export const dict = {
   "provider.custom.error.duplicate": "Tekrar",
   "settings.openLocalConfig": "Yerel Config",
   "settings.openGlobalConfig": "Global Config",
+  "settings.search.placeholder": "Ayarlarda ara",
+  "settings.search.noResults": "Ayar bulunamadı",
+  "settings.search.clear": "Aramayı temizle",
   "settings.config.scope.local": "Yerel",
   "settings.config.scope.global": "Küresel",
   "settings.config.status.loaded": "yüklendi",
@@ -1250,7 +1257,8 @@ export const dict = {
   "settings.models.speechToTextApiKey.description": "Bearer token sent to the custom transcription base URL. Stored in your Kilo config file.",
   "settings.models.speechToTextApiKey.placeholder": "sk-...",
   "settings.experimental.browserAutomation.title": "Integrated Browser",
-  "settings.experimental.browserAutomation.description": "Show local application previews in Agent Manager and expose the browser_open tool to Agent Manager sessions.",
+  "settings.experimental.browserAutomation.description":
+    "Agent Manager'da yerel uygulama önizlemelerini gösterin ve browser_open aracını Agent Manager oturumlarına sunun.",
   "settings.experimental.browserAutomation.systemChrome.title": "Use System Chrome",
   "settings.experimental.browserAutomation.systemChrome.description": "Use installed Google Chrome for the Integrated Browser. Disable only when a compatible Playwright Chromium browser is already installed.",
   "settings.context.compactionModel.hint": "To choose which model is used for compaction, see the Models settings.",

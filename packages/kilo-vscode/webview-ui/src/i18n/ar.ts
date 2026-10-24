@@ -51,6 +51,8 @@ export const anacondaDesktopDict = {
 
 export const dict = {
   ...anacondaDesktopDict,
+  "browserTab.noSession": "افتح المتصفح من جلسة لمعاينة تطبيق محلي أو صفحة HTTPS عامة.",
+  "browserTab.disabled": "المتصفح المدمج معطّل. فعّله من إعدادات Kilo > تجريبي.",
   "settings.experimental.conversationPromptHistory.title": "سجل مطالبات لكل محادثة",
   "settings.experimental.conversationPromptHistory.description":
     "إبقاء سجل مطالبات الإدخال (استدعاء بالسهمين لأعلى/لأسفل) منفصلاً لكل محادثة بدلاً من مشاركة سجل واحد بين جميع المحادثات.",
@@ -61,6 +63,7 @@ export const dict = {
   "session.activity.waiting": "في انتظار إجابة أو موافقة.",
   "session.activity.scheduled": "في انتظار استيقاظ مجدول.",
   "session.tabs.switcher.scheduled": "مجدولة",
+  "session.tabs.pinHint": "Shift+النقر للتثبيت أو إلغاء التثبيت",
   "settings.display.presets.title": "إعدادات العرض المسبقة",
   "settings.display.presets.description": "يغيّر خيارات العرض أدناه، وليس الأذونات. احفظ للتطبيق.",
   "settings.display.preview.title": "معاينة",
@@ -454,6 +457,9 @@ export const dict = {
   "provider.custom.error.duplicate": "مكرر",
   "settings.openLocalConfig": "تكوين محلي",
   "settings.openGlobalConfig": "تكوين عام",
+  "settings.search.placeholder": "البحث في الإعدادات",
+  "settings.search.noResults": "لم يتم العثور على إعدادات",
+  "settings.search.clear": "مسح البحث",
   "settings.config.scope.local": "محلي",
   "settings.config.scope.global": "عالمي",
   "settings.config.status.loaded": "محمل",
@@ -1210,7 +1216,8 @@ export const dict = {
   "settings.models.speechToTextApiKey.description": "Bearer token sent to the custom transcription base URL. Stored in your Kilo config file.",
   "settings.models.speechToTextApiKey.placeholder": "sk-...",
   "settings.experimental.browserAutomation.title": "Integrated Browser",
-  "settings.experimental.browserAutomation.description": "Show local application previews in Agent Manager and expose the browser_open tool to Agent Manager sessions.",
+  "settings.experimental.browserAutomation.description":
+    "عرض معاينات التطبيقات المحلية في Agent Manager وإتاحة أداة browser_open لجلسات Agent Manager.",
   "settings.experimental.browserAutomation.systemChrome.title": "Use System Chrome",
   "settings.experimental.browserAutomation.systemChrome.description": "Use installed Google Chrome for the Integrated Browser. Disable only when a compatible Playwright Chromium browser is already installed.",
   "settings.context.compactionModel.hint": "To choose which model is used for compaction, see the Models settings.",

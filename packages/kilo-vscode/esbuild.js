@@ -438,6 +438,7 @@ function getWebviewsConfig() {
       // offline: kiloclaw and marketplace webviews are cut with the gateway surface
       "diff-viewer": "webview-ui/diff-viewer/index.tsx",
       documents: "webview-ui/documents/index.tsx",
+      "browser-tab": "webview-ui/browser-tab/index.tsx",
       "diff-virtual": "webview-ui/diff-virtual/index.tsx",
       webview: "webview-ui/src/index.tsx",
     },

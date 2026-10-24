@@ -52,6 +52,8 @@ export const anacondaDesktopDict = {
 
 export const dict = {
   ...anacondaDesktopDict,
+  "browserTab.noSession": "セッションからブラウザを開いて、ローカルアプリまたは公開 HTTPS ページをプレビューします。",
+  "browserTab.disabled": "統合ブラウザは無効になっています。Kilo 設定 > 実験的機能で有効にしてください。",
   "settings.experimental.conversationPromptHistory.title": "会話ごとのプロンプト履歴",
   "settings.experimental.conversationPromptHistory.description":
     "プロンプト履歴 (ArrowUp/ArrowDown) をすべての会話で共有せず、会話ごとに分けて保持します。",
@@ -62,6 +64,7 @@ export const dict = {
   "session.activity.waiting": "回答または承認を待っています。",
   "session.activity.scheduled": "予約されたウェイクアップを待機しています。",
   "session.tabs.switcher.scheduled": "予約済み",
+  "session.tabs.pinHint": "Shift+クリックで固定または固定解除",
   "settings.display.presets.title": "表示プリセット",
   "settings.display.presets.description": "下の表示オプションを変更します。権限は変更しません。適用するには保存してください。",
   "settings.display.preview.title": "プレビュー",
@@ -498,6 +501,9 @@ export const dict = {
   "provider.custom.error.duplicate": "重複",
   "settings.openLocalConfig": "ローカル設定",
   "settings.openGlobalConfig": "グローバル設定",
+  "settings.search.placeholder": "設定の検索",
+  "settings.search.noResults": "設定が見つかりません",
+  "settings.search.clear": "検索をクリア",
   "settings.config.scope.local": "ローカル",
   "settings.config.scope.global": "グローバル",
   "settings.config.status.loaded": "読み込み済み",
@@ -1228,7 +1234,8 @@ export const dict = {
   "settings.models.speechToTextApiKey.description": "Bearer token sent to the custom transcription base URL. Stored in your Kilo config file.",
   "settings.models.speechToTextApiKey.placeholder": "sk-...",
   "settings.experimental.browserAutomation.title": "Integrated Browser",
-  "settings.experimental.browserAutomation.description": "Show local application previews in Agent Manager and expose the browser_open tool to Agent Manager sessions.",
+  "settings.experimental.browserAutomation.description":
+    "Agent Manager でローカルアプリケーションのプレビューを表示し、browser_open ツールを Agent Manager セッションに公開します。",
   "settings.experimental.browserAutomation.systemChrome.title": "Use System Chrome",
   "settings.experimental.browserAutomation.systemChrome.description": "Use installed Google Chrome for the Integrated Browser. Disable only when a compatible Playwright Chromium browser is already installed.",
   "settings.context.compactionModel.hint": "To choose which model is used for compaction, see the Models settings.",

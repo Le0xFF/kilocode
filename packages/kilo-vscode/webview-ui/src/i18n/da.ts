@@ -52,6 +52,9 @@ export const anacondaDesktopDict = {
 
 export const dict = {
   ...anacondaDesktopDict,
+  "browserTab.noSession":
+    "Åbn browseren fra en session for at forhåndsvise en lokal applikation eller en offentlig HTTPS-side.",
+  "browserTab.disabled": "Den integrerede browser er deaktiveret. Aktivér den i Kilo-indstillinger > Eksperimentel.",
   "settings.experimental.conversationPromptHistory.title": "Prompthistorik pr. samtale",
   "settings.experimental.conversationPromptHistory.description":
     "Hold prompthistorikken (ArrowUp/ArrowDown) adskilt for hver samtale i stedet for at dele én historik på tværs af alle samtaler.",
@@ -62,6 +65,7 @@ export const dict = {
   "session.activity.waiting": "Venter på et svar eller en godkendelse.",
   "session.activity.scheduled": "Venter på en planlagt vækning.",
   "session.tabs.switcher.scheduled": "Planlagt",
+  "session.tabs.pinHint": "Skift+klik for at fastgøre eller frigøre",
   "settings.display.presets.title": "Visningsforudindstillinger",
   "settings.display.presets.description": "Ændrer visningsindstillingerne nedenfor, ikke tilladelser. Gem for at anvende.",
   "settings.display.preview.title": "Forhåndsvisning",
@@ -501,6 +505,9 @@ export const dict = {
   "provider.custom.error.duplicate": "Duplikat",
   "settings.openLocalConfig": "Lokal konfig",
   "settings.openGlobalConfig": "Global konfig",
+  "settings.search.placeholder": "Søg i indstillinger",
+  "settings.search.noResults": "Ingen indstillinger fundet",
+  "settings.search.clear": "Ryd søgning",
   "settings.config.scope.local": "Lokal",
   "settings.config.scope.global": "Global",
   "settings.config.status.loaded": "indlæst",
@@ -1237,7 +1244,8 @@ export const dict = {
   "settings.models.speechToTextApiKey.description": "Bearer token sent to the custom transcription base URL. Stored in your Kilo config file.",
   "settings.models.speechToTextApiKey.placeholder": "sk-...",
   "settings.experimental.browserAutomation.title": "Integrated Browser",
-  "settings.experimental.browserAutomation.description": "Show local application previews in Agent Manager and expose the browser_open tool to Agent Manager sessions.",
+  "settings.experimental.browserAutomation.description":
+    "Vis forhåndsvisninger af lokale applikationer i Agent Manager, og gør værktøjet browser_open tilgængeligt for Agent Manager-sessioner.",
   "settings.experimental.browserAutomation.systemChrome.title": "Use System Chrome",
   "settings.experimental.browserAutomation.systemChrome.description": "Use installed Google Chrome for the Integrated Browser. Disable only when a compatible Playwright Chromium browser is already installed.",
   "settings.context.compactionModel.hint": "To choose which model is used for compaction, see the Models settings.",

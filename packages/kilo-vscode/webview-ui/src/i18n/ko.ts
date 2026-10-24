@@ -55,6 +55,8 @@ type Keys = keyof typeof en
 
 export const dict = {
   ...anacondaDesktopDict,
+  "browserTab.noSession": "세션에서 브라우저를 열어 로컬 애플리케이션이나 공개 HTTPS 페이지를 미리 보세요.",
+  "browserTab.disabled": "통합 브라우저가 비활성화되어 있습니다. Kilo 설정 > 실험에서 활성화하세요.",
   "settings.experimental.conversationPromptHistory.title": "대화별 프롬프트 기록",
   "settings.experimental.conversationPromptHistory.description":
     "프롬프트 기록(ArrowUp/ArrowDown)을 모든 대화에서 공유하지 않고 대화별로 분리하여 유지합니다.",
@@ -65,6 +67,7 @@ export const dict = {
   "session.activity.waiting": "답변 또는 승인을 기다리는 중입니다.",
   "session.activity.scheduled": "예약된 웨이크업을 기다리는 중입니다.",
   "session.tabs.switcher.scheduled": "예약됨",
+  "session.tabs.pinHint": "Shift+클릭으로 고정하거나 고정 해제",
   "settings.display.presets.title": "표시 프리셋",
   "settings.display.presets.description": "아래 표시 옵션을 변경하며 권한은 변경하지 않습니다. 적용하려면 저장하세요.",
   "settings.display.preview.title": "미리보기",
@@ -461,6 +464,9 @@ export const dict = {
   "provider.custom.error.duplicate": "중복",
   "settings.openLocalConfig": "로컬 설정",
   "settings.openGlobalConfig": "전역 설정",
+  "settings.search.placeholder": "설정 검색",
+  "settings.search.noResults": "설정을 찾을 수 없습니다",
+  "settings.search.clear": "검색 지우기",
   "settings.config.scope.local": "로컬",
   "settings.config.scope.global": "글로벌",
   "settings.config.status.loaded": "로드됨",
@@ -1216,7 +1222,8 @@ export const dict = {
   "settings.models.speechToTextApiKey.description": "Bearer token sent to the custom transcription base URL. Stored in your Kilo config file.",
   "settings.models.speechToTextApiKey.placeholder": "sk-...",
   "settings.experimental.browserAutomation.title": "Integrated Browser",
-  "settings.experimental.browserAutomation.description": "Show local application previews in Agent Manager and expose the browser_open tool to Agent Manager sessions.",
+  "settings.experimental.browserAutomation.description":
+    "Agent Manager에서 로컬 애플리케이션 미리보기를 표시하고 browser_open 도구를 Agent Manager 세션에 노출합니다.",
   "settings.experimental.browserAutomation.systemChrome.title": "Use System Chrome",
   "settings.experimental.browserAutomation.systemChrome.description": "Use installed Google Chrome for the Integrated Browser. Disable only when a compatible Playwright Chromium browser is already installed.",
   "settings.context.compactionModel.hint": "To choose which model is used for compaction, see the Models settings.",

@@ -42,6 +42,7 @@ const active = new Set([
   "test-vscode.yml",
   "test.yml",
   "typecheck.yml",
+  "validate-cli-smoke.yml",
   "visual-regression.yml",
 ])
 

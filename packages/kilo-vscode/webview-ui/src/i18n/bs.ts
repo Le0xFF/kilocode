@@ -52,6 +52,8 @@ export const anacondaDesktopDict = {
 
 export const dict = {
   ...anacondaDesktopDict,
+  "browserTab.noSession": "Otvorite preglednik iz sesije da pregledate lokalnu aplikaciju ili javnu HTTPS stranicu.",
+  "browserTab.disabled": "Integrirani preglednik je onemogućen. Omogućite ga u Kilo postavkama > Eksperimentalno.",
   "settings.experimental.conversationPromptHistory.title": "Historija upita po razgovoru",
   "settings.experimental.conversationPromptHistory.description":
     "Čuvajte historiju upita (ArrowUp/ArrowDown) zasebno za svaki razgovor umjesto da dijelite jednu historiju među svim razgovorima.",
@@ -62,6 +64,7 @@ export const dict = {
   "session.activity.waiting": "Čeka se odgovor ili odobrenje.",
   "session.activity.scheduled": "Čeka se zakazano buđenje.",
   "session.tabs.switcher.scheduled": "Zakazano",
+  "session.tabs.pinHint": "Shift+klik za zakačiti ili otkačiti",
   "settings.display.presets.title": "Preseti prikaza",
   "settings.display.presets.description": "Mijenja opcije prikaza ispod, ne dozvole. Sačuvajte da primijenite.",
   "settings.display.preview.title": "Pregled",
@@ -504,6 +507,9 @@ export const dict = {
   "provider.custom.error.duplicate": "Duplikat",
   "settings.openLocalConfig": "Lokalna konfig.",
   "settings.openGlobalConfig": "Globalna konfig.",
+  "settings.search.placeholder": "Pretraži postavke",
+  "settings.search.noResults": "Nisu pronađene postavke",
+  "settings.search.clear": "Očisti pretragu",
   "settings.config.scope.local": "Lokalno",
   "settings.config.scope.global": "Globalno",
   "settings.config.status.loaded": "učitano",
@@ -1243,7 +1249,8 @@ export const dict = {
   "settings.models.speechToTextApiKey.description": "Bearer token sent to the custom transcription base URL. Stored in your Kilo config file.",
   "settings.models.speechToTextApiKey.placeholder": "sk-...",
   "settings.experimental.browserAutomation.title": "Integrated Browser",
-  "settings.experimental.browserAutomation.description": "Show local application previews in Agent Manager and expose the browser_open tool to Agent Manager sessions.",
+  "settings.experimental.browserAutomation.description":
+    "Prikažite preglede lokalnih aplikacija u Agent Manageru i omogućite alat browser_open sesijama Agent Managera.",
   "settings.experimental.browserAutomation.systemChrome.title": "Use System Chrome",
   "settings.experimental.browserAutomation.systemChrome.description": "Use installed Google Chrome for the Integrated Browser. Disable only when a compatible Playwright Chromium browser is already installed.",
   "settings.context.compactionModel.hint": "To choose which model is used for compaction, see the Models settings.",

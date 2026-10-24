@@ -289,6 +289,7 @@ const fail = (id: string, name: string, detail: string) => results.push({ id, na
     "test-vscode.yml",
     "test.yml",
     "typecheck.yml",
+    "validate-cli-smoke.yml",
     "visual-regression.yml",
   ])
   const dir = path.join(ROOT, ".github", "workflows")
