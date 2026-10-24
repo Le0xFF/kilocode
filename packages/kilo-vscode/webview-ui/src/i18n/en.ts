@@ -1206,6 +1206,7 @@ export const dict = {
   "session.goal.resume": "Resume",
   "session.goal.clear": "Clear goal",
   "task.swarm.title": "Board",
+  "task.swarm.open": "Open board",
   "task.swarm.refresh": "Refresh",
   "task.swarm.reset": "Reset board",
   "task.swarm.resetTitle": "Reset this board?",

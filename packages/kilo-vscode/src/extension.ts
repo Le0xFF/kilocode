@@ -78,7 +78,9 @@ export async function activate(context: vscode.ExtensionContext) {
     trusted: () => vscode.workspace.isTrusted,
     useSystemChrome: () => integratedBrowserUseSystemChrome(),
     fallback: () => process.platform === "linux" && integratedBrowserFallback(),
+    theme: browserTheme,
   })
+  context.subscriptions.push(vscode.window.onDidChangeActiveColorTheme(() => browserBroker.retheme()))
 
 
   // Create shared connection service (one server for all webviews)
@@ -867,6 +869,12 @@ export async function deactivate() {
   TelemetryProxy.getInstance().shutdown()
   await agentManager?.shutdown()
 
+}
+
+/** Current IDE color scheme, so the Integrated Browser matches the editor theme. */
+function browserTheme(): "dark" | "light" {
+  const kind = vscode.window.activeColorTheme.kind
+  return kind === vscode.ColorThemeKind.Light || kind === vscode.ColorThemeKind.HighContrastLight ? "light" : "dark"
 }
 
 function openKiloInNewTab(

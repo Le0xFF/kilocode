@@ -22,6 +22,7 @@ import { keybindings, watchKeybindings } from "../kilo-provider/shortcut-context
 import { DiffVirtualProvider } from "../DiffVirtualProvider"
 import { buildWebviewHtml } from "../utils"
 import { openFileInEditor, getWorkspaceRoot } from "../review-utils"
+import { isWebLink } from "../browser-links"
 import type { AutoApproveController } from "../commands/toggle-auto-approve"
 
 import type { CaffeinationService } from "../services/caffeination"
@@ -543,6 +544,7 @@ panel.onDidDispose(() => {
   }
 
   openExternal(url: string): void {
+    if (!isWebLink(url)) return
     void vscode.env.openExternal(vscode.Uri.parse(url))
   }
 

@@ -1803,7 +1803,9 @@ function SwarmScene(props: { board?: SessionBoard; open?: boolean }) {
   onMount(() => {
     if (!props.open) return
     const observer = new MutationObserver(() => {
-      const button = document.querySelector<HTMLButtonElement>('[data-slot="task-header-stats"] [aria-label="Board"]')
+      const button = document.querySelector<HTMLButtonElement>(
+        '.session-dock-state[data-active] [data-component="board-trigger"]',
+      )
       if (!button) return
       observer.disconnect()
       button.click()
@@ -1827,13 +1829,31 @@ function SwarmScene(props: { board?: SessionBoard; open?: boolean }) {
   }
   return (
     <SessionContext.Provider value={session as unknown as SessionContextValue}>
-      <TaskHeader readonly={scene().readonly} projectId={scene().projectId} />
+      <WorktreeModeProvider>
+        <div class="chat-input" style={{ width: "420px", "padding-top": "360px" }}>
+          <SessionDock
+            readonly={scene().readonly}
+            projectId={scene().projectId}
+            hasActions={() => true}
+            actions={(_, agents) => (
+              <div class="new-task-button-wrapper">
+                <div class="session-actions-row">
+                  {agents}
+                  <Button variant="secondary" size="small" class="session-new-button">
+                    New Session
+                  </Button>
+                </div>
+              </div>
+            )}
+          />
+        </div>
+      </WorktreeModeProvider>
     </SessionContext.Provider>
   )
 }
 
 export const BoardClosed: Story = {
-  name: "Board, header button",
+  name: "Board, dock button",
   render: () => (
     <StoryProviders sessionID={SESSION_ID} config={{ shared_agent_board: true }} noPadding>
       <SwarmScene board={swarm} />
@@ -1851,7 +1871,7 @@ export const BoardEmpty: Story = {
 }
 
 export const BoardOpen: Story = {
-  name: "Board, messages",
+  name: "Board, recent posts",
   render: () => (
     <StoryProviders sessionID={SESSION_ID} config={{ shared_agent_board: true }} noPadding>
       <SwarmScene board={swarm} open />
