@@ -48,7 +48,7 @@ import {
   wrapFirstByte,
 } from "@/kilocode/provider/provider"
 import * as ModelsRefresh from "@/kilocode/provider/models-refresh"
-import { providerKey } from "@/kilocode/provider/cloud-auth" // kilocode_change - cloud-auth helpers served only the removed online loaders
+import { providerKey, vertexOptions } from "@/kilocode/provider/cloud-auth" // kilocode_change - cloud-auth helpers served only the removed online loaders; vertexOptions carries the offline-safe openai-compatible tool-content patch
 // kilocode_change end
 import { ProviderError } from "./error"
 
@@ -971,6 +971,7 @@ const layer = Layer.effect(
       try {
         const provider = s.providers[model.providerID]
         const options = { ...provider.options }
+        vertexOptions(model.providerID, model.api.npm, options) // kilocode_change - hydrate stored credentials
 
         if (model.api.npm.includes("@ai-sdk/openai-compatible") && options["includeUsage"] !== false) {
           options["includeUsage"] = true
