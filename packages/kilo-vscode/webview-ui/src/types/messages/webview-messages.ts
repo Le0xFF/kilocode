@@ -325,9 +325,29 @@ export interface DisconnectMcpMessage {
   name: string
 }
 
-export interface AuthenticateMcpMessage {
-  type: "authenticateMcp"
+export interface RequestMcpAuthStateMessage {
+  type: "requestMcpAuthState"
+}
+
+export interface SignInMcpMessage {
+  type: "signInMcp"
   name: string
+  /** When false, suppress the host's native sign-in outcome notification (the caller renders its own, e.g. the Marketplace install modal). Defaults to true. */
+  notify?: boolean
+}
+
+export interface CancelMcpSignInMessage {
+  type: "cancelMcpSignIn"
+  name: string
+}
+
+export interface ResetMcpAuthMessage {
+  type: "resetMcpAuth"
+  name: string
+}
+
+export interface RequestMcpBundlesMessage {
+  type: "requestMcpBundles"
 }
 
 export interface SetLanguageRequest {
@@ -536,6 +556,8 @@ export interface RequestImageModelsMessage {
 export interface OpenSettingsTabRequest {
   type: "openSettingsTab"
   tab: string
+  subtab?: string
+  focus?: string
 }
 
 export interface UpdateConfigMessage {
@@ -1596,7 +1618,11 @@ export type WebviewMessage =
   | RequestMcpStatusMessage
   | ConnectMcpMessage
   | DisconnectMcpMessage
-  | AuthenticateMcpMessage
+  | RequestMcpAuthStateMessage
+  | SignInMcpMessage
+  | CancelMcpSignInMessage
+  | ResetMcpAuthMessage
+  | RequestMcpBundlesMessage
   | SetLanguageRequest
   | QuestionReplyRequest
   | QuestionRejectRequest

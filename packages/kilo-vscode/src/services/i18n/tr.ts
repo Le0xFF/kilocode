@@ -1,1 +1,5 @@
-export const dict = {} as const
+import { dict as mcpDict } from "./mcp/tr"
+
+export const dict = {
+  ...mcpDict,
+} as const
