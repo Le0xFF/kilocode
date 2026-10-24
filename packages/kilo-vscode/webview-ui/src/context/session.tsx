@@ -95,6 +95,7 @@ import { createSessionVariants } from "./session-variants"
 
 import { parseModelString } from "../../../src/shared/provider-model"
 import type { ReviewMessageData } from "../../../src/shared/review-comments"
+import { REVERT_ERROR_CODE } from "../../../src/shared/revert-error"
 import type { BrowserFeedbackData } from "../../../src/shared/browser-feedback"
 
 import { activeUserMessageID, removeQueuedMessage, visibleMessages as filterVisibleMessages } from "./session-queue"
@@ -145,6 +146,8 @@ export const SessionProvider: ParentComponent = (props) => {
   const provider = useProvider()
   const { config } = useConfig()
   const language = useLanguage()
+  // The Agent Manager nests a second provider for the subagent inspector; the outer one owns the toasts.
+  const nested = useContext(SessionContext) !== undefined
 
   // Current session ID
   const [currentSessionID, setCurrentSessionID] = createSignal<string | undefined>()
@@ -843,6 +846,12 @@ export const SessionProvider: ParentComponent = (props) => {
   function handleError(message: Extract<ExtensionMessage, { type: "error" }>) {
     if (!message.sessionID || message.sessionID === currentSessionID()) setLoading(false)
     if (message.sessionID) patchPage(message.sessionID, { loadingInitial: false, loadingOlder: false })
+    if (message.code !== REVERT_ERROR_CODE || nested) return
+    showToast({
+      variant: "error",
+      title: language.t("common.requestFailed"),
+      description: language.t(REVERT_ERROR_CODE),
+    })
   }
 
   function closed(message: Extract<ExtensionMessage, { type: "sessionTurnClosed" }>) {

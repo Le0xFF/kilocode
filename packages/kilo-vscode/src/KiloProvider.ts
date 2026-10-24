@@ -46,7 +46,7 @@ import { GitOps } from "./agent-manager/GitOps"
 import { GitStatsPoller, type LocalStats } from "./agent-manager/GitStatsPoller"
 import { removeMcp } from "./kilo-provider/remove-config-item"
 import { resolveProjectDirectory } from "./project-directory"
-import { seedSessionStatuses, seedSessionWakeups } from "./session-status"
+import { seedSessionStatuses, seedSessionWakeups, clientSessionStatus } from "./session-status"
 import { normalizeEnhancePromptErrorMessage } from "./enhance-prompt-error"
 import { retry } from "./services/cli-backend/retry"
 import { integratedBrowserUseSystemChrome } from "./services/browser-automation/chrome-setting"
@@ -153,6 +153,7 @@ import {
 } from "./speech-to-text/source"
 import { stopSessionProcesses } from "./kilo-provider/background-process"
 import { sandboxDefault, sandboxSessionMetadata } from "./shared/sandbox-session"
+import { REVERT_ERROR_CODE } from "./shared/revert-error"
 import {
   buildIndexingSettingsMessage,
   validIndexingSetting,
@@ -3135,7 +3136,10 @@ const client = this.client
     return true
   }
 
-  private publish(sessionID: string, status: SessionStatus): void {
+  private publish(sessionID: string, raw: SessionStatus): void {
+    // A session asleep on a pending wakeup is not a running turn; the webview
+    // would otherwise render `scheduled` as permanently working.
+    const status = clientSessionStatus(raw)
     const previous = this.sessionStatusMap.get(sessionID)
     if ((previous === undefined || previous === "idle") && status.type !== "idle") this.costs.rearm(sessionID)
     this.sessionStatusMap.set(sessionID, status.type)
@@ -4550,7 +4554,12 @@ const client = this.client
     const { data, error } = await this.client.session.revert({ sessionID, messageID, partID, directory: dir })
     if (error) {
       console.error("[Kilo New] KiloProvider: Failed to revert session:", error)
-      this.postMessage({ type: "error", message: "Failed to revert session", sessionID })
+      this.postMessage({
+        type: "error",
+        message: getErrorMessage(error),
+        code: REVERT_ERROR_CODE,
+        sessionID,
+      })
       throw error
     }
     if (!data) throw new Error("Revert returned no session")
@@ -4565,7 +4574,12 @@ const client = this.client
     const { data, error } = await this.client.session.unrevert({ sessionID, directory: dir })
     if (error) {
       console.error("[Kilo New] KiloProvider: Failed to unrevert session:", error)
-      this.postMessage({ type: "error", message: "Failed to redo session", sessionID })
+      this.postMessage({
+        type: "error",
+        message: getErrorMessage(error),
+        code: REVERT_ERROR_CODE,
+        sessionID,
+      })
       throw error
     }
     if (!data) throw new Error("Redo returned no session")

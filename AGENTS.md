@@ -60,6 +60,7 @@ Extension-specific settings should live in the Kilo extension settings, not defa
 
 ## Package Instructions
 
+
 ## Monorepo Structure
 
 Turborepo + Bun workspaces. The packages you'll work with most:
