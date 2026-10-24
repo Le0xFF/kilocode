@@ -202,7 +202,15 @@ export const prepare = Effect.fn("LLMRequestPrep.prepare")(function* (input: Pre
     messages,
     tools: Object.fromEntries(Object.entries(tools).toSorted(([a], [b]) => a.localeCompare(b))),
     params,
-    messageTransformOptions: options,
+    // kilocode_change start - surface provider-level endpoint overrides to message
+    // transforms without leaking them into the wire params (options is also params.options)
+    messageTransformOptions: {
+      ...options,
+      ...(typeof (input.provider.options?.endpoint ?? input.provider.options?.baseURL) === "string"
+        ? { providerEndpointOverride: input.provider.options?.endpoint ?? input.provider.options?.baseURL }
+        : {}),
+    },
+    // kilocode_change end
     headers: {
 // kilocode_change start - opencode (Zen) branch and kilo provider headers removed with the online surface
       "x-session-affinity": input.sessionID,
