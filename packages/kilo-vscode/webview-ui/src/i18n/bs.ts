@@ -214,6 +214,7 @@ export const dict = {
   "prompt.action.stop.background": "Zaustavi glavnog agenta. Agenti u pozadini nastavljaju raditi.",
   "prompt.agents.show": "Prikaži agente u pozadini",
   "prompt.action.enhance": "Poboljšaj prompt",
+  "prompt.action.more": "Više akcija",
   "prompt.action.autoApprove.enable": "Uključi automatsko odobravanje",
   "prompt.action.autoApprove.disable": "Isključi automatsko odobravanje",
   "prompt.action.autoApprove.enabled":
@@ -1139,6 +1140,8 @@ export const dict = {
   "task.backgroundAgents.status.cancelled": "Otkazano",
   "task.backgroundAgents.status.error": "Greška",
   "task.backgroundAgents.untitled": "Agent u pozadini",
+  "task.open.panel": "Otvori podagenta u panelu",
+  "task.open.tab": "Otvori podagenta u kartici",
   "settings.saveBar.unsavedChanges": "Nespremljene promjene",
   "settings.saveBar.discard": "Odbaci",
   "settings.saveBar.save": "Spremi",

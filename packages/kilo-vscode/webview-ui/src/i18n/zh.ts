@@ -211,6 +211,7 @@ export const dict = {
   "prompt.action.stop.background": "停止主智能体。后台智能体将继续运行。",
   "prompt.agents.show": "显示后台智能体",
   "prompt.action.enhance": "优化提示词",
+  "prompt.action.more": "更多操作",
   "prompt.action.enhanceDescription":
     "'增强提示'按钮通过提供额外上下文、澄清或重新表述来帮助改进您的请求。尝试在此处输入请求，然后再次点击按钮查看其工作原理。",
   "prompt.action.sandbox.enable": "启用沙盒",
@@ -1070,6 +1071,8 @@ export const dict = {
   "task.backgroundAgents.status.cancelled": "已取消",
   "task.backgroundAgents.status.error": "错误",
   "task.backgroundAgents.untitled": "后台智能体",
+  "task.open.panel": "在面板中打开子智能体",
+  "task.open.tab": "在标签页中打开子智能体",
   "settings.saveBar.unsavedChanges": "未保存的更改",
   "settings.saveBar.discard": "放弃",
   "settings.saveBar.save": "保存",

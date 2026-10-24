@@ -221,6 +221,7 @@ export const dict = {
   "prompt.action.stop.background": "Hauptagent stoppen. Hintergrund-Agenten laufen weiter.",
   "prompt.agents.show": "Hintergrund-Agenten anzeigen",
   "prompt.action.enhance": "Prompt verbessern",
+  "prompt.action.more": "Weitere Aktionen",
   "prompt.action.autoApprove.enable": "Automatische Genehmigung aktivieren",
   "prompt.action.autoApprove.disable": "Automatische Genehmigung deaktivieren",
   "prompt.action.autoApprove.enabled":
@@ -1160,6 +1161,8 @@ export const dict = {
   "task.backgroundAgents.status.cancelled": "Abgebrochen",
   "task.backgroundAgents.status.error": "Fehler",
   "task.backgroundAgents.untitled": "Hintergrund-Agent",
+  "task.open.panel": "Subagent in Panel öffnen",
+  "task.open.tab": "Subagent in Tab öffnen",
   "settings.saveBar.unsavedChanges": "Nicht gespeicherte Änderungen",
   "settings.saveBar.discard": "Verwerfen",
   "settings.saveBar.save": "Speichern",

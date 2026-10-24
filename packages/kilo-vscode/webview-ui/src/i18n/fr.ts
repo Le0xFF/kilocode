@@ -216,6 +216,7 @@ export const dict = {
   "prompt.action.stop.background": "Arrêter l'agent principal. Les agents en arrière-plan continuent de s'exécuter.",
   "prompt.agents.show": "Afficher les agents en arrière-plan",
   "prompt.action.enhance": "Améliorer le prompt",
+  "prompt.action.more": "Autres actions",
   "prompt.action.autoApprove.enable": "Activer l'approbation automatique",
   "prompt.action.autoApprove.disable": "Désactiver l'approbation automatique",
   "prompt.action.autoApprove.enabled":
@@ -1166,6 +1167,8 @@ export const dict = {
   "task.backgroundAgents.status.cancelled": "Annulé",
   "task.backgroundAgents.status.error": "Erreur",
   "task.backgroundAgents.untitled": "Agent en arrière-plan",
+  "task.open.panel": "Ouvrir le sous-agent dans le panneau",
+  "task.open.tab": "Ouvrir le sous-agent dans un onglet",
   "settings.saveBar.unsavedChanges": "Modifications non enregistrées",
   "settings.saveBar.discard": "Ignorer",
   "settings.saveBar.save": "Enregistrer",

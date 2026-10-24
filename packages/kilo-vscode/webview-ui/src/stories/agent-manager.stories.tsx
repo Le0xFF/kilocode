@@ -2444,6 +2444,7 @@ const ProjectsStory = () => (
         onSelect={() => {}}
         onRemove={() => {}}
         onExpand={() => {}}
+        onReorder={() => {}}
         onHistory={() => {}}
         onNew={() => {}}
         onCreate={() => {}}

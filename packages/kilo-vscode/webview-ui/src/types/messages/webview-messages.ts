@@ -829,6 +829,12 @@ export interface SetProjectExpandedMessage {
   expanded: boolean
 }
 
+// Persist the sidebar order of the additional (not pinned) projects
+export interface SetProjectOrderMessage {
+  type: "agentManager.setProjectOrder"
+  order: string[]
+}
+
 // Configure worktree setup script
 export interface ConfigureSetupScriptRequest {
   type: "agentManager.configureSetupScript"
@@ -1767,6 +1773,7 @@ export type WebviewMessage =
   | ActivateSelectionMessage
   | RememberTargetMessage
   | SetProjectExpandedMessage
+  | SetProjectOrderMessage
   | ConfigureSetupScriptRequest
   | ConfigureRunScriptRequest
   | RunScriptRequest

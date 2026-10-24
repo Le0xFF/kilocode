@@ -17,7 +17,7 @@ import type { AgentManagerSidebarTarget } from "./webview-messages"
 import type { PermissionRequest } from "./permissions"
 import type { AnacondaDesktopExtensionMessage } from "../../../../src/shared/anaconda-desktop-messages"
 import type { BrowserFeedbackData, BrowserReference } from "../../../../src/shared/browser-feedback"
-import type { BrowserFrame } from "../../../../src/shared/browser-stream"
+import type { BrowserCursor, BrowserFrame } from "../../../../src/shared/browser-stream"
 import type { CodeContext } from "../../../../src/shared/code-context"
 import type { PRMergeResult, PRReviewResult } from "../../../../src/shared/pr-comment-actions"
 
@@ -1585,6 +1585,11 @@ export interface BrowserTabFrameMessage extends BrowserFrame {
   sessionId: string
 }
 
+interface BrowserTabCursorMessage extends BrowserCursor {
+  type: "browserTab.cursor"
+  sessionId: string
+}
+
 export interface AgentManagerBrowserInspectionMessage {
   type: "agentManager.browserInspection"
   error?: string
@@ -1615,6 +1620,12 @@ interface AgentManagerBrowserFrameMessage extends BrowserFrame {
   sessionId: string
 }
 
+interface AgentManagerBrowserCursorMessage extends BrowserCursor {
+  type: "agentManager.browserCursor"
+  projectId?: string
+  sessionId: string
+}
+
 export interface AgentManagerBrowserDevtoolsMessage {
   type: "agentManager.browserDevtools"
   browserId: string
@@ -1641,11 +1652,13 @@ export type ExtensionMessage =
   | AgentManagerBrowserInspectionMessage
   | AgentManagerBrowserDevtoolsMessage
   | AgentManagerBrowserFrameMessage
+  | AgentManagerBrowserCursorMessage
   | BrowserTabScopeMessage
   | BrowserTabStateMessage
   | BrowserTabInspectionMessage
   | BrowserTabDevtoolsMessage
   | BrowserTabFrameMessage
+  | BrowserTabCursorMessage
   | ReadyMessage
   | FontSizeChangedMessage
   | GitStatusMessage

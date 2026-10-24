@@ -214,6 +214,7 @@ export const dict = {
   "prompt.action.stop.background": "Stop hovedagenten. Baggrundsagenter kører videre.",
   "prompt.agents.show": "Vis baggrundsagenter",
   "prompt.action.enhance": "Forbedr prompt",
+  "prompt.action.more": "Flere handlinger",
   "prompt.action.autoApprove.enable": "Aktiver automatisk godkendelse",
   "prompt.action.autoApprove.disable": "Deaktiver automatisk godkendelse",
   "prompt.action.autoApprove.enabled":
@@ -1134,6 +1135,8 @@ export const dict = {
   "task.backgroundAgents.status.cancelled": "Annulleret",
   "task.backgroundAgents.status.error": "Fejl",
   "task.backgroundAgents.untitled": "Baggrundsagent",
+  "task.open.panel": "Åbn underagent i panel",
+  "task.open.tab": "Åbn underagent i fane",
   "settings.saveBar.unsavedChanges": "Ikke-gemte ændringer",
   "settings.saveBar.discard": "Kassér",
   "settings.saveBar.save": "Gem",

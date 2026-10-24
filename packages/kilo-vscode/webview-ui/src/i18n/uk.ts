@@ -215,6 +215,7 @@ export const dict = {
   "prompt.action.stop.background": "Зупинити головного агента. Фонові агенти продовжать роботу.",
   "prompt.agents.show": "Показати фонових агентів",
   "prompt.action.enhance": "Покращити запит",
+  "prompt.action.more": "Інші дії",
   "prompt.action.indexing": "Налаштування індексування",
   "prompt.action.autoApprove.enable": "Увімкнути автоматичне схвалення",
   "prompt.action.autoApprove.disable": "Вимкнути автоматичне схвалення",
@@ -1112,6 +1113,8 @@ export const dict = {
   "task.backgroundAgents.status.cancelled": "Скасовано",
   "task.backgroundAgents.status.error": "Помилка",
   "task.backgroundAgents.untitled": "Фоновий агент",
+  "task.open.panel": "Відкрити підагента на панелі",
+  "task.open.tab": "Відкрити підагента у вкладці",
 
   "settings.saveBar.unsavedChanges": "Незбережені зміни",
   "settings.saveBar.discard": "Скасувати",
