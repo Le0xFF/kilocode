@@ -16,7 +16,7 @@ The Kilo Community is [on Discord](https://kilo.ai/discord).
 
 ## Prerequisites
 
-- **Bun 1.3.14+** — required for all packages.
+- **Bun 1.4.2+** — required for all packages.
 
 ## Developing
 

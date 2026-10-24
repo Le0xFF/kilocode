@@ -52,8 +52,6 @@ export const anacondaDesktopDict = {
 
 export const dict = {
   ...anacondaDesktopDict,
-  "settings.experimental.multiProject.title": "Multi-Project Agent Manager",
-  "settings.experimental.multiProject.description": "Enable managing sessions and worktrees across multiple repositories in Agent Manager. The current workspace repository is always the default project.",
   "settings.experimental.conversationPromptHistory.title": "تاریخچه پرامپت برای هر گفتگو",
   "settings.experimental.conversationPromptHistory.description":
     "تاریخچه پرامپت (ArrowUp/ArrowDown) را برای هر گفتگو جداگانه نگه دارید، به جای اشتراک یک تاریخچه بین همه گفتگوها.",
@@ -199,6 +197,14 @@ export const dict = {
   "prompt.worktrees.title": "Worktrees",
   "prompt.worktrees.search": "جستجوی worktree‌ها",
   "prompt.thinking.tooltip": "میزان استدلال",
+  "prompt.shortcutHint.addSelection": "برای افزودن انتخاب",
+  "prompt.shortcutHint.waiting": "برای پاسخ به نشست منتظر",
+  "prompt.shortcutHint.type": "برای تایپ",
+  "prompt.shortcutHint.sessions": "برای تغییر نشست",
+  "prompt.shortcutHint.stop": "برای توقف",
+  "prompt.shortcutHint.changes": "برای بررسی تغییرات",
+  "prompt.shortcutHint.pr": "برای باز کردن PR",
+  "prompt.shortcutHint.mode": "حالت بعدی",
   "prompt.action.send": "ارسال",
   "prompt.action.continue": "ادامه",
   "prompt.action.send.blocked": "ابتدا به سؤال در انتظار پاسخ دهید یا آن را رد کنید",
@@ -636,9 +642,11 @@ export const dict = {
   "ui.sessionTurn.status.consideringNextSteps": "در حال بررسی مراحل بعدی...",
 
   "dialog.model.noProviders": "هیچ ارائه‌دهنده‌ای وجود ندارد",
+  "dialog.model.unavailable": "مدل‌های Kilo در دسترس نیستند",
 
   "prompt.placeholder.connecting": "در حال اتصال به سرور...",
   "prompt.placeholder.default": "پیامی بنویسید... (Enter برای ارسال، Shift+Enter برای خط جدید)",
+  "prompt.placeholder.hint": "پیامی بنویسید... ({{key}} {{action}})",
   "prompt.placeholder.error": "اتصال ناموفق بود. پنل خروجی را بررسی کنید یا افزونه را مجدداً راه‌اندازی کنید.",
 
   "context.usage.sessionCost": "هزینه جلسه",
@@ -996,6 +1004,9 @@ export const dict = {
     "انتخاب کنید که بلوک‌های ابزار MCP و عمومی در حالت گسترش‌یافته یا جمع‌شده شروع شوند.",
   "settings.display.mcpTool.expanded": "گسترش‌یافته",
   "settings.display.mcpTool.collapsed": "جمع‌شده",
+  "settings.display.shortcutHints.title": "نمایش راهنمای میانبرها",
+  "settings.display.shortcutHints.description":
+    "میانبر صفحه‌کلیدی متناسب با کاری که اکنون انجام می‌دهید را در اعلان خالی نمایش می‌دهد، مثلاً نحوه افزودن کد انتخاب‌شده یا بازگشت به اعلان.",
   "settings.display.tokenThroughput.title": "نمایش توان عملیاتی توکن",
   "settings.display.tokenThroughput.description":
     "نمایش نرخ تولید متن (tokens/sec) در جدیدترین پیام دستیار و سربرگ کار. به‌طور پیش‌فرض نمایش داده می‌شود؛ برای پنهان کردن آن در صورت نیاز، این تنظیم را غیرفعال کنید.",

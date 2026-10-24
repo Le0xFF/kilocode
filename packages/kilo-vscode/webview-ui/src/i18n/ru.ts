@@ -52,8 +52,6 @@ export const anacondaDesktopDict = {
 
 export const dict = {
   ...anacondaDesktopDict,
-  "settings.experimental.multiProject.title": "Multi-Project Agent Manager",
-  "settings.experimental.multiProject.description": "Enable managing sessions and worktrees across multiple repositories in Agent Manager. The current workspace repository is always the default project.",
   "settings.experimental.conversationPromptHistory.title": "История промптов для каждого разговора",
   "settings.experimental.conversationPromptHistory.description":
     "Хранить историю промптов (ArrowUp/ArrowDown) отдельно для каждого разговора вместо одной общей истории для всех.",
@@ -196,6 +194,14 @@ export const dict = {
   "prompt.worktrees.title": "Worktrees",
   "prompt.worktrees.search": "Поиск worktrees",
   "prompt.thinking.tooltip": "Усилие рассуждения",
+  "prompt.shortcutHint.addSelection": "для добавления выделения",
+  "prompt.shortcutHint.waiting": "для ответа в ожидающей сессии",
+  "prompt.shortcutHint.type": "для ввода",
+  "prompt.shortcutHint.sessions": "для смены сессии",
+  "prompt.shortcutHint.stop": "для остановки",
+  "prompt.shortcutHint.changes": "для просмотра изменений",
+  "prompt.shortcutHint.pr": "для открытия PR",
+  "prompt.shortcutHint.mode": "Следующий режим",
   "prompt.action.send": "Отправить",
   "prompt.action.continue": "Продолжить",
   "prompt.action.send.blocked": "Сначала ответьте на ожидающий вопрос или отклоните его",
@@ -650,11 +656,13 @@ export const dict = {
   "ui.sessionTurn.status.consideringNextSteps": "Продумываю следующие шаги...",
 
   "dialog.model.noProviders": "Нет провайдеров",
+  "dialog.model.unavailable": "Модели Kilo недоступны",
 
   "prompt.placeholder.connecting": "Подключение к серверу...",
   "prompt.placeholder.error": "Не удалось подключиться. Проверьте панель вывода или перезапустите расширение.",
   "prompt.placeholder.default":
     "Введите сообщение, @ чтобы упомянуть файлы... (Enter для отправки, Shift+Enter для новой строки)",
+  "prompt.placeholder.hint": "Введите сообщение, @ чтобы упомянуть файлы... ({{key}} {{action}})",
 
   "context.usage.sessionCost": "Стоимость сессии",
   "context.usage.olderSessions": "{{count}} предыдущих сессий",
@@ -1006,6 +1014,9 @@ export const dict = {
   "settings.display.mcpTool.expanded": "Развёрнуты",
   "settings.display.mcpTool.collapsed": "Свёрнуты",
 
+  "settings.display.shortcutHints.title": "Показывать подсказки по сочетаниям клавиш",
+  "settings.display.shortcutHints.description":
+    "Показывать в пустом поле запроса сочетание клавиш, подходящее к текущему действию, например как добавить выделенный код или вернуться к запросу.",
   "settings.display.tokenThroughput.title": "Показывать пропускную способность токенов",
   "settings.display.tokenThroughput.description":
     "Показывать скорость генерации текста (tokens/sec) в последнем сообщении ассистента и в заголовке задачи. Показывается по умолчанию; отключите этот параметр, чтобы при необходимости скрыть её.",

@@ -212,13 +212,9 @@ export const NewWorktreeDialog: Component<{
     agent: initialAgent,
     fallback: session.modelForAgent,
     effort: session.variantPreference,
-    preferred: session.preferredSelection,
-    hydrated: session.preferencesReady,
     ready: provider.ready,
     valid: provider.isModelValid,
     variants: (value) => Object.keys(provider.findModel(value)?.variants ?? {}),
-    compare: compareMode,
-    remember: session.rememberSelection,
   })
   const { selection, model, agent, variants, effectiveVariant, selectAgent, selectModel, selectVariant } = preferences
   const [modelAllocations, setModelAllocations] = createSignal<ModelAllocations>(new Map())
@@ -520,6 +516,8 @@ const sandboxVisible = () => features().sandboxControls && globalConfig().sandbo
       files: resolveFiles(payload.text),
     })
 
+    // A submitted dialog starts fresh next time: keep only the agent and sandbox restore.
+    preferences.clear()
     persistPrompt("")
     persistImages([])
     props.onClose()

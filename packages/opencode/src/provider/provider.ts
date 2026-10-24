@@ -327,7 +327,7 @@ export class ModelNotFoundError extends Schema.TaggedErrorClass<ModelNotFoundErr
 }) {
   override get message() {
     const suggestions = this.suggestions?.length ? ` Did you mean: ${this.suggestions.join(", ")}?` : ""
-    return `Model not found: ${this.providerID}/${this.modelID}.${suggestions}`
+    return `Model not found: ${this.providerID}/${this.modelID}.${suggestions}` // kilocode_change
   }
 
   static isInstance(input: unknown): input is ModelNotFoundError {

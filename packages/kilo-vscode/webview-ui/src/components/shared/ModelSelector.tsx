@@ -148,7 +148,7 @@ export interface ModelSelectorBaseProps {
 }
 
 export const ModelSelectorBase: Component<ModelSelectorBaseProps> = (props) => {
-  const { connected, models, findModel } = useProvider()
+  const { connected, models, findModel, kiloUnavailable } = useProvider()
   const language = useLanguage()
   const vscode = useVSCode()
   // Session context is optional — ModelSelectorBase is also used in Settings
@@ -803,7 +803,9 @@ export const ModelSelectorBase: Component<ModelSelectorBaseProps> = (props) => {
       hasProviders(),
       {
         select: language.t("dialog.model.select.title"),
-        noProviders: language.t("dialog.model.noProviders"),
+        noProviders: kiloUnavailable()
+          ? language.t("dialog.model.unavailable")
+          : language.t("dialog.model.noProviders"),
         notSet: language.t("dialog.model.notSet"),
       },
     )

@@ -120,6 +120,7 @@ const MockProviderProvider: ParentComponent<{ training?: boolean }> = (props) =>
     // speech-to-text stories in their enabled state.
     authStates: () => ({ lmstudio: "api" }) as Record<string, ProviderAuthState>,
     isModelValid: () => true,
+    kiloUnavailable: () => false,
   }
   return <ProviderContext.Provider value={value}>{props.children}</ProviderContext.Provider>
 }
@@ -227,9 +228,6 @@ export function mockSessionValue(overrides?: {
     selected: () => ({ providerID: "lmstudio", modelID: "anthropic/claude-sonnet-4-6" }),
     modelForAgent: () => ({ providerID: "lmstudio", modelID: "anthropic/claude-sonnet-4-6" }),
     selectModel: noop,
-    preferredSelection: () => undefined,
-    preferencesReady: () => true,
-    rememberSelection: noop,
     trackScopes: () => noop,
     costBreakdown: () => [],
     contextUsage: () => undefined,
@@ -355,6 +353,7 @@ const ConfigWrapper: ParentComponent<{
       projectConfig: createMemo(() => (scoped ? project() : cfg())),
       collections: () => ({}),
       settings,
+      shortcuts: () => ({ bindings: {}, selection: false }),
       features,
       loading: () => false,
       isDirty: dirty,

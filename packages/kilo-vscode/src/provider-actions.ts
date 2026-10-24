@@ -81,7 +81,9 @@ export async function fetchProviderData(client: KiloClient, dir: string) {
     return next as (typeof response.all)[number]
   })
 
-  return { response: { ...response, all }, authMethods, authStates, storedKeys }
+  // Offline fork: the Kilo catalog is hard-cut from /provider, so the catalog is
+  // never "unavailable" here; the field is kept for message-shape parity with upstream.
+  return { response: { ...response, all }, authMethods, authStates, storedKeys, unavailable: false }
 }
 
 /**

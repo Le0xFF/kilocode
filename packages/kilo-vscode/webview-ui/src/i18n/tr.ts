@@ -52,8 +52,6 @@ export const anacondaDesktopDict = {
 
 export const dict = {
   ...anacondaDesktopDict,
-  "settings.experimental.multiProject.title": "Multi-Project Agent Manager",
-  "settings.experimental.multiProject.description": "Enable managing sessions and worktrees across multiple repositories in Agent Manager. The current workspace repository is always the default project.",
   "settings.experimental.conversationPromptHistory.title": "Sohbet başına istem geçmişi",
   "settings.experimental.conversationPromptHistory.description":
     "İstem geçmişini (ArrowUp/ArrowDown) tüm sohbetlerde tek bir geçmiş paylaşmak yerine her sohbet için ayrı tutun.",
@@ -197,6 +195,14 @@ export const dict = {
   "prompt.worktrees.title": "Worktree'ler",
   "prompt.worktrees.search": "Worktree'leri ara",
   "prompt.thinking.tooltip": "Akıl yürütme eforu",
+  "prompt.shortcutHint.addSelection": "seçimi eklemek için",
+  "prompt.shortcutHint.waiting": "bekleyen oturumu yanıtlamak için",
+  "prompt.shortcutHint.type": "yazmak için",
+  "prompt.shortcutHint.sessions": "oturum değiştirmek için",
+  "prompt.shortcutHint.stop": "durdurmak için",
+  "prompt.shortcutHint.changes": "değişiklikleri incelemek için",
+  "prompt.shortcutHint.pr": "PR'ı açmak için",
+  "prompt.shortcutHint.mode": "Sonraki mod",
   "prompt.action.send": "Gönder",
   "prompt.action.continue": "Devam et",
   "prompt.action.send.blocked": "Bekleyen soruyu önce yanıtlayın veya kapatın",
@@ -642,10 +648,12 @@ export const dict = {
   "ui.sessionTurn.status.consideringNextSteps": "Sonraki adımları değerlendiriyor...",
 
   "dialog.model.noProviders": "Sağlayıcı yok",
+  "dialog.model.unavailable": "Kilo modelleri kullanılamıyor",
 
   "prompt.placeholder.connecting": "Sunucuya bağlanılıyor...",
   "prompt.placeholder.default":
     "Bir mesaj yazın, dosyaları belirtmek için @ kullanın... (Göndermek için Enter, yeni satır için Shift+Enter)",
+  "prompt.placeholder.hint": "Bir mesaj yazın, dosyaları belirtmek için @ kullanın... ({{key}} {{action}})",
   "prompt.placeholder.error": "Bağlantı başarısız. Çıktı panelini kontrol edin veya uzantıyı yeniden başlatın.",
 
   "context.usage.sessionCost": "Oturum maliyeti",
@@ -970,6 +978,9 @@ export const dict = {
   "settings.display.mcpTool.expanded": "Genişletilmiş",
   "settings.display.mcpTool.collapsed": "Daraltılmış",
 
+  "settings.display.shortcutHints.title": "Kısayol ipuçlarını göster",
+  "settings.display.shortcutHints.description":
+    "Boş istemde şu anda yaptığınız işe uyan klavye kısayolunu gösterir, örneğin seçili kodu ekleme veya isteme geri dönme.",
   "settings.display.tokenThroughput.title": "Token İşleme Hızını Göster",
   "settings.display.tokenThroughput.description":
     "En son asistan mesajında ve görev başlığında metin oluşturma hızını (tokens/sec) gösterin. Varsayılan olarak gösterilir; gerektiğinde gizlemek için bu ayarı devre dışı bırakın.",

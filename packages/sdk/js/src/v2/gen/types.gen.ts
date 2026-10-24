@@ -4073,6 +4073,7 @@ export type MarketplaceInstalledMetadata = {
 export type MarketplaceListResult = {
   items: Array<MarketplaceItem>
   installed: MarketplaceInstalledMetadata
+  filenames?: Array<string>
   errors?: Array<string>
 }
 

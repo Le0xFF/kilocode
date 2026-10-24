@@ -2990,6 +2990,7 @@ ToolRegistry.register({
       <div data-component="edit-tool">
         <BasicTool
           {...props}
+          revision={props.metadata?.filediff?.patch ?? props.input.newString}
           icon="code-lines"
           defer
           hasDetails
@@ -3077,6 +3078,7 @@ ToolRegistry.register({
       <div data-component="write-tool">
         <BasicTool
           {...props}
+          revision={props.metadata?.filediff?.patch ?? props.input.content}
           icon="code-lines"
           defer
           hasDetails
@@ -3276,6 +3278,7 @@ ToolRegistry.register({
       <div data-component="apply-patch-tool">
         <BasicTool
           {...props}
+          revision={props.input.patchText}
           icon="code-lines"
           defer
           hasDetails

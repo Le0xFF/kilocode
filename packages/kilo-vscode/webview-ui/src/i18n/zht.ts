@@ -52,8 +52,6 @@ export const anacondaDesktopDict = {
 
 export const dict = {
   ...anacondaDesktopDict,
-  "settings.experimental.multiProject.title": "Multi-Project Agent Manager",
-  "settings.experimental.multiProject.description": "Enable managing sessions and worktrees across multiple repositories in Agent Manager. The current workspace repository is always the default project.",
   "settings.experimental.conversationPromptHistory.title": "依對話區分的提示歷史",
   "settings.experimental.conversationPromptHistory.description":
     "為每個對話單獨保存提示歷史(ArrowUp/ArrowDown),而不是在所有對話間共用同一份。",
@@ -190,6 +188,14 @@ export const dict = {
   "prompt.worktrees.title": "Worktrees",
   "prompt.worktrees.search": "搜尋 Worktree",
   "prompt.thinking.tooltip": "推理強度",
+  "prompt.shortcutHint.addSelection": "新增所選內容",
+  "prompt.shortcutHint.waiting": "回覆等待中的工作階段",
+  "prompt.shortcutHint.type": "開始輸入",
+  "prompt.shortcutHint.sessions": "切換工作階段",
+  "prompt.shortcutHint.stop": "停止",
+  "prompt.shortcutHint.changes": "檢視變更",
+  "prompt.shortcutHint.pr": "開啟 PR",
+  "prompt.shortcutHint.mode": "下一個模式",
   "prompt.action.send": "傳送",
   "prompt.action.continue": "繼續",
   "prompt.action.send.blocked": "請先回答或忽略待處理的問題",
@@ -591,10 +597,12 @@ export const dict = {
   "ui.sessionTurn.status.consideringNextSteps": "正在考慮下一步...",
 
   "dialog.model.noProviders": "沒有供應商",
+  "dialog.model.unavailable": "Kilo 模型無法使用",
 
   "prompt.placeholder.connecting": "正在連線至伺服器...",
   "prompt.placeholder.error": "連線失敗。請檢查輸出面板或重新啟動擴充功能。",
   "prompt.placeholder.default": "輸入訊息，用 @ 提及檔案... (Enter 送出，Shift+Enter 換行)",
+  "prompt.placeholder.hint": "輸入訊息，用 @ 提及檔案... ({{key}} {{action}})",
 
   "context.usage.sessionCost": "工作階段費用",
   "context.usage.olderSessions": "{{count}} 個較早的工作階段",
@@ -915,6 +923,9 @@ export const dict = {
   "settings.display.mcpTool.expanded": "展開",
   "settings.display.mcpTool.collapsed": "收合",
 
+  "settings.display.shortcutHints.title": "顯示快捷鍵提示",
+  "settings.display.shortcutHints.description":
+    "在空白輸入框中顯示符合目前操作的鍵盤快捷鍵，例如如何新增所選程式碼或返回輸入框。",
   "settings.display.tokenThroughput.title": "顯示權杖吞吐量",
   "settings.display.tokenThroughput.description":
     "在最新的助理訊息和任務標題中顯示文字生成速率（tokens/sec）。預設顯示；需要時停用此設定即可隱藏。",
