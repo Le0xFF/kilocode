@@ -54,6 +54,7 @@ import { SandboxConfig } from "@/kilocode/sandbox/config"
 import { ExternalMarkdown } from "@/kilocode/config/external-markdown"
 import { ClaudeMigration } from "@/kilocode/config/claude-migration" // kilocode_change
 import { ProviderModels } from "@/kilocode/config/provider-models"
+import * as ReservedCommand from "@/kilocode/command/reserved" // kilocode_change
 import type { KilocodeMarkdown } from "@/kilocode/config/markdown"
 import {
   IndexingConfig as KiloIndexingConfig,
@@ -1050,7 +1051,7 @@ const managedDir = ConfigManaged.managedConfigDir()
     })
 
     const warnings = Effect.fn("Config.warnings")(function* () {
-      return yield* InstanceState.use(state, (s) => s.warnings)
+      return yield* InstanceState.use(state, (s) => [...s.warnings, ...ReservedCommand.warnings(s.config.command)])
     })
     // kilocode_change end
 
