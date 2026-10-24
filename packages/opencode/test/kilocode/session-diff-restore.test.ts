@@ -138,4 +138,8 @@ describe("session diff restore", () => {
     expect(result).toEqual({ applied: 0, skipped: 1, total: 1 })
     expect(fs.existsSync(out)).toBe(false)
   })
+
+  // kilocode_change - the upstream "cut import" test was removed: it exercises
+  // fetchCloudSessionForImport from @kilocode/kilo-gateway, which is pruned in the offline
+  // fork; the cloud-session import cut logic is covered only on the upstream side.
 })
