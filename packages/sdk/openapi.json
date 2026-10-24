@@ -33579,6 +33579,12 @@
                 },
                 "additionalProperties": false
               },
+              "glob_include_ignored": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
               "code_mode": {
                 "type": "boolean"
               },

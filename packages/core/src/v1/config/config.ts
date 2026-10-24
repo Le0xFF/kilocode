@@ -320,7 +320,6 @@ export const Info = Schema.Struct({
       native_notebook_tools: Schema.optional(Schema.Boolean).annotate({
         description: "Enable native tools for reading, editing, and executing VS Code notebooks",
       }),
-
       // kilocode_change start - local media providers (image) reference a providerID/modelID pair
       image_generation_provider: Schema.optional(
         Schema.Struct({
@@ -330,8 +329,11 @@ export const Info = Schema.Struct({
       ).annotate({
         description: "Local OpenAI-compatible provider and model used for image generation",
       }),
-
       // kilocode_change end
+      glob_include_ignored: Schema.optional(Schema.mutable(Schema.Array(Schema.String))).annotate({
+        description:
+          "Folders or files, as gitignore-style patterns relative to the workspace root, that the glob tool should search even when they are ignored (for example by .gitignore) or hidden. Patterns without a slash match folders at any depth; list a file inside an ignored folder by its path (for example build/report.json). Ignored or hidden folders nested inside a listed folder stay skipped.",
+      }),
       code_mode: Schema.optional(Schema.Boolean).annotate({
         description:
           "Route MCP tool calls through a confined JavaScript runtime with on-demand tool discovery instead of exposing every MCP tool directly",

@@ -2667,6 +2667,7 @@ export type Config = {
       provider?: string
       model?: string
     }
+    glob_include_ignored?: Array<string>
     code_mode?: boolean
     speech_to_text_model?: string
     speech_to_text_base_url?: string

@@ -70,6 +70,7 @@ export interface ExperimentalConfig {
   image_generation_model?: string
   code_mode?: boolean
   image_generation_provider?: ExperimentalMediaProvider
+  glob_include_ignored?: string[]
   speech_to_text_base_url?: string
   speech_to_text_api_key?: string
   native_notebook_tools?: boolean
