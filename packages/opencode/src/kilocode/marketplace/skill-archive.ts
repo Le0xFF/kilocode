@@ -45,9 +45,11 @@ export async function stageSkill(item: { id: string; content: string }, dir: str
       if (!data) throw new Error("Unsupported skill archive data URL")
       await Bun.write(file, Buffer.from(data[1], "base64"))
     } else {
-      const response = await fetch(item.content, { signal: AbortSignal.timeout(60_000) })
-      if (!response.ok) throw new Error(`Download failed: ${response.status}`)
-      await Bun.write(file, Buffer.from(await response.arrayBuffer()))
+      // Offline fork: any non-`data:` content URL is a remote download whose URL
+      // is caller-controlled. Fail fast before any network access so the offline
+      // fork can never reach the wire; the catalog is empty here, so a remote
+      // skill URL is the only way a skill archive would otherwise arrive.
+      throw new Error("marketplace remote skill download is disabled in the offline fork")
     }
 
     if (strict) {

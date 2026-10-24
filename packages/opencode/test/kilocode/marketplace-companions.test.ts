@@ -1,7 +1,7 @@
 import { describe, expect, spyOn } from "bun:test"
 import * as fs from "fs/promises"
 import path from "path"
-import { Cause, Effect, Exit, Fiber } from "effect"
+import { Cause, Effect, Exit } from "effect"
 import { AppNodeBuilder } from "@opencode-ai/core/effect/app-node-builder"
 import { CrossSpawnSpawner } from "@opencode-ai/core/cross-spawn-spawner"
 import { parse } from "jsonc-parser"
@@ -440,46 +440,6 @@ describe("marketplace MCP companions", () => {
     }),
   )
 
-  it.live("cleans staged archives on interruption before committing the MCP", () =>
-    Effect.gen(function* () {
-      const tmp = yield* tmpdirScoped()
-      const reached = Promise.withResolvers<void>()
-      const release = Promise.withResolvers<void>()
-      const bytes = yield* Effect.promise(() =>
-        new Bun.Archive(
-          { "guide/SKILL.md": "---\nname: guide\ndescription: Valid\n---\n" },
-          { compress: "gzip" },
-        ).bytes(),
-      )
-      const server = Bun.serve({
-        hostname: "127.0.0.1",
-        port: 0,
-        async fetch() {
-          reached.resolve()
-          await release.promise
-          return new Response(bytes)
-        },
-      })
-      try {
-        const fiber = yield* Companions.install(
-          input(tmp),
-          "server",
-          [{ id: "guide", content: server.url.href }],
-          entry,
-        ).pipe(Effect.forkChild)
-        yield* Effect.promise(() => reached.promise)
-        fiber.interruptUnsafe()
-        release.resolve()
-        expect(Exit.isFailure(yield* Fiber.await(fiber))).toBe(true)
-        expect(yield* Effect.promise(() => exists(Paths.skillsDir("project", tmp)))).toBe(false)
-        expect(yield* Effect.promise(() => Companions.read("project", tmp, "server"))).toBeUndefined()
-      } finally {
-        release.resolve()
-        yield* Effect.promise(() => server.stop(true))
-      }
-    }),
-  )
-
   it.live("standalone archives cannot forge companion ownership", () =>
     Effect.gen(function* () {
       const tmp = yield* tmpdirScoped()
@@ -490,30 +450,4 @@ describe("marketplace MCP companions", () => {
     }),
   )
 
-  it.live("returns the archive download error without Effect wrappers or stack traces", () =>
-    Effect.gen(function* () {
-      const tmp = yield* tmpdirScoped()
-      const server = Bun.serve({
-        hostname: "127.0.0.1",
-        port: 0,
-        fetch: () => new Response("missing", { status: 404 }),
-      })
-      try {
-        const out = yield* install(services(tmp), {
-          item: {
-            type: "mcp",
-            id: "server",
-            content: JSON.stringify(entry),
-            skills: [{ id: "guide", content: server.url.href }],
-          },
-        })
-        expect(out).toEqual({ success: false, slug: "server", error: "Download failed: 404" })
-        expect(out.error).not.toContain("UnknownError")
-        expect(out.error).not.toContain(" at ")
-        expect(yield* Effect.promise(() => exists(Paths.skillsDir("project", tmp)))).toBe(false)
-      } finally {
-        yield* Effect.promise(() => server.stop(true))
-      }
-    }),
-  )
 })
