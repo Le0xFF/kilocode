@@ -11,7 +11,7 @@ import {
   getConfigErrorDetails,
   type ProviderInfo,
 } from "../../src/kilo-provider-utils"
-// kilocode_change - offline: CloudSessionMessage import keep-deleted (cloud sessions pruned); normalize adopted
+// Offline: CloudSessionMessage import keep-deleted (cloud sessions pruned); normalize adopted
 import { normalize, type SyncPayload } from "../../src/services/cli-backend/sdk-sse-adapter"
 import type {
   Session,

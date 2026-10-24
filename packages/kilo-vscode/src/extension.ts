@@ -527,7 +527,7 @@ export async function activate(context: vscode.ExtensionContext) {
   const settingsEditorProvider = new SettingsEditorProvider(context.extensionUri, connectionService, context, {
     ...agentManagerProvider.settings,
   })
-  // kilocode_change - offline: MarketplacePanelProvider/MarketplaceNotifier and setRemoteService keep-deleted (I8)
+  // Offline: MarketplacePanelProvider/MarketplaceNotifier and setRemoteService keep-deleted (I8)
   context.subscriptions.push(settingsEditorProvider)
 
   // Create sub-agent viewer provider (read-only editor panel for sub-agent sessions)

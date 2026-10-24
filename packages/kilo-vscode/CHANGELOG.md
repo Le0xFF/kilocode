@@ -1,5 +1,17 @@
 # kilo-code
 
+## 7.8.17
+
+### Offline fork (leocode)
+
+This build is the **offline `leocode` fork** of Kilo Code, synced to upstream v7.8.17 (v7.8.1 → v7.8.17 in this cycle: 1239 commits integrated in 20 reviewed slices). It runs fully offline against your local OpenAI-compatible providers only — there is no Kilo Gateway, marketplace service, cloud sessions, or KiloClaw.
+
+- Adopted from upstream: Agent Manager New Worktree redesign (base branch + project dropdown), PR panel with threads, brand yellow `#FFDD00` (hover `#edcd00`), provider-failure reasons surfaced in the model picker, review comments from the Changes view while History is shown, multi-root workspace-scope hint, MCP OAuth (user-gated), browser automation (experimental, off by default), custom-provider fetch-models (user endpoints / loopback only), agent-usage local API, settings search, swarm board dock (off by default), and session goal/wakeup/cron.
+- Kept gated/off for the offline build: MCP OAuth only for user-configured servers; browser automation experimental, off by default (`kilo-code.new.experimental.browserAutomation`); the shared agent board stays off by default (`shared_agent_board`); custom-provider fetch-models only against user-configured endpoints (loopback default).
+- Rejected or neutralized for offline use: Kilo Gateway (incl. the `kilo-gateway`/`kilo-telemetry` dirs), auto-routing / custom router, session hosting / Kilo Cloud, cloud sessions / remote notifications, device-flow auth, gateway autocomplete (FIM), the Marketplace panel, KiloClaw, `RemoteStatus`, the `websearch` tool, the SBOM release stack, sst/changesets, and models.dev fetching (the backend serves its catalog from the committed local snapshot). Invariants I1–I12 re-verified via `bun run check:offline` (11/11) plus the matrix greps.
+- VS Code floor: upstream is at `^1.105.1`; the fork deliberately keeps `engines.vscode`/`@types/vscode` at `^1.103.0` (I12) — a documented divergence, not an accepted change.
+- Close-out (2026-10-24): all gates green (typecheck 20/20, lint 0 errors, root guards, `check:offline` 11/11, unit 495/495, visual 313 passed / 47 skipped / 0 failed, compile, `package:vsix` linux + win32 with the `dist/node_modules` playwright-runtime self-check, offline smoke `/provider` = 7 local/configured providers with zero non-loopback endpoint URLs) after `check-kilocode-change` was made green by rewording two informational marker comments (package forbids `kilocode_change` tokens); visual baselines regenerated once — 74 snapshots updated for the window's UI drift, 7 new story baselines added, 4 `chat-workspace-scope` LFS-pointer baselines recaptured (the 3 `marketplace/*` LFS-pointer PNGs are pre-sync orphans of the keep-deleted surface and remain as-is); both VSIXes produced (`kilo-code-7.8.17-{linux,win32}.vsix`, win32 CLI binary cross-rebuilt). Note: the shipped CLI binaries are compiled with the builder's system bun (1.4.0 here; upstream pins `packageManager` bun 1.4.4) — the eMudhra CA-store fix requires bun ≥ 1.4.4, a user decision for future rebuilds.
+
 ## 7.8.16
 
 ## 7.8.15
