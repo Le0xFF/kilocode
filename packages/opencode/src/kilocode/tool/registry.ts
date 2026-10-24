@@ -23,6 +23,8 @@ import { Effect } from "effect"
 import * as Network from "@/kilocode/sandbox/network"
 import { Notebook } from "@/kilocode/notebook/service"
 import { AgentManager, HostError } from "@/kilocode/agent-manager/service"
+// kilocode_change - offline: KiloSessions import keep-deleted (kilo-sessions pruned); prEnabled adopted with path moved to src/kilocode
+import { enabled as prEnabled } from "@/kilocode/pr-link"
 import * as Log from "@opencode-ai/core/util/log"
 import type { Config } from "@/config/config"
 import type { RuntimeFlags } from "@/effect/runtime-flags"
@@ -343,7 +345,8 @@ const openPlan = tools.openPlan ? yield* Tool.init(tools.openPlan) : undefined
       tools.notebookExecute
         ? [tools.notebookRead, tools.notebookEdit, tools.notebookExecute]
         : []),
-      tools.linkPr,
+      // kilocode_change - offline: notify/send/openPlan wiring keep-deleted (mobile surface pruned); prEnabled() gate adopted from upstream #14679 (PR linking restricted to CLI backends)
+      ...(prEnabled() ? [tools.linkPr] : []),
     ]
   }
 

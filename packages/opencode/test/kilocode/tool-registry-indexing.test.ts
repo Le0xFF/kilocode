@@ -392,7 +392,7 @@ describe("kilocode tool registry indexing", () => {
         "agent_manager",
 
         "browser_open",
-        "link_pr",
+        // kilocode_change - offline: notify_user/send_file keep-deleted; link_pr absent for non-cli clients (upstream #14679 gates it to CLI backends)
       ])
       expect(
         KiloToolRegistry.extra(
@@ -415,7 +415,7 @@ describe("kilocode tool registry indexing", () => {
         "notebook_read",
         "notebook_edit",
         "notebook_execute",
-        "link_pr",
+        // kilocode_change - offline: notify_user/send_file keep-deleted; link_pr absent for non-cli clients (upstream #14679 gates it to CLI backends)
       ])
       expect(KiloToolRegistry.extra({ ...tools, semantic: undefined }, {}, flags).map((tool) => tool.id)).toEqual([
         "kilo_memory_recall",
@@ -427,7 +427,7 @@ describe("kilocode tool registry indexing", () => {
         "agent_manager",
 
         "browser_open",
-        "link_pr",
+        // kilocode_change - offline: notify_user/send_file keep-deleted; link_pr absent for non-cli clients (upstream #14679 gates it to CLI backends)
       ])
 
       process.env["KILO_CLIENT"] = "desktop"
@@ -437,7 +437,7 @@ describe("kilocode tool registry indexing", () => {
         "kilo_memory_save",
         "recall",
         "agent_manager_models",
-        "link_pr",
+        // kilocode_change - offline: notify_user/send_file keep-deleted; link_pr absent for non-cli clients (upstream #14679 gates it to CLI backends)
       ])
 
       process.env["KILO_CLIENT"] = "run"
@@ -447,7 +447,7 @@ describe("kilocode tool registry indexing", () => {
         "kilo_memory_save",
         "recall",
         "agent_manager_models",
-        "link_pr",
+        // kilocode_change - offline: notify_user/send_file keep-deleted; link_pr absent for non-cli clients (upstream #14679 gates it to CLI backends)
       ])
 
       process.env["KILO_CLIENT"] = "acp"
@@ -457,7 +457,7 @@ describe("kilocode tool registry indexing", () => {
         "kilo_memory_save",
         "recall",
         "agent_manager_models",
-        "link_pr",
+        // kilocode_change - offline: notify_user/send_file keep-deleted; link_pr absent for non-cli clients (upstream #14679 gates it to CLI backends)
       ])
       for (const client of ["cli", "vscode", "jetbrains", "desktop", "run", "acp"]) {
         process.env["KILO_CLIENT"] = client
