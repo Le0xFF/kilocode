@@ -802,7 +802,7 @@ vscode.commands.registerCommand("kilo-code.new.agentManagerOpen", () => {
     ),
   )
 
-  // Register URI handler for extension deep links (vscode://kilocode.kilo-code/kilocode/...)
+  // Register URI handler for extension deep links (vscode://kilocode.kilo-code-offline/kilocode/...)
   context.subscriptions.push(
     vscode.window.registerUriHandler({
       async handleUri(uri: vscode.Uri) {

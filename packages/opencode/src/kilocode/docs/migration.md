@@ -29,9 +29,9 @@ The migrator reads custom modes from these locations (in order, later entries ov
 
 | Platform | Path |
 |---|---|
-| macOS | `~/Library/Application Support/Code/User/globalStorage/kilocode.kilo-code/settings/custom_modes.yaml` |
-| Windows | `%APPDATA%/Code/User/globalStorage/kilocode.kilo-code/settings/custom_modes.yaml` |
-| Linux | `~/.config/Code/User/globalStorage/kilocode.kilo-code/settings/custom_modes.yaml` |
+| macOS | `~/Library/Application Support/Code/User/globalStorage/kilocode.kilo-code-offline/settings/custom_modes.yaml` |
+| Windows | `%APPDATA%/Code/User/globalStorage/kilocode.kilo-code-offline/settings/custom_modes.yaml` |
+| Linux | `~/.config/Code/User/globalStorage/kilocode.kilo-code-offline/settings/custom_modes.yaml` |
 
 ### Project Modes
 
@@ -228,9 +228,9 @@ Running from `packages/my-package/` discovers both `package-skill` and `project-
 
 | Platform | Path |
 |---|---|
-| macOS | `~/Library/Application Support/Code/User/globalStorage/kilocode.kilo-code/skills/` |
-| Windows | `%APPDATA%/Code/User/globalStorage/kilocode.kilo-code/skills/` |
-| Linux | `~/.config/Code/User/globalStorage/kilocode.kilo-code/skills/` |
+| macOS | `~/Library/Application Support/Code/User/globalStorage/kilocode.kilo-code-offline/skills/` |
+| Windows | `%APPDATA%/Code/User/globalStorage/kilocode.kilo-code-offline/skills/` |
+| Linux | `~/.config/Code/User/globalStorage/kilocode.kilo-code-offline/skills/` |
 
 ## Skill File Format
 

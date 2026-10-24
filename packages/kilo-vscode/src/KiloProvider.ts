@@ -398,7 +398,7 @@ export class KiloProvider implements vscode.WebviewViewProvider {
   private connectionGeneration = 0
   private isWebviewReady = false
   private readonly extensionVersion =
-    vscode.extensions.getExtension("kilocode.kilo-code")?.packageJSON?.version ?? "unknown"
+    vscode.extensions.getExtension("kilocode.kilo-code-offline")?.packageJSON?.version ?? "unknown"
   private cachedProvidersMessage: unknown = null
   /** Directory the cached provider payload was loaded for, so recovery is keyed to the active project. */
   private cachedProvidersDirectory: string | null = null
@@ -4924,7 +4924,7 @@ const client = this.client
     if (confirmed !== "Reset") return
 
     const prefix = "kilo-code.new."
-    const ext = vscode.extensions.getExtension("kilocode.kilo-code")
+    const ext = vscode.extensions.getExtension("kilocode.kilo-code-offline")
     const properties = ext?.packageJSON?.contributes?.configuration?.properties as Record<string, unknown> | undefined
     if (!properties) return
 
