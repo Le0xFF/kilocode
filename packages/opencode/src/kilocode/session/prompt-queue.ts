@@ -64,16 +64,14 @@ export namespace KiloSessionPromptQueue {
       () => undefined,
     )
 
-  // Read-only FIFO snapshot of the per-session waiting
-  // list. Used by replay-on-subscribe in remote-sender.ts to always emit the
-  // current queue state (including empty) to a resubscribing client.
+  // Read-only FIFO snapshot of the per-session waiting list.
   export function snapshot(sessionID: SessionID): MessageID[] {
     return [...(waiting.get(sessionID) ?? [])]
   }
 
   // Emit session.queue.changed when the waiting set
   // actually changes; suppress the redundant empty→empty transition to keep
-  // the bus quiet. Replay uses snapshot() directly so it is never affected.
+  // the bus quiet.
   const publishIfChanged = (sessionID: SessionID, next: MessageID[]) => {
     const prev = waiting.get(sessionID) ?? []
     if (prev.length === 0 && next.length === 0) return
