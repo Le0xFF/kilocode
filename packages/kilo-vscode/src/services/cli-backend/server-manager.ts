@@ -83,6 +83,16 @@ export function resolveClaudeMigrationEnv(env: NodeJS.ProcessEnv, enabled: boole
   return env.KILO_EXPERIMENTAL_CLAUDE_MIGRATION ?? String(enabled)
 }
 
+// The VSIX ships a static ripgrep next to the CLI binary; point the backend
+// at it so ripgrep resolves with zero network on offline installs. When no
+// bundled binary sits next to the CLI (dev source wrapper), the backend falls
+// back to a system rg or its bundled search path.
+export function resolveRipgrepEnv(cliPath: string): Record<string, string> {
+  const name = process.platform === "win32" ? "rg.exe" : "rg"
+  const rg = path.join(path.dirname(cliPath), name)
+  return fs.existsSync(rg) ? { KILO_RIPGREP: rg } : {}
+}
+
 export class ServerManager {
   private instance: ServerInstance | null = null
   private startupPromise: Promise<ServerInstance> | null = null
@@ -206,6 +216,7 @@ export class ServerManager {
           ...(!claudeCompat && { KILO_DISABLE_CLAUDE_CODE: "true" }),
           ...resolveTreeSitterEnv(this.context.extensionPath),
           ...bwrapEnv,
+          ...resolveRipgrepEnv(cliPath),
           ...extraEnv,
           KILO_EXPERIMENTAL_CLAUDE_MIGRATION: claudeMigration,
         },

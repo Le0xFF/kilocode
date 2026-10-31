@@ -9,6 +9,7 @@ import { cpSync, existsSync, mkdirSync, readFileSync, rmSync, readdirSync, statS
 import { tmpdir } from "node:os"
 import { join } from "node:path"
 import { createVSIX, listFiles, PackageManager } from "@vscode/vsce"
+import { ripgrepCacheDir } from "./ripgrep-helper"
 
 export type Target = {
   key: "linux" | "win32"
@@ -67,14 +68,42 @@ function isForbidden(file: string): boolean {
   return file === "bin/.cli-version" || file === "bin/.ffmpeg-target"
 }
 
-function ffmpegName(target: Target) {
-  return target.key === "win32" ? "ffmpeg.exe" : "ffmpeg"
-}
+// local-bin records each staged helper binary in process.platform spelling.
+const helperName = (file: string, target: Target) => (target.key === "win32" ? `${file}.exe` : file)
+const helperMarker = (target: Target) => (target.key === "win32" ? "win32-x64" : "linux-x64")
 
-// local-bin records the staged ffmpeg helper in process.platform spelling.
-function ffmpegMarker(target: Target) {
-  return target.key === "win32" ? "win32-x64" : "linux-x64"
-}
+// One entry per helper binary staged by local-bin.ts (ffmpeg via
+// @ffmpeg-installer, rg via the static ripgrep release). The table drives the
+// prereq existence+marker checks, the foreign-target removal list, and the
+// required VSIX file list, so per-binary knowledge stays in one place.
+const HELPER_BINARIES = [
+  {
+    file: "ffmpeg",
+    markerFile: ".kilo-ffmpeg-target",
+    missing: (target: Target) =>
+      `bin/${helperName("ffmpeg", target)} is missing (local-bin.ts stages it from @ffmpeg-installer/${helperMarker(target)}). ` +
+      `Re-run \`bun script/local-bin.ts --target ${target.localBinTarget}\` with network access if it cannot stage offline.`,
+    marker: (file: string, actual: string, target: Target) =>
+      `ffmpeg marker node_modules/${file} is "${actual}" but local-bin staged "${helperMarker(target)}". ` +
+      `local-bin.ts would now hit the network (npm pack @ffmpeg-installer/...). ` +
+      `Re-run \`bun script/local-bin.ts --target ${target.localBinTarget}\` with network, or restore the warm marker, ` +
+      `then re-run package:vsix.`,
+  },
+  {
+    file: "rg",
+    markerFile: ".kilo-rg-target",
+    missing: (target: Target) =>
+      `bin/${helperName("rg", target)} is missing (local-bin.ts stages it from the static ripgrep-15.1.0 release). Supported recovery: ` +
+      `run \`bun script/local-bin.ts --target ${target.localBinTarget}\` once on a networked machine, or carry the ` +
+      `cached release archive plus its .sha256 checksum from ${ripgrepCacheDir()} (on the networked machine) to the ` +
+      `same location on this machine, then re-run package:vsix.`,
+    marker: (file: string, actual: string, target: Target) =>
+      `ripgrep marker node_modules/${file} is "${actual}" but local-bin staged "${helperMarker(target)}". ` +
+      `local-bin.ts would now hit the network (curl of the ripgrep release). ` +
+      `Re-run \`bun script/local-bin.ts --target ${target.localBinTarget}\` with network, or restore the warm marker, ` +
+      `then re-run package:vsix.`,
+  },
+]
 
 function runLocalBin(target: Target, root: string) {
   console.log(`[pack-vsix] Staging CLI binary for ${target.localBinTarget} (no --force: never triggers a rebuild)`)
@@ -110,23 +139,15 @@ function checkPrereqs(target: Target, root: string) {
         `one-time cross-build, then re-run package:vsix.`,
     )
   }
-  const ff = ffmpegName(target)
-  if (!existsSync(join(root, "bin", ff))) {
-    fail(
-      `bin/${ff} is missing (local-bin.ts stages it from @ffmpeg-installer/${ffmpegMarker(target)}). ` +
-        `Re-run \`bun script/local-bin.ts --target ${target.localBinTarget}\` with network access if it cannot stage offline.`,
-    )
-  }
-  const marker = join(root, "node_modules", ".kilo-ffmpeg-target")
-  const expected = ffmpegMarker(target)
-  const actual = existsSync(marker) ? readFileSync(marker, "utf8").trim() : "<missing>"
-  if (actual !== expected) {
-    fail(
-      `ffmpeg marker node_modules/.kilo-ffmpeg-target is "${actual}" but local-bin staged "${expected}". ` +
-        `local-bin.ts would now hit the network (npm pack @ffmpeg-installer/...). ` +
-        `Re-run \`bun script/local-bin.ts --target ${target.localBinTarget}\` with network, or restore the warm marker, ` +
-        `then re-run package:vsix.`,
-    )
+  for (const entry of HELPER_BINARIES) {
+    if (!existsSync(join(root, "bin", helperName(entry.file, target)))) {
+      fail(entry.missing(target))
+    }
+    const marker = join(root, "node_modules", entry.markerFile)
+    const actual = existsSync(marker) ? readFileSync(marker, "utf8").trim() : "<missing>"
+    if (actual !== helperMarker(target)) {
+      fail(entry.marker(entry.markerFile, actual, target))
+    }
   }
 }
 
@@ -162,14 +183,20 @@ function buildStaging(target: Target, root: string) {
   // only this target's executables and keep every shared helper (tree-sitter,
   // sandbox relay/seccomp, bwrap, licenses) so each VSIX matches the
   // per-platform close-out artifact composition.
-  const foreign = target.key === "linux" ? ["kilo.exe", "ffmpeg.exe"] : ["kilo", "ffmpeg"]
+  const other = TARGETS.find((t) => t.key !== target.key)!
+  const foreign = [other.binary, ...HELPER_BINARIES.map((entry) => helperName(entry.file, other))]
   for (const name of foreign) rmSync(join(staging, "bin", name), { force: true })
   return staging
 }
 
 function checkFileList(target: Target, files: string[]) {
   const set = new Set(files)
-  const required = [...REQUIRED_VSIX_FILES, `bin/${target.binary}`, `bin/${ffmpegName(target)}`, "bin/tree-sitter/tree-sitter.wasm"]
+  const required = [
+    ...REQUIRED_VSIX_FILES,
+    `bin/${target.binary}`,
+    ...HELPER_BINARIES.map((entry) => `bin/${helperName(entry.file, target)}`),
+    "bin/tree-sitter/tree-sitter.wasm",
+  ]
   const missing = required.filter((f) => !set.has(f))
   const forbidden = files.filter(isForbidden)
   if (missing.length || forbidden.length) {

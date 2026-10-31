@@ -14,6 +14,7 @@ import {
 } from "../src/services/cli-backend/cli-resources"
 import { ensureBwrapForTarget } from "./bwrap-helper"
 import { ensureFfmpegForTarget } from "./ffmpeg-helper"
+import { ensureRipgrepForTarget } from "./ripgrep-helper"
 
 // The build wipes the shared opencode dist tree, so a foreign-target build (e.g. windows) loses the
 // host linux-only sandbox helpers (relay/seccomp/bwrap) that a previous host build staged in bin/.
@@ -22,6 +23,7 @@ async function restoreHostSandboxHelpers() {
   const host = hostTarget()
   if (host.os !== "linux") return
   await ensureFfmpegForTarget(`${host.os}-${host.arch}`, targetBinDir)
+  await ensureRipgrepForTarget(`${host.os}-${host.arch}`, targetBinDir)
   if (process.env.KILO_SKIP_BUNDLED_BWRAP === "1") return
   if (await sanitizeSandboxResources(targetBinDir, true)) return
   await ensureBwrapForTarget(`${host.os}-${host.arch}`)
@@ -146,6 +148,7 @@ async function cliInputs() {
     ...[...dirs].sort(),
     "packages/kilo-vscode/script/bwrap-helper.ts",
     "packages/kilo-vscode/script/ffmpeg-helper.ts",
+    "packages/kilo-vscode/script/ripgrep-helper.ts",
     "packages/kilo-vscode/script/local-bin.ts",
     "packages/kilo-vscode/src/services/cli-backend/cli-resources.ts",
   ]
@@ -340,6 +343,7 @@ async function bundleKiloSandboxWorker() {
 async function ensureLocalHelpers() {
   const helperTarget = `${cliTarget.os}-${cliTarget.arch}`
   await ensureFfmpegForTarget(helperTarget, targetBinDir)
+  await ensureRipgrepForTarget(helperTarget, targetBinDir)
   if (process.env.KILO_SKIP_BUNDLED_BWRAP === "1") return
   if (await sanitizeSandboxResources(targetBinDir, true)) return
   if (cliTarget.os !== "linux") return

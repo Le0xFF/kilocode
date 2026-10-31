@@ -94,7 +94,7 @@ describe("VSIX packaging", () => {
       await stageVsix(target, ROOT)
       const files = await listFiles({ cwd: staging, packageManager: PackageManager.None })
       const present = new Set(files)
-      const required = [...REQUIRED_VSIX_FILES, `bin/${target.binary}`, "bin/ffmpeg", "bin/tree-sitter/tree-sitter.wasm"]
+      const required = [...REQUIRED_VSIX_FILES, `bin/${target.binary}`, "bin/ffmpeg", "bin/rg", "bin/tree-sitter/tree-sitter.wasm"]
       const missing = required.filter((file) => !present.has(file))
       expect(missing, `required VSIX files missing from the staged tree: ${missing.join(", ")}`).toEqual([])
       expect(files, "nested chromium-bidi dependency copy missing").toContain("dist/node_modules/chromium-bidi/node_modules/zod/package.json")
