@@ -100,12 +100,10 @@ describe("buildCspString", () => {
     expect(result).not.toContain(`worker-src ${cspSource} blob:`)
   })
 
-  it("includes cspSource and https: in img-src", () => {
+  it("limits img-src to the webview origin and data urls", () => {
     const result = buildCspString(cspSource, nonce)
-    expect(result).toContain("img-src")
-    expect(result).toContain(cspSource)
-    expect(result).toContain("https:")
-    expect(result).toContain("data:")
+    expect(result).toContain(`img-src ${cspSource} data:`)
+    expect(result).not.toContain("https:")
   })
 
   it("uses wildcard connect-src when no port provided", () => {

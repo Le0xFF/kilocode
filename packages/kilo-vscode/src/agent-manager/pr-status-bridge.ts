@@ -90,7 +90,8 @@ export class PRStatusBridge {
       context: (message) => this.context(message),
       post: (message) => host.postToWebview(message),
       refresh: (context, settle) => {
-        if (host.projectId?.() === context.projectId) this.poller.refresh(context.worktreeId, settle)
+        // PR review/merge actions just wrote to GitHub: refresh on demand even while polling is off.
+        if (host.projectId?.() === context.projectId) this.poller.refresh(context.worktreeId, settle, true)
       },
       dirtyFiles: () => host.dirtyFiles?.() ?? [],
       conflicts: async (context, base, head) =>
@@ -151,7 +152,7 @@ export class PRStatusBridge {
     if (this.actions(m)) return true
     if (m.type === "agentManager.refreshPR") {
       if (typeof m.projectId === "string" && m.projectId !== this.host.projectId?.()) return true
-      this.poller.refresh(m.worktreeId as string)
+      this.poller.refresh(m.worktreeId as string, false, true)
       return true
     }
     if (m.type === "agentManager.openPR") {
@@ -209,7 +210,7 @@ export class PRStatusBridge {
     action(commentId, content, wt.path).then(
       () => {
         result(true)
-        if (this.host.projectId?.() === projectId) this.poller.refresh(id)
+        if (this.host.projectId?.() === projectId) this.poller.refresh(id, false, true)
       },
       (err: unknown) => {
         const message = err instanceof Error ? err.message : String(err)
@@ -279,7 +280,7 @@ export class PRStatusBridge {
       if (!task) result(false)
       task?.then(() => {
         result(true)
-        if (this.host.projectId?.() === projectId) this.poller.refresh(id)
+        if (this.host.projectId?.() === projectId) this.poller.refresh(id, false, true)
       }, fail)
     } catch (err) {
       fail(err)

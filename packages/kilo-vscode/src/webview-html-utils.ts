@@ -19,6 +19,9 @@ function joinCspDirectives(directives: string[]): string {
 
 /**
  * Build the full CSP policy string for a webview.
+ *
+ * Offline fork: `img-src` grants only the webview origin and `data:` URLs,
+ * so no webview surface can fetch remote images (avatars, markdown embeds).
  */
 export function buildCspString(
   cspSource: string,
@@ -36,7 +39,7 @@ export function buildCspString(
     `worker-src ${cspSource}`,
     `font-src ${cspSource}`,
     `connect-src ${cspSource} ${connectSrc}`,
-    `img-src ${cspSource} data: https:`,
+    `img-src ${cspSource} data:`,
     ...(frame ? [`frame-src ${frame}`] : []),
   ]
   return joinCspDirectives(directives)

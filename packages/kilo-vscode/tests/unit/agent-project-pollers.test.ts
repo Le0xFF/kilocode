@@ -81,7 +81,7 @@ function fakes() {
 }
 
 describe("ProjectPollers", () => {
-  it("starts pollers for an expanded background project", () => {
+  it("starts the stats poller but not the PR poller by default", () => {
     const extra = stored("prj-extra")
     const contexts = setup([extra])
     expand(contexts, "prj-extra")
@@ -90,7 +90,34 @@ describe("ProjectPollers", () => {
     pollers.sync(contexts)
     const rec = made.get("prj-extra")
     expect(rec).toBeDefined()
+    expect(rec!.enabled).toEqual({ stats: true, pr: false })
+  })
+
+  it("starts the PR poller for an expanded background project when polling is enabled", () => {
+    const extra = stored("prj-extra")
+    const contexts = setup([extra])
+    expand(contexts, "prj-extra")
+    const { made, create, deps } = fakes()
+    const pollers = new ProjectPollers({ ...deps, prPolling: () => true }, (ctx) => create(ctx))
+    pollers.sync(contexts)
+    const rec = made.get("prj-extra")
+    expect(rec).toBeDefined()
     expect(rec!.enabled).toEqual({ stats: true, pr: true })
+  })
+
+  it("re-applies the PR polling setting to running background pollers", () => {
+    const extra = stored("prj-extra")
+    const contexts = setup([extra])
+    expand(contexts, "prj-extra")
+    const { made, create, deps } = fakes()
+    const pollers = new ProjectPollers({ ...deps, prPolling: () => true }, (ctx) => create(ctx))
+    pollers.sync(contexts)
+    const rec = made.get("prj-extra")
+    expect(rec!.enabled.pr).toBe(true)
+    pollers.setPrPolling(false)
+    expect(rec!.enabled.pr).toBe(false)
+    pollers.setPrPolling(true)
+    expect(rec!.enabled.pr).toBe(true)
   })
 
   it("does not start pollers for the active project", () => {

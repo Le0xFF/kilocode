@@ -1155,6 +1155,12 @@
           "default": true,
           "description": "Agent Manager: when you send pull request CI failures or review comments to the agent, or update a worktree from its base, ask the agent to commit and push so the pull request updates. Permission prompts still apply. Disable to keep commits manual."
         },
+        "kilo-code.new.agentManager.prStatusPolling": {
+          "type": "boolean",
+          "default": false,
+          "scope": "application",
+          "description": "Automatically poll GitHub for PR status in Agent Manager. Requires the `gh` CLI and network access; disabled by default in the offline fork."
+        },
         "kilo-code.new.agentWorkStyle": {
           "type": "string",
           "scope": "application",

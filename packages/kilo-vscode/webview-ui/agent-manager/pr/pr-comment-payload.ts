@@ -166,21 +166,17 @@ function trimFallback(value: string): string {
 }
 
 export function prPayload(comment: PRComment): PRReviewCommentData {
-  const replies = (comment.replies ?? []).slice(0, REPLIES).map((reply) => {
-    const avatar = githubUrl(reply.avatar)
-    return {
-      author: reply.author,
-      body: clip(reply.body, BODY),
-      ...(avatar ? { avatar } : {}),
-    }
-  })
-  const avatar = githubUrl(comment.avatar)
+  // Offline fork: never put avatar URLs in the payload; the webview renders
+  // letter tiles and the bundled bot logo instead of remote images.
+  const replies = (comment.replies ?? []).slice(0, REPLIES).map((reply) => ({
+    author: reply.author,
+    body: clip(reply.body, BODY),
+  }))
   const url = githubUrl(comment.url)
   return {
     id: comment.threadId,
     origin: "pr",
     author: comment.author,
-    ...(avatar ? { avatar } : {}),
     body: clip(comment.body, BODY),
     file: comment.file,
     ...(comment.side ? { side: comment.side } : {}),

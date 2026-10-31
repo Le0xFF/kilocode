@@ -49,6 +49,8 @@ interface PollerDeps {
   visible: () => boolean
   log: (...args: unknown[]) => void
   mergeMethods?: Pick<Host, "getPRMergeMethod" | "savePRMergeMethod">
+  /** Read the PR status polling setting; absent or false keeps background PR polling off. */
+  prPolling?: () => boolean
 }
 
 /** True when the last reconcile decided this worktree cannot answer a git or gh query. */
@@ -157,7 +159,7 @@ export class ProjectPollers {
       pair.stats.setVisible(this.deps.visible())
       pair.pr.poller.setVisible(this.deps.visible())
       pair.stats.setEnabled(true)
-      pair.pr.poller.setEnabled(true)
+      pair.pr.poller.setEnabled(this.deps.prPolling?.() === true)
       this.pollers.set(snap.id, pair)
     }
     for (const [id, pair] of [...this.pollers]) {
@@ -174,6 +176,11 @@ export class ProjectPollers {
       pair.stats.setVisible(visible)
       pair.pr.poller.setVisible(visible)
     }
+  }
+
+  /** Re-apply the PR status polling setting to running background pollers. */
+  setPrPolling(enabled: boolean): void {
+    for (const pair of this.pollers.values()) pair.pr.poller.setEnabled(enabled)
   }
 
   dispose(): void {
@@ -204,6 +211,8 @@ export function createPollers(opts: {
   mergeMethods?: Pick<Host, "getPRMergeMethod" | "savePRMergeMethod">
   /** Worktrees the health reconcile says cannot answer; skipped instead of polled. */
   isUnhealthy?: (worktreeId: string) => boolean
+  /** Read the PR status polling setting; absent or false keeps background PR polling off. */
+  prPolling?: () => boolean
 }): { stats: GitStatsPoller; pr: PRStatusBridge; projects: ProjectPollers } {
   const stats = new GitStatsPoller({
     getWorktrees: () => opts.state()?.getWorktrees() ?? [],
@@ -253,6 +262,7 @@ export function createPollers(opts: {
     visible: opts.visible,
     log: opts.log,
     mergeMethods: opts.mergeMethods,
+    prPolling: opts.prPolling,
   })
   return { stats, pr, projects }
 }

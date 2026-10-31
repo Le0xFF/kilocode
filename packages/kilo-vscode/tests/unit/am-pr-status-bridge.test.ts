@@ -292,13 +292,19 @@ describe("PRStatusPoller batched GitHub queries", () => {
     const fetch = spyOn(internal, "fetchOne").mockResolvedValue(undefined)
     internal.prCache.set("/repo\0feature", { result: pr, expires: Infinity })
     internal.lastHash.set("wt1", "stale")
+    // A refresh nobody asked for (e.g. worktree recovery) only clears state while automatic
+    // polling is disabled: no fetch, so no gh spawn and no gh_missing/gh_auth toast.
     bridge.poller.refresh("wt1")
     expect(internal.prCache.size).toBe(0)
     expect(internal.lastHash.size).toBe(0)
     expect(fetch).not.toHaveBeenCalled()
+    // A manual refresh fetches even while automatic polling is disabled, so a user on the
+    // offline default can still refresh PR status on demand.
+    bridge.poller.refresh("wt1", false, true)
+    expect(fetch).toHaveBeenCalledWith("wt1", internal.generation, true)
     internal.active = true
     bridge.poller.refresh("wt1")
-    expect(fetch).toHaveBeenCalledWith("wt1", internal.generation, true)
+    expect(fetch).toHaveBeenCalledTimes(2)
   })
   it("loads checks and reviewers with one request and isolates projects and detached worktrees", async () => {
     let root = "/alpha"
@@ -646,7 +652,7 @@ describe("PRStatusBridge replies", () => {
           ...(projectId ? { projectId } : {}),
         },
       ])
-      expect(refresh).toHaveBeenCalledWith("wt1")
+      expect(refresh).toHaveBeenCalledWith("wt1", false, true)
     },
   )
 
@@ -811,7 +817,7 @@ describe("PRStatusBridge comment mutations", () => {
         success: true,
       },
     ])
-    expect(refresh).toHaveBeenCalledWith("wt1")
+    expect(refresh).toHaveBeenCalledWith("wt1", false, true)
   })
 
   it.each([

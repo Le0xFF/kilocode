@@ -459,6 +459,16 @@ panel.onDidDispose(() => {
     })
   }
 
+  prStatusPolling(): boolean {
+    return vscode.workspace.getConfiguration("kilo-code.new.agentManager").get("prStatusPolling", false)
+  }
+
+  onDidChangePRStatusPolling(cb: (enabled: boolean) => void): Disposable {
+    return vscode.workspace.onDidChangeConfiguration((e) => {
+      if (e.affectsConfiguration("kilo-code.new.agentManager.prStatusPolling")) cb(this.prStatusPolling())
+    })
+  }
+
   isTrusted(): boolean {
     return vscode.workspace.isTrusted
   }

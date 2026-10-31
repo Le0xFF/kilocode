@@ -367,7 +367,7 @@ describe("prPayload", () => {
     expect(prPayload(thread({ replies: [] })).replies).toBeUndefined()
   })
 
-  it("preserves location, resolution, and safe avatar metadata", () => {
+  it("preserves location and resolution without avatar metadata", () => {
     const value = thread({
       avatar: "https://avatar/alice",
       side: "deletions",
@@ -377,17 +377,19 @@ describe("prPayload", () => {
       resolved: true,
       replies: [{ author: "bob", body: "ok", avatar: "https://avatar/bob" }],
     })
-    expect(prPayload(value)).toEqual(
+    const payload = prPayload(value)
+    expect(payload).toEqual(
       expect.objectContaining({
-        avatar: "https://avatar/alice",
         side: "deletions",
         originalLine: 41,
         startLine: 40,
         url: "https://github.com/org/repo/pull/1#discussion_r1",
         resolved: true,
-        replies: [{ author: "bob", body: "ok", avatar: "https://avatar/bob" }],
+        replies: [{ author: "bob", body: "ok" }],
       }),
     )
+    expect(payload).not.toHaveProperty("avatar")
+    expect(payload.replies?.[0]).not.toHaveProperty("avatar")
   })
 
   it("drops unsafe URLs and avatars from the payload", () => {

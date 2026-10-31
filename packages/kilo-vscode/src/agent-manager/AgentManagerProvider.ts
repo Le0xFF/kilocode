@@ -131,6 +131,7 @@ export class AgentManagerProvider implements Disposable {
   private activity: ReturnType<typeof createWorktreeActivity>
   private unsubFont: (() => void) | undefined
   private unsubProjects: (() => void) | undefined
+  private unsubPrPolling: Disposable | undefined
   /** Scratch set returned when no active context exists; mutations are discarded. */
   private readonly staleScratch = new Set<string>()
   private readonly healthScheduler = new HealthScheduler<ProjectContext>(async (ctx) => {
@@ -300,10 +301,12 @@ export class AgentManagerProvider implements Disposable {
       openExternal: (u) => this.host.openExternal(u),
       log: (...args) => this.log(...args),
       mergeMethods: this.host,
+      prPolling: () => this.host.prStatusPolling(),
     })
     this.statsPoller = pollers.stats
     this.prBridge = pollers.pr
     this.projectPollers = pollers.projects
+    this.unsubPrPolling = this.host.onDidChangePRStatusPolling((enabled) => this.syncPrPolling(enabled))
     this.orchestration = createOrchestrationBridge({
       connectionService: this.connectionService,
       contexts: this.contexts,
@@ -1424,7 +1427,13 @@ export class AgentManagerProvider implements Disposable {
     this.syncPollerSkips()
     this.statsPoller.setEnabled(worktrees.length > 0 || this.panel !== undefined)
     // Start PR polling during state hydration so persisted badges get live status.
-    this.prBridge.poller.setEnabled(this.panel !== undefined)
+    this.prBridge.poller.setEnabled(this.panel !== undefined && this.host.prStatusPolling())
+  }
+
+  /** Re-apply the PR status polling setting to every live poller. */
+  private syncPrPolling(enabled: boolean): void {
+    this.prBridge.poller.setEnabled(this.panel !== undefined && enabled)
+    this.projectPollers.setPrPolling(enabled)
   }
 
   /** Push empty state when the folder is not a git repo or has no folder open. */
@@ -1860,6 +1869,7 @@ export class AgentManagerProvider implements Disposable {
     this.activity.dispose()
     this.unsubFont?.()
     this.unsubProjects?.()
+    this.unsubPrPolling?.dispose()
     this.unsubDestination?.()
     await this.scripts.dispose()
     this.orchestration.dispose()

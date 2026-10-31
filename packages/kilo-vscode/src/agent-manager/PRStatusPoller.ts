@@ -183,18 +183,25 @@ export class PRStatusPoller {
       .filter((id) => this.quarantine.peek(id))
   }
 
-  /** Force-refresh a specific worktree immediately, bypassing the PR cache. */
-  refresh(worktreeId: string, settle = false): void {
+  /**
+   * Force-refresh a specific worktree immediately, bypassing the PR cache.
+   *
+   * A `manual` refresh is one the user asked for (the PR panel refresh button, or a PR action that
+   * just wrote to GitHub), so it fetches even while automatic polling is disabled. Other callers
+   * (e.g. worktree recovery) only clear state here: with polling disabled nothing would serve the
+   * fetch, and spawning `gh` — or a gh_missing/gh_auth toast — for an action that never asked for
+   * PR status would be noise.
+   */
+  refresh(worktreeId: string, settle = false, manual = false): void {
     this.clearRefreshTimers(worktreeId)
     const wt = this.options.getWorktrees().find((w) => w.id === worktreeId)
     if (wt) this.prCache.delete(this.key(wt.branch, wt.path))
     this.lastHash.delete(worktreeId)
     // An explicit refresh outranks a quarantine: the user asked for this one now.
     this.quarantine.clear(worktreeId)
-    if (!this.active) return
     const generation = this.generation
-    void this.fetchOne(worktreeId, generation, true).catch(() => undefined)
-    if (!settle || !this.visible) return
+    if (this.active || manual) void this.fetchOne(worktreeId, generation, true).catch(() => undefined)
+    if (!this.active || !settle || !this.visible) return
     const delays = [2_000, 8_000]
     this.refreshTimers.set(
       worktreeId,

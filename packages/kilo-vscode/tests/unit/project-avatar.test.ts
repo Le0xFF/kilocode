@@ -28,15 +28,39 @@ describe("project avatar", () => {
     expect(origin(fs.mkdtempSync(path.join(os.tmpdir(), "avatar-")))).toBeUndefined()
   })
 
-  it("serves a cached avatar from disk as a data URL", () => {
+  it("serves a cached avatar from disk as a data URL, no matter how old", () => {
     const cache = fs.mkdtempSync(path.join(os.tmpdir(), "avatar-cache-"))
     process.env.XDG_CACHE_HOME = cache
-    fs.mkdirSync(path.join(cache, "kilo", "project-avatars"), { recursive: true })
-    fs.writeFileSync(path.join(cache, "kilo", "project-avatars", "cached-org.png"), "png")
-    expect(avatar(repo("git@github.com:Cached-Org/x.git"))).toBe(
-      `data:image/png;base64,${Buffer.from("png").toString("base64")}`,
-    )
+    const dir = path.join(cache, "kilo", "project-avatars")
+    fs.mkdirSync(dir, { recursive: true })
+    const entry = (name: string) => path.join(dir, `${name}.png`)
+    fs.writeFileSync(entry("cachedorg"), "png")
+    fs.writeFileSync(entry("staleorg"), "png")
+    const url = `data:image/png;base64,${Buffer.from("png").toString("base64")}`
+    expect(avatar(repo("git@github.com:CachedOrg/x.git"))).toBe(url)
+    fs.utimesSync(entry("staleorg"), 0, 0)
+    expect(avatar(repo("git@github.com:StaleOrg/y.git"))).toBe(url)
     expect(avatar(repo("git@gitlab.com:team/private.git"))).toBeUndefined()
+  })
+
+  it("never calls fetch and falls back to the letter tile without a cache entry", () => {
+    const cache = fs.mkdtempSync(path.join(os.tmpdir(), "avatar-offline-"))
+    const prev = process.env.XDG_CACHE_HOME
+    process.env.XDG_CACHE_HOME = cache
+    const calls: string[] = []
+    const restore = globalThis.fetch
+    globalThis.fetch = ((input: RequestInfo | URL) => {
+      calls.push(String(input))
+      throw new Error("offline")
+    }) as typeof globalThis.fetch
+    try {
+      expect(avatar(repo("git@github.com:Offline-Org/x.git"))).toBeUndefined()
+      expect(calls).toEqual([])
+    } finally {
+      globalThis.fetch = restore
+      if (prev == null) delete process.env.XDG_CACHE_HOME
+      else process.env.XDG_CACHE_HOME = prev
+    }
   })
 
   it("returns undefined instead of throwing when git config cannot be read", () => {

@@ -160,6 +160,12 @@ export interface Host {
   /** Listen for changes to the worktree pre-warming setting. */
   onDidChangeWorktreePool(cb: (enabled: boolean) => void): Disposable
 
+  /** Whether Agent Manager automatically polls GitHub for PR status. */
+  prStatusPolling(): boolean
+
+  /** Listen for changes to the PR status polling setting. */
+  onDidChangePRStatusPolling(cb: (enabled: boolean) => void): Disposable
+
   /** Read the persisted additional-project registry payload. */
   readProjects(): unknown
 
