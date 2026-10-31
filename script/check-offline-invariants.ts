@@ -2,7 +2,7 @@
 // kilocode_change - new file
 
 /**
- * Deterministic, read-only guard that asserts the 11 offline invariants (I1–I11)
+ * Deterministic, read-only guard that asserts the 18 offline invariants (I1–I18)
  * from `docs/upstream-sync.md`. It translates each invariant's grep/`ls` command
  * into a programmatic check so a future upstream sync cannot silently re-activate
  * online surface (models.dev fetch, network probes, gateway/telemetry packages,
@@ -36,6 +36,42 @@ const readText = async (rel: string): Promise<string | null> => {
   return text
 }
 
+// Strips /* ... */ blocks and // line tails so a comment enumerating a
+// pattern can never satisfy a check. String/template literal contents are
+// preserved (URL-like strings may contain //); a // inside a regex literal
+// still ends the line, which only removes code text — it can cause a rare
+// same-line miss, never a comment-satisfied false pass.
+const withoutComments = (text: string): string => {
+  let out = ""
+  let mode: "code" | "line" | "block" | '"' | "'" | "`" = "code"
+  for (let i = 0; i < text.length; i++) {
+    const c = text.charAt(i)
+    if (mode === "code") {
+      const n = text.charAt(i + 1)
+      if (c === "/" && (n === "/" || n === "*")) {
+        mode = n === "/" ? "line" : "block"
+        i++
+        continue
+      }
+      if (c === '"' || c === "'" || c === "`") mode = c
+    } else if (mode === "line") {
+      if (c !== "\n") continue
+      mode = "code"
+    } else if (mode === "block") {
+      if (c !== "*" || text.charAt(i + 1) !== "/") continue
+      mode = "code"
+      i++
+      continue
+    } else if (c === "\\") {
+      out += c + text.charAt(i + 1)
+      i++
+      continue
+    } else if (c === mode) mode = "code"
+    out += c
+  }
+  return out
+}
+
 // Tracked-file listing (mirrors check-forbidden-strings.ts scoping) so live-import
 // and workflow drift checks only ever look at files git tracks, never node_modules.
 const ls = spawnSync("git", ["ls-files", "-z"], { cwd: ROOT, encoding: "buffer" })
@@ -67,9 +103,11 @@ const fail = (id: string, name: string, detail: string) => results.push({ id, na
   if (text === null) {
     fail("I1", "models-fetch disabled at spawn", `${rel} not found`)
   } else {
-    const fn = /export function resolveManagedServerEnv\s*\(/.test(text)
-    const inject = /KILO_DISABLE_MODELS_FETCH\s*:\s*"true"/.test(text)
-    const used = /resolveManagedServerEnv\(/.test(text)
+    // Comments are stripped so a commented-out injection or call cannot satisfy the check.
+    const code = withoutComments(text)
+    const fn = /export function resolveManagedServerEnv\s*\(/.test(code)
+    const inject = /KILO_DISABLE_MODELS_FETCH\s*:\s*"true"/.test(code)
+    const used = /resolveManagedServerEnv\(/.test(code)
     if (fn && inject && used) pass("I1", "models-fetch disabled at spawn")
     else {
       const parts: string[] = []
@@ -94,8 +132,10 @@ const fail = (id: string, name: string, detail: string) => results.push({ id, na
   if (net === null || proc === null) {
     fail("I2", "offline probe zeroing", `missing ${[netRel, procRel].find((r) => (r === netRel ? net : proc) === null)}`)
   } else {
-    const netOk = /const urls = \[\]/.test(net)
-    const procOk = /["']retry["']/.test(proc)
+    // Comments are stripped: network.ts annotates the zeroing with a
+    // kilocode_change comment and processor.ts documents the "retry" fallback.
+    const netOk = /const urls = \[\]/.test(withoutComments(net))
+    const procOk = /["']retry["']/.test(withoutComments(proc))
     if (netOk && procOk) pass("I2", "offline probe zeroing")
     else {
       const parts: string[] = []
@@ -124,15 +164,17 @@ const fail = (id: string, name: string, detail: string) => results.push({ id, na
   for (const rel of markerFiles) {
     const text = await readText(rel)
     if (text === null) continue
-    if (/LOCAL_PROVIDER_IDS|inLocalSurface/.test(text)) hits++
+    if (/LOCAL_PROVIDER_IDS|inLocalSurface/.test(withoutComments(text))) hits++
   }
   const gen = await readText("packages/opencode/script/generate.ts")
-  if (hits >= 2 && gen !== null && /models-dev\.local\.json/.test(gen)) pass("I3", "provider hard-cut + local catalog")
+  // Comments are stripped: a comment naming the identifiers or the snapshot
+  // cannot count as the hard-cut being present.
+  if (hits >= 2 && gen !== null && /models-dev\.local\.json/.test(withoutComments(gen))) pass("I3", "provider hard-cut + local catalog")
   else {
     const parts: string[] = []
     if (hits < 2) parts.push(`expected LOCAL_PROVIDER_IDS/inLocalSurface in >=2 provider files, found in ${hits}`)
     if (gen === null) parts.push("packages/opencode/script/generate.ts not found")
-    else if (!/models-dev\.local\.json/.test(gen)) parts.push("generate.ts does not reference models-dev.local.json")
+    else if (!/models-dev\.local\.json/.test(withoutComments(gen))) parts.push("generate.ts does not reference models-dev.local.json")
     fail("I3", "provider hard-cut + local catalog", parts.join("; "))
   }
 }
@@ -147,8 +189,11 @@ const fail = (id: string, name: string, detail: string) => results.push({ id, na
   if (text === null) {
     fail("I4", "media-local route registered", `${rel} not found`)
   } else {
-    const importHit = /import\s*\{[^}]*MediaLocalApi[^}]*\}/.test(text)
-    const regHit = /\.addHttpApi\(\s*MediaLocalApi\s*\)/.test(text)
+    // Comments are stripped: both lines carry kilocode_change annotations
+    // and a commented-out import/registration must not satisfy the check.
+    const code = withoutComments(text)
+    const importHit = /import\s*\{[^}]*MediaLocalApi[^}]*\}/.test(code)
+    const regHit = /\.addHttpApi\(\s*MediaLocalApi\s*\)/.test(code)
     if (importHit && regHit) pass("I4", "media-local route registered")
     else {
       const parts: string[] = []
@@ -175,7 +220,10 @@ const fail = (id: string, name: string, detail: string) => results.push({ id, na
       ['BUN_ prefix strip', /startsWith\(\s*["']BUN_["']\s*\)/],
       ['NODE_OPTIONS strip', /===?\s*["']NODE_OPTIONS["']/],
     ]
-    const missing = need.filter(([, re]) => !re.test(text)).map(([label]) => label)
+    // Comments are stripped: a comment enumerating e.g. startsWith("OTEL_")
+    // cannot satisfy a strip assertion.
+    const code = withoutComments(text)
+    const missing = need.filter(([, re]) => !re.test(code)).map(([label]) => label)
     if (missing.length === 0) pass("I5", "spawn env sanitized")
     else fail("I5", "spawn env sanitized", `missing strips: ${missing.join(", ")}`)
   }
@@ -206,8 +254,9 @@ const fail = (id: string, name: string, detail: string) => results.push({ id, na
 
 // ---------------------------------------------------------------------------
 // I7 — Pruned online packages absent from disk, and zero live imports of
-// `@kilocode/kilo-gateway`. Only comment/string occurrences are allowed (they
-// annotate where the package was re-hosted); any real import statement fails.
+// `@kilocode/kilo-gateway`. Comments are stripped before matching so a
+// commented-out import cannot false-trip the absence check; string mentions
+// (which annotate where the package was re-hosted) are still tolerated.
 // ---------------------------------------------------------------------------
 {
   const dirs = ["packages/kilo-gateway", "packages/kilo-telemetry"]
@@ -217,7 +266,7 @@ const fail = (id: string, name: string, detail: string) => results.push({ id, na
   for (const file of tracked.filter((f) => f.endsWith(".ts"))) {
     const text = await readText(file)
     if (text === null) continue
-    if (liveImport.test(text)) offenders.push(file)
+    if (liveImport.test(withoutComments(text))) offenders.push(file)
   }
   if (present.length === 0 && offenders.length === 0) pass("I7", "gateway/telemetry absent, no live imports")
   else {
@@ -330,11 +379,236 @@ const fail = (id: string, name: string, detail: string) => results.push({ id, na
     fail("I11", "vsix packaging self-sufficiency", parts.join("; "))
   } else {
     const parts: string[] = []
-    if (!pack.includes("dist/node_modules/playwright-core")) parts.push("pack-vsix.ts no longer asserts dist/node_modules/playwright-core")
-    if (!pack.includes("dist/node_modules/chromium-bidi")) parts.push("pack-vsix.ts no longer asserts dist/node_modules/chromium-bidi")
+    // pack-vsix.ts is scanned with comments stripped so a comment naming the
+    // runtime cannot satisfy the assertion; .vscodeignore is not JS (comments
+    // use #), so its pattern line is matched raw.
+    const packCode = withoutComments(pack)
+    if (!packCode.includes("dist/node_modules/playwright-core")) parts.push("pack-vsix.ts no longer asserts dist/node_modules/playwright-core")
+    if (!packCode.includes("dist/node_modules/chromium-bidi")) parts.push("pack-vsix.ts no longer asserts dist/node_modules/chromium-bidi")
     if (!/^!dist\/\*\*$/m.test(ign)) parts.push(".vscodeignore missing the `!dist/**` negation line")
     if (parts.length === 0) pass("I11", "vsix packaging self-sufficiency")
     else fail("I11", "vsix packaging self-sufficiency", parts.join("; "))
+  }
+}
+
+// ---------------------------------------------------------------------------
+// I12 — VS Code 1.103 floor: engines.vscode and @types/vscode pinned to
+// ^1.103.0 in the extension manifest. Any upstream change raising the floor
+// (newer vscode APIs, @types/vscode past 1.103) must be rejected or
+// neutralized during conflict resolution; a silent bump fails here.
+// ---------------------------------------------------------------------------
+{
+  const rel = "packages/kilo-vscode/package.json"
+  const text = await readText(rel)
+  if (text === null) {
+    fail("I12", "vscode 1.103 floor", `${rel} not found`)
+  } else {
+    const pkg = JSON.parse(text) as {
+      engines?: { vscode?: string }
+      devDependencies?: Record<string, string>
+      dependencies?: Record<string, string>
+    }
+    const engine = pkg.engines?.vscode
+    const types = pkg.devDependencies?.["@types/vscode"] ?? pkg.dependencies?.["@types/vscode"]
+    const parts: string[] = []
+    if (engine !== "^1.103.0") parts.push(`engines.vscode is ${engine ?? "missing"}, expected ^1.103.0`)
+    if (types !== "^1.103.0") parts.push(`@types/vscode is ${types ?? "missing"}, expected ^1.103.0`)
+    if (parts.length === 0) pass("I12", "vscode 1.103 floor")
+    else fail("I12", "vscode 1.103 floor", parts.join("; "))
+  }
+}
+
+// ---------------------------------------------------------------------------
+// I13 — Marketplace zeroing: the four catalog fetches in marketplace/api.ts
+// are empty-list stubs (no live `fetch(` call, no quoted api.kilo endpoint —
+// the offline comment may name the old host, live code cannot), and the
+// remote skill download in skill-archive.ts fails fast before any network
+// access. During the v7.8.17 sync this surface stayed live for 20 slices.
+// ---------------------------------------------------------------------------
+{
+  const apiRel = "packages/opencode/src/kilocode/marketplace/api.ts"
+  const archiveRel = "packages/opencode/src/kilocode/marketplace/skill-archive.ts"
+  const api = await readText(apiRel)
+  const archive = await readText(archiveRel)
+  if (api === null || archive === null) {
+    fail("I13", "marketplace zeroed", `missing ${api === null ? apiRel : archiveRel}`)
+  } else {
+    const parts: string[] = []
+    // Comments are stripped first: the offline comment may name the old host,
+    // live code cannot, and a comment must not be able to satisfy a check either.
+    const apiCode = withoutComments(api)
+    if (apiCode.includes("fetch(")) parts.push(`${apiRel} contains a live fetch( call`)
+    // Quoted endpoints only, per line.
+    if (/(["'`][^"'`\n]*api\.kilo[^"'`\n]*["'`])/.test(apiCode)) parts.push(`${apiRel} references a quoted api.kilo endpoint`)
+    if (!withoutComments(archive).includes("marketplace remote skill download is disabled in the offline fork"))
+      parts.push(`${archiveRel} missing the offline fail-fast error`)
+    if (parts.length === 0) pass("I13", "marketplace zeroed")
+    else fail("I13", "marketplace zeroed", parts.join("; "))
+  }
+}
+
+// ---------------------------------------------------------------------------
+// I14 — Full env strip at spawn (extends I5): in addition to the OTEL_/BUN_/
+// NODE_OPTIONS strips, every proxy key, every well-known provider API-key
+// name, and the AWS_/VERTEX_ credential prefixes must be stripped inside
+// resolveManagedServerEnv, or the offline backend inherits credentials it
+// should not. Comments are stripped before matching so a comment that merely
+// enumerates the keys cannot satisfy the check.
+// ---------------------------------------------------------------------------
+{
+  const rel = "packages/kilo-vscode/src/services/cli-backend/server-manager.ts"
+  const text = await readText(rel)
+  if (text === null) {
+    fail("I14", "spawn env fully sanitized", `${rel} not found`)
+  } else {
+    const code = withoutComments(text)
+    const proxyKeys = ["HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY", "http_proxy", "https_proxy", "all_proxy", "NO_PROXY", "no_proxy"]
+    const providerKeys = [
+      "ANTHROPIC_API_KEY",
+      "OPENAI_API_KEY",
+      "OPENROUTER_API_KEY",
+      "GEMINI_API_KEY",
+      "GROQ_API_KEY",
+      "MISTRAL_API_KEY",
+      "TOGETHER_API_KEY",
+      "PERPLEXITY_API_KEY",
+      "CLOUDFLARE_API_KEY",
+      "COHERE_API_KEY",
+      "DEEPSEEK_API_KEY",
+      "ZAI_API_KEY",
+      "HUGGINGFACE_API_KEY",
+      "MINIMAX_API_KEY",
+      "GITHUB_TOKEN",
+      "COPILOT_GITHUB_DEVICE_ID",
+    ]
+    const prefixes = ["AWS_", "VERTEX_"]
+    const parts: string[] = []
+    const missingProxy = proxyKeys.filter((k) => !code.includes(`"${k}"`))
+    const presentProvider = providerKeys.filter((k) => code.includes(`"${k}"`))
+    const missingPrefix = prefixes.filter((k) => !code.includes(`"${k}"`))
+    if (missingProxy.length > 0) parts.push(`proxy keys not stripped: ${missingProxy.join(", ")}`)
+    if (presentProvider.length < 16) parts.push(`provider API-key strips: ${presentProvider.length}/16 present`)
+    if (missingPrefix.length > 0) parts.push(`credential prefixes not stripped: ${missingPrefix.join(", ")}`)
+    if (parts.length === 0) pass("I14", "spawn env fully sanitized", "8 proxy keys + 16 provider keys + AWS_/VERTEX_ prefixes")
+    else fail("I14", "spawn env fully sanitized", parts.join("; "))
+  }
+}
+
+// ---------------------------------------------------------------------------
+// I15 — Keep-deleted orphans absent: upstream surfaces the fork deleted that
+// must never reappear, even when upstream still modifies them.
+// ---------------------------------------------------------------------------
+{
+  const paths = [
+    "packages/opencode/src/lsp",
+    "packages/opencode/src/share",
+    "packages/opencode/src/account",
+    "packages/opencode/src/kilo-sessions",
+    "packages/opencode/src/session-hosting",
+    "packages/opencode/src/mcp/auth-telemetry.ts",
+    "packages/opencode/src/kilocode/claw",
+    "packages/opencode/src/kilocode/console",
+    "packages/opencode/src/kilocode/event-service",
+  ]
+  const present = paths.filter((p) => existsSync(abs(p)))
+  if (present.length === 0) pass("I15", "keep-deleted orphans absent")
+  else fail("I15", "keep-deleted orphans absent", `still present: ${present.join(", ")}`)
+}
+
+// ---------------------------------------------------------------------------
+// I16 — Auto-update absence: no `"/global/upgrade"` route string and no
+// `upgrade` endpoint/handler in the server surface (only removal-comment
+// mentions are allowed); the manual `kilo upgrade` CLI is unaffected.
+// ---------------------------------------------------------------------------
+{
+  const dirs = ["packages/opencode/src/server/", "packages/opencode/src/kilocode/server/"]
+  const routeString = /(["'`])\/global\/upgrade\1/
+  const endpointName = /HttpApiEndpoint\.\w+\(\s*["']upgrade["']/
+  const handlerName = /\.handle(?:Raw)?\(\s*["']upgrade["']/
+  const offenders: string[] = []
+  for (const file of tracked.filter((f) => f.endsWith(".ts") && dirs.some((d) => f.startsWith(d)))) {
+    const text = await readText(file)
+    if (text === null) continue
+    const code = withoutComments(text)
+    if (routeString.test(code) || endpointName.test(code) || handlerName.test(code)) offenders.push(file)
+  }
+  if (offenders.length === 0) pass("I16", "auto-update absent")
+  else fail("I16", "auto-update absent", `/global/upgrade surface reappeared in: ${offenders.slice(0, 5).join(", ")}`)
+}
+
+// ---------------------------------------------------------------------------
+// I17 — New automatic-egress pins: project avatars are cache-only (no fetch,
+// no github.com), the webview CSP img-src grants only the webview origin and
+// data: (no https:), Agent Manager PR status polling is off by default, and
+// the ripgrep binary resolves via KILO_RIPGREP/system/bundled path with no
+// on-demand download (no github.com, no HttpClientRequest).
+// ---------------------------------------------------------------------------
+{
+  const avatarRel = "packages/kilo-vscode/src/agent-manager/project/avatar.ts"
+  const cspRel = "packages/kilo-vscode/src/webview-html-utils.ts"
+  const pkgRel = "packages/kilo-vscode/package.json"
+  const rgRel = "packages/core/src/ripgrep/binary.ts"
+  const avatar = await readText(avatarRel)
+  const csp = await readText(cspRel)
+  const raw = await readText(pkgRel)
+  const rg = await readText(rgRel)
+  if (avatar === null || csp === null || raw === null || rg === null) {
+    const missing = [avatarRel, cspRel, pkgRel, rgRel].filter((r) =>
+      r === avatarRel ? avatar === null : r === cspRel ? csp === null : r === pkgRel ? raw === null : rg === null,
+    )
+    fail("I17", "automatic-egress pins", `missing ${missing.join(", ")}`)
+  } else {
+    const parts: string[] = []
+    // Comments are stripped so e.g. an avatar.ts doc comment mentioning
+    // github.com cannot satisfy the "no github.com" pin.
+    const avatarCode = withoutComments(avatar)
+    if (avatarCode.includes("fetch(")) parts.push(`${avatarRel} contains a live fetch( call`)
+    if (avatarCode.includes("github.com")) parts.push(`${avatarRel} references github.com`)
+    const img = withoutComments(csp)
+      .split("\n")
+      .find((line) => line.includes("img-src"))
+    if (img === undefined) parts.push(`${cspRel} has no img-src CSP line`)
+    else if (img.includes("https:")) parts.push(`${cspRel} img-src grants https: (remote images)`)
+    const pkg = JSON.parse(raw) as { contributes?: { configuration?: unknown } }
+    const configs = Array.isArray(pkg.contributes?.configuration)
+      ? pkg.contributes.configuration
+      : pkg.contributes?.configuration
+        ? [pkg.contributes.configuration]
+        : []
+    const entry = configs
+      .flatMap((cfg) => Object.entries((cfg as { properties?: Record<string, { default?: unknown }> }).properties ?? {}))
+      .find(([key]) => key === "kilo-code.new.agentManager.prStatusPolling")
+    if (entry?.[1]?.default !== false)
+      parts.push(
+        `prStatusPolling default is ${entry ? String(entry[1].default) : "missing"}, expected false${entry === undefined ? ` (${pkgRel} setting absent)` : ""}`,
+      )
+    const rgCode = withoutComments(rg)
+    if (rgCode.includes("github.com")) parts.push(`${rgRel} references github.com`)
+    if (rgCode.includes("HttpClientRequest")) parts.push(`${rgRel} references HttpClientRequest`)
+    if (parts.length === 0) pass("I17", "automatic-egress pins")
+    else fail("I17", "automatic-egress pins", parts.join("; "))
+  }
+}
+
+// ---------------------------------------------------------------------------
+// I18 — Probe short-circuit wired: SessionNetwork exports hasProbes() and the
+// offline processor short-circuits on it (immediate "retry" fallback when no
+// probe hosts exist). Without the wiring, a non-empty urls list re-activates
+// live probes even if the network.ts zeroing (I2) is re-applied.
+// ---------------------------------------------------------------------------
+{
+  const netRel = "packages/opencode/src/session/network.ts"
+  const procRel = "packages/opencode/src/kilocode/session/processor.ts"
+  const net = await readText(netRel)
+  const proc = await readText(procRel)
+  if (net === null || proc === null) {
+    fail("I18", "probe short-circuit wired", `missing ${net === null ? netRel : procRel}`)
+  } else {
+    const parts: string[] = []
+    if (!/export function hasProbes\b/.test(withoutComments(net))) parts.push(`no hasProbes() export in ${netRel}`)
+    if (!withoutComments(proc).includes("hasProbes")) parts.push(`no hasProbes short-circuit in ${procRel}`)
+    if (parts.length === 0) pass("I18", "probe short-circuit wired")
+    else fail("I18", "probe short-circuit wired", parts.join("; "))
   }
 }
 
