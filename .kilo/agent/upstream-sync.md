@@ -1,6 +1,6 @@
 ---
 name: upstream-sync
-description: Esegue UNO step del sync origin/main→leocode: merge del range assegnato, risoluzione conflitti per matrice, riapplicazione invarianti I1–I11, guard+test+smoke, report.
+description: Esegue UNO step del sync origin/main→leocode: merge del range assegnato, risoluzione conflitti per matrice, riapplicazione invarianti I1–I18, guard+test+smoke, report.
 mode: subagent
 ---
 
@@ -10,7 +10,7 @@ Eseguisci **uno solo** step di un sync `origin/main` → `leocode` nel fork offl
 
 ## Fonti operative (leggi prima di agire)
 
-- `docs/upstream-sync.md` — pre-condizioni, comandi esatti, matrice take-ours/take-theirs, verifiche post-merge I1–I11, casi limite, rollback, definizione di "sync completo". Fonte primaria.
+- `docs/upstream-sync.md` — pre-condizioni, comandi esatti, matrice take-ours/take-theirs, verifiche post-merge I1–I18, casi limite, rollback, definizione di "sync completo". Fonte primaria.
 - `PRUNE-NOTES.md` — cosa è stato rimosso dal fork e perché, vincoli strutturali (workspace list esplicita a 22 voci, patchedDependencies, zdiff3), matrice dei residui online gated, comandi validi dopo il prune.
 - `.kilo/skills/upstream-sync/SKILL.md` — checklist operativa a 10 punti che concatena i due documenti precedenti. Se disponibile nella sessione, caricala con il tool `skill` (nome `upstream-sync`); in alternativa leggila direttamente con `read`.
 - `/tmp/kilo/sync-analysis.md` (o il path indicato nel prompt) — elenco conflitti classificati per area, range SHA validati del batch corrente, dipendenze nuove classificate accettabile/rifiutabile per offline.
@@ -31,10 +31,10 @@ Se il prompt manca del range/batch, fermati e riportalo: non indovinare il delta
 2. **Niente refactoring extra**: la risoluzione conflitti è l'unico intervento sul codice. Nessun riordino, rinomina, o pulizia collaterale in file condivisi.
 3. **Marker vincenti**: nei file condivisi (superficie opencode non-kilocode) le porzioni marcate `kilocode_change` vincono sempre su quelle di theirs; dove la matrice tace e non ci sono marker, preferire la versione che mantiene l'applicazione offline.
 4. **Offline prevale sull'allineamento feature**: qualsiasi feature online di main (swarm cloud, claw/kiloclaw, gateway, telemetry, cloud sessions, session-export, indexing-worker, probe mdns) va rifiutata o neutralizzata (keep-deleted + pulizia import residui), mai riadottata parzialmente. Le feature offline-compatible vanno adottate. Ogni scarto va documentato nel report.
-5. **Invarianti I1–I11 inviolabili** (definite in `docs/upstream-sync.md`): re-applicarle dopo ogni hunch risolto (es. `resolveManagedServerEnv` in `server-manager.ts`, `const urls = []` in `session/network.ts`, hard-cut provider, route `/media-local/*`, env sanificate, workspace list esplicita, assenza `kilo-gateway`/`kilo-telemetry`).
+5. **Invarianti I1–I18 inviolabili** (definite in `docs/upstream-sync.md`): re-applicarle dopo ogni hunch risolto (es. `resolveManagedServerEnv` in `server-manager.ts`, `const urls = []` in `session/network.ts`, hard-cut provider, route `/media-local/*`, env sanificate, workspace list esplicita, assenza `kilo-gateway`/`kilo-telemetry`). In particolare I14: le 8 proxy var standard restano ereditate dallo shell in `resolveManagedServerEnv` (nessuno strip — mai reintrodurlo) e sono gestite da `buildProxyEnv` (override `http.proxy`, azzeramento con `proxySupport: "off"`); il re-applicare la funzione da `git show <tag-pre-sync>` deve portare entrambi i comportamenti.
 6. **Compila e testa prima di terminare**, in questo ordine:
    - `bun turbo typecheck` + `bun run lint` da root;
-   - guard root: `bun run script/check-workflows.ts`, `bun run script/check-forbidden-strings.ts`, `bun run script/check-md-table-padding.ts`, `bun run script/check-kilo-generated-artifacts.ts`, `bun run script/check-kilocode-duplication.ts`;
+    - guard root: `bun run script/check-workflows.ts`, `bun run script/check-forbidden-strings.ts`, `bun run script/check-md-table-padding.ts`, `bun run script/check-kilo-generated-artifacts.ts`, `bun run script/check-kilocode-duplication.ts`, `bun run check:offline` (guard deterministico invarianti I1–I18, deve uscire a 0 — include I14: proxy var ereditate, non strip);
    - da `packages/kilo-vscode/`: `bun run test:unit` (runner anti-OOM; MAI `bun test` da root) e `bun run compile` se il batch tocca SDK/bundle;
    - smoke offline: da `packages/opencode/` avviare `bun dev serve` in background, poi `curl localhost:PORT/provider` deve mostrare SOLO provider locali/configurati (nessun `kilo`, nessun gateway); kill del processo dopo.
    Risolvi gli errori introdotti dal tuo batch prima di terminare; non lasciare red.
@@ -60,8 +60,8 @@ Prodotto in Markdown, consegnato come ultimo messaggio, con questa forma:
 - aggiunte: ...
 - rifiutate: ... (ragione offline)
 
-## Invarianti I1–I11
-- evidenza grep/comando per ciascuna (pass/fail + output sintetico)
+## Invarianti I1–I18
+- evidenza grep/comando per ciascuna (pass/fail + output sintetico; per I14 includere l'output di `bun run check:offline`)
 
 ## Guard / Test / Smoke
 - typecheck: ...

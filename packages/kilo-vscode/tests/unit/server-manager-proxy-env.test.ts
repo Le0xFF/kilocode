@@ -1,6 +1,6 @@
 import { describe, it, expect, afterEach } from "bun:test"
 import * as vscode from "vscode"
-import { buildProxyEnv } from "../../src/services/cli-backend/server-manager"
+import { buildProxyEnv, resolveManagedServerEnv } from "../../src/services/cli-backend/server-manager"
 
 type Info = { globalValue?: unknown; workspaceValue?: unknown; workspaceFolderValue?: unknown }
 type WorkspaceStub = {
@@ -36,6 +36,12 @@ function stubHttpConfig(values: { proxy?: unknown; noProxy?: unknown; proxySuppo
 afterEach(() => {
   workspace.getConfiguration = originalGetConfiguration
 })
+
+// Composes the spawn env exactly like startServer(): resolveManagedServerEnv
+// first, then buildProxyEnv, so explicit VS Code proxy settings override any
+// inherited shell values.
+const composeServerEnv = (inherited: Record<string, string>) =>
+  Object.assign(resolveManagedServerEnv(inherited), buildProxyEnv())
 
 describe("buildProxyEnv", () => {
   it("returns an empty object when neither proxy nor noProxy is configured", () => {
@@ -176,5 +182,89 @@ describe("buildProxyEnv", () => {
       all_proxy: "",
       no_proxy: "",
     })
+  })
+})
+
+describe("server spawn env composition", () => {
+  it("preserves inherited proxy vars when no VS Code proxy is configured", () => {
+    stubHttpConfig({})
+    const env = composeServerEnv({
+      HTTP_PROXY: "http://127.0.0.1:3128",
+      HTTPS_PROXY: "http://proxy:8080",
+      NO_PROXY: "localhost",
+      ALL_PROXY: "socks5://proxy:1080",
+      http_proxy: "http://127.0.0.1:3129",
+      https_proxy: "http://proxy:8081",
+      all_proxy: "socks5://proxy:1081",
+      no_proxy: "127.0.0.1",
+    })
+
+    expect(env.HTTP_PROXY).toBe("http://127.0.0.1:3128")
+    expect(env.HTTPS_PROXY).toBe("http://proxy:8080")
+    expect(env.NO_PROXY).toBe("localhost")
+    expect(env.ALL_PROXY).toBe("socks5://proxy:1080")
+    expect(env.http_proxy).toBe("http://127.0.0.1:3129")
+    expect(env.https_proxy).toBe("http://proxy:8081")
+    expect(env.all_proxy).toBe("socks5://proxy:1081")
+    expect(env.no_proxy).toBe("127.0.0.1")
+  })
+
+  it("clears all inherited proxy vars when http.proxySupport is off", () => {
+    stubHttpConfig({ proxySupport: "off" })
+    const env = composeServerEnv({
+      HTTP_PROXY: "http://127.0.0.1:3128",
+      HTTPS_PROXY: "http://proxy:8080",
+      NO_PROXY: "localhost",
+      ALL_PROXY: "socks5://proxy:1080",
+      http_proxy: "http://127.0.0.1:3129",
+      https_proxy: "http://proxy:8081",
+      all_proxy: "socks5://proxy:1081",
+      no_proxy: "127.0.0.1",
+    })
+
+    expect(env.HTTP_PROXY).toBe("")
+    expect(env.HTTPS_PROXY).toBe("")
+    expect(env.NO_PROXY).toBe("")
+    expect(env.ALL_PROXY).toBe("")
+    expect(env.http_proxy).toBe("")
+    expect(env.https_proxy).toBe("")
+    expect(env.all_proxy).toBe("")
+    expect(env.no_proxy).toBe("")
+  })
+
+  it("overrides inherited proxy vars with the VS Code http.proxy setting", () => {
+    stubHttpConfig({ proxy: "http://new-proxy.example.com:3128" })
+    const env = composeServerEnv({
+      HTTP_PROXY: "http://old-proxy.example.com:3128",
+      HTTPS_PROXY: "http://old-proxy.example.com:3128",
+      ALL_PROXY: "http://old-proxy.example.com:3128",
+      http_proxy: "http://old-proxy.example.com:3128",
+      https_proxy: "http://old-proxy.example.com:3128",
+      all_proxy: "http://old-proxy.example.com:3128",
+      NO_PROXY: "old-no-proxy",
+      no_proxy: "old-no-proxy",
+    })
+
+    expect(env.HTTP_PROXY).toBe("http://new-proxy.example.com:3128")
+    expect(env.HTTPS_PROXY).toBe("http://new-proxy.example.com:3128")
+    expect(env.ALL_PROXY).toBe("http://new-proxy.example.com:3128")
+    expect(env.http_proxy).toBe("http://new-proxy.example.com:3128")
+    expect(env.https_proxy).toBe("http://new-proxy.example.com:3128")
+    expect(env.all_proxy).toBe("http://new-proxy.example.com:3128")
+    expect(env.NO_PROXY).toContain("127.0.0.1")
+    expect(env.NO_PROXY).toContain("localhost")
+    expect(env.no_proxy).toContain("127.0.0.1")
+    expect(env.no_proxy).toContain("localhost")
+  })
+
+  it("preserves distinct inherited HTTP and HTTPS proxy values when no VS Code proxy is set", () => {
+    stubHttpConfig({})
+    const env = composeServerEnv({
+      HTTP_PROXY: "http://a.example.com:3128",
+      HTTPS_PROXY: "http://b.example.com:3128",
+    })
+
+    expect(env.HTTP_PROXY).toBe("http://a.example.com:3128")
+    expect(env.HTTPS_PROXY).toBe("http://b.example.com:3128")
   })
 })

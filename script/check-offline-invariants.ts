@@ -207,7 +207,9 @@ const fail = (id: string, name: string, detail: string) => results.push({ id, na
 // ---------------------------------------------------------------------------
 // I5 — Env sanitization at spawn: OTEL_/BUN_ prefixes and NODE_OPTIONS stripped
 // inside resolveManagedServerEnv. Any single missing strip means the child
-// process inherits telemetry/proxy/toolchain env it should not.
+// process inherits telemetry/toolchain env it should not. Standard proxy vars
+// are deliberately NOT stripped here (inherited from the shell; managed by
+// buildProxyEnv) — that contract is I14.
 // ---------------------------------------------------------------------------
 {
   const rel = "packages/kilo-vscode/src/services/cli-backend/server-manager.ts"
@@ -448,12 +450,16 @@ const fail = (id: string, name: string, detail: string) => results.push({ id, na
 }
 
 // ---------------------------------------------------------------------------
-// I14 — Full env strip at spawn (extends I5): in addition to the OTEL_/BUN_/
-// NODE_OPTIONS strips, every proxy key, every well-known provider API-key
-// name, and the AWS_/VERTEX_ credential prefixes must be stripped inside
+// I14 — Env contract at spawn (extends I5): the well-known provider API-key
+// names and the AWS_/VERTEX_ credential prefixes must be stripped inside
 // resolveManagedServerEnv, or the offline backend inherits credentials it
-// should not. Comments are stripped before matching so a comment that merely
-// enumerates the keys cannot satisfy the check.
+// should not. The 8 standard proxy variables are the opposite contract: they
+// must NOT be stripped (inherited from the shell so shell-level HTTP_PROXY/
+// HTTPS_PROXY/ALL_PROXY/NO_PROXY setups work); only buildProxyEnv manages
+// them (explicit http.proxy overrides, proxySupport "off" clears). A quoted
+// proxy-key literal in this file is how a strip list would be written, so its
+// presence is treated as a regression. Comments are stripped before matching
+// so a comment enumerating keys can neither satisfy nor fake the checks.
 // ---------------------------------------------------------------------------
 {
   const rel = "packages/kilo-vscode/src/services/cli-backend/server-manager.ts"
@@ -483,14 +489,15 @@ const fail = (id: string, name: string, detail: string) => results.push({ id, na
     ]
     const prefixes = ["AWS_", "VERTEX_"]
     const parts: string[] = []
-    const missingProxy = proxyKeys.filter((k) => !code.includes(`"${k}"`))
+    const strippedProxy = proxyKeys.filter((k) => code.includes(`"${k}"`))
     const presentProvider = providerKeys.filter((k) => code.includes(`"${k}"`))
     const missingPrefix = prefixes.filter((k) => !code.includes(`"${k}"`))
-    if (missingProxy.length > 0) parts.push(`proxy keys not stripped: ${missingProxy.join(", ")}`)
+    if (strippedProxy.length > 0) parts.push(`proxy keys re-stripped (must stay inherited): ${strippedProxy.join(", ")}`)
     if (presentProvider.length < 16) parts.push(`provider API-key strips: ${presentProvider.length}/16 present`)
     if (missingPrefix.length > 0) parts.push(`credential prefixes not stripped: ${missingPrefix.join(", ")}`)
-    if (parts.length === 0) pass("I14", "spawn env fully sanitized", "8 proxy keys + 16 provider keys + AWS_/VERTEX_ prefixes")
-    else fail("I14", "spawn env fully sanitized", parts.join("; "))
+    if (parts.length === 0)
+      pass("I14", "spawn env contract", "16 provider keys + AWS_/VERTEX_ prefixes stripped; 8 proxy keys inherited (not stripped)")
+    else fail("I14", "spawn env contract", parts.join("; "))
   }
 }
 

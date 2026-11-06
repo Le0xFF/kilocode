@@ -29,8 +29,6 @@ export function resolveIndexingEnv(folders: readonly WorkspaceFolderLike[] | und
   return { KILO_DISABLE_CODEBASE_INDEXING: "vscode-no-workspace" }
 }
 
-const PROXY_KEYS = ["HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY", "http_proxy", "https_proxy", "all_proxy", "NO_PROXY", "no_proxy"] as const
-
 // Well-known online provider API keys and credential prefixes are stripped from
 // the child `kilo serve` environment so a managed (offline) backend never sees
 // them. Users who genuinely need one of these keys for a BYOK openai-compatible
@@ -63,7 +61,6 @@ export function resolveManagedServerEnv(env: NodeJS.ProcessEnv): NodeJS.ProcessE
     if (key.startsWith("OTEL_")) continue
     if (key.startsWith("BUN_")) continue
     if (key === "NODE_OPTIONS") continue
-    if ((PROXY_KEYS as readonly string[]).includes(key)) continue
     if ((PROVIDER_KEY_NAMES as readonly string[]).includes(key)) continue
     if (PROVIDER_KEY_PREFIXES.some((prefix) => key.startsWith(prefix))) continue
     out[key] = value

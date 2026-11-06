@@ -404,13 +404,13 @@ describe("server workspace helpers", () => {
     })
   })
 
-  it("strips OTEL_ and proxy env vars from the inherited environment", () => {
+  it("strips OTEL_ vars but preserves inherited proxy env vars", () => {
     const out = resolveManagedServerEnv({
       PATH: "/usr/bin",
       OTEL_EXPORTER_OTLP_ENDPOINT: "http://localhost:4318",
       OTEL_EXPORTER_OTLP_HEADERS: "key=value",
-      HTTP_PROXY: "http://proxy:8080",
-      http_proxy: "http://proxy:8080",
+      HTTP_PROXY: "http://127.0.0.1:3128",
+      http_proxy: "http://127.0.0.1:3128",
       HTTPS_PROXY: "http://proxy:8080",
       ALL_PROXY: "socks5://proxy:1080",
       NO_PROXY: "localhost",
@@ -418,13 +418,57 @@ describe("server workspace helpers", () => {
 
     expect(out).not.toHaveProperty("OTEL_EXPORTER_OTLP_ENDPOINT")
     expect(out).not.toHaveProperty("OTEL_EXPORTER_OTLP_HEADERS")
-    expect(out).not.toHaveProperty("HTTP_PROXY")
-    expect(out).not.toHaveProperty("http_proxy")
-    expect(out).not.toHaveProperty("HTTPS_PROXY")
-    expect(out).not.toHaveProperty("ALL_PROXY")
-    expect(out).not.toHaveProperty("NO_PROXY")
+    expect(out.HTTP_PROXY).toBe("http://127.0.0.1:3128")
+    expect(out.http_proxy).toBe("http://127.0.0.1:3128")
+    expect(out.HTTPS_PROXY).toBe("http://proxy:8080")
+    expect(out.ALL_PROXY).toBe("socks5://proxy:1080")
+    expect(out.NO_PROXY).toBe("localhost")
     expect(out.PATH).toBe("/usr/bin")
     expect(out.KILO_DISABLE_MODELS_FETCH).toBe("true")
+  })
+
+  it("preserves all eight proxy env vars unchanged", () => {
+    const out = resolveManagedServerEnv({
+      PATH: "/usr/bin",
+      HTTP_PROXY: "http://127.0.0.1:3128",
+      http_proxy: "http://127.0.0.1:3129",
+      HTTPS_PROXY: "http://127.0.0.1:3130",
+      https_proxy: "http://127.0.0.1:3131",
+      ALL_PROXY: "socks5://127.0.0.1:1080",
+      all_proxy: "socks5://127.0.0.1:1081",
+      NO_PROXY: "localhost",
+      no_proxy: "127.0.0.1",
+    })
+
+    expect(out.HTTP_PROXY).toBe("http://127.0.0.1:3128")
+    expect(out.http_proxy).toBe("http://127.0.0.1:3129")
+    expect(out.HTTPS_PROXY).toBe("http://127.0.0.1:3130")
+    expect(out.https_proxy).toBe("http://127.0.0.1:3131")
+    expect(out.ALL_PROXY).toBe("socks5://127.0.0.1:1080")
+    expect(out.all_proxy).toBe("socks5://127.0.0.1:1081")
+    expect(out.NO_PROXY).toBe("localhost")
+    expect(out.no_proxy).toBe("127.0.0.1")
+    expect(out.PATH).toBe("/usr/bin")
+  })
+
+  it("preserves distinct HTTP_PROXY and HTTPS_PROXY values independently", () => {
+    const out = resolveManagedServerEnv({
+      HTTP_PROXY: "http://127.0.0.1:3128",
+      HTTPS_PROXY: "http://proxy:8080",
+    })
+
+    expect(out.HTTP_PROXY).toBe("http://127.0.0.1:3128")
+    expect(out.HTTPS_PROXY).toBe("http://proxy:8080")
+  })
+
+  it("preserves ALL_PROXY when it is the only proxy var", () => {
+    const out = resolveManagedServerEnv({
+      PATH: "/usr/bin",
+      ALL_PROXY: "socks5://proxy:1080",
+    })
+
+    expect(out.ALL_PROXY).toBe("socks5://proxy:1080")
+    expect(out.PATH).toBe("/usr/bin")
   })
 
   it("strips NODE_OPTIONS and BUN_ prefixed vars from the inherited environment", () => {
