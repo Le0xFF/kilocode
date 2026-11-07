@@ -2,6 +2,8 @@
 
 Procedura di riferimento per ogni sync del fork offline verso upstream. È la fonte operativa usata da tutti gli step del piano (`.kilo/plans/…-leocode-upstream-sync-plan.md`) e dalla skill `.kilo/skills/upstream-sync/SKILL.md`; i vincoli strutturali sono in `PRUNE-NOTES.md`.
 
+**Baseline corrente del fork: v7.8.27** (sync 2026-11-07, window v7.8.17 → v7.8.27 in 8 slice S1–S8; tag locale `v7.8.27-offline`, backup tag `pre-sync-20261107`). Il sync precedente era v7.8.17 (2026-10-24, tag `v7.8.17-offline`).
+
 ## Pre-condizioni
 
 | Condizione | Verifica |
@@ -50,6 +52,8 @@ cd packages/kilo-vscode && bun run test:unit
 ```
 
 Il gate finale di packaging è `bun run compile` da `packages/kilo-vscode/` (prepare:cli-binary + prepare:sdk + bundle) seguito da `bun run package:vsix`, che si auto-verifica su `dist/node_modules` (runtime playwright) prima del pack; da eseguire quando il sync tocca SDK, bundle o packaging.
+
+**Deviazione merge-on-tag-SHA (dal sync v7.8.27, 2026-11-07)**: quando il piano fissa un tag upstream stabile come target (es. `v7.8.27`) e vieta di mergeare la punta di `origin/main` (avanzata oltre il tag), i passi 1/3/4 sopra si eseguiscono sugli **SHA dei tag** (e sugli SHA intermedi degli under-slice) al posto di `main`/`origin/main`: `git fetch origin --tags` (senza muovere `refs/heads/main`), dry-run `git merge-tree --write-tree --name-only <tag-SHA> leocode`, `git merge <tag-SHA>`. Il resto della procedura (zdiff3, `bun install`, `generate.ts`, guard, test, smoke, close-out) resta invariato, e il gate di completezza diventa `git rev-list --count leocode..<tag>` == 0.
 
 Approccio alla risoluzione: risolvere conflitto per conflitto seguendo la matrice take-ours/take-theirs; dove la matrice tace, la porzione marcata `kilocode_change` vince e, in assenza di marker, preferire la versione che mantiene l'applicazione offline. Non fare refactoring extra durante la risoluzione.
 
@@ -130,6 +134,19 @@ Ogni invariante va ri-verificata con grep dopo il merge (i path sono relativi a 
 | `check-kilocode-change` | Il guard (marker banditi in `packages/kilo-vscode/` e `packages/kilo-ui/`) era rimasto red da un merge: i commenti informativi `kilocode_change` nel package dell'estensione si riformulano togliendo il token letterale mantenendo il contesto; dal close-out 2026-10-24 il guard è verde |
 | `packageManager` = bun 1.4.4 (upstream) vs bun di sistema | La metadata `packageManager` resta quella di upstream (1.4.4) senza installazioni alternative: il bun di sistema è ora 1.4.4 (allineato al pin upstream), quindi gate e build girano sul medesimo runtime; i runtime CLI spediti nei VSIX sono stati ricompilati su bun 1.4.4. Nota per future rebuild: la fix della CA-store eMudhra esiste solo in runtime bun ≥ 1.4.4 — chi ricostruisce i binary CLI per l'uso offline con CA non standard deve usare un runtime ≥ 1.4.4 |
 
+### Casi limite emersi nel sync v7.8.17 → v7.8.27 (2026-11-07)
+
+| Caso | Gestione |
+|---|---|
+| Merge su tag SHA invece che sulla punta di `origin/main` (deviazione di piano) | `origin/main` era oltre v7.8.27 e non va mergeato: i merge passano sugli SHA dei tag (v7.8.18…v7.8.27) e sugli under-SHA intermedi; gate finale `git rev-list --count leocode..v7.8.27` == 0; `refs/heads/main` locale resta immosso |
+| Storia non lineare in criss-cross (tag v7.8.21–v7.8.23 tagliati da release branch indietro rispetto a main) | Span "delete-then-re-add": git può risolvere **silenziosamente**, senza alcun marker di conflitto, sia i keep-deleted sia i file da preservare → dopo ogni batch ri-verificare con `git diff --name-status` che i file keep-ours del fork (es. `publish.ts`, `tool-start.ts`, `MessageList.tsx`) non siano spariti e che i keep-deleted restino assenti |
+| `opencode/script/publish.ts` (S7b): hunk con dial-out verso il Docker registry (`ghcr.io/kilo-org/kilocode` buildx push) | **keep-ours**: la versione pre-sync del fork conteneva già la riga con marker `kilocode_change` (superficie rifiutata); il path è inerte nel fork (packaging offline = `script/pack-vsix.ts`, mai publish.ts) |
+| `@actions/*` devDeps (S7d) | adottati i bump `@actions/core` 3.0.1 + `@actions/github` 9.1.1 (già presenti nel fork, `packages/opencode/package.json`); rifiutati `@actions/artifact` e `@aws-sdk/client-s3` (assenti nel fork, toolchain publish pruned); adottate le root `overrides` undici per `@actions/http-client`/`@actions/github` |
+| `dependency-submission.yml` (S7c add, S8 modify) | keep-deleted: presuppone `script/kilocode/sbom/` (pruned) + package jetbrains pruned; l'allowlist `check-workflows` resta a 11 |
+| SDK gen + `openapi.json` con le route hosted (S1a/S3) | take-theirs provvisorio in ogni batch, poi `bun run script/generate.ts`: dopo i keep-deleted la rigenerazione sparisce lo snapshot delle superfici hosted |
+| Playwright runtime 1.64.1 (S7c) | bump `playwright-core`/`@playwright/test` 1.57.0/1.59 → 1.64.1; assert di `script/pack-vsix.ts` + `tests/unit/vsix-packaging.test.ts` aggiornati se pinnano la versione; il runtime resta nel payload `dist/node_modules` (I11) — auto-verificato da `package:vsix` al close-out |
+| Baseline PNG (S7c ×1 M, S7d ×8 A) | NON mergiate nelle slice: rigenerate una sola volta al close-out (questo sync: `readable-chat-420` + 8 `splash-*`, splash off-by-default → le baseline catturano gli stati che la suite renderizza); mai `git rm` in blocco su `packages/kilo-docs/` |
+
 ## Rollback
 
 Il tag `pre-sync-*` congela il HEAD di `leocode` prima del merge:
@@ -152,7 +169,7 @@ Un sync è completo quando:
 - Gli step 0–8 del piano sono completati, ciascuno approvato dall'utente prima dello step successivo.
 - Ogni step termina con codebase compilabile, eccetto lo step merge (step 2) la cui riconciliazione è completata nello step 5 — dipendenza esplicita a due step prevista dal piano.
 - Le invarianti I1–I18 sono verificate una per una: `bun run check:offline` (guard `script/check-offline-invariants.ts`, traduzione programmatica dei grep della matrice sopra) deve uscire a 0, più lo smoke offline. La matrice resta la fonte; il guard ne automatizza l'assertion post-merge.
-- `origin/main` è completamente integrata: `git rev-list --count leocode..origin/main` == 0.
+- Il target del sync è completamente integrato: `git rev-list --count leocode..<target>` == 0, dove `<target>` è il tag upstream di chiusura (es. `v7.8.27`) con la deviazione merge-on-tag-SHA sopra, oppure `origin/main` quando si mergea la punta.
 - Nessuna funzionalità online è riattivata: gateway/claw/cloud/telemetry assenti da runtime e type surface; il marketplace è **probe-zeroed** — gli endpoint `/kilocode/marketplace` (list) e `/kilocode/marketplace/install` restano registrati per stabilità di forma ma non toccano mai la rete: il fetch del catalogo `api.kilo.ai` è azzerato in `packages/opencode/src/kilocode/marketplace/api.ts` (restituisce catalogo vuoto, stile I2) e il download remoto di skill (`marketplace/skill-archive.ts` → `stageSkill`) fallisce subito con un errore offline; l'installazione locale di MCP/agent/config resta.
 - Test unit, guard CI (`check-workflows`, `check-forbidden-strings`, `check-kilo-generated-artifacts`, `check-md-table-padding`, `check-kilocode-duplication`, `check-offline-invariants`), `compile` e smoke offline sono verdi.
 - I baseline visual regression non si mergiano per batch: vengono rigenerati una sola volta alla fine del sync (step di close-out), prima del gate finale di packaging.
