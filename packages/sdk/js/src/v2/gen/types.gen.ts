@@ -3967,6 +3967,17 @@ export type UnknownError1 = {
   ref?: string
 }
 
+export type SnapshotBlockedError = {
+  _tag: "SnapshotBlockedError"
+  message: string
+}
+
+export type MechanismNotImplementedError = {
+  _tag: "MechanismNotImplementedError"
+  message: string
+  mechanism: "basic" | "digest" | "ntlm" | "kerberos"
+}
+
 export type CommandFile = {
   name: string
   description?: string
@@ -16030,6 +16041,10 @@ export type KilocodeHeapSnapshotErrors = {
    * BadRequest | InvalidRequestError
    */
   400: EffectHttpApiErrorBadRequest | InvalidRequestError
+  /**
+   * SnapshotBlockedError
+   */
+  409: SnapshotBlockedError
 }
 
 export type KilocodeHeapSnapshotError = KilocodeHeapSnapshotErrors[keyof KilocodeHeapSnapshotErrors]
@@ -16042,6 +16057,78 @@ export type KilocodeHeapSnapshotResponses = {
 }
 
 export type KilocodeHeapSnapshotResponse = KilocodeHeapSnapshotResponses[keyof KilocodeHeapSnapshotResponses]
+
+export type KilocodeProxyAuthSetData = {
+  body?: {
+    mechanism?: "basic" | "digest" | "ntlm" | "kerberos"
+    user?: string
+    password: string
+  }
+  path?: never
+  query?: {
+    directory?: string
+    workspace?: string
+  }
+  url: "/kilocode/proxy-auth/set"
+}
+
+export type KilocodeProxyAuthSetErrors = {
+  /**
+   * Bad request
+   */
+  400: BadRequestError
+  /**
+   * MechanismNotImplementedError
+   */
+  501: MechanismNotImplementedError
+}
+
+export type KilocodeProxyAuthSetError = KilocodeProxyAuthSetErrors[keyof KilocodeProxyAuthSetErrors]
+
+export type KilocodeProxyAuthSetResponses = {
+  /**
+   * Proxy auth status after set
+   */
+  200: {
+    active: boolean
+    host: string
+    mechanism: string
+  }
+}
+
+export type KilocodeProxyAuthSetResponse = KilocodeProxyAuthSetResponses[keyof KilocodeProxyAuthSetResponses]
+
+export type KilocodeProxyAuthClearData = {
+  body?: never
+  path?: never
+  query?: {
+    directory?: string
+    workspace?: string
+  }
+  url: "/kilocode/proxy-auth/clear"
+}
+
+export type KilocodeProxyAuthClearErrors = {
+  /**
+   * Bad request
+   */
+  400: BadRequestError
+}
+
+export type KilocodeProxyAuthClearError = KilocodeProxyAuthClearErrors[keyof KilocodeProxyAuthClearErrors]
+
+export type KilocodeProxyAuthClearResponses = {
+  /**
+   * Proxy auth status after clear
+   */
+  200: {
+    active: boolean
+    host: string
+    mechanism: string
+  }
+}
+
+export type KilocodeProxyAuthClearResponse = KilocodeProxyAuthClearResponses[keyof KilocodeProxyAuthClearResponses]
 
 export type KilocodeCommandFilesData = {
   body?: never

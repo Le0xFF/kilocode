@@ -1642,6 +1642,27 @@ export interface AgentManagerBrowserDevtoolsMessage {
   url: string
 }
 
+/**
+ * Proxy auth status for the Settings "Network" tab. Credential-free by
+ * contract: never carries a password, and `proxy` is display-safe — inline
+ * `user:pass` credentials are stripped before the value leaves the host.
+ */
+export interface ProxyAuthStatusLoadedMessage {
+  type: "proxyAuthStatusLoaded"
+  /** Display-safe proxy target: the effective `http.proxy` value with inline credentials stripped, or null when no proxy is active. */
+  proxy: string | null
+  /** True when the proxy URL embeds user:pass credentials. */
+  inlineCredentials: boolean
+  /** Proxy hostname (lowercased) when a proxy is configured, else null. */
+  host: string | null
+  /** Username of the effective credential, or null when none. Never a password. */
+  username: string | null
+  /** Auth mechanism of the effective credential, or null. */
+  mechanism: string | null
+  /** True when a credential is persisted in the OS keychain for this proxy. */
+  stored: boolean
+}
+
 export type ExtensionMessage =
   | {
       type: "agentManager.resolveCommentResult" | "agentManager.unresolveCommentResult"
@@ -1844,6 +1865,7 @@ export type ExtensionMessage =
   | McpAuthStateMessage
   | McpAuthResultMessage
   | McpBundlesMessage
+  | ProxyAuthStatusLoadedMessage
   | McpRemovedMessage
   | McpInstalledMessage
   | McpRemovalStateMessage

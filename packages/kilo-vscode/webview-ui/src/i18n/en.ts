@@ -708,6 +708,27 @@ export const dict = {
   "settings.language.auto": "Auto (VS Code language)",
   "settings.language.current": "Current:",
 
+  "settings.network.title": "Network",
+  "settings.network.proxy.title": "Proxy",
+  "settings.network.proxy.none": "No proxy is configured (http.proxy is empty or proxy support is off).",
+  "settings.network.inlineCredentials": "Inline credentials",
+  "settings.network.inlineCredentials.description":
+    "The http.proxy value embeds credentials, which take precedence over credentials managed here.",
+  "settings.network.credentials.title": "Credentials",
+  "settings.network.credentials.description": "Host, mechanism, and username of the credential in use; the password is never shown.",
+  "settings.network.credentials.none": "No credentials configured.",
+  "settings.network.credentials.anonymous": "anonymous",
+  "settings.network.credentials.user": "user: {{user}}",
+  "settings.network.credentials.session": "session only",
+  "settings.network.credentials.stored": "stored in OS keychain",
+  "settings.network.remember.title": "Remember credentials",
+  "settings.network.remember.description":
+    "Store the proxy credentials securely in the OS keychain. Unchecked keeps them for this session only.",
+  "settings.network.set": "Set",
+  "settings.network.clear": "Clear",
+  "settings.network.note":
+    "Basic authentication only. Digest, NTLM, and Kerberos proxies are not supported yet — run an external local forwarder and point http.proxy at it.",
+
   "common.add": "Add",
 
   "settings.notifications.sounds": "Sounds",

@@ -44,6 +44,7 @@ const ContextTab = lazy(() => import("./ContextTab"))
 const CommitMessageTab = lazy(() => import("./CommitMessageTab"))
 const ExperimentalTab = lazy(() => import("./ExperimentalTab"))
 const LanguageTab = lazy(() => import("./LanguageTab"))
+const NetworkTab = lazy(() => import("./NetworkTab"))
 const AboutKiloCodeTab = lazy(() => import("./AboutKiloCodeTab"))
 const IndexingTab = lazy(() => import("./IndexingTab"))
 const SandboxingTab = lazy(() => import("./SandboxingTab"))
@@ -471,6 +472,10 @@ const Settings: Component<SettingsProps> = (props) => {
             <Icon name="speech-bubble" />
             <span class="label">{language.t("settings.language.title")}</span>
           </Tabs.Trigger>
+          <Tabs.Trigger value="network" aria-label={language.t("settings.network.title")}>
+            <Icon name="globe" />
+            <span class="label">{language.t("settings.network.title")}</span>
+          </Tabs.Trigger>
           <Tabs.Trigger value="aboutKiloCode" aria-label={language.t("settings.aboutKiloCode.title")}>
             <Icon name="help" />
             <span class="label">{language.t("settings.aboutKiloCode.title")}</span>
@@ -547,6 +552,10 @@ const Settings: Component<SettingsProps> = (props) => {
         <Tabs.Content value="language">
           <h3>{language.t("settings.language.title")}</h3>
           <LanguageTab />
+        </Tabs.Content>
+        <Tabs.Content value="network">
+          <h3>{language.t("settings.network.title")}</h3>
+          <NetworkTab />
         </Tabs.Content>
         <Tabs.Content value="aboutKiloCode">
           <h3>{language.t("settings.aboutKiloCode.title")}</h3>

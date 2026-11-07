@@ -54,6 +54,22 @@
 
 <a href="https://youtu.be/pqGfYXgrhig"><img src="https://img.youtube.com/vi/pqGfYXgrhig/maxresdefault.jpg" alt="Watch the video" width="640" height="360"></a>
 
+## Corporate Proxy with Authentication
+
+Kilo Code talks to providers through VS Code's `http.proxy` setting. Two ways to authenticate to a corporate proxy:
+
+**Zero-config (Basic):** put the credentials inline in the proxy URL, e.g. `http.proxy` = `http://user:pass@proxy.corp:8080`. Nothing else is needed.
+
+**Kilo proxy credentials:** for proxies where you do not want the password in a VS Code setting, use the "Kilo Code: Set Proxy Credentials" palette command (or the **Network** tab in Kilo Code settings, between Language and About Kilo Code). Complementary commands: "Kilo Code: Clear Proxy Credentials" and "Kilo Code: Show Proxy Credentials Status".
+
+- Credentials are pushed to the `kilo serve` process over the authenticated loopback API and kept in that process's memory only — they never appear in any environment variable and are never written to disk. They are applied per-request via Bun fetch's per-request proxy option.
+- Storage is **session-only by default**: credentials are cleared when the window reloads. Checking "Remember credentials (store in OS keychain)" persists them in VS Code SecretStorage (OS keychain); they are re-pushed automatically on every backend (re)start.
+- "Show Proxy Credentials Status" reveals the proxy host and username only — never the password.
+
+**Supported mechanism: Basic only.** Roadmap: the CLI proxy-auth module has a scheme seam — Digest and NTLM are planned as dependency-free pure-JS backends, while Kerberos/Negotiate requires an OS-level native backend (GSSAPI/SSPI, e.g. a prebuilt libcurl binding or the `kerberos` npm package). Note that libcurl is not an NTLM option: NTLM support was removed in libcurl 8.24.0. Workaround for any unsupported scheme: run an external local forwarder (gost, squid + `ntlm_auth`, or ccproxy) and point `http.proxy` at it.
+
+**Diagnostics while credentials are active:** "Kilo Code: Take Heap Snapshot" is refused while proxy credentials are active, and you should avoid OS-level crash-dump collection in that window — heap snapshots and crash dumps can contain in-memory credentials.
+
 ## Developer Setup
 
 If you want to contribute or modify the extension locally, see the [DEVELOPMENT.md](/DEVELOPMENT.md) file for build and setup instructions.

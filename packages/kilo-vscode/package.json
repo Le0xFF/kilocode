@@ -457,6 +457,24 @@
         "category": "Kilo Code"
       },
       {
+        "command": "kilo-code.new.proxyAuth.set",
+        "title": "Set Proxy Credentials",
+        "category": "Kilo Code",
+        "commandPalette": true
+      },
+      {
+        "command": "kilo-code.new.proxyAuth.clear",
+        "title": "Clear Proxy Credentials",
+        "category": "Kilo Code",
+        "commandPalette": true
+      },
+      {
+        "command": "kilo-code.new.proxyAuth.status",
+        "title": "Show Proxy Credentials Status",
+        "category": "Kilo Code",
+        "commandPalette": true
+      },
+      {
         "command": "kilo-code.new.reload",
         "title": "Reload Config and Skills",
         "category": "Kilo Code"

@@ -207,6 +207,26 @@ export interface OpenSettingsPanelRequest {
   projectId?: string
 }
 
+/** Ask the host to re-push the proxy auth status (Settings "Network" tab). */
+export interface RequestProxyAuthStatusMessage {
+  type: "requestProxyAuthStatus"
+}
+
+/**
+ * Set proxy credentials from the Settings "Network" tab. The username and
+ * password are prompted host-side; only the remember flag crosses the webview.
+ */
+export interface SetProxyAuthMessage {
+  type: "proxyAuth.set"
+  /** Store the credential in the OS keychain instead of keeping it for this session only. */
+  remember: boolean
+}
+
+/** Clear session and stored proxy credentials. */
+export interface ClearProxyAuthMessage {
+  type: "proxyAuth.clear"
+}
+
 export interface RequestAgentManagerSettingsMessage {
   type: "requestAgentManagerSettings"
   projectId?: string
@@ -1674,6 +1694,9 @@ export type WebviewMessage =
   | OpenExternalRequest
   | OpenWebLinkRequest
   | OpenSettingsPanelRequest
+  | RequestProxyAuthStatusMessage
+  | SetProxyAuthMessage
+  | ClearProxyAuthMessage
   | RequestAgentManagerSettingsMessage
   | RequestAgentManagerSettingsBranchesMessage
   | SetAgentManagerDefaultBaseBranchMessage

@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test"
 import { APICallError } from "ai"
+import { STATUS_CODES } from "http"
 import { MessageV2 } from "@/session/message-v2"
 import { ProviderV2 } from "@opencode-ai/core/provider"
 
@@ -243,6 +244,44 @@ describe("responses api terminal frames", () => {
     const result = MessageV2.fromError(payload, { providerID: ProviderV2.ID.make("openai") })
 
     expect(MessageV2.APIError.isInstance(result)).toBe(false)
+  })
+})
+
+function proxyError(status: number) {
+  return new APICallError({
+    message: `${status} ${STATUS_CODES[status]}`,
+    url: "https://api.openai.com/v1/chat/completions",
+    requestBodyValues: {},
+    statusCode: status,
+    responseHeaders: { "content-type": "application/json" },
+    responseBody: "",
+    isRetryable: false,
+  })
+}
+
+describe("proxy authentication errors", () => {
+  test("attaches a proxy-auth hint to 407 errors", () => {
+    const error = proxyError(407)
+    const result = MessageV2.fromError(error, { providerID: ProviderV2.ID.make("openai") })
+
+    expect(MessageV2.APIError.isInstance(result)).toBe(true)
+    if (!MessageV2.APIError.isInstance(result)) throw new Error("expected APIError")
+    expect(result.data.message).toContain("Kilo Code: Set Proxy Credentials")
+    expect(result.data.message).toContain("forwarder")
+    expect(result.data.statusCode).toBe(407)
+    expect(result.data.isRetryable).toBe(false)
+  })
+
+  test("does not attach the hint to other statuses", () => {
+    for (const status of [401, 500]) {
+      const error = proxyError(status)
+      const result = MessageV2.fromError(error, { providerID: ProviderV2.ID.make("anthropic") })
+
+      expect(MessageV2.APIError.isInstance(result)).toBe(true)
+      if (!MessageV2.APIError.isInstance(result)) throw new Error("expected APIError")
+      expect(result.data.message).toBe(error.message)
+      expect(result.data.message).not.toContain("Set Proxy Credentials")
+    }
   })
 })
 

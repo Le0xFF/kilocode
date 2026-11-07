@@ -39,6 +39,11 @@ import {
   MarketplaceRemoveResult,
 } from "@/kilocode/marketplace/schema"
 import { CommandFiles } from "@/kilocode/command-files"
+import {
+  MechanismNotImplementedError,
+  ProxyAuthMechanism,
+  SnapshotBlockedError,
+} from "@/kilocode/proxy-auth"
 import { Token } from "@opencode-ai/schema/kilocode/session-drain"
 import { PendingInfo as WakeupPending } from "@opencode-ai/schema/kilocode/wakeup-event"
 
@@ -113,6 +118,18 @@ export const RetentionRunPayload = Schema.Struct({
   force: Schema.optional(Schema.Boolean),
 })
 
+export const ProxyAuthSetPayload = Schema.Struct({
+  mechanism: Schema.optional(ProxyAuthMechanism),
+  user: Schema.optional(Schema.String),
+  password: Schema.String,
+})
+
+export const ProxyAuthStatus = Schema.Struct({
+  active: Schema.Boolean,
+  host: Schema.NullOr(Schema.String),
+  mechanism: Schema.NullOr(Schema.String),
+})
+
 export const RetentionState = Schema.Struct({
   at: Schema.Number,
   scanned: Schema.Number,
@@ -144,6 +161,8 @@ export const RetentionStatus = Schema.Struct({
 
 export const KilocodePaths = {
   heapSnapshot: `${root}/heap/snapshot`,
+  proxyAuthSet: `${root}/proxy-auth/set`,
+  proxyAuthClear: `${root}/proxy-auth/clear`,
   commandFiles: `${root}/command/files`,
   removeCommand: `${root}/command/remove`,
   removeSkill: `${root}/skill/remove`,
@@ -236,12 +255,36 @@ export const KilocodeApi = HttpApi.make("kilocode")
         HttpApiEndpoint.post("heapSnapshot", KilocodePaths.heapSnapshot, {
           query: WorkspaceRoutingQuery,
           success: described(Schema.String, "Heap snapshot file path"),
-          error: HttpApiError.BadRequest,
+          error: [HttpApiError.BadRequest, SnapshotBlockedError],
         }).annotateMerge(
           OpenApi.annotations({
             identifier: "kilocode.heap.snapshot",
             summary: "Write heap snapshot",
-            description: "Write a heap snapshot for the CLI process to the log directory.",
+            description:
+              "Write a heap snapshot for the CLI process to the log directory. Refused while proxy credentials are stored in memory, because a heap dump would serialize them to disk.",
+          }),
+        ),
+        HttpApiEndpoint.post("proxyAuthSet", KilocodePaths.proxyAuthSet, {
+          query: WorkspaceRoutingQuery,
+          payload: ProxyAuthSetPayload,
+          success: described(ProxyAuthStatus, "Proxy auth status after set"),
+          error: MechanismNotImplementedError,
+        }).annotateMerge(
+          OpenApi.annotations({
+            identifier: "kilocode.proxyAuth.set",
+            summary: "Set proxy credentials",
+            description:
+              "Store mechanism-tagged proxy credentials in server process memory and apply Basic auth to the environment-configured proxy on each outbound request. Credentials are never written to process.env or disk. Mechanisms without a backend are rejected with 501.",
+          }),
+        ),
+        HttpApiEndpoint.post("proxyAuthClear", KilocodePaths.proxyAuthClear, {
+          query: WorkspaceRoutingQuery,
+          success: described(ProxyAuthStatus, "Proxy auth status after clear"),
+        }).annotateMerge(
+          OpenApi.annotations({
+            identifier: "kilocode.proxyAuth.clear",
+            summary: "Clear proxy credentials",
+            description: "Forget the in-memory proxy credentials and restore native environment proxy behavior.",
           }),
         ),
         HttpApiEndpoint.get("commandFiles", KilocodePaths.commandFiles, {

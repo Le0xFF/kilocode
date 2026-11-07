@@ -82,6 +82,14 @@ import { handleModelUsageMessage } from "./kilo-provider/model-usage"
 import { handleForkSession } from "./kilo-provider/fork-session"
 import { openConfig } from "./kilo-provider/open-config"
 import {
+  applyProxyAuth,
+  displayProxy,
+  promptProxyCredentials,
+  readEffectiveProxy,
+  runClearProxyAuth,
+} from "./commands/proxy-auth"
+import { hasEmbeddedCredentials } from "./services/cli-backend/proxy-auth"
+import {
   getWorkStylePayload,
   handleWorkStyleMessage,
   isWorkStyleSetting,
@@ -436,6 +444,8 @@ export class KiloProvider implements vscode.WebviewViewProvider {
   private cachedMcpStatusMessage: unknown = null
   /** Cached mcpBundles payload so requestMcpBundles can be served before client is ready */
   private cachedMcpBundlesMessage: unknown = null
+  /** Cached proxyAuthStatusLoaded payload so webview refreshes and late tab mounts get it immediately. */
+  private cachedProxyAuthMessage: unknown = null
   /** Ref-count of in-flight handleUpdateConfig calls; prevents fetchAndSendConfig from sending stale data */
   private pending = 0
   private configWarningsShown = false
@@ -803,6 +813,11 @@ export class KiloProvider implements vscode.WebviewViewProvider {
 
     // Always push connection state first so the UI can render appropriately.
     this.postConnectionState()
+
+    // Re-send the proxy auth status (cached) so a webview refresh keeps it.
+    void this.sendProxyAuthStatus().catch((e) =>
+      console.error("[Kilo New] KiloProvider: sendProxyAuthStatus failed:", e),
+    )
 
     // Re-send ready so the webview can recover after refresh.
     if (serverInfo) {
@@ -1351,6 +1366,21 @@ speechToTextModels: () => this.fetchAndSendSpeechToTextModels(),
           break
         case "openSettingsPanel":
           vscode.commands.executeCommand("kilo-code.new.settingsButtonClicked", message.tab, message.projectId)
+          break
+        case "requestProxyAuthStatus":
+          void this.sendProxyAuthStatus().catch((e) =>
+            console.error("[Kilo New] KiloProvider: sendProxyAuthStatus failed:", e),
+          )
+          break
+        case "proxyAuth.set":
+          void this.handleProxyAuthSet(message.remember === true).catch((e) =>
+            console.error("[Kilo New] KiloProvider: proxyAuth.set failed:", e),
+          )
+          break
+        case "proxyAuth.clear":
+          void this.handleProxyAuthClear().catch((e) =>
+            console.error("[Kilo New] KiloProvider: proxyAuth.clear failed:", e),
+          )
           break
         case "openVSCodeSettings":
           vscode.commands.executeCommand("workbench.action.openSettings", message.query)
@@ -3086,6 +3116,52 @@ const client = this.client
     } catch (error) {
       console.error("[Kilo New] KiloProvider: Failed to fetch MCP bundles:", error)
     }
+  }
+
+  /**
+   * Push the credential-free proxy auth status to the webview, caching it so
+   * refreshes and late tab mounts get it immediately. The proxy value is
+   * display-safe: inline credentials are stripped before it leaves the host.
+   */
+  private async sendProxyAuthStatus(): Promise<void> {
+    const state = this.connectionService.proxyAuthState()
+    if (!state) return
+    const status = await state.status()
+    const display = displayProxy(status.proxy)
+    this.cachedProxyAuthMessage = {
+      type: "proxyAuthStatusLoaded",
+      proxy: display.target,
+      inlineCredentials: display.inline,
+      host: status.host,
+      username: status.username,
+      mechanism: status.mechanism,
+      stored: status.stored,
+    }
+    this.postMessage(this.cachedProxyAuthMessage)
+  }
+
+  /** Settings "Set": prompt host-side (the password never crosses the webview) and apply the panel's remember flag. */
+  private async handleProxyAuthSet(remember: boolean): Promise<void> {
+    const state = this.connectionService.proxyAuthState()
+    if (!state) return
+    const proxy = readEffectiveProxy()
+    if (proxy === null) {
+      vscode.window.showInformationMessage("Set the `http.proxy` setting first")
+    } else if (hasEmbeddedCredentials(proxy)) {
+      vscode.window.showInformationMessage("Inline credentials in `http.proxy` are in use; stored credentials are ignored")
+    } else {
+      const cred = await promptProxyCredentials()
+      if (cred) await applyProxyAuth(state, this.connectionService, { user: cred.user, password: cred.password, remember })
+    }
+    await this.sendProxyAuthStatus()
+  }
+
+  /** Settings "Clear": drop session and stored credentials, push, and re-send the status. */
+  private async handleProxyAuthClear(): Promise<void> {
+    const state = this.connectionService.proxyAuthState()
+    if (!state) return
+    await runClearProxyAuth(state, this.connectionService)
+    await this.sendProxyAuthStatus()
   }
 
   private async handleMemoryMessage(message: Record<string, unknown>): Promise<boolean> {

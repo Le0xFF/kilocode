@@ -66,6 +66,7 @@ export const SETTINGS_TABS: SettingsTab[] = [
     conditional: true,
   },
   { id: "language", titleKey: "settings.language.title", keywords: ["locale", "translation"] },
+  { id: "network", titleKey: "settings.network.title", keywords: ["proxy", "authentication", "keychain"] },
   { id: "aboutKiloCode", titleKey: "settings.aboutKiloCode.title", keywords: ["version", "update", "support"] },
 ]
 
@@ -87,6 +88,7 @@ const GROUP_TABS: Record<string, string> = {
   indexing: "indexing",
   language: "language",
   models: "models",
+  network: "network",
   notifications: "notifications",
   permissions: "autoApprove",
   providers: "models",

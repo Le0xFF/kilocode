@@ -87,7 +87,13 @@ export function fallback(body: Frame, responseBody: string) {
 const AUTH_ERROR =
   "Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/identity/sign-in/web/devconsole-project."
 
+// Client-neutral guidance for HTTP 407 (Proxy Authentication Required), e.g. when
+// the first provider call hits an auth proxy before pushed credentials arrive
+const PROXY_AUTH =
+  "Your proxy requires authentication (HTTP 407). In VS Code, run the Kilo Code: Set Proxy Credentials command (or the Network tab in Kilo Code settings), or embed user:pass@ inline in http.proxy. In the CLI, embed Basic credentials in HTTP(S)_PROXY. Only Basic auth is supported; for Digest, NTLM, or Kerberos proxies, use an external local forwarder."
+
 export function hint(provider: ProviderV2.ID, error: APICallError) {
+  if (error.statusCode === 407) return PROXY_AUTH
   if (provider !== ProviderV2.ID.make("google")) return
   if (error.statusCode !== 401) return
   if (error.message !== AUTH_ERROR) return

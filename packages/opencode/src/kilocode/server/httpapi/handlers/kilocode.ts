@@ -41,6 +41,7 @@ import { Location } from "@opencode-ai/core/location"
 import { LocationServiceMap } from "@opencode-ai/core/location-services"
 import { AbsolutePath } from "@opencode-ai/core/schema"
 import { InstanceStore } from "@/project/instance-store"
+import * as ProxyAuth from "@/kilocode/proxy-auth"
 import { InstanceHttpApi } from "@/server/routes/instance/httpapi/api"
 import { ConflictError, InvalidRequestError, UnknownError } from "@/server/routes/instance/httpapi/errors"
 import { Database } from "@opencode-ai/core/database/database"
@@ -76,6 +77,7 @@ import {
   BackgroundJobInfo,
   BackgroundJobsQuery,
   SessionBoardQuery,
+  ProxyAuthSetPayload,
   ResetSessionBoardPayload,
   RetentionRunPayload,
 } from "../groups/kilocode"
@@ -220,7 +222,48 @@ export const kilocodeHandlers = HttpApiBuilder.group(InstanceHttpApi, "kilocode"
     })
 
     const heapSnapshot = Effect.fn("KilocodeHttpApi.heapSnapshot")(function* () {
+      if (ProxyAuth.State.active())
+        return yield* Effect.fail(
+          new ProxyAuth.SnapshotBlockedError({
+            message:
+              "Refusing heap snapshot while proxy credentials are active: the dump would serialize in-memory credentials to disk. Clear proxy auth (POST /kilocode/proxy-auth/clear) first.",
+          }),
+        )
       return yield* Effect.sync(() => HeapSnapshot.write())
+    })
+
+    const proxyAuthStatus = Effect.fn("KilocodeHttpApi.proxyAuthStatus")(function* () {
+      const creds = ProxyAuth.State.peek()
+      return {
+        active: creds !== undefined,
+        host: ProxyAuth.proxyHost(),
+        mechanism: creds?.mechanism ?? null,
+      }
+    })
+
+    const proxyAuthSet = Effect.fn("KilocodeHttpApi.proxyAuthSet")(function* (ctx: {
+      payload: typeof ProxyAuthSetPayload.Type
+    }) {
+      const creds: ProxyAuth.ProxyCredentials = {
+        mechanism: ctx.payload.mechanism ?? "basic",
+        user: ctx.payload.user,
+        password: ctx.payload.password,
+      }
+      try {
+        ProxyAuth.State.set(creds)
+      } catch (err) {
+        if (err instanceof ProxyAuth.UnsupportedMechanismError)
+          return yield* Effect.fail(
+            new ProxyAuth.MechanismNotImplementedError({ message: err.message, mechanism: creds.mechanism }),
+          )
+        return yield* Effect.die(err)
+      }
+      return yield* proxyAuthStatus()
+    })
+
+    const proxyAuthClear = Effect.fn("KilocodeHttpApi.proxyAuthClear")(function* () {
+      ProxyAuth.State.clear()
+      return yield* proxyAuthStatus()
     })
 
     const commandFiles = Effect.fn("KilocodeHttpApi.commandFiles")(function* () {
@@ -596,6 +639,8 @@ export const kilocodeHandlers = HttpApiBuilder.group(InstanceHttpApi, "kilocode"
       .handle("sessionBoard", sessionBoard)
       .handle("resetSessionBoard", resetSessionBoard)
       .handle("heapSnapshot", heapSnapshot)
+      .handle("proxyAuthSet", proxyAuthSet)
+      .handle("proxyAuthClear", proxyAuthClear)
       .handle("commandFiles", commandFiles)
       .handle("removeCommand", removeCommand)
       .handle("removeSkill", removeSkill)

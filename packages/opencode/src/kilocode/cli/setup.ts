@@ -71,6 +71,11 @@ export namespace KiloCli {
     if (info) return
     narrow = workerTui(opts)
 
+    // Install the proxy-auth fetch wrapper before any command handler runs, so
+    // it precedes every fetch binding captured from globalThis.fetch.
+    const { initProxyAuth } = await import("@/kilocode/proxy-auth")
+    initProxyAuth()
+
     const { KiloLog } = await import("@/kilocode/log")
     await KiloLog.init()
 

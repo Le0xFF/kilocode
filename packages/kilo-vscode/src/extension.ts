@@ -32,6 +32,8 @@ import { registerCodeActions, registerTerminalActions, KiloCodeActionProvider } 
 import { closeTaskTarget, SurfaceFocus } from "./commands/close-task-target"
 import { registerToggleAutoApprove } from "./commands/toggle-auto-approve"
 import { registerHeapSnapshot } from "./commands/heap-snapshot"
+import { registerProxyAuthCommands, readEffectiveProxy } from "./commands/proxy-auth"
+import { ProxyAuthState } from "./services/cli-backend/proxy-auth-state"
 import { markWorkspace } from "./util/spotlight"
 import { createNotebookBridge } from "./services/notebook"
 import { createGitExecutable } from "./util/git-executable"
@@ -83,11 +85,16 @@ export async function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(vscode.window.onDidChangeActiveColorTheme(() => browserBroker.retheme()))
 
 
+  // Shared proxy-auth credential state (session-only by default; stored in the
+  // OS keychain only when the user opts in). One instance for the whole window.
+  const proxyAuthState = new ProxyAuthState(context.secrets, readEffectiveProxy)
+
   // Create shared connection service (one server for all webviews)
   const connectionService = new KiloConnectionService(
     context,
     () => browserBroker.env(),
     (dir): Promise<void> => browserAutomationService.ready(dir),
+    proxyAuthState,
   )
 
   // One MCP OAuth sign-in service for the whole extension (sidebar, Kilo tabs, Settings, Marketplace).
@@ -822,6 +829,9 @@ vscode.commands.registerCommand("kilo-code.new.agentManagerOpen", () => {
   registerCommitMessageService(context, connectionService)
 
   registerHeapSnapshot(context, connectionService)
+
+  // Proxy authentication: set / clear / status from the Command Palette.
+  registerProxyAuthCommands(context, connectionService, proxyAuthState)
 
   context.subscriptions.push(
     vscode.commands.registerCommand("kilo-code.new.reload", () => {

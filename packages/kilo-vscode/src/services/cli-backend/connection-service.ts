@@ -7,6 +7,8 @@ import { createDuplicateEventFilter, resolveEventSessionId as resolveEventSessio
 import { SandboxPreference } from "../sandbox-preference"
 import { ExplicitAbortState } from "./explicit-abort"
 import type { PermissionResponseResult } from "../../kilo-provider/handlers/permission-handler"
+import type { ProxyAuthState } from "./proxy-auth-state"
+import { isProxyAuthKey } from "./proxy-auth"
 
 export type ConnectionState = "connecting" | "connected" | "disconnected" | "error"
 type SSEEventListener = (event: SSEPayload, directory?: string) => void
@@ -68,6 +70,15 @@ function sameSet(a: Set<string>, b: Set<string>): boolean {
   return true
 }
 
+/** True for the backend's 501 "mechanism not supported" response (forward-compat guard). */
+function isMechanismUnsupported(err: unknown): boolean {
+  if (!err || typeof err !== "object") return false
+  const obj = err as Record<string, unknown>
+  if (obj._tag === "MechanismNotImplementedError") return true
+  if (obj.status === 501) return true
+  return false
+}
+
 // Poll /global/health every 10 seconds.
 // This provides a second detection channel for server death independent of the SSE heartbeat.
 const HEALTH_POLL_INTERVAL_MS = 10_000
@@ -98,6 +109,9 @@ export class KiloConnectionService {
   private config: ServerConfig | null = null
   private state: ConnectionState = "disconnected"
   private error: Error | null = null
+  /** Proxy credential state pushed to the backend; null when not wired. */
+  private proxyAuth: ProxyAuthState | null = null
+  private secretsChangeDisposable: vscode.Disposable | null = null
   private connectPromise: Promise<void> | null = null
   private healthPollTimer: ReturnType<typeof setInterval> | null = null
 
@@ -157,6 +171,7 @@ export class KiloConnectionService {
     context: vscode.ExtensionContext,
     env?: () => Promise<Record<string, string>>,
     private readonly prepare?: (directory: string) => Promise<void>,
+    proxyAuth?: ProxyAuthState,
   ) {
     const state =
       context.workspaceState ??
@@ -171,6 +186,14 @@ export class KiloConnectionService {
       this.active = ws.focused
       this.flushViewed()
     })
+    // Re-sync proxy credentials when a secret we own is edited externally
+    // (e.g. removed from the OS keychain). No-op until a state is wired in.
+    this.proxyAuth = proxyAuth ?? null
+    if (proxyAuth) {
+      this.secretsChangeDisposable = context.secrets.onDidChange((e) => {
+        if (e && isProxyAuthKey(e.key)) void this.syncProxyAuth()
+      })
+    }
   }
 
   /**
@@ -270,6 +293,20 @@ export class KiloConnectionService {
    */
   getConnectionError(): Error | null {
     return this.error
+  }
+
+  /**
+   * Push the current effective proxy credential to the backend (or clear it).
+   * No-op when no credential state is wired or the client is not connected;
+   * a connected backend re-syncs automatically on the next successful connect.
+   */
+  async pushProxyAuth(): Promise<void> {
+    await this.syncProxyAuth()
+  }
+
+  /** The shared proxy credential state, or null when no state is wired. */
+  proxyAuthState(): ProxyAuthState | null {
+    return this.proxyAuth
   }
 
   /**
@@ -884,6 +921,9 @@ notifyMigrationComplete(): void {
     }
     this.windowStateDisposable?.dispose()
     this.windowStateDisposable = null
+    this.secretsChangeDisposable?.dispose()
+    this.secretsChangeDisposable = null
+    this.proxyAuth = null
     this.viewedDirty = false
     this.client = null
     this.sseClient = null
@@ -1059,6 +1099,33 @@ notifyMigrationComplete(): void {
     this.startCheckin()
     // Start the independent health poll once we are confirmed connected.
     this.startHealthPoll(config.baseUrl, config.password)
+    // Re-push any persisted proxy credentials now that the backend is live.
+    void this.syncProxyAuth()
+  }
+
+  /**
+   * Sync the proxy credential to the backend: push the effective credential
+   * (session-only first, then stored) or clear when there is none. Tolerates a
+   * not-yet-ready client and swallows a 501 "mechanism not supported" response.
+   * Never logs passwords or proxy URLs.
+   */
+  private async syncProxyAuth(): Promise<void> {
+    const state = this.proxyAuth
+    if (state === null) return
+    const client = this.client
+    if (!client || this.state !== "connected") return
+    const cred = await state.effective()
+    const result = cred
+      ? await client.kilocode.proxyAuth.set({
+          mechanism: cred.mechanism as "basic" | "digest" | "ntlm" | "kerberos",
+          user: cred.user,
+          password: cred.password,
+        })
+      : await client.kilocode.proxyAuth.clear()
+    const error = (result as { error?: unknown }).error
+    if (error && !isMechanismUnsupported(error)) {
+      console.warn("[Kilo New] ConnectionService: proxy auth sync failed")
+    }
   }
 
   private broadcast(event: SSEPayload, directory?: string): void {

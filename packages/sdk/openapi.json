@@ -13286,14 +13286,193 @@
                 }
               }
             }
+          },
+          "409": {
+            "description": "SnapshotBlockedError",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SnapshotBlockedError"
+                }
+              }
+            }
           }
         },
-        "description": "Write a heap snapshot for the CLI process to the log directory.",
+        "description": "Write a heap snapshot for the CLI process to the log directory. Refused while proxy credentials are stored in memory, because a heap dump would serialize them to disk.",
         "summary": "Write heap snapshot",
         "x-codeSamples": [
           {
             "lang": "js",
             "source": "import { createKiloClient } from \"@kilocode/sdk\"\n\nconst client = createKiloClient()\nawait client.kilocode.heap.snapshot({\n  ...\n})"
+          }
+        ]
+      }
+    },
+    "/kilocode/proxy-auth/set": {
+      "post": {
+        "tags": ["kilocode"],
+        "operationId": "kilocode.proxyAuth.set",
+        "parameters": [
+          {
+            "name": "directory",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "required": false
+          },
+          {
+            "name": "workspace",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Proxy auth status after set",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "active": {
+                      "type": "boolean"
+                    },
+                    "host": {
+                      "type": "string"
+                    },
+                    "mechanism": {
+                      "type": "string"
+                    }
+                  },
+                  "required": ["active", "host", "mechanism"],
+                  "additionalProperties": false,
+                  "description": "Proxy auth status after set"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestError"
+                }
+              }
+            }
+          },
+          "501": {
+            "description": "MechanismNotImplementedError",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MechanismNotImplementedError"
+                }
+              }
+            }
+          }
+        },
+        "description": "Store mechanism-tagged proxy credentials in server process memory and apply Basic auth to the environment-configured proxy on each outbound request. Credentials are never written to process.env or disk. Mechanisms without a backend are rejected with 501.",
+        "summary": "Set proxy credentials",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "mechanism": {
+                    "type": "string",
+                    "enum": ["basic", "digest", "ntlm", "kerberos"]
+                  },
+                  "user": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  }
+                },
+                "required": ["password"],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "js",
+            "source": "import { createKiloClient } from \"@kilocode/sdk\"\n\nconst client = createKiloClient()\nawait client.kilocode.proxyAuth.set({\n  ...\n})"
+          }
+        ]
+      }
+    },
+    "/kilocode/proxy-auth/clear": {
+      "post": {
+        "tags": ["kilocode"],
+        "operationId": "kilocode.proxyAuth.clear",
+        "parameters": [
+          {
+            "name": "directory",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "required": false
+          },
+          {
+            "name": "workspace",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Proxy auth status after clear",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "active": {
+                      "type": "boolean"
+                    },
+                    "host": {
+                      "type": "string"
+                    },
+                    "mechanism": {
+                      "type": "string"
+                    }
+                  },
+                  "required": ["active", "host", "mechanism"],
+                  "additionalProperties": false,
+                  "description": "Proxy auth status after clear"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestError"
+                }
+              }
+            }
+          }
+        },
+        "description": "Forget the in-memory proxy credentials and restore native environment proxy behavior.",
+        "summary": "Clear proxy credentials",
+        "x-codeSamples": [
+          {
+            "lang": "js",
+            "source": "import { createKiloClient } from \"@kilocode/sdk\"\n\nconst client = createKiloClient()\nawait client.kilocode.proxyAuth.clear({\n  ...\n})"
           }
         ]
       }
@@ -37965,6 +38144,38 @@
           }
         },
         "required": ["_tag", "message"],
+        "additionalProperties": false
+      },
+      "SnapshotBlockedError": {
+        "type": "object",
+        "properties": {
+          "_tag": {
+            "type": "string",
+            "enum": ["SnapshotBlockedError"]
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": ["_tag", "message"],
+        "additionalProperties": false
+      },
+      "MechanismNotImplementedError": {
+        "type": "object",
+        "properties": {
+          "_tag": {
+            "type": "string",
+            "enum": ["MechanismNotImplementedError"]
+          },
+          "message": {
+            "type": "string"
+          },
+          "mechanism": {
+            "type": "string",
+            "enum": ["basic", "digest", "ntlm", "kerberos"]
+          }
+        },
+        "required": ["_tag", "message", "mechanism"],
         "additionalProperties": false
       },
       "CommandFile": {

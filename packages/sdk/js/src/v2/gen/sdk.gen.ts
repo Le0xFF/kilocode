@@ -186,6 +186,10 @@ import type {
   KilocodeProviderUsageGetResponses,
   KilocodeProviderUsageRefreshErrors,
   KilocodeProviderUsageRefreshResponses,
+  KilocodeProxyAuthClearErrors,
+  KilocodeProxyAuthClearResponses,
+  KilocodeProxyAuthSetErrors,
+  KilocodeProxyAuthSetResponses,
   KilocodeRemoveAgentErrors,
   KilocodeRemoveAgentResponses,
   KilocodeRemoveCommandErrors,
@@ -6538,7 +6542,7 @@ export class Heap extends HeyApiClient {
   /**
    * Write heap snapshot
    *
-   * Write a heap snapshot for the CLI process to the log directory.
+   * Write a heap snapshot for the CLI process to the log directory. Refused while proxy credentials are stored in memory, because a heap dump would serialize them to disk.
    */
   public snapshot<ThrowOnError extends boolean = false>(
     parameters?: {
@@ -6564,6 +6568,87 @@ export class Heap extends HeyApiClient {
       ThrowOnError
     >({
       url: "/kilocode/heap/snapshot",
+      ...options,
+      ...params,
+    })
+  }
+}
+
+export class ProxyAuth extends HeyApiClient {
+  /**
+   * Set proxy credentials
+   *
+   * Store mechanism-tagged proxy credentials in server process memory and apply Basic auth to the environment-configured proxy on each outbound request. Credentials are never written to process.env or disk. Mechanisms without a backend are rejected with 501.
+   */
+  public set<ThrowOnError extends boolean = false>(
+    parameters: {
+      directory?: string
+      workspace?: string
+      mechanism?: "basic" | "digest" | "ntlm" | "kerberos"
+      user?: string
+      password: string
+    },
+    options?: Options<never, ThrowOnError>,
+  ) {
+    const params = buildClientParams(
+      [parameters],
+      [
+        {
+          args: [
+            { in: "query", key: "directory" },
+            { in: "query", key: "workspace" },
+            { in: "body", key: "mechanism" },
+            { in: "body", key: "user" },
+            { in: "body", key: "password" },
+          ],
+        },
+      ],
+    )
+    return (options?.client ?? this.client).post<
+      KilocodeProxyAuthSetResponses,
+      KilocodeProxyAuthSetErrors,
+      ThrowOnError
+    >({
+      url: "/kilocode/proxy-auth/set",
+      ...options,
+      ...params,
+      headers: {
+        "Content-Type": "application/json",
+        ...options?.headers,
+        ...params.headers,
+      },
+    })
+  }
+
+  /**
+   * Clear proxy credentials
+   *
+   * Forget the in-memory proxy credentials and restore native environment proxy behavior.
+   */
+  public clear<ThrowOnError extends boolean = false>(
+    parameters?: {
+      directory?: string
+      workspace?: string
+    },
+    options?: Options<never, ThrowOnError>,
+  ) {
+    const params = buildClientParams(
+      [parameters],
+      [
+        {
+          args: [
+            { in: "query", key: "directory" },
+            { in: "query", key: "workspace" },
+          ],
+        },
+      ],
+    )
+    return (options?.client ?? this.client).post<
+      KilocodeProxyAuthClearResponses,
+      KilocodeProxyAuthClearErrors,
+      ThrowOnError
+    >({
+      url: "/kilocode/proxy-auth/clear",
       ...options,
       ...params,
     })
@@ -8224,6 +8309,11 @@ export class Kilocode extends HeyApiClient {
   private _heap?: Heap
   get heap(): Heap {
     return (this._heap ??= new Heap({ client: this.client }))
+  }
+
+  private _proxyAuth?: ProxyAuth
+  get proxyAuth(): ProxyAuth {
+    return (this._proxyAuth ??= new ProxyAuth({ client: this.client }))
   }
 
   private _marketplace?: Marketplace
