@@ -491,19 +491,27 @@ panel.onDidDispose(() => {
     else void vscode.window.showErrorMessage(msg)
   }
 
+  async withProgress<T>(
+    title: string,
+    task: (cancelled: () => boolean, report: (message: string) => void) => Promise<T>,
+    opts?: { cancellable?: boolean },
+  ): Promise<T> {
+    return await vscode.window.withProgress(
+      { location: vscode.ProgressLocation.Notification, title, cancellable: opts?.cancellable ?? true },
+      (progress, token) =>
+        task(
+          () => token.isCancellationRequested,
+          (message) => progress.report({ message }),
+        ),
+    )
+  }
+
   revealInOS(path: string): void {
     if (vscode.env.remoteName) {
       console.warn(`[Kilo New] Cannot reveal ${path} in the OS file manager on a remote workspace`)
       return
     }
     void vscode.commands.executeCommand("revealFileInOS", vscode.Uri.file(path))
-  }
-
-  async withProgress<T>(title: string, task: (cancelled: () => boolean) => Promise<T>): Promise<T> {
-    return await vscode.window.withProgress(
-      { location: vscode.ProgressLocation.Notification, title, cancellable: true },
-      (_progress, token) => task(() => token.isCancellationRequested),
-    )
   }
 
   async openDocument(path: string): Promise<void> {

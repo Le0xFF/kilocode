@@ -28,6 +28,7 @@ import { PermissionProvenance } from "@/kilocode/permission/provenance" // kiloc
 import { KiloToolInput } from "@/kilocode/session/tool-input" // kilocode_change
 import { KiloSessionOverflow } from "@/kilocode/session/overflow"
 import { KiloResponseMetadata } from "@/kilocode/session/response-metadata"
+import { KiloGeneratedFile } from "@/kilocode/session/generated-file"
 import { KiloReasoningReplay } from "@/kilocode/session/reasoning-replay"
 import { Suggestion } from "@/kilocode/suggestion"
 // kilocode_change - provider-cost escape hatch needs the stored auth payload on the processor input
@@ -628,6 +629,19 @@ const layer = Layer.effect(
             })
             // kilocode_change end
             yield* Effect.forEach(Object.keys(ctx.reasoningMap), finishReasoning)
+            // kilocode_change start - persist model-generated images as assistant file parts
+            yield* Effect.forEach(
+              yield* KiloGeneratedFile.store({
+                metadata: value.providerMetadata,
+                sessionID: ctx.assistantMessage.sessionID,
+                messageID: ctx.assistantMessage.id,
+                id: () => PartID.ascending(),
+                image,
+                config: yield* config.get(),
+              }),
+              (part) => session.updatePart(part),
+            )
+            // kilocode_change end
             // kilocode_change start - persist late-arriving OpenRouter reasoning details for replay
             const details = KiloReasoningReplay.details(value.providerMetadata)
             if (details) {

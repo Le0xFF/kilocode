@@ -32,7 +32,7 @@ export const REQUIRED_VSIX_FILES = [
   "dist/agent-manager.js",
   "dist/node_modules/playwright-core/index.js",
   "dist/node_modules/playwright-core/browsers.json",
-  "dist/node_modules/playwright-core/lib/generated/utilityScriptSource.js",
+  "dist/node_modules/playwright-core/lib/coreBundle.js",
   "dist/node_modules/chromium-bidi/package.json",
   "dist/node_modules/chromium-bidi/node_modules/zod/package.json",
   "dist/node_modules/chromium-bidi/node_modules/mitt/package.json",

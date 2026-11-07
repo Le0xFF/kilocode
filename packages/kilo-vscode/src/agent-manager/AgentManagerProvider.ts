@@ -23,7 +23,6 @@ import {
   type LifecycleHost,
 } from "./provider-lifecycle"
 import { Timing } from "./creation-timing"
-import { normalizeBaseBranch } from "./base-branch"
 import { handleBaseUpdate } from "./base-update"
 import { pushFixes } from "../kilo-provider/push-fixes-settings"
 import { GitStatsPoller, type LocalStats, type WorktreePresenceResult, type WorktreeStats } from "./GitStatsPoller"
@@ -40,13 +39,13 @@ import { discardWorktree as discard } from "./discard-worktree"
 import { acquirePtyCleanup, teardown } from "./pty-cleanup"
 import { executeVscodeTask } from "./task-runner"
 import { runLifecycleSetup } from "./provider-lifecycle"
+import { sendRepoInfo } from "./repo-info"
 import { RunController } from "./run/controller"
-import { handleRunMessage } from "./run/message"
-import { handleTabLayoutMessage } from "./tab-layout"
 import { createRunController, createScriptTerminalRuntime, clearScriptTerminals } from "./script-terminal-runtime"
 import { forkSession } from "./fork-session"
 import { AgentManagerVisiblePresence } from "./am-visible-presence"
 import { continueInWorktree } from "./continue-in-worktree"
+import { stateMessage, uiMessage, type MessageRoutingDeps } from "./message-routing"
 import { WorktreeDiffController } from "./worktree-diff-controller"
 import { createWorktreeActivity } from "./worktree-activity"
 import { sendDiffBranches as postDiffBranches } from "./project/diff-branches"
@@ -73,7 +72,7 @@ import type { AgentManagerOrchestrationBridge } from "./orchestration-bridge"
 import { pruneSubagents } from "./prune-subagents"
 import { prepareDirectory, startSession } from "./mcp-warmup"
 import { readTerminalFont, watchTerminalFont } from "./terminal-font"
-import { DestinationState, handleDestination, watchTerminalDestination } from "./terminal-destination"
+import { DestinationState, watchTerminalDestination } from "./terminal-destination"
 import { buildKeybindingMap } from "./format-keybinding"
 import { resolveVersionModels, buildInitialMessages, type CreatedVersion } from "./multi-version"
 import { sessionCreateBody } from "./session-create"
@@ -734,95 +733,11 @@ export class AgentManagerProvider implements Disposable {
     m: AgentManagerInMessage,
     msg: Record<string, unknown>,
   ): Record<string, unknown> | null | undefined {
-    if (m.type === "agentManager.configureSetupScript") {
-      void this.configureSetupScript()
-      return null
-    }
-    if (handleDestination(this.destination, m, (msg) => this.log("[XTerm]", msg))) return null
-    if (handleRunMessage(this.run, m, (id) => this.runKey(id))) return null
-    if (m.type === "agentManager.showTerminal") {
-      this.terminalManager.showTerminal(m.sessionId, this.state)
-      return null
-    }
-    if (m.type === "agentManager.showLocalTerminal") {
-      this.terminalManager.showLocalTerminal()
-      return null
-    }
-    if (m.type === "agentManager.showWorktreeTerminal") {
-      this.terminalManager.showWorktreeTerminal(m.worktreeId, this.state)
-      return null
-    }
-    if (m.type === "agentManager.openWorktree") {
-      this.openWorktreeDirectory(m.worktreeId)
-      return null
-    }
-    if (m.type === "agentManager.copyToClipboard") {
-      this.host.copyToClipboard(m.text)
-      return null
-    }
-    if (m.type === "previewImage") return msg
-    if (m.type === "saveImage") return msg
-    if (m.type === "agentManager.showExistingLocalTerminal") {
-      this.terminalManager.syncLocalOnSessionSwitch()
-      return null
-    }
-    if (m.type === "agentManager.requestRepoInfo") {
-      void this.sendRepoInfo()
-      return null
-    }
-    if (m.type === "agentManager.createMultiVersion") {
-      void this.onCreateMultiVersion(m)
-      return null
-    }
-    if (m.type === "agentManager.renameWorktree") {
-      const state = this.getStateManager()
-      if (state) {
-        state.updateWorktreeLabel(m.worktreeId, m.label)
-        this.pushState()
-      }
-      return null
-    }
+    return uiMessage(this.messageDeps, m, msg)
   }
 
   private onStateMessage(m: AgentManagerInMessage): Record<string, unknown> | null | undefined {
-    if (m.type === "agentManager.requestState") {
-      this.onRequestState()
-      return null
-    }
-    if (handleTabLayoutMessage(this.state, m)) return null
-    if (m.type === "agentManager.setWorktreeOrder") {
-      const state = this.getStateManager()
-      if (state) {
-        state.setWorktreeOrder(m.order)
-        this.pushState()
-      }
-      return null
-    }
-    if (m.type === "agentManager.setSessionsCollapsed") {
-      this.state?.setSessionsCollapsed(m.collapsed)
-      // Project bodies render collapsed from pushed state, so the mutation
-      // must round-trip.
-      this.pushState()
-      return null
-    }
-    if (m.type === "agentManager.setSidebarCollapsed") {
-      this.state?.setSidebarCollapsed(m.collapsed)
-      return null
-    }
-    if (this.handleSection(m)) return null
-    if (m.type === "agentManager.setReviewDiffStyle") {
-      this.state?.setReviewDiffStyle(m.style)
-      return null
-    }
-    if (m.type === "agentManager.setReviewMarkdownRender") {
-      void setDiffMarkdownRender(m.render).then(() => this.pushState())
-      return null
-    }
-    if (m.type === "agentManager.setDefaultBaseBranch") {
-      this.state?.setDefaultBaseBranch(normalizeBaseBranch(m.branch))
-      this.pushState()
-      return null
-    }
+    return stateMessage(this.messageDeps, m)
   }
 
   private onImportMessage(m: AgentManagerInMessage): Record<string, unknown> | null | undefined {
@@ -1305,16 +1220,12 @@ export class AgentManagerProvider implements Disposable {
   // Repo info
 
   private async sendRepoInfo(): Promise<void> {
-    const ctx = this.context
-    const manager = this.getWorktreeManager()
-    if (!manager) return
-    try {
-      const branch = await manager.currentBranch()
-      const defaultBranch = await manager.defaultBranch()
-      this.postToWebview({ type: "agentManager.repoInfo", branch, defaultBranch, projectId: ctx?.id })
-    } catch (error) {
-      this.log(`Failed to get current branch: ${error}`)
-    }
+    return sendRepoInfo({
+      manager: this.getWorktreeManager(),
+      projectId: this.context?.id,
+      post: (msg) => this.postToWebview(msg),
+      log: (msg) => this.log(msg),
+    })
   }
 
   // State helpers
@@ -1510,6 +1421,27 @@ export class AgentManagerProvider implements Disposable {
 
   private getStateManager(): WorktreeStateManager | undefined {
     return this.context?.stateManager()
+  }
+  /** Capabilities the extracted in-message routing branches borrow from the provider. */
+  private get messageDeps(): MessageRoutingDeps {
+    return {
+      state: this.state,
+      destination: this.destination,
+      run: this.run,
+      terminalManager: this.terminalManager,
+      getStateManager: () => this.getStateManager(),
+      runKey: (worktreeId) => this.runKey(worktreeId),
+      requestState: () => this.onRequestState(),
+      pushState: () => this.pushState(),
+      handleSection: (m) => this.handleSection(m),
+      setMarkdownRender: (render) => void setDiffMarkdownRender(render).then(() => this.pushState()),
+      configureSetupScript: () => void this.configureSetupScript(),
+      openWorktreeDirectory: (worktreeId) => this.openWorktreeDirectory(worktreeId),
+      copyToClipboard: (text) => void this.host.copyToClipboard(text),
+      sendRepoInfo: () => void this.sendRepoInfo(),
+      createMultiVersion: (m) => void this.onCreateMultiVersion(m),
+      log: (...args) => this.log(...args),
+    }
   }
 
   private getSetupScriptService(): SetupScriptService | undefined {
