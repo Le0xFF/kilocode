@@ -41168,6 +41168,9 @@
                     "branchName": {
                       "type": "string"
                     },
+                    "baseBranch": {
+                      "type": "string"
+                    },
                     "agent": {
                       "type": "string"
                     },

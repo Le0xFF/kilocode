@@ -16,6 +16,25 @@ This build is the **offline `leocode` fork** of Kilo Code, synced to upstream v7
 - VSIX CLI runtimes were rebuilt on bun 1.4.4, so the shipped binaries carry the eMudhra CA-store fix; the system bun was upgraded to match the upstream `packageManager` pin `bun@1.4.4`.
 - Close-out (2026-10-24): all gates green (typecheck 20/20, lint 0 errors, root guards, `check:offline` 11/11, unit 495/495, visual 313 passed / 47 skipped / 0 failed, compile, `package:vsix` linux + win32 with the `dist/node_modules` playwright-runtime self-check, offline smoke `/provider` = 7 local/configured providers with zero non-loopback endpoint URLs) after `check-kilocode-change` was made green by rewording two informational marker comments (package forbids `kilocode_change` tokens); visual baselines regenerated once — 74 snapshots updated for the window's UI drift, 7 new story baselines added, 4 `chat-workspace-scope` LFS-pointer baselines recaptured (the 3 `marketplace/*` LFS-pointer PNGs — pre-sync orphans of the keep-deleted surface — were proven dead and removed post-close-out in `dbcbd905`); both VSIXes produced (`kilo-code-7.8.17-{linux,win32}.vsix`, win32 CLI binary cross-rebuilt). Note: the shipped CLI binaries are compiled with the builder's system bun, now 1.4.4 (upgraded to match the upstream `packageManager` pin `bun@1.4.4`), so the eMudhra CA-store fix is present in the current VSIX artifacts.
 
+## 7.8.20
+
+### Minor Changes
+
+- [#15482](https://github.com/Kilo-Org/kilocode/pull/15482) [`ab43c7d`](https://github.com/Kilo-Org/kilocode/commit/ab43c7d4ed670fb77302087d6e47ac1959f0e699) - Let agents choose the base branch when they start Agent Manager worktree sessions.
+
+### Patch Changes
+
+- [#15483](https://github.com/Kilo-Org/kilocode/pull/15483) [`f9e7774`](https://github.com/Kilo-Org/kilocode/commit/f9e77749281ede26a550149aff283fc0101a8143) - Upgrade zod in the VS Code extension to a patched release that fixes a memory-exhaustion advisory when validating oversized constrained collections.
+
+- [#15479](https://github.com/Kilo-Org/kilocode/pull/15479) [`ccf958a`](https://github.com/Kilo-Org/kilocode/commit/ccf958a1d2a4fa8b5136f228939daa975d0c8feb) - Fix auto-compaction starting well before the configured context threshold, and stop compaction from looping on models without a known context size or after you stop a compaction.
+
+- Updated dependencies [[`6c0d427`](https://github.com/Kilo-Org/kilocode/commit/6c0d4273f1b1b7fa85d562c699e7210f90b365b9)]:
+  - @kilocode/kilo-gateway@7.9.0
+  - @opencode-ai/core@7.8.19
+  - @kilocode/kilo-indexing@7.8.19
+  - @kilocode/kilo-ui@7.8.19
+  - @opencode-ai/ui@7.8.19
+
 ## 7.8.18
 
 ### Patch Changes

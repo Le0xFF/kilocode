@@ -5035,6 +5035,7 @@ export type EventKilocodeAgentManagerStart = {
       prompt?: string
       name?: string
       branchName?: string
+      baseBranch?: string
       agent?: string
       model?: {
         providerID: string

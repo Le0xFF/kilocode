@@ -2,7 +2,7 @@
   "name": "kilo-code-offline",
   "displayName": "Kilo Code (Offline): AI Coding Agent",
   "description": "Open Source AI coding agent that generates code from natural language, automates tasks, and runs terminal commands. Works fully offline with local OpenAI-compatible providers (llama.cpp, vLLM, Ollama) via custom provider config. Features chat/agent modes, an Agent Manager for parallel worktree sessions, local codebase indexing, MCP, snapshot/worktree support, browser automation, and automated refactoring.",
-  "version": "7.8.18",
+  "version": "7.8.20",
   "icon": "assets/icons/logo-outline-black.png",
   "galleryBanner": {
     "color": "#FFFFFF",
@@ -1258,7 +1258,7 @@
     "esbuild-plugin-solid": "^0.6.0",
     "eslint": "^9.39.2",
     "eslint-config-prettier": "^10.1.8",
-    "happy-dom": "20.8.9",
+    "happy-dom": "21.0.4",
     "knip": "5.85.0",
     "prettier": "3.6.2",
     "storybook": "10.6.2",
@@ -1297,14 +1297,13 @@
     "marked": "catalog:",
     "lru-cache": "^11.0.2",
     "minimatch": "10.2.6",
-    "openai": "^4.85.4",
     "playwright-core": "1.57.0",
     "simple-git": "4.0.2",
     "solid-js": "^1.9.11",
     "virtua": "catalog:",
     "ws": "8.21.0",
     "yaml": "2.8.3",
-    "zod": "^3.24.2"
+    "zod": "^4.6.6"
   },
   "peerDependencies": {}
 }
