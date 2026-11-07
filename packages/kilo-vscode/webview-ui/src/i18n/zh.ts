@@ -1205,8 +1205,6 @@ export const dict = {
   "diffViewer.comment.chooseDestination": "Choose destination",
   "diffViewer.comment.postToGithub": "Post to GitHub",
   "diffViewer.comment.prContext": "PR #{{number}}",
-  "diffViewer.comment.saveLocal": "Save local",
-  "diffViewer.comment.sendToAgent": "Send to agent",
   "diffViewer.comment.sendToGithub": "Send to GitHub #{{number}}",
   "diffViewer.comment.sendToKilo": "Send to Kilo",
   "diffViewer.comment.unavailable": "This line is not available in the current pull request snapshot.",
