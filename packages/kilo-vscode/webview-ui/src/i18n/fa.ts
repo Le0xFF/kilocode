@@ -59,6 +59,9 @@ export const dict = {
     "تاریخچه پرامپت (ArrowUp/ArrowDown) را برای هر گفتگو جداگانه نگه دارید، به جای اشتراک یک تاریخچه بین همه گفتگوها.",
   "settings.experimental.claudeMigration.title": "Claude Code Migration (Experimental)",
   "settings.experimental.claudeMigration.description": "On the next backend start, import supported global CLAUDE.md instructions, simple skills, and disabled MCP definitions. This runs once with no automatic retry; global Claude instructions and skills are then handed off to Kilo. Claude files stay unchanged; keep them if you still use Claude Code.",
+  "settings.experimental.agentManagerSplash.title": "صفحه خوشامدگویی Agent Manager",
+  "settings.experimental.agentManagerSplash.description":
+    "معرفی جدید Agent Manager را با نمونه‌های گردش کار امتحان کنید. بلافاصله اعمال می‌شود.",
   "settings.agentBehaviour.pushFixes.title": "Push Pull Request Fixes",
   "settings.agentBehaviour.pushFixes.description": "When you send pull request CI failures or review comments to the agent, or update a worktree from its base, ask it to commit and push so the pull request updates. Permission prompts still apply. Turn off to keep commits manual.",
   "session.activity.waiting": "در انتظار پاسخ یا تأیید.",

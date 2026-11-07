@@ -40,7 +40,8 @@ import { SessionDrain } from "@/kilocode/session/drain" // kilocode_change
 import { RepoOverviewTool } from "@/kilocode/tool/repo-overview" // kilocode_change
 import { ContextInfoTool, CompactTool } from "@/kilocode/tool/context" // kilocode_change
 import { RepoCloneTool } from "./repo_clone" // kilocode_change
-
+import { Flag } from "@opencode-ai/core/flag/flag" // kilocode_change
+import { stripZodFormat } from "@opencode-ai/core/kilocode/json-schema-format" // kilocode_change
 import { Auth } from "@/auth" // kilocode_change
 
 // kilocode_change - LSP removed; no lsp tool in the registry
@@ -464,7 +465,11 @@ function legacyJsonSchema(entries: [string, unknown][]): JSONSchema7 {
 }
 
 function zodJsonSchema(schema: z.ZodType): JSONSchema7 {
-  const result = normalizeZodJsonSchema(z.toJSONSchema(schema, { io: "input", metadata: zodMetadataRegistry(schema) }))
+  // kilocode_change start - drop zod 4.6 non-standard string formats
+  const result = normalizeZodJsonSchema(
+    z.toJSONSchema(schema, { io: "input", metadata: zodMetadataRegistry(schema), override: stripZodFormat }),
+  )
+  // kilocode_change end
   if (!isJsonSchemaObject(result)) throw new Error("plugin tool Zod schema produced a non-object JSON Schema")
   const { $defs, ...rest } = result
   return (

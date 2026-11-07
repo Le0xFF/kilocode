@@ -464,6 +464,7 @@ export interface ChatSettingsLoadedMessage {
   type: "chatSettingsLoaded"
   settings: {
     shiftTabCyclesVariant: boolean
+    agentManagerSplash: boolean
     browserAutomation: boolean
     agentManagerBrowserOpenLinksIn: "external" | "integrated"
     workspaceTrusted: boolean

@@ -62,6 +62,9 @@ export const dict = {
     "프롬프트 기록(ArrowUp/ArrowDown)을 모든 대화에서 공유하지 않고 대화별로 분리하여 유지합니다.",
   "settings.experimental.claudeMigration.title": "Claude Code Migration (Experimental)",
   "settings.experimental.claudeMigration.description": "On the next backend start, import supported global CLAUDE.md instructions, simple skills, and disabled MCP definitions. This runs once with no automatic retry; global Claude instructions and skills are then handed off to Kilo. Claude files stay unchanged; keep them if you still use Claude Code.",
+  "settings.experimental.agentManagerSplash.title": "Agent Manager 시작 화면",
+  "settings.experimental.agentManagerSplash.description":
+    "워크플로 예제가 포함된 새로운 Agent Manager 소개 화면을 사용해 보세요. 즉시 적용됩니다.",
   "settings.agentBehaviour.pushFixes.title": "Push Pull Request Fixes",
   "settings.agentBehaviour.pushFixes.description": "When you send pull request CI failures or review comments to the agent, or update a worktree from its base, ask it to commit and push so the pull request updates. Permission prompts still apply. Turn off to keep commits manual.",
   "session.activity.waiting": "답변 또는 승인을 기다리는 중입니다.",

@@ -892,6 +892,11 @@ export interface AgentManagerSetIntroDismissedRequest {
   dismissed: boolean
 }
 
+export interface AgentManagerSetSplashFoldedRequest {
+  type: "agentManager.setSplashFolded"
+  folded: boolean
+}
+
 // Copy text to the system clipboard via the extension host
 export interface CopyToClipboardRequest {
   type: "copyToClipboard"
@@ -1785,6 +1790,7 @@ export type WebviewMessage =
   | OpenWorktreeRequest
   | AgentManagerCopyToClipboardRequest
   | AgentManagerSetIntroDismissedRequest
+  | AgentManagerSetSplashFoldedRequest
   | CopyToClipboardRequest
   | ShowExistingLocalTerminalRequest
   | AgentManagerOpenFileRequest

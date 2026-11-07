@@ -61,6 +61,9 @@ export const dict = {
     "Houd de promptgeschiedenis (ArrowUp/ArrowDown) gescheiden per gesprek in plaats van één geschiedenis te delen over alle gesprekken.",
   "settings.experimental.claudeMigration.title": "Claude Code Migration (Experimental)",
   "settings.experimental.claudeMigration.description": "On the next backend start, import supported global CLAUDE.md instructions, simple skills, and disabled MCP definitions. This runs once with no automatic retry; global Claude instructions and skills are then handed off to Kilo. Claude files stay unchanged; keep them if you still use Claude Code.",
+  "settings.experimental.agentManagerSplash.title": "Agent Manager-welkomstscherm",
+  "settings.experimental.agentManagerSplash.description":
+    "Probeer de nieuwe Agent Manager-introductie met workflowvoorbeelden. Wordt direct toegepast.",
   "settings.agentBehaviour.pushFixes.title": "Push Pull Request Fixes",
   "settings.agentBehaviour.pushFixes.description": "When you send pull request CI failures or review comments to the agent, or update a worktree from its base, ask it to commit and push so the pull request updates. Permission prompts still apply. Turn off to keep commits manual.",
   "session.activity.waiting": "Wachten op een antwoord of goedkeuring.",

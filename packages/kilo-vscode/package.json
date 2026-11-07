@@ -2,7 +2,7 @@
   "name": "kilo-code-offline",
   "displayName": "Kilo Code (Offline): AI Coding Agent",
   "description": "Open Source AI coding agent that generates code from natural language, automates tasks, and runs terminal commands. Works fully offline with local OpenAI-compatible providers (llama.cpp, vLLM, Ollama) via custom provider config. Features chat/agent modes, an Agent Manager for parallel worktree sessions, local codebase indexing, MCP, snapshot/worktree support, browser automation, and automated refactoring.",
-  "version": "7.8.25",
+  "version": "7.8.26",
   "icon": "assets/icons/logo-outline-black.png",
   "galleryBanner": {
     "color": "#FFFFFF",
@@ -960,6 +960,12 @@
           "scope": "application",
           "description": "Pre-warm a ready worktree in the background so new Agent Manager sessions start faster. Uses extra disk space equal to one checkout per open project. Turn off to create worktrees only on demand."
         },
+        "kilo-code.new.experimental.agentManagerSplash": {
+          "type": "boolean",
+          "default": false,
+          "scope": "application",
+          "description": "Try the new Agent Manager introduction with workflow examples. Applies immediately."
+        },
         "kilo-code.new.experimental.browserAutomation": {
           "type": "boolean",
           "default": false,
@@ -1259,7 +1265,7 @@
     "@vscode/test-electron": "^2.5.2",
     "@vscode/vsce": "^4.0.0",
     "babel-preset-solid": "^1.9.9",
-    "esbuild": "^0.27.2",
+    "esbuild": "^0.28.1",
     "esbuild-plugin-solid": "^0.6.0",
     "eslint": "^9.39.2",
     "eslint-config-prettier": "^10.1.8",
