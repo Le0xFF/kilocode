@@ -75,3 +75,5 @@ packages/*/.kilo/tui.jsonc
 
 # Test Artifacts
 packages/*/.artifacts/
+/out/
+**/allure-results/
