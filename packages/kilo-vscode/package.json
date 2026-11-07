@@ -427,6 +427,11 @@
         "category": "Kilo Code"
       },
       {
+        "command": "kilo-code.new.showOpenTabs",
+        "title": "Show Open Tabs",
+        "category": "Kilo Code"
+      },
+      {
         "command": "kilo-code.new.cycleAgentMode",
         "title": "Cycle Agent Mode",
         "category": "Kilo Code"
@@ -1295,9 +1300,9 @@
     "fuzzysort": "3.1.0",
     "ignore": "^7.0.3",
     "marked": "catalog:",
-    "lru-cache": "^11.0.2",
-    "minimatch": "10.2.6",
-    "playwright-core": "1.57.0",
+     "lru-cache": "^11.0.2",
+     "minimatch": "11.0.1",
+     "playwright-core": "1.57.0",
     "simple-git": "4.0.2",
     "solid-js": "^1.9.11",
     "virtua": "catalog:",
