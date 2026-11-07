@@ -16,6 +16,14 @@ This build is the **offline `leocode` fork** of Kilo Code, synced to upstream v7
 - VSIX CLI runtimes were rebuilt on bun 1.4.4, so the shipped binaries carry the eMudhra CA-store fix; the system bun was upgraded to match the upstream `packageManager` pin `bun@1.4.4`.
 - Close-out (2026-10-24): all gates green (typecheck 20/20, lint 0 errors, root guards, `check:offline` 11/11, unit 495/495, visual 313 passed / 47 skipped / 0 failed, compile, `package:vsix` linux + win32 with the `dist/node_modules` playwright-runtime self-check, offline smoke `/provider` = 7 local/configured providers with zero non-loopback endpoint URLs) after `check-kilocode-change` was made green by rewording two informational marker comments (package forbids `kilocode_change` tokens); visual baselines regenerated once — 74 snapshots updated for the window's UI drift, 7 new story baselines added, 4 `chat-workspace-scope` LFS-pointer baselines recaptured (the 3 `marketplace/*` LFS-pointer PNGs — pre-sync orphans of the keep-deleted surface — were proven dead and removed post-close-out in `dbcbd905`); both VSIXes produced (`kilo-code-7.8.17-{linux,win32}.vsix`, win32 CLI binary cross-rebuilt). Note: the shipped CLI binaries are compiled with the builder's system bun, now 1.4.4 (upgraded to match the upstream `packageManager` pin `bun@1.4.4`), so the eMudhra CA-store fix is present in the current VSIX artifacts.
 
+## 7.8.18
+
+### Patch Changes
+
+- [#15410](https://github.com/Kilo-Org/kilocode/pull/15410) [`5f2aa0b`](https://github.com/Kilo-Org/kilocode/commit/5f2aa0b32fa4fafe1c544ac4a5203fc913e36225) Thanks [@WebReflection](https://github.com/WebReflection)! - Update DOMPurify to 3.4.17 to fix sanitization issues flagged by Dependabot alerts.
+
+- [#15412](https://github.com/Kilo-Org/kilocode/pull/15412) [`0377248`](https://github.com/Kilo-Org/kilocode/commit/0377248fb9af4ba12d04521821372a4d95cb1f6a) Thanks [@WebReflection](https://github.com/WebReflection)! - Update vite to 7.3.7 to fix the launch-editor editor CLI flag misinterpretation flagged by Dependabot (CVE-2026-112944).
+
 ## 7.8.16
 
 ## 7.8.15
